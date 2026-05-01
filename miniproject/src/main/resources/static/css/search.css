@@ -65,6 +65,73 @@ a { text-decoration: none; color: inherit; }
 button { font-family: 'Sarabun', sans-serif; cursor: pointer; }
 img { display: block; }
 
+
+
+/* ── Sort bar (แบบ Booking.com) ── */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.sort-label { font-size: 14px; color: var(--neutral-500); font-weight: 600; }
+.sort-btn {
+  padding: 7px 16px;
+  border-radius: 100px;
+  border: 1.5px solid var(--neutral-300);
+  background: var(--white);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--neutral-600);
+  cursor: pointer;
+  transition: all .14s;
+}
+.sort-btn:hover  { border-color: var(--green-400); color: var(--green-700); }
+.sort-btn.active { background: var(--green-800); color: #fff; border-color: var(--green-800); }
+.sort-filter-right { margin-left: auto; }
+.filter-toggle-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 16px;
+  border-radius: 100px;
+  border: 1.5px solid var(--neutral-300);
+  background: var(--white);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--neutral-600);
+  cursor: pointer;
+  transition: all .14s;
+}
+.filter-toggle-btn:hover { border-color: var(--green-400); color: var(--green-700); }
+
+/* ── Filter panel ── */
+.filter-panel {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--r-md);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.filter-group { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
+.filter-group-label { font-size: 12px; font-weight: 700; color: var(--neutral-500); text-transform: uppercase; letter-spacing: .5px; }
+.filter-check { display: flex; align-items: center; gap: 7px; font-size: 14px; color: var(--neutral-700); cursor: pointer; }
+.filter-check input { accent-color: var(--green-600); width: 15px; height: 15px; }
+.price-range-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--neutral-500); }
+.price-input {
+  width: 90px; padding: 6px 10px;
+  border: 1.5px solid var(--neutral-300);
+  border-radius: var(--r-sm);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px; outline: none;
+}
+.price-input:focus { border-color: var(--green-400); }
+
+
+
+
 /* ============================================================
    TOP BAR
 ============================================================ */

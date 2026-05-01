@@ -95,3 +95,46 @@ document.addEventListener('DOMContentLoaded', () => {
   const type   = params.get('type') || 'activity';
   switchTab(type);
 });
+//ลล
+const tabCfg = {
+  recommended: {               // ✅ เพิ่ม
+    label: 'ค้นหาทั้งหมด',
+    placeholder: 'กิจกรรม ทัวร์ หรือโฮมสเตย์',
+  },
+  activity: {
+    label: 'ค้นหากิจกรรม',
+    placeholder: 'ชื่อกิจกรรม หรือสถานที่',
+  },
+  tour: {
+    label: 'ค้นหาทัวร์ชุมชน',
+    placeholder: 'ชื่อทัวร์ หรือสถานที่',
+  },
+  homestay: {
+    label: 'ค้นหาโฮมสเตย์',
+    placeholder: 'ชื่อโฮมสเตย์ หรือที่อยู่',
+  },
+  package: {
+    label: 'ค้นหาแพ็กเกจ',
+    placeholder: 'ชื่อแพ็กเกจ',
+  },
+};
+
+// ✅ เพิ่ม function filter panel
+function toggleFilterPanel() {
+  const panel = document.getElementById('filterPanel');
+  if (panel) panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+}
+
+function selectSort(el) {
+  el.closest('.sort-bar')
+    .querySelectorAll('.sort-btn')
+    .forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ✅ default เปลี่ยนเป็น recommended
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const type   = params.get('type') || 'recommended'; // ← เปลี่ยนตรงนี้
+  switchTab(type);
+});

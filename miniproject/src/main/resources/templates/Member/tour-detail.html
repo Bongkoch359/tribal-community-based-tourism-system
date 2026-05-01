@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${tour.tourmname} + ' – ระบบท่องเที่ยวชุมชนเผ่า'">รายละเอียดทัวร์</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark:  #1a5c38;
+      --green:       #2d7a4f;
+      --green-mid:   #3d9e68;
+      --green-light: #52b788;
+      --green-pale:  #d8f3dc;
+      --amber:       #f59e0b;
+      --amber-pale:  #fef3c7;
+      --red:         #ef4444;
+      --gray-50:     #f9fafb;
+      --gray-100:    #f3f4f6;
+      --gray-200:    #e5e7eb;
+      --gray-400:    #9ca3af;
+      --gray-600:    #4b5563;
+      --gray-800:    #1f2937;
+      --white:       #ffffff;
+      --radius:      14px;
+      --shadow-sm:   0 1px 4px rgba(0,0,0,.08);
+      --shadow:      0 4px 20px rgba(0,0,0,.10);
+      --shadow-lg:   0 8px 40px rgba(0,0,0,.14);
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      line-height: 1.6;
+    }
+
+    /* ─── TOP BAR ─── */
+    .top-bar {
+      background: var(--green-dark);
+      padding: 8px 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 13px;
+    }
+    .top-bar a {
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color .2s;
+    }
+    .top-bar a:hover { color: #fff; }
+    .top-bar a svg { width: 14px; height: 14px; }
+    .top-bar-div { width: 1px; height: 14px; background: rgba(255,255,255,.25); }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      background: var(--green);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      height: 64px;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,.2);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+    }
+    .brand-icon svg { width: 20px; height: 20px; }
+    .brand-text { color: #fff; font-weight: 700; font-size: 15px; line-height: 1.2; }
+    .brand-text small { font-weight: 400; font-size: 11px; opacity: .8; display: block; }
+    .nav-links { display: flex; gap: 4px; margin-left: 20px; }
+    .nav-link {
+      color: rgba(255,255,255,.85);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background .2s, color .2s;
+    }
+    .nav-link:hover { background: rgba(255,255,255,.15); color: #fff; }
+    .nav-link svg { width: 16px; height: 16px; }
+    .nav-spacer { flex: 1; }
+    .btn-login {
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background .2s;
+    }
+    .btn-login:hover { background: rgba(255,255,255,.25); }
+
+    /* ─── BREADCRUMB ─── */
+    .breadcrumb {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+    .breadcrumb a { color: var(--green); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb svg { width: 14px; height: 14px; }
+
+    /* ─── HERO IMAGE ─── */
+    .hero-img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-img-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.5));
+    }
+    .hero-badge-wrap {
+      position: absolute;
+      bottom: 24px;
+      left: 32px;
+      z-index: 2;
+      display: flex;
+      gap: 8px;
+    }
+    .badge {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+    .badge-tour { background: var(--amber); color: #000; }
+    .badge-new  { background: var(--green-light); color: #fff; }
+
+    /* ─── MAIN LAYOUT ─── */
+    .page-wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ─── LEFT COLUMN ─── */
+    .title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .tour-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--gray-800);
+      line-height: 1.3;
+    }
+    .fav-btn {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      border: 2px solid var(--gray-200);
+      border-radius: 50%;
+      background: var(--white);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: border-color .2s, background .2s;
+    }
+    .fav-btn svg { width: 18px; height: 18px; }
+    .fav-btn:hover { border-color: var(--red); background: #fff0f0; }
+    .fav-btn.active svg { fill: var(--red); stroke: var(--red); }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+    .meta-item svg { width: 16px; height: 16px; color: var(--green); flex-shrink: 0; }
+    .meta-item strong { color: var(--gray-800); }
+
+    /* stats strip */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--gray-200);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .stat-cell {
+      background: var(--white);
+      padding: 18px;
+      text-align: center;
+    }
+    .stat-cell .val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--green);
+      display: block;
+    }
+    .stat-cell .lbl {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 2px;
+    }
+
+    /* section card */
+    .section-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .section-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--green-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .section-card h3 svg { width: 18px; height: 18px; }
+
+    /* schedule / timeline */
+    .timeline { list-style: none; position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: var(--gray-200);
+    }
+    .tl-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .tl-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--green-pale);
+      border: 2px solid var(--green-light);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .tl-dot svg { width: 18px; height: 18px; stroke: var(--green); }
+    .tl-time {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 2px;
+    }
+    .tl-desc {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.55;
+    }
+    .tl-title { font-weight: 600; color: var(--gray-800); font-size: 14px; margin-bottom: 2px; }
+
+    /* included */
+    .included-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .inc-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+    .inc-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .inc-item.yes svg { stroke: var(--green); }
+    .inc-item.no  svg { stroke: var(--red); }
+
+    /* notes */
+    .note-list { list-style: none; }
+    .note-list li {
+      font-size: 13.5px;
+      color: var(--gray-600);
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--gray-200);
+      padding-left: 18px;
+      position: relative;
+    }
+    .note-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* reviews */
+    .rating-hero {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    .big-score {
+      font-size: 56px;
+      font-weight: 800;
+      color: var(--green-dark);
+      line-height: 1;
+    }
+    .stars-big { display: flex; gap: 3px; margin-bottom: 4px; }
+    .stars-big svg { width: 20px; height: 20px; fill: var(--amber); }
+    .rating-bars { flex: 1; }
+    .rb-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+    .rb-row span:first-child { width: 20px; text-align: right; }
+    .rb-track {
+      flex: 1;
+      height: 6px;
+      background: var(--gray-200);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .rb-fill { height: 100%; background: var(--amber); border-radius: 3px; }
+
+    .review-item {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .review-item:last-child { border-bottom: none; }
+    .rv-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .rv-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--green-pale);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--green-dark);
+      flex-shrink: 0;
+    }
+    .rv-name { font-weight: 600; font-size: 14px; }
+    .rv-date { font-size: 12px; color: var(--gray-400); }
+    .rv-stars { display: flex; gap: 2px; margin-left: auto; }
+    .rv-stars svg { width: 13px; height: 13px; fill: var(--amber); }
+    .rv-text { font-size: 14px; color: var(--gray-600); line-height: 1.6; }
+
+    /* ─── RIGHT SIDEBAR ─── */
+    .sidebar {
+      position: sticky;
+      top: 80px;
+    }
+    .booking-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .booking-header {
+      background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+      padding: 20px 22px;
+      color: #fff;
+    }
+    .price-display { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
+    .price-main { font-size: 32px; font-weight: 800; }
+    .price-unit { font-size: 13px; opacity: .8; }
+    .price-child { font-size: 13px; opacity: .75; }
+
+    .booking-body { padding: 20px 22px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+    .form-label svg { width: 14px; height: 14px; }
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      color: var(--gray-800);
+      background: var(--gray-50);
+      transition: border-color .2s;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--green-light); background: #fff; }
+
+    .guest-row {
+      display: flex;
+      gap: 10px;
+    }
+    .guest-group { flex: 1; }
+    .counter-wrap {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--gray-50);
+    }
+    .cnt-btn {
+      width: 36px; height: 40px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--green);
+      transition: background .15s;
+      flex-shrink: 0;
+    }
+    .cnt-btn:hover { background: var(--green-pale); }
+    .cnt-input {
+      flex: 1;
+      text-align: center;
+      border: none;
+      background: transparent;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gray-800);
+      outline: none;
+    }
+
+    .price-summary {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .ps-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+    }
+    .ps-row.total {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--gray-800);
+      padding-top: 8px;
+      border-top: 1px solid var(--gray-200);
+      margin-top: 6px;
+    }
+    .ps-row.total span:last-child { color: var(--green-dark); }
+
+    .btn-book {
+      width: 100%;
+      background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity .2s, transform .15s;
+      text-decoration: none;
+    }
+    .btn-book:hover { opacity: .92; transform: translateY(-1px); }
+    .btn-book svg { width: 18px; height: 18px; }
+
+    .guarantee {
+      text-align: center;
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .guarantee svg { width: 13px; height: 13px; stroke: var(--green-light); }
+
+    /* host card */
+    .host-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-top: 16px;
+    }
+    .host-row { display: flex; align-items: center; gap: 12px; }
+    .host-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .host-name { font-weight: 700; font-size: 14px; }
+    .host-title { font-size: 12px; color: var(--gray-400); }
+    .host-meta { display: flex; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200); }
+    .host-stat { flex: 1; text-align: center; }
+    .host-stat .v { font-weight: 700; color: var(--green-dark); font-size: 15px; }
+    .host-stat .l { font-size: 11px; color: var(--gray-400); }
+
+    /* seat badge */
+    .seat-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--amber-pale);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #92400e;
+      margin-bottom: 16px;
+    }
+    .seat-bar svg { width: 16px; height: 16px; stroke: #b45309; flex-shrink: 0; }
+
+    /* map placeholder */
+    .map-ph {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      border-radius: 10px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      font-size: 14px;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .map-ph svg { width: 20px; height: 20px; }
+
+    /* toast */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: var(--green-dark);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 999;
+      animation: slideUp .3s ease;
+    }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    @media (max-width: 900px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .stats-strip { grid-template-columns: repeat(2,1fr); }
+      .included-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>ภาษาไทย</a>
+  <div class="top-bar-div"></div>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>ช่วยเหลือ</a>
+  <div class="top-bar-div"></div>
+  <a href="/member/bookings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>การจองของฉัน</a>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="/search" class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+    </div>
+    <div class="brand-text">
+      ระบบท่องเที่ยวชุมชนเผ่า
+      <small>Tribal Community Tourism</small>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="/search" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      หน้าแรก
+    </a>
+    <a href="/tribe-info" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+      ข้อมูลชนเผ่า
+    </a>
+    <a href="/about" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      เกี่ยวกับเรา
+    </a>
+  </div>
+  <div class="nav-spacer"></div>
+
+  <!-- Auth – logged in -->
+  <th:block th:if="${session.loggedInMember != null}">
+    <div style="display:flex;align-items:center;gap:10px;color:#fff;font-size:14px;">
+      <div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-weight:700;"
+           th:text="${#strings.substring(session.loggedInMember.firstname,0,1)}">ม</div>
+      <span th:text="${session.loggedInMember.firstname}">ชื่อผู้ใช้</span>
+    </div>
+  </th:block>
+  <th:block th:if="${session.loggedInMember == null and session.loggedInManager == null and session.loggedInOwner == null and session.loggedInAdmin == null}">
+    <button class="btn-login" onclick="location.href='/member/login'">เข้าสู่ระบบ</button>
+  </th:block>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="/search">หน้าแรก</a>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  <a href="/search?type=tour">ทัวร์ชุมชน</a>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  <span th:text="${tour.tourmname}">ชื่อทัวร์</span>
+</div>
+
+<!-- HERO IMAGE -->
+<div class="hero-img-wrap">
+  <img class="hero-img"
+       th:src="${tour.images}"
+       src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=500&fit=crop"
+       onerror="this.src='https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=500&fit=crop'"
+       th:alt="${tour.tourmname}" alt="tour"/>
+  <div class="hero-badge-wrap">
+    <span class="badge badge-tour">🗺 ทัวร์ชุมชน</span>
+    <span class="badge badge-new">✓ พร้อมจอง</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="page-wrap">
+
+  <!-- ══ LEFT COLUMN ══ -->
+  <div>
+
+    <!-- Title -->
+    <div class="title-row">
+      <h1 class="tour-title" th:text="${tour.tourmname}">ชื่อทัวร์ชุมชน</h1>
+      <button class="fav-btn" id="favBtn" onclick="toggleFav()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      </button>
+    </div>
+
+    <!-- Meta -->
+    <div class="meta-row">
+      <div class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-4-4-7-7.5-7-10.5a7 7 0 1114 0c0 3-3 6.5-7 10.5z"/><circle cx="12" cy="10" r="2"/></svg>
+        <span th:text="${tour.location}">เชียงใหม่, ภาคเหนือ</span>
+      </div>
+      <div class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <span th:text="${tour.duration}">1 วัน</span>
+      </div>
+      <div class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+        <strong>4.8</strong>&nbsp;(38 รีวิว)
+      </div>
+      <div class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+        <span th:text="${tour.minseatstour} + ' – ' + ${tour.maxseatstour} + ' คน/รอบ'">2 – 20 คน/รอบ</span>
+      </div>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="stats-strip">
+      <div class="stat-cell">
+        <span class="val" th:text="${tour.minseatstour}">2</span>
+        <span class="lbl">ที่นั่งขั้นต่ำ</span>
+      </div>
+      <div class="stat-cell">
+        <span class="val" th:text="${tour.maxseatstour}">20</span>
+        <span class="lbl">ที่นั่งสูงสุด</span>
+      </div>
+      <div class="stat-cell">
+        <span class="val">฿<span th:text="${#numbers.formatDecimal(tour.adultprice,0,'COMMA',0,'POINT')}">850</span></span>
+        <span class="lbl">ผู้ใหญ่ / คน</span>
+      </div>
+      <div class="stat-cell">
+        <span class="val">฿<span th:text="${#numbers.formatDecimal(tour.childprice,0,'COMMA',0,'POINT')}">500</span></span>
+        <span class="lbl">เด็ก / คน</span>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="section-card">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        รายละเอียดทัวร์
+      </h3>
+      <p style="font-size:14.5px;color:#4b5563;line-height:1.75;" th:text="${tour.description}">
+        ทัวร์ชุมชนที่พาคุณสัมผัสวิถีชีวิตจริงของชาวเขาในภาคเหนือ เรียนรู้วัฒนธรรม ประเพณี และการดำรงชีวิตที่สอดคล้องกับธรรมชาติ นำโดยไกด์ชาวบ้านที่มีความเชี่ยวชาญและความใส่ใจ
+      </p>
+    </div>
+
+    <!-- Schedule / Timeline -->
+    <div class="section-card">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        กำหนดการ
+      </h3>
+      <ul class="timeline">
+        <li class="tl-item">
+          <div class="tl-dot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <div>
+            <div class="tl-time">08:00 น.</div>
+            <div class="tl-title">พบกัน ณ จุดนัดพบ / รับจากที่พัก</div>
+            <div class="tl-desc">แนะนำทีมไกด์ ชี้แจงรายละเอียดทัวร์ และเตรียมอุปกรณ์</div>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-dot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+          </div>
+          <div>
+            <div class="tl-time">09:00 น.</div>
+            <div class="tl-title">เดินทางสู่หมู่บ้านชนเผ่า</div>
+            <div class="tl-desc">ชมทัศนียภาพระหว่างทาง เรียนรู้ประวัติชุมชนและวัฒนธรรมชนเผ่า</div>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-dot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.122 12.122l.707.707M1 12h1m20 0h1M4.22 19.78l.707-.707M18.364 5.636l.707-.707"/></svg>
+          </div>
+          <div>
+            <div class="tl-time">11:00 น.</div>
+            <div class="tl-title">กิจกรรมชุมชน (ทำนา / ทอผ้า / ทำอาหาร)</div>
+            <div class="tl-desc">ลงมือทำกิจกรรมร่วมกับชาวบ้าน ประสบการณ์ที่จะจดจำได้ตลอดไป</div>
+          </div>
+        </li>
+        <li class="tl-item">
+          <div class="tl-dot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div>
+            <div class="tl-time">13:00 น.</div>
+            <div class="tl-title">มื้อกลางวัน – อาหารพื้นเมืองจากชาวบ้าน</div>
+            <div class="tl-desc">รับประทานอาหารพื้นถิ่นที่ปรุงสดจากวัตถุดิบในชุมชน</div>
+          </div>
+        </li>
+        <li class="tl-item" style="margin-bottom:0;">
+          <div class="tl-dot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          </div>
+          <div>
+            <div class="tl-time">16:00 น.</div>
+            <div class="tl-title">เดินทางกลับ / ส่งที่พัก</div>
+            <div class="tl-desc">อำลาหมู่บ้าน เดินทางกลับพร้อมความประทับใจ</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Included -->
+    <div class="section-card">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        สิ่งที่รวมอยู่ในทัวร์
+      </h3>
+      <div class="included-grid">
+        <div class="inc-item yes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          ไกด์นำเที่ยวชาวบ้าน
+        </div>
+        <div class="inc-item yes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          อาหารกลางวัน 1 มื้อ
+        </div>
+        <div class="inc-item yes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          อุปกรณ์กิจกรรมทั้งหมด
+        </div>
+        <div class="inc-item yes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          น้ำดื่มตลอดทริป
+        </div>
+        <div class="inc-item yes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          ประกันการเดินทาง
+        </div>
+        <div class="inc-item no">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"/></svg>
+          ค่ารถรับ-ส่ง (ตามตกลง)
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="section-card">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        หมายเหตุ / ข้อควรรู้
+      </h3>
+      <ul class="note-list">
+        <li>กรุณาสวมรองเท้าที่เดินสะดวก เหมาะกับการเดินป่า</li>
+        <li>แนะนำให้นำครีมกันแดดและหมวกมาด้วย</li>
+        <li>เด็กอายุต่ำกว่า 5 ขวบ ไม่มีค่าบริการ</li>
+        <li>หากมีผู้เข้าร่วมไม่ถึงขั้นต่ำ ทางทีมจะติดต่อเลื่อนวันให้</li>
+        <li>สามารถยกเลิกได้ฟรีล่วงหน้า 48 ชั่วโมง</li>
+      </ul>
+    </div>
+
+    <!-- Reviews -->
+    <div class="section-card">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+        รีวิวจากนักท่องเที่ยว
+      </h3>
+      <div class="rating-hero">
+        <div class="big-score">4.8</div>
+        <div>
+          <div class="stars-big">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div style="font-size:13px;color:#6b7280;">จาก 38 รีวิว</div>
+        </div>
+        <div class="rating-bars">
+          <div class="rb-row"><span>5</span><div class="rb-track"><div class="rb-fill" style="width:78%"></div></div><span>78%</span></div>
+          <div class="rb-row"><span>4</span><div class="rb-track"><div class="rb-fill" style="width:16%"></div></div><span>16%</span></div>
+          <div class="rb-row"><span>3</span><div class="rb-track"><div class="rb-fill" style="width:6%"></div></div><span>6%</span></div>
+          <div class="rb-row"><span>2</span><div class="rb-track"><div class="rb-fill" style="width:0%"></div></div><span>0%</span></div>
+          <div class="rb-row"><span>1</span><div class="rb-track"><div class="rb-fill" style="width:0%"></div></div><span>0%</span></div>
+        </div>
+      </div>
+
+      <!-- Review list (dynamic) -->
+      <th:block th:each="r : ${reviews}">
+        <div class="review-item">
+          <div class="rv-header">
+            <div class="rv-avatar" th:text="${#strings.substring(r.memberName,0,1)}">ก</div>
+            <div>
+              <div class="rv-name" th:text="${r.memberName}">ชื่อผู้รีวิว</div>
+              <div class="rv-date" th:text="${r.reviewDate}">2 เม.ย. 2026</div>
+            </div>
+            <div class="rv-stars">
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+          </div>
+          <p class="rv-text" th:text="${r.comment}">ข้อความรีวิว</p>
+        </div>
+      </th:block>
+
+      <!-- Static fallback reviews -->
+      <th:block th:if="${#lists.isEmpty(reviews)}">
+        <div class="review-item">
+          <div class="rv-header">
+            <div class="rv-avatar">ส</div>
+            <div>
+              <div class="rv-name">สุดาพร ก.</div>
+              <div class="rv-date">15 มี.ค. 2026</div>
+            </div>
+            <div class="rv-stars">
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+          </div>
+          <p class="rv-text">ประสบการณ์ที่ประทับใจมากค่ะ ไกด์ให้ความรู้ดีมาก ลูกๆ สนุกมากกับการทำนา แนะนำให้ทุกคนลองดูค่ะ</p>
+        </div>
+        <div class="review-item">
+          <div class="rv-header">
+            <div class="rv-avatar">ว</div>
+            <div>
+              <div class="rv-name">วิทวัส น.</div>
+              <div class="rv-date">2 เม.ย. 2026</div>
+            </div>
+            <div class="rv-stars">
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+          </div>
+          <p class="rv-text">อาหารอร่อยมากครับ กินข้าวกับชาวบ้านแล้วรู้สึกอบอุ่นมาก ทัวร์จัดได้ดี ตรงเวลา คุ้มค่ามากครับ</p>
+        </div>
+      </th:block>
+    </div>
+  </div>
+
+  <!-- ══ RIGHT SIDEBAR ══ -->
+  <div class="sidebar">
+    <div class="booking-card">
+      <div class="booking-header">
+        <div class="price-display">
+          <span class="price-main">฿<span th:text="${#numbers.formatDecimal(tour.adultprice,0,'COMMA',0,'POINT')}">850</span></span>
+          <span class="price-unit">/ คน (ผู้ใหญ่)</span>
+        </div>
+        <div class="price-child">เด็ก ฿<span th:text="${#numbers.formatDecimal(tour.childprice,0,'COMMA',0,'POINT')}">500</span> / คน</div>
+      </div>
+
+      <div class="booking-body">
+        <div class="seat-bar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+          รับ <span th:text="${tour.minseatstour}">2</span> – <span th:text="${tour.maxseatstour}">20</span> คน/รอบ
+        </div>
+
+        <form th:action="@{/booking/tour}" method="post">
+          <input type="hidden" name="tourid" th:value="${tour.tourid}"/>
+
+          <div class="form-group">
+            <label class="form-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              วันที่เดินทาง
+            </label>
+            <input type="date" name="travelDate" class="form-input" required
+                   th:min="${#dates.format(#dates.createNow(),'yyyy-MM-dd')}"/>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-8 0v2"/><circle cx="12" cy="7" r="4"/></svg>
+              จำนวนผู้ร่วมทริป
+            </label>
+            <div class="guest-row">
+              <div class="guest-group">
+                <div style="font-size:11px;color:#9ca3af;margin-bottom:4px;font-weight:600;">ผู้ใหญ่</div>
+                <div class="counter-wrap">
+                  <button type="button" class="cnt-btn" onclick="changeCount('adult',-1)">−</button>
+                  <input type="number" id="adultCount" name="adultCount" class="cnt-input" value="1" min="0" max="50" readonly/>
+                  <button type="button" class="cnt-btn" onclick="changeCount('adult',1)">+</button>
+                </div>
+              </div>
+              <div class="guest-group">
+                <div style="font-size:11px;color:#9ca3af;margin-bottom:4px;font-weight:600;">เด็ก</div>
+                <div class="counter-wrap">
+                  <button type="button" class="cnt-btn" onclick="changeCount('child',-1)">−</button>
+                  <input type="number" id="childCount" name="childCount" class="cnt-input" value="0" min="0" max="50" readonly/>
+                  <button type="button" class="cnt-btn" onclick="changeCount('child',1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="price-summary">
+            <div class="ps-row">
+              <span>ผู้ใหญ่ (<span id="adultDisp">1</span> คน × ฿<span id="adultUnitPrice" th:text="${#numbers.formatDecimal(tour.adultprice,0,'COMMA',0,'POINT')}">850</span>)</span>
+              <span>฿<span id="adultTotal">850</span></span>
+            </div>
+            <div class="ps-row">
+              <span>เด็ก (<span id="childDisp">0</span> คน × ฿<span id="childUnitPrice" th:text="${#numbers.formatDecimal(tour.childprice,0,'COMMA',0,'POINT')}">500</span>)</span>
+              <span>฿<span id="childTotal">0</span></span>
+            </div>
+            <div class="ps-row total">
+              <span>รวมทั้งหมด</span>
+              <span>฿<span id="grandTotal">850</span></span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-book">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            จองทัวร์นี้เลย
+          </button>
+        </form>
+
+        <div class="guarantee">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          ยกเลิกฟรีล่วงหน้า 48 ชม. · ชำระเมื่อยืนยัน
+        </div>
+      </div>
+    </div>
+
+    <!-- Host card -->
+    <div class="host-card">
+      <div class="host-row">
+        <div class="host-avatar">🏕</div>
+        <div>
+          <div class="host-name" th:text="${tour.managerName}">ผู้จัดทัวร์</div>
+          <div class="host-title">ผู้จัดการทัวร์ชุมชน</div>
+        </div>
+      </div>
+      <div class="host-meta">
+        <div class="host-stat"><div class="v">4.9</div><div class="l">คะแนน</div></div>
+        <div class="host-stat"><div class="v">120+</div><div class="l">ทริป</div></div>
+        <div class="host-stat"><div class="v">3 ปี</div><div class="l">ประสบการณ์</div></div>
+      </div>
+      <div class="map-ph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        แผนที่เส้นทางทัวร์
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="2.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+  <span id="toastMsg">บันทึกรายการโปรด</span>
+</div>
+
+<script>
+  // ── price calculator ──────────────────────────
+  const adultPrice = parseFloat(document.getElementById('adultUnitPrice').textContent.replace(/,/g,'')) || 0;
+  const childPrice = parseFloat(document.getElementById('childUnitPrice').textContent.replace(/,/g,'')) || 0;
+
+  function fmt(n) { return n.toLocaleString('th-TH'); }
+
+  function recalc() {
+    const a = parseInt(document.getElementById('adultCount').value) || 0;
+    const c = parseInt(document.getElementById('childCount').value) || 0;
+    document.getElementById('adultDisp').textContent  = a;
+    document.getElementById('childDisp').textContent  = c;
+    document.getElementById('adultTotal').textContent = fmt(a * adultPrice);
+    document.getElementById('childTotal').textContent = fmt(c * childPrice);
+    document.getElementById('grandTotal').textContent = fmt(a * adultPrice + c * childPrice);
+  }
+
+  function changeCount(type, delta) {
+    const el = document.getElementById(type + 'Count');
+    const val = parseInt(el.value) + delta;
+    const min = parseInt(el.min);
+    const max = parseInt(el.max);
+    if (val >= min && val <= max) { el.value = val; recalc(); }
+  }
+
+  recalc();
+
+  // ── favourite ─────────────────────────────────
+  function toggleFav() {
+    const btn = document.getElementById('favBtn');
+    btn.classList.toggle('active');
+    showToast(btn.classList.contains('active') ? '❤️ บันทึกรายการโปรดแล้ว' : '🤍 ยกเลิกรายการโปรด');
+  }
+
+  // ── toast ─────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.style.display = 'flex';
+    setTimeout(() => { t.style.display = 'none'; }, 2500);
+  }
+</script>
+</body>
+</html>
