@@ -81,7 +81,7 @@ public class TribeController {
     @GetMapping("/tribe-info")
     public String listTribes(Model model) {
         model.addAttribute("tribes", tribeList);
-        return "tribe-list";
+        return "Member/tribe-list";
     }
 
     @GetMapping("/tribe-info/{id}")
@@ -90,6 +90,6 @@ public class TribeController {
                 .filter(t -> t.getId() == id)
                 .findFirst().orElse(null);
         model.addAttribute("tribe", selected);
-        return "tribe-detail";
+        return "Member/tribe-detail";
     }
 }

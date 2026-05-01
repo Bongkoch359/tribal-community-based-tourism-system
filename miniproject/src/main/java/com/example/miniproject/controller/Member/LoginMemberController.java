@@ -20,7 +20,7 @@ public class LoginMemberController {
         if ("true".equals(registered)) {
             model.addAttribute("successMessage", "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
         }
-        return "member_login";
+        return "Member/member_login";
     }
 
     @PostMapping
@@ -39,7 +39,7 @@ public class LoginMemberController {
         }
 
         model.addAttribute("errorMessage", result);
-        return "member_login";
+        return "Member/member_login";
     }
 
     // ─── Logout (เรียกจาก href="/member/login/logout") ───

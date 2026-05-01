@@ -17,7 +17,7 @@ public class RegisterUserController {
     @GetMapping
     public String openRegisterPage(Model model) {
         model.addAttribute("member", new Member());
-        return "member_register";
+        return "Member/member_register";
     }
 
     @PostMapping
@@ -33,6 +33,6 @@ public class RegisterUserController {
 
         model.addAttribute("errorMessage", "กรุณากรอกข้อมูลให้ถูกต้อง หรืออีเมลนี้มีผู้ใช้แล้ว");
         model.addAttribute("member", member);
-        return "member_register";
+        return "Member/member_register";
     }
 }

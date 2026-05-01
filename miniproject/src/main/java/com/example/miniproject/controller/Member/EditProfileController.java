@@ -36,7 +36,7 @@ public class EditProfileController {
 
         // display result: ส่งไปหน้า edit_profile.html
         model.addAttribute("member", member);
-        return "member_editprofile";
+        return "Member/member_editprofile";
     }
 
     // ══════════════════════════════════════════════════════
@@ -70,19 +70,19 @@ public class EditProfileController {
             lastname  == null || lastname.isBlank()) {
             model.addAttribute("errorMessage", "กรุณากรอกชื่อและนามสกุลให้ครบถ้วน");
             model.addAttribute("member", loggedIn);
-            return "member_editprofile";
+            return "Member/member_editprofile";
         }
 
         if (newPassword != null && !newPassword.isBlank()) {
             if (newPassword.length() < 6) {
                 model.addAttribute("errorMessage", "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
                 model.addAttribute("member", loggedIn);
-                return "edit_profile";
+                return "Member/edit_profile";
             }
             if (!newPassword.equals(confirmPassword)) {
                 model.addAttribute("errorMessage", "รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน");
                 model.addAttribute("member", loggedIn);
-                return "member_editprofile";
+                return "Member/member_editprofile";
             }
         }
 
@@ -112,7 +112,7 @@ public class EditProfileController {
             model.addAttribute("errorMessage",
                     "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
             model.addAttribute("member", loggedIn);
-            return "member_editprofile";
+            return "Member/member_editprofile";
         }
 
         // ══ Step 9: สำเร็จ → อัปเดต session ══════════════
@@ -132,6 +132,6 @@ public class EditProfileController {
         Member member = memberService.getMemberById(loggedIn.getMemberid())
                                      .orElse(loggedIn);
         model.addAttribute("member", member);
-        return "member_editprofile";
+        return "Member/member_editprofile";
     }
 }

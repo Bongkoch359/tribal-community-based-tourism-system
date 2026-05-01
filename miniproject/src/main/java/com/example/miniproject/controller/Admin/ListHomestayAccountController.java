@@ -31,7 +31,7 @@ public class ListHomestayAccountController {
         model.addAttribute("approvedCount", 0);
         model.addAttribute("rejectedCount", 0);
 
-        return "admin_homestaylist";
+        return "Admin/admin_homestaylist";
     }
 
     // ============================================================

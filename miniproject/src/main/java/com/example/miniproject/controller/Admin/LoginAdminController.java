@@ -29,7 +29,7 @@ public String home() {
         if (session.getAttribute("loggedInAdmin") != null) {
             return "redirect:/admin/dashboard";
         }
-        return "admin_login";
+        return "Admin/admin_login";
     }
 
     @GetMapping("/admin/dashboard")
@@ -37,7 +37,7 @@ public String home() {
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
-        return "admin_dashboard";
+        return "Admin/admin_dashboard";
     }
 
     // step 3-6: validate → loginAdmin() → return T/F

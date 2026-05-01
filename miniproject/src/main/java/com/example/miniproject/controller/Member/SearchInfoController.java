@@ -48,6 +48,6 @@ public class SearchInfoController {
         model.addAttribute("homestayCount", homestays.size());
         model.addAttribute("totalCount",    activities.size() + tours.size() + homestays.size());
 
-        return "member_search";
+        return "Member/member_search";
     }
 }

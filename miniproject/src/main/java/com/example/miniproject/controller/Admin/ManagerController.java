@@ -44,7 +44,7 @@ public class ManagerController {
             model.addAttribute("allCount",      0);
             model.addAttribute("activeCount",   0);
             model.addAttribute("inactiveCount", 0);
-            return "admin_managerlist";
+            return "Admin/admin_managerlist";
         }
 
         // step 4.2 / step 5: display list
@@ -56,7 +56,7 @@ public class ManagerController {
         model.addAttribute("activeCount",   activeCount);
         model.addAttribute("inactiveCount", inactiveCount);
 
-        return "admin_managerlist";
+        return "Admin/admin_managerlist";
     }
 
     // ============================================================
@@ -68,7 +68,7 @@ public class ManagerController {
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
-        return "admin_managercreate";
+        return "Admin/admin_managercreate";
     }
 
     // ============================================================
