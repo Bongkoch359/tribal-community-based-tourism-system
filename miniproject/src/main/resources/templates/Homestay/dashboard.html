@@ -97,42 +97,7 @@
 
     </div>
 
-    <!-- ─── ROOM LIST TABLE ─── -->
-    <div class="section-title">
-        <i class="fas fa-list"></i> รายการห้องพัก
-    </div>
-    <div class="table-card">
-        <table>
-            <thead>
-                <tr>
-                    <th>ชื่อ / ประเภทห้อง</th>
-                    <th>ราคาต่อคืน</th>
-                    <th>ผู้เข้าพักสูงสุด</th>
-                    <th>จำนวนห้อง</th>
-                    <th>สถานะ</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="room : ${rooms}">
-                    <td th:text="${room.typename}">ห้องเดี่ยว</td>
-                    <td th:text="${#numbers.formatDecimal(room.pricepernight, 1, 'COMMA', 2, 'POINT')} + ' ฿'">500.00 ฿</td>
-                    <td th:text="${room.maxguest} + ' คน'">2 คน</td>
-                    <td th:text="${room.totalrooms} + ' ห้อง'">3 ห้อง</td>
-                    <td>
-                        <span th:if="${room.status == 'available'}"   class="badge badge-available">ว่าง</span>
-                        <span th:if="${room.status == 'unavailable'}" class="badge badge-unavailable">ไม่ว่าง</span>
-                        <span th:if="${room.status == 'maintenance'}" class="badge badge-maintenance">ปิดปรับปรุง</span>
-                    </td>
-                </tr>
-                <!-- ถ้าไม่มีข้อมูล -->
-                <tr th:if="${#lists.isEmpty(rooms)}">
-                    <td colspan="5" style="text-align:center; color:#aaa; padding:2rem;">
-                        ยังไม่มีข้อมูลห้องพัก
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <!--  -->
 
     <!-- ─── QUICK ACTIONS ─── -->
     <div class="section-title" style="margin-top:2rem;">
