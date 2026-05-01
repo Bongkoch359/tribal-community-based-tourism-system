@@ -183,6 +183,25 @@
             .info-grid  { grid-template-columns: 1fr; }
             .page-header { flex-direction: column; }
         }
+
+        .gallery-main {
+    border-radius: 10px; overflow: hidden;
+    background: var(--green-light); aspect-ratio: 4/3;
+}
+.gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 6px;
+}
+.gallery-thumbs img {
+    width: 100%; aspect-ratio: 1; object-fit: cover;
+    border-radius: 6px; cursor: pointer;
+    border: 2px solid transparent;
+    opacity: .7; transition: border-color .18s, opacity .18s;
+}
+.gallery-thumbs img.active,
+.gallery-thumbs img:hover { border-color: var(--green-main); opacity: 1; }
     </style>
 </head>
 <body>
@@ -237,10 +256,24 @@
 
         <!-- Left -->
         <div class="left-col">
-            <div class="room-image">
-                <img th:if="${firstImageUrl != null}" th:src="${firstImageUrl}" alt="room"/>
-                <div class="no-image" th:unless="${firstImageUrl != null}">ไม่มีรูปภาพ</div>
-            </div>
+            <!-- ── Gallery ── -->
+    <div th:if="${imageList != null and !#lists.isEmpty(imageList)}">
+        <div class="gallery-main">
+            <img id="mainImg" th:src="${imageList[0]}" alt="room"/>
+        </div>
+        <!-- Thumbnails (แสดงเมื่อมีมากกว่า 1 รูป) -->
+        <div class="gallery-thumbs" th:if="${#lists.size(imageList) > 1}" style="margin-top:8px;">
+            <img th:each="img,stat : ${imageList}"
+                 th:src="${img}"
+                 th:classappend="${stat.index == 0} ? 'active' : ''"
+                 th:onclick="'switchImg(this, \'' + ${img} + '\')'"
+                 alt="thumb"/>
+        </div>
+    </div>
+    <!-- ไม่มีรูป -->
+    <div class="gallery-main" th:unless="${imageList != null and !#lists.isEmpty(imageList)}">
+        <div class="no-image">ไม่มีรูปภาพ</div>
+    </div>
             <div class="price-card">
                 <div class="price-label">ราคาต่อคืน</div>
                 <div class="price-value"
@@ -284,11 +317,11 @@
                         <div class="info-item">
                             <label>สถานะ</label>
                             <span class="badge-status badge-open"
-                                  th:if="${room.status == 'open'}">
-                                <span class="dot"></span> เปิดของ
+                                  th:if="${room.status == 'available'}">
+                                <span class="dot"></span> เปิดจอง
                             </span>
                             <span class="badge-status badge-close"
-                                  th:unless="${room.status == 'open'}">
+                                  th:unless="${room.status == 'available'}">
                                 <span class="dot"></span> ปิดการใช้งาน
                             </span>
                         </div>
@@ -346,6 +379,13 @@
         </div>
     </div>
 </div>
+
+<script>
+function switchImg(thumb, src) {
+    document.getElementById('mainImg').src = src;
+    document.querySelectorAll('.gallery-thumbs img').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+}</script>
 
 </body>
 </html>

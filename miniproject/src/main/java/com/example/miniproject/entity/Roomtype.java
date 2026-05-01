@@ -37,11 +37,11 @@ public class Roomtype {
     @Column(length = 50)
     private String status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "homestayid")
     private Homestay homestay;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "roomtypefacilities",
         joinColumns = @JoinColumn(name = "roomtypeid"),
