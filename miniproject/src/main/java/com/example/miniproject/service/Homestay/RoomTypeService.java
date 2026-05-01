@@ -8,7 +8,7 @@ import com.example.miniproject.repository.Homestay.FacilitiesRepository;
 import com.example.miniproject.repository.Homestay.RoomTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +20,8 @@ public class RoomTypeService {
 
     @Autowired
     private FacilitiesRepository facilitiesRepository; // ✅ เพิ่ม
+
+  
 
     // ─── Add ───
     public Roomtype addRoomType(AddRoomRequest req) {
@@ -62,9 +64,15 @@ public class RoomTypeService {
         return roomTypeRepository.findByHomestayId(homestayid);
     }
 
+      // ─── Read ───
+    @Transactional  // ✅ เพิ่มตรงนี้
     public Roomtype getRoomTypeById(String roomtypeid) {
-        return roomTypeRepository.findById(roomtypeid).orElse(null);
+    Roomtype room = roomTypeRepository.findById(roomtypeid).orElse(null);
+    if (room != null && room.getFacilities() != null) {
+        room.getFacilities().size(); // ✅ force load facilities
     }
+    return room;
+}
 
     // ─── Update ───
     public Roomtype updateRoomType(Roomtype roomType) {

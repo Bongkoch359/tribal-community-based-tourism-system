@@ -183,12 +183,16 @@ public class HomestayownerController {
         return body;
     }
 
-        @GetMapping("/owner/homestays")
+      @GetMapping("/owner/homestays")
 public String homestaysPage(HttpSession session, Model model) {
-    Homestayowner owner = (Homestayowner) session.getAttribute("ownerLogin");
-    if (owner == null) return "redirect:/owner/login";
+    // ✅ เปลี่ยนจาก ownerLogin → ownerid
+    Integer ownerid = (Integer) session.getAttribute("ownerid");
+    if (ownerid == null) return "redirect:/owner/login";
 
+    // ดึง owner จาก DB ใหม่เลย
+    Homestayowner owner = ownerService.getProfile(ownerid);
     List<HomestayDto> homestays = homestayService.getHomestaysByOwner(owner);
+    
     model.addAttribute("ownername", session.getAttribute("ownername"));
     model.addAttribute("homestays", homestays);
     return "Homestay/homestays";
@@ -198,19 +202,12 @@ public String homestaysPage(HttpSession session, Model model) {
 public String viewHomestay(@PathVariable Integer id,
                            HttpSession session,
                            Model model) {
-    Homestayowner owner = (Homestayowner) session.getAttribute("ownerLogin");
-    if (owner == null) return "redirect:/owner/login";
+
+    // ✅ เปลี่ยนจาก ownerLogin → ownerid
+    Integer ownerid = (Integer) session.getAttribute("ownerid");
+    if (ownerid == null) return "redirect:/owner/login";
 
     HomestayDetailDto detail = homestayService.getHomestayDetail(id);
-
-    // ✅ debug — ลบออกเมื่อแก้ได้แล้ว
-    System.out.println("=== detail: " + detail);
-    if (detail != null) {
-        System.out.println("=== homestayname: " + detail.getHomestay().getHomestayname());
-        System.out.println("=== firstImage null?: " + (detail.getFirstImage() == null));
-        System.out.println("=== roomTypeCount: " + detail.getRoomTypeCount());
-    }
-
     if (detail == null) return "redirect:/owner/homestays";
 
     model.addAttribute("ownername", session.getAttribute("ownername"));

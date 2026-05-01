@@ -112,38 +112,41 @@ public class RoomTypeController {
    // ─── เพิ่มใน RoomTypeController.java ───────────────────────────────────────
 
 // // GET: ดูรายละเอียดห้องพัก
-@GetMapping("/owner/room/view")
-public String viewRoom(
+    @GetMapping("/owner/room/view")
+    public String viewRoom(
         @RequestParam("roomtypeid") String roomtypeid,
         HttpSession session,
         Model model) {
- 
+
     if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
- 
+
     Roomtype room = roomTypeService.getRoomTypeById(roomtypeid);
     if (room == null) return "redirect:/owner/rooms";
- 
-    // ดึงชื่อ facilities เป็น List<String>
+
+    // ✅ แยกรูปทุกรูปเป็น List<String>
+    List<String> imageList = new java.util.ArrayList<>();
+    String imgs = room.getImages();
+    if (imgs != null && !imgs.isBlank()) {
+        // Base64 หลายรูปคั่นด้วย ",data:" — split ให้ถูกต้อง
+        String[] parts = imgs.split("(?=,data:)");
+        for (String part : parts) {
+            if (!part.isBlank()) imageList.add(part.startsWith(",") ? part.substring(1) : part);
+        }
+    }
+
+    // ✅ ดึงชื่อ facilities
     List<String> facilities = java.util.Collections.emptyList();
     if (room.getFacilities() != null && !room.getFacilities().isEmpty()) {
         facilities = room.getFacilities().stream()
                 .map(f -> f.getFacilitiesname())
                 .collect(java.util.stream.Collectors.toList());
     }
- 
-    // รูปแรก
-    String firstImageUrl = null;
-    String imgs = room.getImages();
-    if (imgs != null && !imgs.isBlank()) {
-        int nextIdx = imgs.indexOf(",data:");
-        firstImageUrl = (nextIdx > 0) ? imgs.substring(0, nextIdx) : imgs;
-    }
- 
-    model.addAttribute("ownername",     session.getAttribute("ownername") != null ? session.getAttribute("ownername") : "Owner");
-    model.addAttribute("room",          room);
-    model.addAttribute("facilities",    facilities);
-    model.addAttribute("firstImageUrl", firstImageUrl);
- 
+
+    model.addAttribute("ownername",  session.getAttribute("ownername") != null ? session.getAttribute("ownername") : "Owner");
+    model.addAttribute("room",       room);
+    model.addAttribute("imageList",  imageList);   // ✅ เปลี่ยนจาก firstImageUrl → imageList
+    model.addAttribute("facilities", facilities);
+
     return "Homestay/viewRoom";
-}
+    }
 }

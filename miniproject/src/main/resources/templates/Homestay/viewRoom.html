@@ -9,52 +9,37 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --green-dark:   #2d5016;
-            --green-main:   #3a6b1a;
-            --green-accent: #4a8c20;
+            --green-dark:   #1e3a0f;
+            --green-main:   #2d5a16;
+            --green-accent: #3a7020;
             --green-light:  #e8f0df;
-            --bg:           #f4f0e8;
+            --bg:           #f0ede6;
             --card:         #ffffff;
             --text:         #2c2c2c;
-            --text-muted:   #6b6b6b;
+            --text-muted:   #888;
             --border:       #dde5d4;
-            --price-bg:     #eef5e4;
+            --price-bg:     #f0f7e8;
         }
 
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
         /* ── Navbar ── */
         .navbar {
             background: var(--green-dark);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 28px;
-            height: 56px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 28px; height: 56px;
             position: sticky; top: 0; z-index: 100;
         }
-        .navbar-brand {
-            display: flex; align-items: center; gap: 10px;
-            color: #fff; font-size: 15px; font-weight: 600;
-        }
-        .nav-user {
-            display: flex; align-items: center; gap: 10px;
-            color: #fff; font-size: 14px; cursor: pointer;
-        }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 15px; font-weight: 700; }
+        .nav-user { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 14px; }
         .avatar {
-            width: 34px; height: 34px; border-radius: 50%;
-            background: #e8b84b;
+            width: 34px; height: 34px; border-radius: 50%; background: #d4a017;
             display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 13px; color: #fff;
         }
 
         /* ── Layout ── */
-        .container { max-width: 980px; margin: 0 auto; padding: 28px 20px 60px; }
+        .container { max-width: 960px; margin: 0 auto; padding: 28px 20px 60px; }
 
         /* ── Back ── */
         .btn-back {
@@ -63,124 +48,120 @@
             border: none; border-radius: 6px;
             padding: 7px 16px; font-size: 13.5px; font-family: inherit;
             cursor: pointer; text-decoration: none;
-            margin-bottom: 20px;
-            transition: background .18s;
+            margin-bottom: 20px; transition: background .18s;
         }
         .btn-back:hover { background: var(--green-accent); }
 
         /* ── Page header ── */
         .page-header {
-            display: flex; align-items: flex-start;
-            justify-content: space-between;
+            display: flex; align-items: flex-start; justify-content: space-between;
             margin-bottom: 24px; gap: 16px;
         }
-        .page-title h1 { font-size: 26px; font-weight: 700; line-height: 1.2; }
+        .page-title h1 { font-size: 26px; font-weight: 700; }
         .page-title .room-id { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
 
         .btn-edit {
             display: inline-flex; align-items: center; gap: 6px;
             background: #fff; color: var(--green-main);
             border: 1.5px solid var(--green-main); border-radius: 6px;
             padding: 7px 16px; font-size: 13.5px; font-family: inherit;
-            cursor: pointer; text-decoration: none;
-            transition: background .18s;
-            white-space: nowrap;
+            cursor: pointer; text-decoration: none; transition: background .18s; white-space: nowrap;
         }
         .btn-edit:hover { background: var(--green-light); }
 
-        /* ── Grid ── */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 290px 1fr;
-            gap: 20px; align-items: start;
+        .btn-close {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #d9534f; color: #fff; border: none; border-radius: 6px;
+            padding: 7px 16px; font-size: 13.5px; font-family: inherit;
+            cursor: pointer; text-decoration: none; white-space: nowrap;
         }
+
+        /* ── Main Grid ── */
+        .main-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
         .left-col { display: flex; flex-direction: column; gap: 14px; }
 
-        /* ── Image ── */
-        .room-image {
-            border-radius: 10px; overflow: hidden;
-            background: var(--green-light); aspect-ratio: 4/3;
+        /* ── Gallery ── */
+        .gallery-wrap { border-radius: 12px; overflow: hidden; background: #ddd; }
+        .gallery-main { position: relative; aspect-ratio: 4/3; overflow: hidden; }
+        .gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .no-image { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+
+        .gallery-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,.4); color: #fff; border: none; border-radius: 50%;
+            width: 30px; height: 30px; font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; z-index: 2;
         }
-        .room-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .no-image {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-muted); font-size: 13px;
+        .gallery-arrow:hover { background: rgba(0,0,0,.65); }
+        .gallery-arrow.prev { left: 8px; }
+        .gallery-arrow.next { right: 8px; }
+        .gallery-counter {
+            position: absolute; bottom: 8px; right: 10px;
+            background: rgba(0,0,0,.5); color: #fff;
+            font-size: 11px; padding: 2px 8px; border-radius: 10px;
         }
+        .gallery-thumbs { display: flex; gap: 6px; padding: 8px; background: #f0ede6; overflow-x: auto; }
+        .gallery-thumbs img {
+            width: 54px; height: 54px; object-fit: cover; border-radius: 6px;
+            cursor: pointer; flex-shrink: 0; border: 2px solid transparent; opacity: .7;
+            transition: border-color .15s, opacity .15s;
+        }
+        .gallery-thumbs img.active { border-color: var(--green-main); opacity: 1; }
 
         /* ── Price card ── */
         .price-card {
-            background: var(--price-bg);
-            border: 1.5px solid var(--border);
-            border-radius: 10px; padding: 18px 20px; text-align: center;
+            background: var(--price-bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 18px 20px; text-align: center;
         }
         .price-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-        .price-value { font-size: 28px; font-weight: 700; color: var(--green-dark); }
+        .price-value { font-size: 30px; font-weight: 700; color: var(--green-dark); }
         .price-unit  { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
         /* ── Cards ── */
         .right-col { display: flex; flex-direction: column; gap: 16px; }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px; overflow: hidden;
-        }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         .card-header {
             display: flex; align-items: center; gap: 8px;
-            padding: 12px 18px; border-bottom: 1px solid var(--border);
+            padding: 11px 18px; border-bottom: 1px solid var(--border);
             font-size: 14px; font-weight: 600; color: var(--green-dark);
-            background: var(--green-light);
+            background: #f7fbf2;
         }
         .card-body { padding: 16px 18px; }
 
         /* ── Info grid ── */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-        .info-item label {
-            display: block; font-size: 11.5px;
-            color: var(--text-muted); margin-bottom: 4px;
-        }
-        .info-item .value { font-size: 14.5px; font-weight: 600; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+        .info-item label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        .info-item .value { font-size: 14px; font-weight: 600; }
         .info-item.full { grid-column: 1 / -1; }
 
         .badge-status {
             display: inline-flex; align-items: center; gap: 5px;
-            padding: 3px 12px; border-radius: 20px;
-            font-size: 13px; font-weight: 600;
+            padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
         }
         .badge-open  { background: #d4f0c8; color: #1e7a10; }
         .badge-close { background: #fde8e8; color: #b32020; }
         .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
-        .description-text { font-size: 13.5px; line-height: 1.8; color: var(--text); }
+        .description-text { font-size: 13.5px; line-height: 1.8; }
 
         /* ── Facilities ── */
         .facility-list { display: flex; flex-wrap: wrap; gap: 8px; }
         .facility-tag {
-            display: inline-flex; align-items: center; gap: 6px;
+            display: inline-flex; align-items: center; gap: 5px;
             background: var(--green-light); border: 1px solid var(--border);
-            color: var(--green-dark); border-radius: 20px;
-            padding: 5px 14px; font-size: 13px;
+            color: var(--green-dark); border-radius: 8px;
+            padding: 5px 14px; font-size: 13px; font-weight: 500;
         }
 
         /* ── Conditions ── */
         .condition-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-        .condition-list li {
-            display: flex; align-items: flex-start; gap: 8px;
-            font-size: 13.5px; line-height: 1.65;
-        }
-        .condition-list li::before {
-            content: "*"; color: var(--green-main);
-            font-weight: 700; flex-shrink: 0; margin-top: 1px;
-        }
+        .condition-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 13.5px; line-height: 1.65; }
+        .condition-list li::before { content: "*"; color: var(--green-main); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
 
         @media (max-width: 700px) {
-            .main-grid  { grid-template-columns: 1fr; }
-            .info-grid  { grid-template-columns: 1fr; }
+            .main-grid { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
             .page-header { flex-direction: column; }
         }
     </style>
@@ -189,64 +170,56 @@
 
 <!-- Navbar -->
 <nav class="navbar">
-    <div class="navbar-brand">
-        <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
-            <path d="M9 21V12h6v9" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-        ระบบท่องเที่ยวชุมชนชนเผ่า
-    </div>
+    <div class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนชนเผ่า</div>
     <div class="nav-user">
         <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">HO</div>
-        <span th:text="${ownername}">คุณมิคม สุขใจ</span>
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-            <path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <span th:text="${ownername}">Owner</span> ▾
     </div>
 </nav>
 
 <div class="container">
 
-    <!-- Back -->
-    <a th:href="@{/owner/rooms(homestayid=${room.homestay.homestayid})}" class="btn-back">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-            <path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        ย้อนกลับ
-    </a>
+    <a th:href="@{/owner/rooms(homestayid=${room.homestay.homestayid})}" class="btn-back">← ย้อนกลับ</a>
 
-    <!-- Header -->
     <div class="page-header">
         <div class="page-title">
             <h1>รายละเอียดประเภทห้องพัก</h1>
-            <div class="room-id" th:text="'roomTypeId: ' + ${room.roomtypeid}">roomTypeId: RT-1002</div>
+            <div class="room-id" th:text="'roomTypeId: ' + ${room.roomtypeid}"></div>
         </div>
-        <div>
-            <a th:href="@{/editroom(roomtypeid=${room.roomtypeid})}" class="btn-edit">
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                แก้ไขข้อมูล
-            </a>
+        <div class="header-actions">
+            <a th:href="@{/editroom(roomtypeid=${room.roomtypeid})}" class="btn-edit">✏️ แก้ไขข้อมูล</a>
+            
         </div>
     </div>
 
-    <!-- Grid -->
     <div class="main-grid">
 
         <!-- Left -->
         <div class="left-col">
-            <div class="room-image">
-                <img th:if="${firstImageUrl != null}" th:src="${firstImageUrl}" alt="room"/>
-                <div class="no-image" th:unless="${firstImageUrl != null}">ไม่มีรูปภาพ</div>
+            <div th:if="${imageList != null and !#lists.isEmpty(imageList)}" class="gallery-wrap">
+                <div class="gallery-main">
+                    <img id="mainImg" th:src="${imageList[0]}" alt="room"/>
+                    <button th:if="${#lists.size(imageList) > 1}" class="gallery-arrow prev" onclick="prevImg()">&#8249;</button>
+                    <button th:if="${#lists.size(imageList) > 1}" class="gallery-arrow next" onclick="nextImg()">&#8250;</button>
+                    <div class="gallery-counter" id="imgCounter" th:if="${#lists.size(imageList) > 1}">
+                        1 / <span th:text="${#lists.size(imageList)}"></span>
+                    </div>
+                </div>
+                <div class="gallery-thumbs" th:if="${#lists.size(imageList) > 1}">
+                    <img th:each="img,stat : ${imageList}"
+                         th:src="${img}"
+                         th:classappend="${stat.index == 0} ? 'active' : ''"
+                         th:onclick="'goToImg(' + ${stat.index} + ')'"
+                         alt="thumb"/>
+                </div>
             </div>
+            <div class="gallery-wrap" th:unless="${imageList != null and !#lists.isEmpty(imageList)}">
+                <div class="gallery-main"><div class="no-image">ไม่มีรูปภาพ</div></div>
+            </div>
+
             <div class="price-card">
                 <div class="price-label">ราคาต่อคืน</div>
-                <div class="price-value"
-                     th:text="${#numbers.formatDecimal(room.pricepernight,1,'COMMA',2,'POINT')} + ' ฿'">
-                    1,500.00 ฿
-                </div>
+                <div class="price-value" th:text="${#numbers.formatDecimal(room.pricepernight,1,'COMMA',2,'POINT')} + ' ฿'">1,500.00 ฿</div>
                 <div class="price-unit">ราคาสุทธิ / คืน</div>
             </div>
         </div>
@@ -254,15 +227,8 @@
         <!-- Right -->
         <div class="right-col">
 
-            <!-- ข้อมูลประเภทห้องพัก -->
             <div class="card">
-                <div class="card-header">
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                        <path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                    </svg>
-                    ข้อมูลประเภทห้องพัก
-                </div>
+                <div class="card-header">🏠 ข้อมูลประเภทห้องพัก</div>
                 <div class="card-body">
                     <div class="info-grid">
                         <div class="info-item">
@@ -274,6 +240,15 @@
                             <div class="value" th:text="${room.bedtype}">เตียงคู่</div>
                         </div>
                         <div class="info-item">
+                            <label>สถานะ</label>
+                            <span class="badge-status badge-open" th:if="${room.status == 'available'}">
+                                <span class="dot"></span> เปิดจอง
+                            </span>
+                            <span class="badge-status badge-close" th:unless="${room.status == 'available'}">
+                                <span class="dot"></span> ปิดการใช้งาน
+                            </span>
+                        </div>
+                        <div class="info-item">
                             <label>จำนวนผู้เข้าพักสูงสุด</label>
                             <div class="value" th:text="${room.maxguest} + ' ท่าน'">4 ท่าน</div>
                         </div>
@@ -281,63 +256,38 @@
                             <label>จำนวนห้องทั้งหมด</label>
                             <div class="value" th:text="${room.totalrooms} + ' หลัง'">5 หลัง</div>
                         </div>
-                        <div class="info-item">
-                            <label>สถานะ</label>
-                            <span class="badge-status badge-open"
-                                  th:if="${room.status == 'open'}">
-                                <span class="dot"></span> เปิดของ
-                            </span>
-                            <span class="badge-status badge-close"
-                                  th:unless="${room.status == 'open'}">
-                                <span class="dot"></span> ปิดการใช้งาน
-                            </span>
-                        </div>
                         <div class="info-item full" th:if="${room.description != null and room.description != ''}">
                             <label>คำอธิบาย</label>
-                            <div class="description-text" th:text="${room.description}">คำอธิบาย</div>
+                            <div class="description-text" th:text="${room.description}"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- สิ่งอำนวยความสะดวก -->
             <div class="card" th:if="${facilities != null and !#lists.isEmpty(facilities)}">
-                <div class="card-header">
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                              stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                    </svg>
-                    สิ่งอำนวยความสะดวก
-                </div>
+                <div class="card-header">🏕️ สิ่งอำนวยความสะดวก</div>
                 <div class="card-body">
                     <div class="facility-list">
-                        <span class="facility-tag" th:each="f : ${facilities}">
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
-                                <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span th:text="${f}">Wi-Fi</span>
+                        <span th:each="f : ${facilities}" class="facility-tag">
+                            <span th:text="${f == 'Wi-Fi'} ? '📶 Wi-Fi' :
+                                           (${f == 'เครื่องปรับอากาศ'} ? '❄️ แอร์' :
+                                           (${f == 'น้ำอุ่น'} ? '🚿 น้ำอุ่น' :
+                                           (${f == 'ทีวี'} ? '📺 ทีวี' :
+                                           (${f == 'อาหารเช้า'} ? '🍳 อาหารเช้า' :
+                                           (${f == 'ที่จอดรถ'} ? '🚗 ที่จอดรถ' : ${f})))))">
+                            </span>
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- เงื่อนไขการเข้าพัก -->
             <div class="card" th:if="${room.roomcondition != null and room.roomcondition != ''}">
-                <div class="card-header">
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"
-                              stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
-                        <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    </svg>
-                    เงื่อนไขการเข้าพัก
-                </div>
+                <div class="card-header">📋 เงื่อนไขการเข้าพัก</div>
                 <div class="card-body">
                     <ul class="condition-list">
                         <li th:each="line : ${#strings.arraySplit(room.roomcondition, '\n')}"
                             th:if="${!#strings.isEmpty(#strings.trim(line))}"
                             th:text="${#strings.trim(line)}">
-                            เช็คอินหลัง 14:00 น.
                         </li>
                     </ul>
                 </div>
@@ -346,6 +296,24 @@
         </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+    const images = /*[[${imageList}]]*/ [];
+    let current = 0;
+    const mainImg = document.getElementById('mainImg');
+    const counter = document.getElementById('imgCounter');
+    const thumbs  = document.querySelectorAll('.gallery-thumbs img');
+
+    function goToImg(index) {
+        if (!images || images.length === 0) return;
+        current = (index + images.length) % images.length;
+        mainImg.src = images[current];
+        if (counter) counter.textContent = (current + 1) + ' / ' + images.length;
+        thumbs.forEach((t, i) => t.classList.toggle('active', i === current));
+    }
+    function nextImg() { goToImg(current + 1); }
+    function prevImg() { goToImg(current - 1); }
+</script>
 
 </body>
 </html>
