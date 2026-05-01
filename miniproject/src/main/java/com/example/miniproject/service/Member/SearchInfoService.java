@@ -10,7 +10,7 @@ import com.example.miniproject.entity.Activitypost;
 import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.repository.Member.ActivitypostRepository;
-import com.example.miniproject.repository.Member.HomestayRepository;
+import com.example.miniproject.repository.Homestay.HomestayRepository;
 import com.example.miniproject.repository.Member.TourRepository;
 
 @Service

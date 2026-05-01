@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface HomestayRepository extends JpaRepository<Homestay, Integer> {
 
+    List<Homestay> findByHomestaynameContainingIgnoreCase(String homestayname);
+    List<Homestay> findByAddressContainingIgnoreCase(String address);
+
     @Query("SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END " +
            "FROM Homestay h WHERE h.homestayid = :homestayid " +
            "AND h.owner.ownerid = :ownerid")
