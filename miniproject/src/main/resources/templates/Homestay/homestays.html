@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลโฮมสเตย์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/Homestay/homestay.css}" rel="stylesheet">
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav class="navbar" style="display:flex; align-items:center;">
+    <a class="navbar-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
+    <div class="nav-links" style="flex:1; display:flex; gap:1rem;">
+        <a class="nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
+        <a class="nav-link" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
+        <a class="nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
+        <a class="nav-link active" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
+    </div>
+    <div class="nav-right">
+        <div class="profile-dropdown">
+            <div class="profile-trigger">
+                <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
+                <span class="owner-name" th:text="${ownername}">สมชาย ใจดี</span>
+                <i class="fas fa-chevron-down" style="font-size:0.8rem; margin-left:5px;"></i>
+            </div>
+            <div class="dropdown-content">
+                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                <hr>
+                <a th:href="@{/owner/logout}" class="logout-item">
+                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ─── CONTENT ─── -->
+<div class="page">
+
+    <div class="page-header">
+        <h2><i class="fas fa-house"></i> โฮมสเตย์ของฉัน</h2>
+        <a href="#" class="btn-add"><i class="fas fa-plus"></i> เพิ่มโฮมสเตย์</a>
+    </div>
+
+    <div class="section-label">รายการโฮมสเตย์ทั้งหมด</div>
+
+    <!-- ✅ มีข้อมูล -->
+    <div th:if="${not #lists.isEmpty(homestays)}">
+        <div th:each="hs : ${homestays}"
+             class="homestay-card"
+             th:classappend="${hs.homestay.status == 'active'} ? ' active' : ' pending'">
+
+            
+<!-- รูปภาพ -->
+<div class="hs-img">
+    <img th:if="${hs.firstImage != null}"
+         th:src="${hs.firstImage}"
+         alt="homestay"
+         style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+    <i th:unless="${hs.firstImage != null}"
+       class="fas fa-house" style="font-size:2rem; color:#ccc;"></i>
+</div>
+
+            <!-- ข้อมูล -->
+            <div class="hs-info">
+                <div class="hs-name">
+                    <span th:text="${hs.homestay.homestayname}">บ้านมูเซอดาว</span>
+                    <span class="badge-status"
+                          th:classappend="${hs.homestay.status == 'active'} ? ' badge-active' : ' badge-pending'"
+                          th:text="${hs.homestay.status == 'active'} ? 'อนุมัติแล้ว' : 'รอการอนุมัติ'">
+                    </span>
+                </div>
+                <div class="hs-meta">
+                    <span>
+                        <i class="fas fa-location-dot"></i>
+                        <span th:text="${hs.homestay.address}">ที่อยู่</span>
+                    </span>
+                    <span th:if="${hs.homestay.owner != null and hs.homestay.owner.phone != null}">
+                        <i class="fas fa-phone"></i>
+                        <span th:text="${hs.homestay.owner.phone}">081-234-5678</span>
+                    </span>
+                </div>
+                <div class="hs-rating">
+                    <i class="fas fa-star"></i>
+                    <span th:text="${#numbers.formatDecimal(hs.avgRating, 1, 1)}">0.0</span>
+                    <span class="count" th:text="'(' + ${hs.reviewCount} + ' รีวิว)'"></span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="hs-actions" style="flex-direction: row; align-items: center;">
+                <a th:href="@{/owner/homestays/{id}(id=${hs.homestay.homestayid})}" class="btn-detail">
+    <i class="fas fa-circle-info"></i> ดูรายละเอียด
+</a>
+                <a href="#" class="btn-review">
+                    <i class="fas fa-star"></i>
+                    รีวิว (<span th:text="${hs.reviewCount}">0</span>)
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ✅ ไม่มีข้อมูล -->
+    <div th:if="${#lists.isEmpty(homestays)}" class="empty-state">
+        <i class="fas fa-house-circle-xmark"></i>
+        <p>ยังไม่มีโฮมสเตย์ในระบบ</p>
+        <a href="#" class="btn-add" style="display:inline-flex;">
+            <i class="fas fa-plus"></i> เพิ่มโฮมสเตย์แรก
+        </a>
+    </div>
+
+</div>
+</body>
+</html>

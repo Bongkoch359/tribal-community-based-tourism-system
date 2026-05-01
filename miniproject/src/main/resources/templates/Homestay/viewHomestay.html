@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${detail.homestay.homestayname}">ดูโฮมสเตย์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
+    <style>
+        .page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #2d6a2d; font-size: 0.9rem; font-weight: 600;
+            text-decoration: none; margin-bottom: 1rem;
+        }
+        .back-btn:hover { color: #1e4620; }
+
+        .page-title {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .page-title h2 {
+            font-size: 1.6rem; font-weight: 800; color: #1e4620;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .title-actions { display: flex; gap: 10px; }
+        .btn-edit {
+            padding: 8px 18px; border-radius: 8px; border: none;
+            background: #e07b00; color: #fff; font-family: 'Sarabun', sans-serif;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; text-decoration: none;
+        }
+        .btn-edit:hover { background: #c96d00; color: #fff; }
+        .btn-addroom {
+            padding: 8px 18px; border-radius: 8px; border: none;
+            background: #2d6a2d; color: #fff; font-family: 'Sarabun', sans-serif;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; text-decoration: none;
+        }
+        .btn-addroom:hover { background: #1e4620; color: #fff; }
+
+        /* Layout */
+        .content-grid {
+            display: grid; grid-template-columns: 340px 1fr; gap: 1.5rem;
+            align-items: start;
+        }
+
+        /* Left Panel */
+        .left-panel { display: flex; flex-direction: column; gap: 1rem; }
+
+        .main-img {
+            width: 100%; aspect-ratio: 4/3; border-radius: 14px;
+            overflow: hidden; background: #e8f5e9;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .main-img img { width: 100%; height: 100%; object-fit: cover; }
+        .main-img i { font-size: 3rem; color: #ccc; }
+
+        .thumb-row {
+            display: flex; gap: 6px; flex-wrap: wrap;
+        }
+        .thumb {
+            width: 72px; height: 56px; border-radius: 8px;
+            overflow: hidden; cursor: pointer; border: 2px solid transparent;
+            flex-shrink: 0;
+        }
+        .thumb:hover { border-color: #2d6a2d; }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+        }
+        .badge-active  { background: #e8f5e9; color: #2d6a2d; }
+        .badge-pending { background: #fff3e0; color: #e07b00; }
+
+        .rating-row {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .stars { color: #f5a623; font-size: 1rem; }
+        .rating-num { font-size: 1rem; font-weight: 700; color: #333; }
+        .rating-count { color: #aaa; font-size: 0.85rem; }
+
+        .stat-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        }
+        .stat-box {
+            background: #fff; border-radius: 10px;
+            padding: 12px; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-box .num {
+            font-size: 1.5rem; font-weight: 800; color: #1e4620;
+        }
+        .stat-box .lbl {
+            font-size: 0.78rem; color: #888; margin-top: 2px;
+        }
+
+        /* Right Panel */
+        .right-panel { display: flex; flex-direction: column; gap: 1rem; }
+
+        .info-card {
+            background: #fff; border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07); padding: 1.4rem;
+        }
+        .info-card-title {
+            font-size: 0.9rem; font-weight: 700; color: #2d6a2d;
+            border-left: 3px solid #2d6a2d; padding-left: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .info-row {
+            display: flex; padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5; font-size: 0.9rem;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #888; width: 120px; flex-shrink: 0; }
+        .info-value { color: #333; font-weight: 500; flex: 1; }
+
+        .location-tags {
+            display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;
+        }
+        .loc-tag {
+            background: #f0faf1; color: #2d6a2d; font-size: 0.8rem;
+            font-weight: 600; padding: 3px 10px; border-radius: 20px;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* Menu List */
+        .menu-card {
+            background: #fff; border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07); overflow: hidden;
+        }
+        .menu-card-title {
+            font-size: 0.9rem; font-weight: 700; color: #2d6a2d;
+            border-left: 3px solid #e07b00; padding: 1rem 1.4rem;
+            background: #fffdf7; border-bottom: 1px solid #f0f0f0;
+        }
+        .menu-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 1.4rem; border-bottom: 1px solid #f5f5f5;
+            text-decoration: none; color: #333; transition: background 0.15s;
+        }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background: #f9fdf9; }
+        .menu-item-left { display: flex; align-items: center; gap: 12px; }
+        .menu-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem;
+        }
+        .icon-star    { background: #fff8e1; color: #f5a623; }
+        .icon-room    { background: #e8f5e9; color: #2d6a2d; }
+        .icon-booking { background: #e3f2fd; color: #1976d2; }
+        .menu-item-title { font-size: 0.93rem; font-weight: 600; color: #333; }
+        .menu-item-sub { font-size: 0.8rem; color: #aaa; margin-top: 1px; }
+        .menu-item-sub.pending { color: #e07b00; font-weight: 600; }
+        .menu-arrow { color: #ccc; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav class="navbar" style="display:flex; align-items:center;">
+    <a class="navbar-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
+    <div class="nav-links" style="flex:1; display:flex; gap:1rem;">
+        <a class="nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
+        <a class="nav-link" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
+        <a class="nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
+        <a class="nav-link active" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
+    </div>
+    <div class="nav-right">
+        <div class="profile-dropdown">
+            <div class="profile-trigger">
+                <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
+                <span class="owner-name" th:text="${ownername}">สมชาย</span>
+                <i class="fas fa-chevron-down" style="font-size:0.8rem; margin-left:5px;"></i>
+            </div>
+            <div class="dropdown-content">
+                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                <hr>
+                <a th:href="@{/owner/logout}" class="logout-item">
+                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ─── CONTENT ─── -->
+<div class="page">
+
+    <a th:href="@{/owner/homestays}" class="back-btn">
+        <i class="fas fa-chevron-left"></i> ย้อนกลับ
+    </a>
+
+    <div class="page-title">
+        <h2>
+            <i class="fas fa-house"></i>
+            <span th:text="${detail.homestay.homestayname}">บ้านมูเซอดาว</span>
+        </h2>
+        <div class="title-actions">
+            <a th:href="@{/owner/homestays/{id}/edit(id=${detail.homestay.homestayid})}"
+               class="btn-edit">
+                <i class="fas fa-pen"></i> แก้ไขโฮมสเตย์
+            </a>
+            <a th:href="@{/addroom(homestayid=${detail.homestay.homestayid},
+                          homestayname=${detail.homestay.homestayname})}"
+               class="btn-addroom">
+                <i class="fas fa-plus"></i> เพิ่มประเภทห้องพัก
+            </a>
+        </div>
+    </div>
+
+    <div class="content-grid">
+
+        <!-- ─── LEFT ─── -->
+        <div class="left-panel">
+
+            <!-- รูปหลัก -->
+            <div class="main-img" id="mainImgBox">
+                <img th:if="${detail.firstImage != null}"
+                     th:src="${detail.firstImage}" id="mainImg" alt="homestay">
+                <i th:unless="${detail.firstImage != null}" class="fas fa-house"></i>
+            </div>
+
+            <!-- Thumbnails -->
+            <div class="thumb-row" th:if="${detail.allImages != null}">
+                <div th:each="img,iter : ${detail.allImages}"
+                     class="thumb"
+                     th:onclick="|document.getElementById('mainImg').src='${img}'|">
+                    <img th:src="${img}" alt="">
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div>
+                <span class="status-badge"
+                      th:classappend="${detail.homestay.status == 'active'} ? ' badge-active' : ' badge-pending'">
+                    <i class="fas fa-circle" style="font-size:0.6rem;"></i>
+                    <span th:text="${detail.homestay.status == 'active'} ? 'อนุมัติแล้ว' : 'รอการอนุมัติ'"></span>
+                </span>
+            </div>
+
+            <!-- Rating -->
+            <div class="rating-row">
+                <span class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </span>
+                <span class="rating-num" th:text="${#numbers.formatDecimal(detail.avgRating,1,1)}">0.0</span>
+                <span class="rating-count" th:text="'· ' + ${detail.reviewCount} + ' รีวิว'"></span>
+            </div>
+
+            <!-- Stats -->
+            <div class="stat-row">
+                <div class="stat-box">
+                    <div class="num" th:text="${detail.roomTypeCount}">0</div>
+                    <div class="lbl">ประเภทห้อง</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num" th:text="${detail.bookingCount}">0</div>
+                    <div class="lbl">รอตรวจสอบ</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num" th:text="${detail.reviewCount}">0</div>
+                    <div class="lbl">รีวิว</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ─── RIGHT ─── -->
+        <div class="right-panel">
+
+            <!-- ข้อมูลโฮมสเตย์ -->
+            <div class="info-card">
+                <div class="info-card-title">ข้อมูลโฮมสเตย์</div>
+
+                <div class="info-row">
+                    <span class="info-label">รหัสโฮมสเตย์</span>
+                    <span class="info-value"
+                          th:text="'HMS-' + ${detail.homestay.homestayid}">HMS-1</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">ชื่อโฮมสเตย์</span>
+                    <span class="info-value"
+                          th:text="${detail.homestay.homestayname}">บ้านมูเซอดาว</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">ที่อยู่</span>
+                    <div class="info-value">
+                        <div class="location-tags">
+                            <span class="loc-tag">
+                                <i class="fas fa-location-dot"></i>
+                                <span th:text="${detail.homestay.address}">ที่อยู่</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-row" th:if="${detail.homestay.description != null}">
+                    <span class="info-label">รายละเอียด</span>
+                    <span class="info-value"
+                          th:text="${detail.homestay.description}">รายละเอียด</span>
+                </div>
+            </div>
+
+            <!-- เมนูที่เกี่ยวข้อง -->
+            <div class="menu-card">
+                <div class="menu-card-title">เมนูที่เกี่ยวข้อง</div>
+
+                <!-- ดูรีวิว -->
+                <a th:href="@{/owner/reviews(homestayid=${detail.homestay.homestayid})}"
+                   class="menu-item">
+                    <div class="menu-item-left">
+                        <div class="menu-icon icon-star">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div>
+                            <div class="menu-item-title">ดูรีวิว</div>
+                            <div class="menu-item-sub"
+                                 th:text="${detail.reviewCount} + ' รีวิว · คะแนนเฉลี่ย ' +
+                                 ${#numbers.formatDecimal(detail.avgRating,1,1)}">
+                            </div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
+                </a>
+
+                <!-- ประเภทห้องพัก -->
+                <a th:href="@{/owner/rooms(homestayid=${detail.homestay.homestayid})}"
+                   class="menu-item">
+                    <div class="menu-item-left">
+                        <div class="menu-icon icon-room">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div>
+                            <div class="menu-item-title">ประเภทห้องพัก</div>
+                            <div class="menu-item-sub"
+                                 th:text="${detail.roomTypeCount} + ' ประเภท'">
+                            </div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
+                </a>
+
+                <!-- รายการจอง -->
+                <a th:href="@{/owner/bookings(homestayid=${detail.homestay.homestayid})}"
+                   class="menu-item">
+                    <div class="menu-item-left">
+                        <div class="menu-icon icon-booking">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <div class="menu-item-title">รายการจอง</div>
+                            <div class="menu-item-sub pending"
+                                 th:if="${detail.bookingCount > 0}"
+                                 th:text="${detail.bookingCount} + ' รายการรอตรวจสอบ'">
+                            </div>
+                            <div class="menu-item-sub"
+                                 th:unless="${detail.bookingCount > 0}">ไม่มีรายการรอ</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

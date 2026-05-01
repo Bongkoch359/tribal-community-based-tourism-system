@@ -1,0 +1,229 @@
+// ============================================
+//   edit-profile.js  (Session-based version)
+//   GET  /owner/profile       — โหลดข้อมูล
+//   PUT  /owner/profile       — บันทึกข้อมูลส่วนตัว
+//   PUT  /owner/change-password — เปลี่ยนรหัสผ่าน
+// ============================================
+
+// ─── DOM Refs ─────────────────────────────────
+const firstnameInput  = document.getElementById('firstname');
+const lastnameInput   = document.getElementById('lastname');
+const emailInput      = document.getElementById('email');
+const phoneInput      = document.getElementById('phone');
+const currentPwInput  = document.getElementById('currentPassword');
+const newPwInput      = document.getElementById('newPassword');
+const confirmPwInput  = document.getElementById('confirmPassword');
+const resetBtn        = document.getElementById('resetBtn');
+const toast           = document.getElementById('toast');
+
+let originalData = {};
+
+// ─── Init ─────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    loadProfile();
+    bindEvents();
+});
+
+// ─── โหลดโปรไฟล์จาก Session ─────────────────
+async function loadProfile() {
+    try {
+        const res = await fetch('/owner/profile');
+
+        if (res.status === 401) {
+            window.location.href = '/owner/login';
+            return;
+        }
+        if (!res.ok) throw new Error('โหลดข้อมูลล้มเหลว');
+
+        const data = await res.json();
+        fillForm(data);
+        originalData = { ...data };
+
+    } catch (err) {
+        showToast('ไม่สามารถโหลดข้อมูลได้: ' + err.message, true);
+    }
+}
+
+function fillForm(data) {
+    firstnameInput.value = data.firstname || '';
+    lastnameInput.value  = data.lastname  || '';
+    emailInput.value     = data.email     || '';
+    phoneInput.value     = data.phone     || '';
+
+    // Profile card
+    const fullName = `${data.firstname || ''} ${data.lastname || ''}`.trim();
+    document.getElementById('profileName').textContent  = fullName || 'ไม่ระบุชื่อ';
+    document.getElementById('profileEmail').textContent = data.email || '-';
+
+    // Avatar initials
+    const initials = ((data.firstname?.[0] || '') + (data.lastname?.[0] || '')).toUpperCase() || 'HO';
+    document.getElementById('avatarInitials').textContent = initials;
+}
+
+// ─── Bind Events ──────────────────────────────
+function bindEvents() {
+
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = document.getElementById(btn.dataset.target);
+            const hidden = input.type === 'password';
+            input.type      = hidden ? 'text' : 'password';
+            btn.textContent = hidden ? '🙈' : '👁';
+        });
+    });
+
+    // Live validation
+    firstnameInput.addEventListener('input', () => validateField(firstnameInput, 'firstnameError', 'กรุณากรอกชื่อ'));
+    lastnameInput.addEventListener('input',  () => validateField(lastnameInput,  'lastnameError',  'กรุณากรอกนามสกุล'));
+    emailInput.addEventListener('input',     validateEmail);
+    phoneInput.addEventListener('input',     validatePhone);
+    newPwInput.addEventListener('input',     validateNewPassword);
+    confirmPwInput.addEventListener('input', validateConfirmPassword);
+
+    resetBtn.addEventListener('click', resetForm);
+
+    document.getElementById('editProfileForm').addEventListener('submit', handleSubmit);
+}
+
+// ─── Submit ───────────────────────────────────
+async function handleSubmit(e) {
+    e.preventDefault();
+
+    const profileValid = validateField(firstnameInput, 'firstnameError', 'กรุณากรอกชื่อ')
+                      && validateField(lastnameInput,  'lastnameError',  'กรุณากรอกนามสกุล')
+                      && validateEmail()
+                      && validatePhone();
+
+    if (!profileValid) return;
+
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '⏳ กำลังบันทึก...';
+
+    try {
+        // 1) บันทึกข้อมูลส่วนตัว
+        await saveProfile();
+
+        // 2) เปลี่ยนรหัสผ่าน (ถ้ากรอกมา)
+        if (newPwInput.value.trim()) {
+            await savePassword();
+        }
+
+        showToast('✓ บันทึกข้อมูลสำเร็จ');
+        clearPasswordFields();
+
+    } catch (err) {
+        showToast(err.message, true);
+    } finally {
+        saveBtn.disabled  = false;
+        saveBtn.innerHTML = '<span>✓</span> บันทึกข้อมูล';
+    }
+}
+
+async function saveProfile() {
+    const res = await fetch('/owner/profile', {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            firstname: firstnameInput.value.trim(),
+            lastname:  lastnameInput.value.trim(),
+            email:     emailInput.value.trim(),
+            phone:     phoneInput.value.trim(),
+        }),
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || 'บันทึกข้อมูลล้มเหลว');
+
+    // อัปเดต card
+    fillForm(result);
+    originalData = { ...result };
+}
+
+async function savePassword() {
+    if (!validateNewPassword() || !validateConfirmPassword()) return;
+
+    if (!currentPwInput.value.trim()) {
+        throw new Error('กรุณากรอกรหัสผ่านปัจจุบัน');
+    }
+
+    const res = await fetch('/owner/change-password', {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            currentPassword: currentPwInput.value,
+            newPassword:     newPwInput.value,
+        }),
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || 'เปลี่ยนรหัสผ่านล้มเหลว');
+}
+
+// ─── Validation ───────────────────────────────
+function validateField(input, errorId, msg) {
+    const empty = !input.value.trim();
+    showError(input, errorId, empty ? msg : '');
+    return !empty;
+}
+
+function validateEmail() {
+    const val = emailInput.value.trim();
+    const ok  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    const msg = !val ? 'กรุณากรอกอีเมล' : !ok ? 'รูปแบบอีเมลไม่ถูกต้อง' : '';
+    showError(emailInput, 'emailError', msg);
+    return !msg;
+}
+
+function validatePhone() {
+    const val = phoneInput.value.trim();
+    if (!val) { showError(phoneInput, 'phoneError', ''); return true; }
+    const ok = /^[0-9]{9,10}$/.test(val);
+    showError(phoneInput, 'phoneError', ok ? '' : 'เบอร์โทรต้องเป็นตัวเลข 9-10 หลัก');
+    return ok;
+}
+
+function validateNewPassword() {
+    const val = newPwInput.value;
+    if (!val) { showError(newPwInput, 'newPasswordError', ''); return true; }
+    const ok = val.length >= 6;
+    showError(newPwInput, 'newPasswordError', ok ? '' : 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
+    return ok;
+}
+
+function validateConfirmPassword() {
+    const match = confirmPwInput.value === newPwInput.value;
+    showError(confirmPwInput, 'confirmPasswordError', match ? '' : 'รหัสผ่านไม่ตรงกัน');
+    return match;
+}
+
+function showError(input, errorId, msg) {
+    const el = document.getElementById(errorId);
+    if (el) el.textContent = msg;
+    input.classList.toggle('is-error', !!msg);
+}
+
+// ─── Reset ────────────────────────────────────
+function resetForm() {
+    fillForm(originalData);
+    clearPasswordFields();
+    document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
+    document.querySelectorAll('.form-input').forEach(el => el.classList.remove('is-error'));
+}
+
+function clearPasswordFields() {
+    currentPwInput.value = '';
+    newPwInput.value     = '';
+    confirmPwInput.value = '';
+}
+
+// ─── Toast ────────────────────────────────────
+let toastTimer;
+function showToast(msg, isError = false) {
+    toast.textContent = msg;
+    toast.classList.toggle('error', isError);
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}

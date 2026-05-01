@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียน - ระบบท่องเที่ยวชุมชนชนเผ่า</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/Homestay/register-owner.css}" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="top-navbar">
+    <a class="brand" href="index.html">
+        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
+    <div class="nav-right">
+        <a href="index.html" class="top-nav-item">
+            <i class="fas fa-home"></i> หน้าแรก
+        </a>
+    </div>
+</nav>
+
+<!-- Step Indicator -->
+<div class="step-wrapper">
+    <div class="step-indicator">
+        <div class="step-item active" id="step-dot-1">
+            <div class="step-dot">1</div>
+            <div class="step-label">ข้อมูลเจ้าของ</div>
+        </div>
+        <div class="step-line" id="step-line-1"></div>
+        <div class="step-item" id="step-dot-2">
+            <div class="step-dot">2</div>
+            <div class="step-label">ข้อมูลโฮมสเตย์</div>
+        </div>
+        <div class="step-line" id="step-line-2"></div>
+        <div class="step-item" id="step-dot-3">
+            <div class="step-dot">3</div>
+            <div class="step-label">เสร็จสิ้น</div>
+        </div>
+    </div>
+</div>
+
+<div class="page-wrapper">
+
+    <!-- ===== STEP 1: ข้อมูลเจ้าของ ===== -->
+    <div id="page-1" class="form-card">
+        <div class="card-header-green">
+            <i class="fas fa-user me-2"></i> ข้อมูลเจ้าของโฮมสเตย์
+            <span class="step-sub">ขั้นตอนที่ 1 / 2</span>
+        </div>
+        <div class="card-body-inner">
+            <form id="form-step1" th:action="@{/owner/register}" method="post">
+
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label required-label">ชื่อ</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" placeholder="ชื่อ">
+                        <span class="field-error" id="firstnameError"></span>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label required-label">นามสกุล</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" placeholder="นามสกุล">
+                        <span class="field-error" id="lastnameError"></span>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label required-label">อีเมล</label>
+                    <div class="input-icon">
+                        <input type="text" class="form-control" id="email" name="email" placeholder="example@email.com">
+                        <i class="fas fa-envelope icon-right"></i>
+                    </div>
+                    <span class="field-error" id="emailError"></span>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label required-label">เบอร์โทรศัพท์</label>
+                    <div class="input-icon">
+                        <input type="text" class="form-control" id="phone" name="phone" placeholder="0X-XXXX-XXXX">
+                        <i class="fas fa-phone icon-right"></i>
+                    </div>
+                    <span class="field-error" id="phoneError"></span>
+                </div>
+
+                <hr class="my-3">
+                <div class="section-label">รหัสผ่าน</div>
+
+                <div class="mt-2">
+                    <label class="form-label required-label">รหัสผ่าน</label>
+                    <div class="input-icon">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="ตั้งรหัสผ่าน">
+                        <i class="fas fa-eye icon-right toggle-pw" data-target="password"></i>
+                    </div>
+                    <div class="hint-text">อย่างน้อย 8 ตัวอักษร ผสมตัวเลขและตัวอักษรอังกฤษ</div>
+                    <span class="field-error" id="passwordError"></span>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label required-label">ยืนยัน รหัสผ่าน</label>
+                    <div class="input-icon">
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง">
+                        <i class="fas fa-eye icon-right toggle-pw" data-target="confirmPassword"></i>
+                    </div>
+                    <span class="field-error" id="confirmPasswordError"></span>
+                </div>
+
+                <div class="notice-box mt-3">
+                    <i class="fas fa-info-circle me-2"></i> บัญชีจะต้องการอนุมัติจาก Admin ก่อนเปิดใช้งาน
+                </div>
+
+                <div class="mt-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="agree">
+                        <label class="form-check-label" for="agree">
+                            ยอมรับ <a href="#" class="link-green">เงื่อนไขการใช้งาน</a>
+                        </label>
+                    </div>
+                    <span class="field-error" id="agreeError"></span>
+                </div>
+
+                <button type="button" class="btn btn-next w-100 mt-4" onclick="validateStep1()">
+                    ถัดไป : ข้อมูลโฮมสเตย์ <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+
+                <div class="text-center mt-3">
+                    <small>มีบัญชีอยู่แล้ว? <a href="/owner/login" class="link-green">เข้าสู่ระบบ</a></small>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== STEP 2: ข้อมูลโฮมสเตย์ ===== -->
+<div id="page-2" class="form-card d-none">
+    <div class="card-header-green">
+        <i class="fas fa-house me-2"></i> ข้อมูลโฮมสเตย์
+        <span class="step-sub">ขั้นตอนที่ 2 / 2 — สามารถเพิ่มได้หลายโฮมสเตย์</span>
+    </div>
+    <div class="card-body-inner">
+
+        <div id="homestay-list"></div>
+
+        <button type="button" class="btn btn-add-homestay w-100 mt-2" onclick="addHomestay()">
+            <i class="fas fa-plus-circle me-2"></i> เพิ่มโฮมสเตย์อีกแห่ง
+        </button>
+
+        <div class="d-flex gap-2 mt-3">
+            <button type="button" class="btn btn-back flex-fill" onclick="goBack()">
+                <i class="fas fa-arrow-left me-2"></i> ย้อนกลับ
+            </button>
+            <button type="button" class="btn btn-submit flex-fill" onclick="submitAll()">
+                <i class="fas fa-paper-plane me-2"></i> ส่งคำขอสมัคร
+            </button>
+        </div>
+
+        <div class="notice-box mt-3">
+            <i class="fas fa-clock me-2"></i> หลังส่งคำขอ Admin จะตรวจสอบและแจ้งผลการอนุมัติของคุณ
+        </div>
+    </div>
+</div>
+
+    <!-- ===== STEP 3: เสร็จสิ้น ===== -->
+    <div id="page-3" class="form-card d-none text-center">
+        <div class="card-body-inner py-5">
+            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+            <h4 class="mt-3 fw-bold" style="color:#1e4620;">ส่งคำขอสมัครเรียบร้อย!</h4>
+            <p class="text-muted mt-2">Admin จะตรวจสอบข้อมูลและแจ้งผลทางอีเมลของคุณ</p>
+            <a href="/owner/login" class="btn btn-next mt-4 px-5">เข้าสู่ระบบ</a>
+        </div>
+    </div>
+
+</div>
+
+<script th:src="@{/js/Homestay/register-owner.js}"></script>
+</body>
+</html>

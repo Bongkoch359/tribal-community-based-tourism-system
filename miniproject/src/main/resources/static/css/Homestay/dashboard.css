@@ -1,0 +1,341 @@
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green-dark:   #1a3d1f;
+            --green-mid:    #2d6a35;
+            --green-light:  #3d8b47;
+            --orange:       #e08a00;
+            --orange-light: #f5a623;
+            --bg:           #f0ece3;
+            --text-dark:    #1a2e1c;
+            --text-muted:   #6b7c6e;
+            --white:        #ffffff;
+            --card-shadow:  0 4px 24px rgba(0,0,0,.13);
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* ─── NAVBAR ─── */
+        .navbar {
+            background: var(--green-dark);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            height: 84px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            margin-right: 2.5rem;
+            white-space: nowrap;
+        }
+        .navbar-brand i { color: #ffffff; font-size: 1.2rem; }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: .25rem;
+            flex: 1;
+        }
+        .nav-link {
+            color: rgba(255,255,255,.7);
+            text-decoration: none;
+            font-size: .92rem;
+            font-weight: 500;
+            padding: .45rem 1rem;
+            border-radius: 6px;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            white-space: nowrap;
+        }
+        .nav-link:hover { color: var(--white); background: rgba(255,255,255,.08); }
+        .nav-link.active {
+            color: var(--white);
+            border-bottom: 3px solid #7ecf88;
+            border-radius: 0;
+            padding-bottom: calc(.45rem - 3px);
+        }
+
+        /* จัดการตำแหน่ง Container หลัก */
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.profile-trigger:hover {
+    background-color: #f0f2f5;
+}
+
+/* ส่วนเนื้อหา Dropdown */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #ffffff;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+    z-index: 1000;
+    border-radius: 8px;
+    margin-top: 10px; /* ช่องว่างที่ทำให้เกิดปัญหา */
+    padding: 8px 0;
+    border: 1px solid #eee;
+}
+
+/* --- เพิ่มส่วนนี้เพื่อสร้าง "สะพานเชื่อม" --- */
+.dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -15px; /* คลุมพื้นที่ว่างด้านบนเมนู */
+    left: 0;
+    width: 100%;
+    height: 15px; /* ความสูงต้องครอบคลุม margin-top */
+    display: block;
+}
+
+/* แสดง Dropdown เมื่อ Hover */
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+/* แสดง Dropdown เมื่อ Hover */
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* ตกแต่งลิงก์ข้างใน */
+.dropdown-content a {
+    color: #333;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+.dropdown-content hr {
+    margin: 4px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+.dropdown-content a.logout-item:hover {
+    color: #dc3545; /* สีแดงสำหรับปุ่มออก */
+    background-color: #fff5f5;
+}
+        .avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: var(--orange);
+            color: var(--white);
+            font-weight: 700;
+            font-size: .85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .owner-name {
+            color: var(--white);
+            font-size: .92rem;
+            font-weight: 500;
+        }
+        .btn-logout {
+            color: rgba(255,255,255,.65);
+            font-size: .85rem;
+            text-decoration: none;
+            transition: color .2s;
+        }
+        .btn-logout:hover { color: var(--white); }
+
+        /* ─── PAGE ─── */
+        .page { padding: 2.5rem 2.5rem; max-width: 1280px; margin: 0 auto; }
+
+        .welcome {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 1.75rem;
+        }
+
+        /* ─── STAT CARDS ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            border-radius: 16px;
+            padding: 1.6rem 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--card-shadow);
+            transition: transform .2s, box-shadow .2s;
+            cursor: default;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,.18); }
+
+        .stat-card.green-dark  { background: var(--green-dark); }
+        .stat-card.green-mid   { background: var(--green-mid); }
+        .stat-card.orange      { background: var(--orange); }
+        .stat-card.green-light { background: var(--green-light); }
+
+        .stat-info { display: flex; flex-direction: column; gap: .3rem; }
+        .stat-label {
+            color: rgba(255,255,255,.8);
+            font-size: .9rem;
+            font-weight: 500;
+        }
+        .stat-value {
+            color: var(--white);
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: rgba(255,255,255,.6);
+        }
+
+        /* ─── SECTION ─── */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        /* ─── TABLE ─── */
+        .table-card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        .table-card table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .93rem;
+        }
+        .table-card thead th {
+            background: var(--green-dark);
+            color: rgba(255,255,255,.85);
+            font-weight: 600;
+            padding: .85rem 1.1rem;
+            text-align: left;
+        }
+        .table-card tbody tr { border-bottom: 1px solid #eee; transition: background .15s; }
+        .table-card tbody tr:last-child { border-bottom: none; }
+        .table-card tbody tr:hover { background: #f6faf6; }
+        .table-card td { padding: .8rem 1.1rem; color: var(--text-dark); }
+
+        .badge {
+            display: inline-block;
+            padding: .25rem .7rem;
+            border-radius: 20px;
+            font-size: .78rem;
+            font-weight: 600;
+        }
+        .badge-available   { background: #d4f0d8; color: #1a5c23; }
+        .badge-unavailable { background: #fde8c8; color: #7a4000; }
+        .badge-maintenance { background: #e8e8e8; color: #555; }
+
+        /* ─── QUICK ACTIONS ─── */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: 1rem 1.25rem;
+            background: var(--white);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--green-dark);
+            font-family: 'Sarabun', sans-serif;
+            font-size: .95rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,.07);
+            transition: all .2s;
+        }
+        .action-btn:hover {
+            border-color: var(--green-mid);
+            background: #f0faf1;
+            transform: translateY(-2px);
+        }
+        .action-btn .action-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: #d4f0d8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--green-mid);
+            font-size: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+            .actions-grid { grid-template-columns: repeat(2,1fr); }
+        }
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .actions-grid { grid-template-columns: 1fr; }
+            .page { padding: 1.5rem 1rem; }
+            .nav-links { display: none; }
+        }

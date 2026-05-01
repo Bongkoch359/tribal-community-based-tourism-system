@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการห้องพัก</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Sarabun', sans-serif; background: #f5f0e8; min-height: 100vh; }
+
+        /* ── Page ── */
+        .page { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+        /* ── Header row ── */
+        .page-header {
+            display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 28px;
+        }
+        .page-title {
+            font-size: 1.5rem; font-weight: 700; color: #1a3a1a;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .page-title i { color: #2d6a2d; }
+
+        .btn-add {
+            background: #e07b00; color: #fff;
+            border: none; border-radius: 8px;
+            padding: 10px 20px; font-family: 'Sarabun', sans-serif;
+            font-size: .95rem; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            text-decoration: none; transition: background .2s;
+        }
+        .btn-add:hover { background: #c96e00; color: #fff; }
+
+        /* ── Filter tabs ── */
+        .filter-bar {
+            display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 7px 18px; border-radius: 8px; border: 1.5px solid #d0d0d0;
+            background: #fff; font-family: 'Sarabun', sans-serif;
+            font-size: .9rem; cursor: pointer; transition: all .2s;
+            color: #444; font-weight: 500;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .filter-btn.active {
+            background: #fff8f0; border-color: #e07b00; color: #e07b00; font-weight: 700;
+        }
+        .filter-btn:hover:not(.active) { border-color: #aaa; }
+
+        /* ── Table card ── */
+        .table-card {
+            background: #fff; border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(0,0,0,.07); overflow: hidden;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        thead tr { background: #f0f5f0; }
+        thead th {
+            padding: 14px 16px; text-align: left;
+            font-size: .85rem; font-weight: 700;
+            color: #2d6a2d; text-transform: uppercase;
+            letter-spacing: .04em; border-bottom: 2px solid #e0ebe0;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background .15s;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #fafff8; }
+
+        tbody td {
+            padding: 14px 16px; vertical-align: middle;
+            font-size: .95rem; color: #333;
+        }
+
+        /* ── Room image ── */
+        .room-img {
+            width: 72px; height: 52px; border-radius: 8px;
+            object-fit: cover; display: block;
+            background: #eee;
+        }
+        .room-img-placeholder {
+            width: 72px; height: 52px; border-radius: 8px;
+            background: #e8ede8; display: flex; align-items: center;
+            justify-content: center; color: #aaa; font-size: 1.4rem;
+        }
+
+        /* ── Type badge ── */
+        .type-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: .85rem; font-weight: 600;
+        }
+        .badge-house   { background: #fff3e0; color: #e07b00; }
+        .badge-dome    { background: #e3f0ff; color: #2266cc; }
+        .badge-tent    { background: #e8f5e9; color: #2d6a2d; }
+        .badge-default { background: #f0f0f0; color: #666; }
+
+        /* ── Status badge ── */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 14px; border-radius: 20px;
+            font-size: .85rem; font-weight: 600;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status-available   { background: #e8f5e8; color: #1e7e1e; }
+        .status-available   .status-dot { background: #22aa22; }
+        .status-unavailable { background: #fdecea; color: #c62828; }
+        .status-unavailable .status-dot { background: #e53935; }
+
+        /* ── Price ── */
+        .price-text { font-weight: 700; color: #1a3a1a; }
+        .price-unit { font-size: .8rem; color: #888; font-weight: 400; }
+
+        /* ── Action button ── */
+        .btn-detail {
+            background: #1a3a1a; color: #fff;
+            border: none; border-radius: 7px;
+            padding: 7px 16px; font-family: 'Sarabun', sans-serif;
+            font-size: .88rem; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            text-decoration: none; transition: background .2s;
+            white-space: nowrap;
+        }
+        .btn-detail:hover { background: #2d6a2d; color: #fff; }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center; padding: 64px 20px; color: #aaa;
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; display: block; }
+        .empty-state p { font-size: 1rem; }
+
+        .room-img-placeholder.hidden { display: none; }
+        .count-chip {
+            background: #e8f5e8; color: #2d6a2d;
+            font-size: .78rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 20px;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav class="navbar">
+    <a class="navbar-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
+    <div class="nav-links">
+        <a class="nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
+        <a class="nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
+        <a class="nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
+        <a class="nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
+    </div>
+    <div class="nav-right">
+        <div class="profile-dropdown">
+            <div class="profile-trigger">
+                <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
+                <span class="owner-name" th:text="${ownername}">สมชาย ใจดี</span>
+                <i class="fas fa-chevron-down" style="font-size:.8rem; margin-left:5px; color:#fff;"></i>
+            </div>
+            <div class="dropdown-content">
+                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                <hr>
+                <a th:href="@{/owner/logout}" class="logout-item">
+                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ─── CONTENT ─── -->
+<div class="page">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-title">
+            <i class="fas fa-door-open"></i>
+            รายการห้องพักทั้งหมด
+            <span class="count-chip" th:text="${rooms.size()} + ' ห้อง'">0 ห้อง</span>
+        </div>
+        <a class="btn-add"
+           th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}">
+            <i class="fas fa-plus"></i> เพิ่มห้องพัก
+        </a>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterRooms('all', this)">
+            ทั้งหมด
+        </button>
+        <button class="filter-btn" onclick="filterRooms('บ้านพัก', this)">
+            <i class="fas fa-house"></i> บ้านพัก
+        </button>
+        <button class="filter-btn" onclick="filterRooms('โดม', this)">
+            <i class="fas fa-circle-dot"></i> โดม
+        </button>
+        <button class="filter-btn" onclick="filterRooms('เต็นท์', this)">
+            <i class="fas fa-campground"></i> เต็นท์
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+        <table id="roomTable">
+            <thead>
+                <tr>
+                    <th>รูปภาพ</th>
+                    <th>ประเภท</th>
+                    <th>ราคา/คืน</th>
+                    <th>รองรับ</th>
+                    <th>จำนวนห้องทั้งหมด</th>
+                    <th>สถานะ</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="roomBody">
+
+                <!-- กรณีไม่มีห้อง -->
+                <tr th:if="${#lists.isEmpty(rooms)}">
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fas fa-door-open"></i>
+                            <p>ยังไม่มีห้องพัก — กดปุ่ม "+ เพิ่มห้องพัก" เพื่อเริ่มต้น</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- วน loop ห้อง (rooms = List<Map<String,Object>>) -->
+                <tr th:each="room : ${rooms}" th:data-type="${room['typename']}">
+
+                    <!-- รูปภาพ -->
+                    <td>
+                        <img th:if="${room['firstImageUrl'] != null}"
+                             th:src="${room['firstImageUrl']}"
+                             class="room-img" alt="room"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                        <div class="room-img-placeholder"
+                             th:classappend="${room['firstImageUrl'] != null} ? 'hidden' : ''">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </td>
+
+                    <!-- ประเภท -->
+                    <td>
+                        <span th:switch="${room['typename']}">
+                            <span th:case="'บ้านพัก'" class="type-badge badge-house">
+                                <i class="fas fa-house"></i>
+                                <span th:text="${room['typename']}"></span>
+                            </span>
+                            <span th:case="'โดม'" class="type-badge badge-dome">
+                                <i class="fas fa-circle-dot"></i>
+                                <span th:text="${room['typename']}"></span>
+                            </span>
+                            <span th:case="'เต็นท์'" class="type-badge badge-tent">
+                                <i class="fas fa-campground"></i>
+                                <span th:text="${room['typename']}"></span>
+                            </span>
+                            <span th:case="*" class="type-badge badge-default"
+                                  th:text="${room['typename']}"></span>
+                        </span>
+                    </td>
+
+                    <!-- ราคา -->
+                    <td>
+                        <span class="price-text"
+                              th:text="${#numbers.formatDecimal(room['pricepernight'],1,'COMMA',0,'POINT')} + ' ฿'">
+                        </span>
+                    </td>
+
+                    <!-- รองรับ -->
+                    <td th:text="${room['maxguest']} + ' คน'"></td>
+
+                    <!-- จำนวนห้อง -->
+                    <td th:text="${room['totalrooms']} + ' ห้อง'"></td>
+
+                    <!-- สถานะ -->
+                    <td>
+                        <span th:if="${room['status'] == 'available'}"
+                              class="status-badge status-available">
+                            <span class="status-dot"></span> ว่าง
+                        </span>
+                        <span th:unless="${room['status'] == 'available'}"
+                              class="status-badge status-unavailable">
+                            <span class="status-dot"></span> ไม่ว่าง
+                        </span>
+                    </td>
+
+                    <!-- Action -->
+                    <td>
+                        <a class="btn-detail"
+                           th:href="@{/owner/room/view(roomtypeid=${room['roomtypeid']})}">
+                            <i class="fas fa-eye"></i> ดูรายละเอียด
+                        </a>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+// ── Filter tabs ──────────────────────────────────────────────
+function filterRooms(type, btn) {
+    // สลับ active
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const rows = document.querySelectorAll('#roomBody tr[data-type]');
+    rows.forEach(row => {
+        const rowType = row.getAttribute('data-type');
+        row.style.display = (type === 'all' || rowType === type) ? '' : 'none';
+    });
+}
+</script>
+
+</body>
+</html>

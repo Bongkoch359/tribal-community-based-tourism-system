@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขโปรไฟล์</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/Homestay/edit-profile.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Nav -->
+    <header class="top-nav">
+        <button class="back-btn" onclick="history.back()">
+            <span class="back-icon">&#8592;</span> กลับ
+        </button>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">แก้ไขโปรไฟล์</h1>
+            <p class="page-subtitle">อัปเดตข้อมูลส่วนตัวและรหัสผ่านของบัญชีคุณ</p>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="avatar-wrapper">
+                <div class="avatar" id="avatarCircle">
+                    <span id="avatarInitials">HO</span>
+                </div>
+            </div>
+            <div class="profile-info">
+                <p class="profile-name" id="profileName">กำลังโหลด...</p>
+                <p class="profile-email" id="profileEmail">-</p>
+                <span class="badge-role">เจ้าของโฮมสเตย์</span>
+            </div>
+        </div>
+
+        <form id="editProfileForm" novalidate>
+            <!-- Personal Info Section -->
+            <section class="form-section">
+                <div class="section-header">
+                    <span class="section-icon">&#128100;</span>
+                    <h2 class="section-title">ข้อมูลส่วนตัว</h2>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="firstname">ชื่อ <span class="required">*</span></label>
+                        <input type="text" id="firstname" name="firstname" class="form-input" placeholder="ชื่อ" required>
+                        <span class="error-msg" id="firstnameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="lastname">นามสกุล <span class="required">*</span></label>
+                        <input type="text" id="lastname" name="lastname" class="form-input" placeholder="นามสกุล" required>
+                        <span class="error-msg" id="lastnameError"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">อีเมล <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <input type="email" id="email" name="email" class="form-input" placeholder="อีเมล" required>
+                        <span class="input-icon">&#9993;</span>
+                    </div>
+                    <span class="error-msg" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="phone">เบอร์โทรศัพท์</label>
+                    <div class="input-with-icon">
+                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="0812345678" maxlength="10">
+                        <span class="input-icon">&#128222;</span>
+                    </div>
+                    <span class="error-msg" id="phoneError"></span>
+                </div>
+            </section>
+
+            <!-- Change Password Section -->
+            <section class="form-section">
+                <div class="section-header">
+                    <span class="section-icon">&#128273;</span>
+                    <h2 class="section-title">เปลี่ยนรหัสผ่าน</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="currentPassword">รหัสผ่านปัจจุบัน <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <input type="password" id="currentPassword" name="currentPassword" class="form-input" placeholder="กรอกรหัสผ่านปัจจุบัน">
+                        <button type="button" class="toggle-password" data-target="currentPassword">&#128065;</button>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="newPassword">รหัสผ่านใหม่ <span class="required">*</span></label>
+                        <div class="input-with-icon">
+                            <input type="password" id="newPassword" name="newPassword" class="form-input" placeholder="รหัสผ่านใหม่">
+                            <button type="button" class="toggle-password" data-target="newPassword">&#128065;</button>
+                        </div>
+                        <span class="error-msg" id="newPasswordError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">ยืนยันรหัสผ่านใหม่ <span class="required">*</span></label>
+                        <div class="input-with-icon">
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="ยืนยันรหัสผ่านใหม่">
+                            <button type="button" class="toggle-password" data-target="confirmPassword">&#128065;</button>
+                        </div>
+                        <span class="error-msg" id="confirmPasswordError"></span>
+                    </div>
+                </div>
+
+                <div class="password-hint">
+                    <span class="hint-icon">&#9432;</span>
+                    หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้ปล่อยว่างช่องไว้ได้เลย
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-reset" id="resetBtn">
+                    <span>&#8635;</span> รีเซ็ต
+                </button>
+                <button type="submit" class="btn btn-save" id="saveBtn">
+                    <span>&#10003;</span> บันทึกข้อมูล
+                </button>
+            </div>
+        </form>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast"></div>
+    </main>
+
+    <script th:src="@{/js/Homestay/edit-profile.js}"></script>
+</body>
+</html>

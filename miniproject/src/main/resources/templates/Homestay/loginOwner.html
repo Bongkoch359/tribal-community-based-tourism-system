@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>เข้าสู่ระบบสมาชิก</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/Homestay/loginowner.css}" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="top-navbar">
+    <a class="brand" href="index.html">
+        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
+    <div class="nav-right">
+        <a href="index.html" class="top-nav-item">
+            <i class="fas fa-home"></i> หน้าแรก
+        </a>
+    </div>
+</nav>
+
+<div class="login-wrapper">
+    <div class="login-box">
+
+        <h4 class="mb-2 text-center fw-bold" style="color:#1e4620;">เข้าสู่ระบบ</h4>
+        <h6 class="mb-4 text-center text-muted">ด้วยบัญชีผู้จัดการท่องเที่ยวชุมชน</h6>
+
+        <form id="loginForm" novalidate>
+            <div class="mb-3">
+                <label class="form-label fw-500">อีเมล</label>
+                <!-- type="text" แทน type="email" เพื่อปิด browser popup -->
+                <input type="text" id="email" class="form-control" placeholder="กรอกอีเมล">
+                <span id="emailError" class="text-danger small" style="display:none;"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">รหัสผ่าน</label>
+                <input type="password" id="password" class="form-control" placeholder="กรอกรหัสผ่าน">
+                <span id="passwordError" class="text-danger small" style="display:none;"></span>
+            </div>
+
+            <button type="submit" class="btn btn-login w-100">
+                เข้าสู่ระบบ
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<script th:src="@{/js/Homestay/login-owner.js}"></script>
+</body>
+</html>
