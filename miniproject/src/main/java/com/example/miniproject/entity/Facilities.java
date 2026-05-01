@@ -18,7 +18,9 @@ public class Facilities {
     @ManyToMany(mappedBy="facilities")
     private List<Roomtype> roomTypes;
 
-    
+    public Facilities(){
+		
+	}
 	public Facilities(String facilitiesid, String facilitiesName, List<Roomtype> roomTypes) {
 		super();
 		this.facilitiesid = facilitiesid;
