@@ -1,6 +1,7 @@
 package  com.example.miniproject.entity;
+
 import jakarta.persistence.*;
-import com.example.miniproject.entity.enums.HomestayownerStatus;
+
 import java.util.List;
 
 @Entity
@@ -8,9 +9,10 @@ import java.util.List;
 public class Homestayowner {
 
     @Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ownerid",length = 10)
-    private Integer ownerid;
-    @Column(name="password", length = 1050)
+    private int ownerid;
+    @Column(name="password", length = 50)
 	private String password;
 
 	@Column(name="firstname", length = 100)
@@ -24,12 +26,12 @@ public class Homestayowner {
 
 	@Column(name="phone", length = 10)
 	private String phone;
-
-	@Column(name = "verificationstatus")
+	@Column(length = 50)
 	private  Boolean verificationstatus;
 
-	@Enumerated(EnumType.STRING)
-	private HomestayownerStatus accountstatus;
+	private String accountstatus;
+	// @Enumerated(EnumType.STRING)
+	// private HomestayownerStatus accountstatus;
 
     @OneToMany(mappedBy="owner")
     private List<Homestay> homestays;
@@ -84,12 +86,13 @@ public class Homestayowner {
 	public void setHomestays(List<Homestay> homestays) {
 		this.homestays = homestays;
 	}
-	public HomestayownerStatus getAccountstatus() {
+	public String getAccountstatus() {
 		return accountstatus;
 	}
-	public void setAccountstatus(HomestayownerStatus accountstatus) {
+	public void setAccountstatus(String accountstatus) {
 		this.accountstatus = accountstatus;
 	}
+	
 	
 	
 

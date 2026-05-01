@@ -1,6 +1,6 @@
 package com.example.miniproject.entity;
 
-import com.example.miniproject.entity.enums.HomestayStatus;
+// import com.example.miniproject.entity.enums.HomestayStatus;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -10,8 +10,9 @@ import java.util.List;
 public class Homestay {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "homestayid", length = 10)
-    private String homestayid;
+    private int homestayid;
 
     @Column(length = 100)
     private String homestayname;
@@ -22,11 +23,14 @@ public class Homestay {
     @Column(length = 255)
     private String description;
 
-    @Column(length = 50)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String images;
 
-    @Enumerated(EnumType.STRING)
-    private HomestayStatus status;
+    // @Enumerated(EnumType.STRING)
+    // private HomestayStatus status;
+    @Column(length = 50)
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "ownerid")
@@ -37,11 +41,11 @@ public class Homestay {
 
     public Homestay() {}
 
-    public String getHomestayid() {
+    public int getHomestayid() {
         return homestayid;
     }
 
-    public void setHomestayid(String homestayid) {
+    public void setHomestayid(int homestayid) {
         this.homestayid = homestayid;
     }
 
@@ -77,13 +81,7 @@ public class Homestay {
         this.images = images;
     }
 
-    public HomestayStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(HomestayStatus status) {
-        this.status = status;
-    }
+    
 
     public Homestayowner getOwner() {
         return owner;
@@ -99,5 +97,13 @@ public class Homestay {
 
     public void setRoomtypes(List<Roomtype> roomtypes) {
         this.roomtypes = roomtypes;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

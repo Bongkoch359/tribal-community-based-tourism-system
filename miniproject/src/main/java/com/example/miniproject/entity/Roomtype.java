@@ -1,6 +1,5 @@
 package com.example.miniproject.entity;
 
-import com.example.miniproject.entity.enums.RoomtypeStatus;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -17,6 +16,9 @@ public class Roomtype {
     @Column(length = 100)
     private String typename;
 
+    @Column(length = 100)
+    private String bedtype;
+
     @Column(length = 255)
     private String description;
 
@@ -27,10 +29,13 @@ public class Roomtype {
     @Column(length = 255)
     private String roomcondition;
 
-    private Integer totalrooms;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String images;
 
-    @Enumerated(EnumType.STRING)
-    private RoomtypeStatus status;
+    private Integer totalrooms;
+    @Column(length = 50)
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "homestayid")
@@ -39,7 +44,7 @@ public class Roomtype {
     @ManyToMany
     @JoinTable(
         name = "roomtypefacilities",
-        joinColumns = @JoinColumn(name = "roomTypeid"),
+        joinColumns = @JoinColumn(name = "roomtypeid"),
         inverseJoinColumns = @JoinColumn(name = "facilitiesid")
     )
     private List<Facilities> facilities;
@@ -70,8 +75,7 @@ public class Roomtype {
     public Integer getTotalrooms() { return totalrooms; }
     public void setTotalrooms(Integer totalrooms) { this.totalrooms = totalrooms; }
 
-    public RoomtypeStatus getStatus() { return status; }
-    public void setStatus(RoomtypeStatus status) { this.status = status; }
+    
 
     public Homestay getHomestay() { return homestay; }
     public void setHomestay(Homestay homestay) { this.homestay = homestay; }
@@ -81,4 +85,33 @@ public class Roomtype {
 
     public List<Bookingroomdetail> getBookingRoomDetails() { return bookingRoomDetails; }
     public void setBookingRoomDetails(List<Bookingroomdetail> bookingRoomDetails) { this.bookingRoomDetails = bookingRoomDetails; }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getBedtype() {
+        return bedtype;
+    }
+
+    public void setBedtype(String bedtype) {
+        this.bedtype = bedtype;
+    }
+
+    public String getImages() {
+        return images;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
+    }
+
+    
+
+    
+    
 }

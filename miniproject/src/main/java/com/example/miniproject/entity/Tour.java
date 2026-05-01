@@ -1,6 +1,5 @@
 package com.example.miniproject.entity;
 
-import com.example.miniproject.entity.enums.TourStatus;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -15,10 +14,10 @@ public class Tour {
     private String tourid;
 
     @Column(length = 100)
-    private String tourname;
+    private String tourmname;
 
-    @Enumerated(EnumType.STRING)
-    private TourStatus status;
+    @Column(length = 50)
+    private String status;
 
     @Column(length = 255)
     private String tourdetail;
@@ -30,9 +29,9 @@ public class Tour {
     private Integer maxSeatstour;
     private Double adultprice;
     private Double childprice;
-
-    @ElementCollection
-    private List<String> images = new ArrayList<>();
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String images;
 
     @ManyToOne
     @JoinColumn(name = "managerid")
@@ -46,11 +45,9 @@ public class Tour {
     public String getTourid() { return tourid; }
     public void setTourid(String tourid) { this.tourid = tourid; }
 
-    public String getTourmname() { return tourname; }
-    public void setTourmname(String tourmname) { this.tourname = tourmname; }
+    public String getTourmname() { return tourmname; }
+    public void setTourmname(String tourmname) { this.tourmname = tourmname; }
 
-    public TourStatus getStatus() { return status; }
-    public void setStatus(TourStatus status) { this.status = status; }
 
     public String getTourdetail() { return tourdetail; }
     public void setTourdetail(String tourdetail) { this.tourdetail = tourdetail; }
@@ -69,16 +66,21 @@ public class Tour {
 
     public Double getChildprice() { return childprice; }
     public void setChildprice(Double childprice) { this.childprice = childprice; }
-    public List<String> getImages() {
-    return images;
-}
 
-    public void setImages(List<String> images) {
-    this.images = images;
-}
+    public String getImages() { return images; }
+    public void setImages(String images) { this.images = images; }
+
     public Communitymanager getCommunitymanager() { return communitymanager; }
     public void setCommunitymanager(Communitymanager communitymanager) { this.communitymanager = communitymanager; }
 
     public List<Bookingtourdetail> getBookingTourDetails() { return bookingTourDetails; }
     public void setBookingTourDetails(List<Bookingtourdetail> bookingTourDetails) { this.bookingTourDetails = bookingTourDetails; }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

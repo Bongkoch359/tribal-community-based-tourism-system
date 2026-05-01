@@ -18,7 +18,8 @@ public class Activitypost {
     @Column(length = 255)
     private String location;
     private Date createddate;
-
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String images;
     
     @Enumerated(EnumType.STRING)
