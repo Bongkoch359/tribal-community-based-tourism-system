@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>เข้าสู่ระบบ – ท่องเที่ยวชุมชนชนเผ่า</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #f4f6f3;
+      color: #1e2d1a;
+      min-height: 100vh;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAVBAR ─────────────────────────────── */
+    .navbar {
+      background: #1e4d2b;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      justify-content: space-between;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+    .brand-logo {
+      width: 52px; height: 52px;
+      background: #52b788;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .brand-logo svg { width: 28px; height: 28px; fill: #fff; }
+    .brand-text { display: flex; flex-direction: column; gap: 1px; }
+    .brand-title {
+      color: #fff; font-size: 20px; font-weight: 800;
+      letter-spacing: -0.3px; line-height: 1.2;
+    }
+    .brand-sub { color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 400; }
+
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-right a {
+      color: rgba(255,255,255,0.75); font-size: 15px; font-weight: 500;
+      text-decoration: none; padding: 9px 18px; border-radius: 8px;
+      transition: background .15s, color .15s;
+    }
+    .nav-right a:hover { background: rgba(255,255,255,0.10); color: #fff; }
+    .nav-btn-amber {
+      background: #f59e0b !important; color: #fff !important;
+      font-weight: 700 !important; padding: 9px 22px !important;
+    }
+    .nav-btn-amber:hover { background: #d97706 !important; }
+
+    /* ─── PAGE BODY ─────────────────────────── */
+    .page-body {
+      min-height: calc(100vh - 100px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px 64px;
+    }
+
+    /* ─── FORM CARD ──────────────────────────── */
+    .form-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 48px 52px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05);
+      border: 1px solid #e8e6e0;
+    }
+
+    .form-card-header { margin-bottom: 32px; text-align: center; }
+    .form-card-header .header-icon {
+      width: 60px; height: 60px;
+      background: #e8f5ee;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .form-card-header .header-icon svg {
+      width: 28px; height: 28px;
+      stroke: #1e4d2b; fill: none; stroke-width: 1.8;
+    }
+    .form-card-header h1 {
+      font-size: 26px; font-weight: 800;
+      color: #1e2d1a; margin-bottom: 6px;
+    }
+    .form-card-header p { font-size: 15px; color: #999; }
+
+    /* ALERT */
+    .alert {
+      border-radius: 9px; padding: 13px 16px;
+      font-size: 15px; margin-bottom: 22px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .alert-error  { background: #fff3f3; border: 1px solid #fccaca; color: #b91c1c; }
+    .alert-success{ background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+    .alert svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+
+    /* FORM */
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block; font-size: 14px; font-weight: 700;
+      color: #3a3a3a; margin-bottom: 7px;
+    }
+
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px;
+      stroke: #bbb; fill: none; stroke-width: 1.8;
+      pointer-events: none;
+    }
+    .form-control {
+      width: 100%;
+      border: 1.5px solid #ddd;
+      border-radius: 9px;
+      padding: 13px 14px 13px 44px;
+      font-size: 16px;
+      font-family: 'Sarabun', sans-serif;
+      color: #1e2d1a;
+      background: #fafaf9;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+    }
+    .form-control:focus {
+      border-color: #52b788;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.14);
+    }
+    .form-control::placeholder { color: #c0bdb8; font-weight: 400; }
+
+    /* SUBMIT */
+    .btn-submit {
+      width: 100%;
+      background: #1e4d2b;
+      border: none; border-radius: 10px;
+      padding: 15px;
+      color: #fff; font-size: 18px; font-weight: 700;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer; margin-top: 8px;
+      transition: background .18s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-submit:hover { background: #14321e; }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; }
+
+    /* DIVIDER */
+    .or-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0 20px; color: #bbb; font-size: 13px;
+    }
+    .or-divider::before, .or-divider::after {
+      content: ''; flex: 1; height: 1px; background: #ede9e4;
+    }
+
+    /* OTHER LOGINS */
+    .other-logins { display: flex; flex-direction: column; gap: 10px; }
+    .other-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 11px 16px; border-radius: 9px;
+      font-size: 15px; font-weight: 600; font-family: 'Sarabun', sans-serif;
+      text-decoration: none; transition: background .15s, border-color .15s;
+      border: 1.5px solid #e4e0da; color: #555; background: #fff;
+    }
+    .other-btn:hover { background: #f7f5f2; border-color: #c8c4be; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* FOOTER */
+    .form-footer {
+      text-align: center; font-size: 15px;
+      color: #999; margin-top: 24px;
+    }
+    .form-footer a { color: #2d6a4f; font-weight: 700; text-decoration: none; }
+    .form-footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .navbar { padding: 0 20px; height: auto; min-height: 80px; }
+      .form-card { padding: 32px 24px; }
+      .brand-sub { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="nav-brand" href="/search">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-title">ระบบท่องเที่ยวชุมชนเผ่า</span>
+      <span class="brand-sub">Tribal Community Tourism</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <a href="/search">หน้าแรก</a>
+    <a href="/tribes">ชนเผ่า</a>
+    <a href="/register" class="nav-btn-amber">สมัครสมาชิก</a>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page-body">
+  <div class="form-card">
+
+    <!-- HEADER -->
+    <div class="form-card-header">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <h1>เข้าสู่ระบบสมาชิก</h1>
+      <p>ยินดีต้อนรับสู่ระบบท่องเที่ยวชุมชนชนเผ่า</p>
+    </div>
+
+    <!-- ALERTS -->
+    <div th:if="${errorMessage}" class="alert alert-error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span th:text="${errorMessage}"></span>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span th:text="${successMessage}"></span>
+    </div>
+
+    <!-- FORM -->
+    <form th:action="@{/member/login}" method="post">
+
+      <div class="form-group">
+        <label class="form-label">อีเมล</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24">
+            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          <input class="form-control" type="email" name="email" placeholder="example@email.com" required/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">รหัสผ่าน</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+          <input class="form-control" type="password" name="password" placeholder="กรอกรหัสผ่าน" required/>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        เข้าสู่ระบบ
+      </button>
+    </form>
+
+    <!-- OTHER LOGINS -->
+    <div class="or-divider">หรือเข้าสู่ระบบในฐานะ</div>
+    <div class="other-logins">
+      <a href="/manager/login" class="other-btn">
+        <span class="dot" style="background:#d97706;"></span>
+        ผู้จัดการท่องเที่ยวชุมชน
+      </a>
+      <a href="/owner/login" class="other-btn">
+        <span class="dot" style="background:#0369a1;"></span>
+        เจ้าของโฮมสเตย์
+      </a>
+    </div>
+
+    <div class="form-footer">
+      ยังไม่มีบัญชี? <a href="/register">สมัครสมาชิกฟรี</a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

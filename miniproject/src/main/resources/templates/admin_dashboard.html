@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แผงควบคุมผู้ดูแลระบบ - ระบบท่องเที่ยวชุมชนเผ่า</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body { 
+    font-family: 'Sarabun', sans-serif; 
+    background: #ffffff; /* พื้นหลังขาวสะอาด */
+    color: #333;
+    line-height: 1.6;
+  }
+
+  /* --- NAVBAR (สูง 100px ตามธีมหลัก) --- */
+  .navbar {
+    background: #1e4d2b;
+    height: 100px; /* ปรับสูง 100px ตามสั่ง */
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .navbar-brand {
+    color: #fff;
+    font-weight: 700;
+    font-size: 24px; /* ตัวหนังสือใหญ่ชัดเจน */
+    text-decoration: none;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .nav-link {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 18px; /* ขนาดตัวอักษรเมนูใหญ่ขึ้น */
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+
+  .admin-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-left: 20px;
+    border-left: 1px solid rgba(255,255,255,0.2);
+    margin-left: 10px;
+  }
+
+  .admin-name {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .admin-badge {
+    background: #f4a261;
+    color: #fff;
+    border-radius: 50%;
+    width: 45px; /* ขนาด Badge ใหญ่ขึ้นให้รับกับ Nav 100px */
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .logout-btn {
+    color: #ff9f9f;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .logout-btn:hover { color: #fff; }
+
+  /* --- CONTENT --- */
+  .content { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 60px 24px; 
+  }
+
+  /* WELCOME BANNER */
+  .welcome-banner {
+    background: linear-gradient(135deg, #1e4d2b, #2d6a4f);
+    border-radius: 20px;
+    padding: 50px;
+    color: #fff;
+    margin-bottom: 45px;
+    box-shadow: 0 10px 30px rgba(30, 77, 43, 0.15);
+  }
+
+  .welcome-banner h1 { 
+    font-size: 36px; /* หัวข้อใหญ่พิเศษ */
+    font-weight: 700; 
+    margin-bottom: 12px; 
+  }
+
+  .welcome-banner p { 
+    font-size: 18px; 
+    opacity: 0.9; 
+    font-weight: 400;
+  }
+
+  /* MENU CARDS GRID */
+  .grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+    gap: 30px; 
+  }
+
+  .menu-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    border: 1px solid #f0f0f0;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  }
+
+  .menu-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    border-color: #1e4d2b;
+  }
+
+  .menu-icon { 
+    font-size: 50px; 
+    margin-bottom: 20px; 
+    display: block;
+  }
+
+  .menu-title { 
+    font-size: 22px; 
+    font-weight: 700; 
+    color: #1e4d2b;
+    margin-bottom: 10px; 
+  }
+
+  .menu-desc { 
+    font-size: 16px; 
+    color: #666; 
+    line-height: 1.5;
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .navbar { height: auto; padding: 20px; flex-direction: column; gap: 15px; }
+    .nav-group { flex-wrap: wrap; justify-content: center; }
+    .welcome-banner { padding: 30px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนเผ่า</a>
+  
+  <div class="nav-group">
+    <a href="/admin/dashboard" class="nav-link active">📊 Dashboard</a>
+    <a href="/admin/manager" class="nav-link">👥 จัดการผู้จัดการ</a>
+    <a href="/admin/homestay" class="nav-link">🏠 จัดการโฮมสเตย์</a>
+  </div>
+
+  <div class="admin-section">
+    <div class="admin-info" style="text-align: right;">
+      <div class="admin-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
+      <a href="/admin/logout" class="logout-btn">ออกจากระบบ</a>
+    </div>
+    <div class="admin-badge">A</div>
+  </div>
+</nav>
+
+<div class="content">
+  <div class="welcome-banner">
+    <h1>ยินดีต้อนรับ, <span th:text="${session.loggedInAdmin?.username ?: 'Admin'}">Admin</span> 👋</h1>
+    <p>ระบบบริหารจัดการข้อมูลการท่องเที่ยวชุมชน — เลือกโมดูลที่คุณต้องการดำเนินการด้านล่าง</p>
+  </div>
+
+  <div class="grid">
+    <a href="/admin/manager" class="menu-card">
+      <span class="menu-icon">👥</span>
+      <div class="menu-title">จัดการผู้จัดการชุมชน</div>
+      <div class="menu-desc">ตรวจสอบบัญชีรายชื่อ สร้างบัญชีใหม่ หรือระงับการเข้าใช้งานของผู้จัดการชุมชนแต่ละพื้นที่</div>
+    </a>
+
+    <a href="/admin/homestay" class="menu-card">
+      <span class="menu-icon">🏠</span>
+      <div class="menu-title">จัดการโฮมสเตย์</div>
+      <div class="menu-desc">พิจารณาอนุมัติโฮมสเตย์ที่สมัครเข้าโครงการ หรือจัดการสถานะการให้บริการของโฮมสเตย์ในระบบ</div>
+    </a>
+  </div>
+</div>
+
+</body>
+</html>

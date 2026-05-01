@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>แก้ไขโปรไฟล์ – ท่องเที่ยวชุมชนชนเผ่า</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #f4f6f3;
+      color: #1e2d1a;
+      min-height: 100vh;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAVBAR ──────────────────────────── */
+    .navbar {
+      background: #1e4d2b;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      justify-content: space-between;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    .brand-logo {
+      width: 52px; height: 52px;
+      background: #52b788; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(82,183,136,0.35);
+    }
+    .brand-logo svg { width: 28px; height: 28px; fill: #fff; }
+    .brand-text { display: flex; flex-direction: column; gap: 1px; }
+    .brand-title { color: #fff; font-size: 20px; font-weight: 800; line-height: 1.2; }
+    .brand-sub   { color: rgba(255,255,255,0.55); font-size: 13px; }
+
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-right a {
+      color: rgba(255,255,255,0.80); font-size: 15px; font-weight: 500;
+      text-decoration: none; padding: 9px 18px;
+      border-radius: 8px; transition: background .15s;
+    }
+    .nav-right a:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .nav-user-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.22);
+      border-radius: 50px; padding: 7px 16px 7px 7px;
+    }
+    .nav-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #52b788, #2d7a4f);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 15px; color: #fff;
+      border: 2px solid rgba(255,255,255,0.3); flex-shrink: 0;
+    }
+    .nav-user-name { color: #fff; font-size: 15px; font-weight: 700; }
+    .nav-logout {
+      color: rgba(255,255,255,0.65) !important;
+      font-size: 14px !important; padding: 7px 14px !important;
+      border: 1px solid rgba(255,255,255,0.18) !important;
+      border-radius: 8px !important;
+    }
+    .nav-logout:hover { background: rgba(239,68,68,0.18) !important; color: #fca5a5 !important; }
+
+    /* ─── PAGE ────────────────────────────── */
+    .page-body {
+      min-height: calc(100vh - 100px);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 48px 24px 72px;
+    }
+    .form-area { width: 100%; max-width: 600px; }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; color: #aaa; margin-bottom: 28px;
+    }
+    .breadcrumb a { color: #52b788; text-decoration: none; font-weight: 600; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb-sep { color: #ccc; }
+
+    /* Card */
+    .form-card {
+      background: #fff; border-radius: 20px; padding: 44px 48px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05);
+      border: 1px solid #e8e6e0;
+    }
+
+    /* Card Header */
+    .card-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 36px; padding-bottom: 28px;
+      border-bottom: 1.5px solid #f0ece6;
+    }
+    .header-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, #52b788, #1e4d2b);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800; color: #fff;
+      border: 3px solid #d8f3dc; flex-shrink: 0;
+    }
+    .header-text h1 { font-size: 26px; font-weight: 800; color: #1e2d1a; margin-bottom: 4px; }
+    .header-text p  { font-size: 15px; color: #999; }
+    .header-badge {
+      margin-left: auto;
+      background: #d8f3dc; color: #1a472a;
+      border-radius: 100px; padding: 5px 16px;
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .header-badge::before {
+      content: ''; width: 7px; height: 7px;
+      background: #52b788; border-radius: 50%;
+    }
+
+    /* Alert */
+    .alert {
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 15px; margin-bottom: 24px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .alert-error   { background: #fff3f3; border: 1px solid #fccaca; color: #b91c1c; }
+    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+    .alert svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+
+    /* Section label */
+    .sec-label {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12.5px; font-weight: 700; color: #aaa;
+      letter-spacing: .8px; text-transform: uppercase;
+      margin: 8px 0 22px;
+    }
+    .sec-label::before, .sec-label::after {
+      content: ''; flex: 1; height: 1px; background: #ede9e4;
+    }
+
+    /* Grid */
+    .row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: block; font-size: 14px; font-weight: 700;
+      color: #3a3a3a; margin-bottom: 7px;
+    }
+    .req { color: #e53e3e; margin-left: 3px; }
+    .opt { color: #aaa; font-size: 12px; font-weight: 400; margin-left: 5px; }
+
+    /* Input */
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px;
+      stroke: #bbb; fill: none; stroke-width: 1.8; pointer-events: none;
+    }
+    .form-control {
+      width: 100%; border: 1.5px solid #ddd; border-radius: 10px;
+      padding: 13px 14px 13px 44px;
+      font-size: 16px; font-family: 'Sarabun', sans-serif;
+      color: #1e2d1a; background: #fafaf9; outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+    }
+    .form-control.no-icon { padding-left: 14px; }
+    .form-control:focus {
+      border-color: #52b788; background: #fff;
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.14);
+    }
+    .form-control::placeholder { color: #c0bdb8; font-weight: 400; }
+    .form-control[readonly] {
+      background: #f5f5f4; color: #999;
+      cursor: not-allowed; border-color: #e5e3de;
+    }
+    .readonly-note {
+      font-size: 12px; color: #bbb; margin-top: 5px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .readonly-note svg { width: 13px; height: 13px; }
+
+    /* Password toggle */
+    .pw-toggle {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #bbb; transition: color .15s;
+    }
+    .pw-toggle:hover { color: #52b788; }
+    .pw-toggle svg { width: 18px; height: 18px; }
+
+    /* Strength bar */
+    .pw-strength { margin-top: 8px; }
+    .pw-strength-bar { height: 4px; border-radius: 4px; background: #eee; overflow: hidden; }
+    .pw-strength-fill { height: 100%; border-radius: 4px; transition: width .3s, background .3s; width: 0; }
+    .pw-strength-label { font-size: 12px; margin-top: 4px; color: #aaa; text-align: right; }
+
+    /* Password note */
+    .pw-note {
+      background: #f8f9fa; border: 1px solid #e8e6e0;
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 13px; color: #888; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pw-note svg { width: 15px; height: 15px; color: #52b788; flex-shrink: 0; }
+
+    /* Buttons */
+    .btn-row { display: flex; gap: 12px; margin-top: 8px; }
+    .btn-submit {
+      flex: 1; background: #1e4d2b; border: none; border-radius: 11px;
+      padding: 15px; color: #fff; font-size: 17px; font-weight: 700;
+      font-family: 'Sarabun', sans-serif; cursor: pointer;
+      transition: background .18s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-submit:hover { background: #14321e; }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; }
+
+    .btn-cancel {
+      background: #fff; border: 1.5px solid #d6d3ce; border-radius: 11px;
+      padding: 15px 22px; color: #666; font-size: 16px; font-weight: 600;
+      font-family: 'Sarabun', sans-serif; cursor: pointer;
+      text-decoration: none;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .15s, border-color .15s; white-space: nowrap;
+    }
+    .btn-cancel:hover { background: #f9f8f6; border-color: #bbb; color: #444; }
+    .btn-cancel svg { width: 17px; height: 17px; }
+
+    @media (max-width: 640px) {
+      .navbar { padding: 0 20px; height: auto; min-height: 80px; }
+      .form-card { padding: 28px 20px; }
+      .row-two { grid-template-columns: 1fr; gap: 0; }
+      .brand-sub { display: none; }
+      .btn-row { flex-direction: column-reverse; }
+      .header-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ──────────────────────────────────────────── -->
+<nav class="navbar">
+  <a class="nav-brand" href="/search">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-title">ระบบท่องเที่ยวชุมชนเผ่า</span>
+      <span class="brand-sub">Tribal Community Tourism</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <a href="/search">หน้าแรก</a>
+    <a href="/member/bookings">การจองของฉัน</a>
+    <div class="nav-user-pill">
+      <div class="nav-avatar"
+           th:text="${#strings.substring(session.loggedInMember.firstname,0,1)}">ม</div>
+      <span class="nav-user-name"
+            th:text="${session.loggedInMember.firstname}">สมาชิก</span>
+    </div>
+    <a href="/member/login/logout" class="nav-logout">ออกจากระบบ</a>
+  </div>
+</nav>
+
+<!-- ── PAGE ────────────────────────────────────────────── -->
+<div class="page-body">
+  <div class="form-area">
+
+    <div class="breadcrumb">
+      <a href="/search">หน้าแรก</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="/member/profile">โปรไฟล์ของฉัน</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>แก้ไขข้อมูล</span>
+    </div>
+
+    <div class="form-card">
+
+      <!-- Header -->
+      <div class="card-header">
+        <div class="header-avatar"
+             th:text="${#strings.substring(member.firstname,0,1)}">ม</div>
+        <div class="header-text">
+          <h1>แก้ไขโปรไฟล์</h1>
+          <p th:text="${member.firstname} + ' ' + ${member.lastname}">ชื่อ นามสกุล</p>
+        </div>
+        <div class="header-badge">สมาชิก</div>
+      </div>
+
+      <!-- Alerts -->
+      <div th:if="${errorMessage}" class="alert alert-error">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span th:text="${errorMessage}"></span>
+      </div>
+      <div th:if="${successMessage}" class="alert alert-success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span th:text="${successMessage}"></span>
+      </div>
+
+      <!-- FORM -->
+      <form th:action="@{/member/profile/edit}" method="post"
+            id="editProfileForm" onsubmit="return validateForm()">
+
+        <!-- ── ข้อมูลส่วนตัว ──────────────────── -->
+        <div class="sec-label">ข้อมูลส่วนตัว</div>
+
+        <div class="row-two">
+          <!-- ✅ name="firstname" ตรงกับ Entity และ Controller -->
+          <div class="form-group">
+            <label class="form-label">ชื่อ <span class="req">*</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <input class="form-control" type="text"
+                     name="firstname"
+                     id="firstname"
+                     th:value="${member.firstname}"
+                     placeholder="ชื่อ" required/>
+            </div>
+          </div>
+          <!-- ✅ name="lastname" ตรงกับ Entity และ Controller -->
+          <div class="form-group">
+            <label class="form-label">นามสกุล <span class="req">*</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <input class="form-control" type="text"
+                     name="lastname"
+                     id="lastname"
+                     th:value="${member.lastname}"
+                     placeholder="นามสกุล" required/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email: readonly ───────────────────── -->
+        <div class="form-group">
+          <label class="form-label">อีเมล</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24">
+              <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <input class="form-control" type="email"
+                   th:value="${member.email}"
+                   readonly/>
+          </div>
+          <p class="readonly-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            อีเมลไม่สามารถเปลี่ยนแปลงได้
+          </p>
+        </div>
+
+        <div class="row-two">
+          <div class="form-group">
+            <label class="form-label">เบอร์โทรศัพท์ <span class="opt">(ไม่บังคับ)</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.13 6.13l1.27-1.27a2 2 0 012.11-.45c.91.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+              <input class="form-control" type="tel"
+                     name="phone"
+                     th:value="${member.phone}"
+                     placeholder="0xx-xxx-xxxx"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">วันเกิด <span class="opt">(ไม่บังคับ)</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <input class="form-control" type="date"
+                     name="birthdate"
+                     th:value="${member.birthdate}"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ที่อยู่ <span class="opt">(ไม่บังคับ)</span></label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24">
+              <path d="M12 21c-4-4-7-7.5-7-10.5a7 7 0 1114 0c0 3-3 6.5-7 10.5z"/>
+              <circle cx="12" cy="10" r="2"/>
+            </svg>
+            <input class="form-control" type="text"
+                   name="address"
+                   th:value="${member.address}"
+                   placeholder="กรอกที่อยู่"/>
+          </div>
+        </div>
+
+        <!-- ── เปลี่ยนรหัสผ่าน ──────────────── -->
+        <div class="sec-label">เปลี่ยนรหัสผ่าน</div>
+
+        <div class="pw-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+          </svg>
+          หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้ทั้งสองช่อง
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">รหัสผ่านใหม่ <span class="opt">(ไม่บังคับ)</span></label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input class="form-control" type="password"
+                   name="newPassword" id="newPassword"
+                   placeholder="กรอกรหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)"
+                   oninput="checkStrength(this.value)"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('newPassword',this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <div class="pw-strength" id="strengthWrap" style="display:none;">
+            <div class="pw-strength-bar">
+              <div class="pw-strength-fill" id="strengthFill"></div>
+            </div>
+            <div class="pw-strength-label" id="strengthLabel"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ยืนยันรหัสผ่านใหม่ <span class="opt">(ไม่บังคับ)</span></label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input class="form-control" type="password"
+                   name="confirmPassword" id="confirmPassword"
+                   placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"
+                   oninput="checkMatch()"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('confirmPassword',this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <p id="matchMsg" style="font-size:13px; margin-top:5px; display:none;"></p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-row">
+          <a href="/member/profile" class="btn-cancel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+            ยกเลิก
+          </a>
+          <button type="submit" class="btn-submit">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            บันทึกข้อมูล
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    btn.innerHTML = isText
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  }
+
+  function checkStrength(val) {
+    const wrap = document.getElementById('strengthWrap');
+    const fill = document.getElementById('strengthFill');
+    const lbl  = document.getElementById('strengthLabel');
+    if (!val) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    let s = 0;
+    if (val.length >= 6)           s++;
+    if (val.length >= 10)          s++;
+    if (/[A-Z]/.test(val))         s++;
+    if (/[0-9]/.test(val))         s++;
+    if (/[^A-Za-z0-9]/.test(val))  s++;
+    const lv = [
+      { p:'20%', c:'#ef4444', t:'อ่อนมาก' },
+      { p:'40%', c:'#f97316', t:'อ่อน' },
+      { p:'60%', c:'#eab308', t:'ปานกลาง' },
+      { p:'80%', c:'#22c55e', t:'แข็งแรง' },
+      { p:'100%',c:'#16a34a', t:'แข็งแรงมาก' },
+    ][Math.min(s,4)];
+    fill.style.width = lv.p; fill.style.background = lv.c;
+    lbl.textContent = lv.t; lbl.style.color = lv.c;
+  }
+
+  function checkMatch() {
+    const pw1 = document.getElementById('newPassword').value;
+    const pw2 = document.getElementById('confirmPassword').value;
+    const msg = document.getElementById('matchMsg');
+    if (!pw2) { msg.style.display = 'none'; return; }
+    msg.style.display = 'block';
+    if (pw1 === pw2) { msg.textContent = '✓ รหัสผ่านตรงกัน'; msg.style.color = '#16a34a'; }
+    else             { msg.textContent = '✗ รหัสผ่านไม่ตรงกัน'; msg.style.color = '#dc2626'; }
+  }
+
+  function validateForm() {
+    const fn  = document.getElementById('firstname').value.trim();
+    const ln  = document.getElementById('lastname').value.trim();
+    const pw1 = document.getElementById('newPassword').value;
+    const pw2 = document.getElementById('confirmPassword').value;
+
+    if (!fn || !ln) {
+      showErr('กรุณากรอกชื่อและนามสกุลให้ครบถ้วน'); return false;
+    }
+    if (pw1 || pw2) {
+      if (pw1.length < 6) { showErr('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'); return false; }
+      if (pw1 !== pw2)    { showErr('รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน'); return false; }
+    }
+    return true;
+  }
+
+  function showErr(msg) {
+    document.querySelectorAll('.alert').forEach(e => e.remove());
+    const div = document.createElement('div');
+    div.className = 'alert alert-error';
+    div.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>${msg}</span>`;
+    const form = document.getElementById('editProfileForm');
+    form.parentNode.insertBefore(div, form);
+    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+</script>
+</body>
+</html>

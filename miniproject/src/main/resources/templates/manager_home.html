@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>หน้าหลักผู้จัดการ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; padding: 50px; text-align: center; background: #fdfaf4; }
+        .welcome-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: inline-block; }
+        h1 { color: #d97706; }
+        .btn-logout { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #1e4d2b; color: white; text-decoration: none; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-card">
+        <h1>ยินดีต้อนรับเข้าสู่ระบบจัดการ</h1>
+        <p>สวัสดีคุณ: <strong th:text="${session.loggedInManager != null ? session.loggedInManager.firstname : 'Manager'}">ชื่อผู้จัดการ</strong></p>
+        <p>ขณะนี้ระบบหลังบ้านกำลังอยู่ระหว่างการพัฒนา...</p>
+        
+        <a href="/manager/login/logout" class="btn-logout">ออกจากระบบ</a>
+    </div>
+
+</body>
+</html>
