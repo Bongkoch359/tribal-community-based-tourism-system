@@ -339,3 +339,40 @@
             .page { padding: 1.5rem 1rem; }
             .nav-links { display: none; }
         }
+
+        html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.page {
+    flex: 1;
+}
+
+        .footer {
+    margin-top: 3rem;
+    padding: 1rem 2rem;
+    background: #1a3d1f;
+    color: #d8f3dc;
+    font-size: 0.9rem;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer a {
+    color: #95d5b2;
+    text-decoration: none;
+    margin-left: 8px;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}

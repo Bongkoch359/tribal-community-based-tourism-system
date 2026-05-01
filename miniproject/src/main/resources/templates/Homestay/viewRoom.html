@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>รายละเอียดประเภทห้องพัก</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -30,7 +31,45 @@
             padding: 0 28px; height: 56px;
             position: sticky; top: 0; z-index: 100;
         }
-        .navbar-brand { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 15px; font-weight: 700; }
+        /* แก้ไขสี Navbar และฟอนต์ Brand ให้หนาขึ้น */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;           /* เว้นระยะห่างระหว่างไอคอนและข้อความ */
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;    /* เพิ่มความหนาของตัวอักษรให้เหมือนในรูป */
+    font-size: 16px;     /* ปรับขนาดให้ดูพอดีกับแถบเมนู */
+}
+
+.navbar-brand i {
+    font-size: 20px;     /* ปรับขนาดไอคอนภูเขาให้เด่นชัด */
+}
+
+/* เพิ่มเส้นแบ่งระหว่างเมนูกับชื่อผู้ใช้ (ถ้าต้องการให้เหมือนเป๊ะ) */
+.nav-user { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    color: #fff; 
+    font-size: 14px; 
+    padding-left: 20px;
+    border-left: 1px solid rgba(255,255,255,0.1); /* เส้นแบ่งจางๆ */
+}
+
+/* แก้ไขสี Avatar เป็นสีส้มตามรูป */
+.avatar {
+    width: 32px; 
+    height: 32px; 
+    border-radius: 50%; 
+    background: #e67e22; /* สีส้มอมน้ำตาลตามรูป */
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-weight: 600; 
+    font-size: 12px; 
+    color: #fff;
+}
         .nav-user { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 14px; }
         .avatar {
             width: 34px; height: 34px; border-radius: 50%; background: #d4a017;
@@ -39,7 +78,7 @@
         }
 
         /* ── Layout ── */
-        .container { max-width: 960px; margin: 0 auto; padding: 28px 20px 60px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
 
         /* ── Back ── */
         .btn-back {
@@ -170,10 +209,18 @@
 
 <!-- Navbar -->
 <nav class="navbar">
-    <div class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนชนเผ่า</div>
+    <a class="navbar-brand" th:href="@{/}">
+    <!-- เปลี่ยนไอคอนเป็นรูปภูเขาปกติ -->
+    <i class="fas fa-mountain"></i> 
+    <span>ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+</a>
+    
     <div class="nav-user">
-        <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">HO</div>
-        <span th:text="${ownername}">Owner</span> ▾
+        <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">นค</div>
+        <div style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+            <span th:text="${ownername}"></span>
+            <i class="fas fa-caret-down" style="font-size: 10px; opacity: 0.8;"></i>
+        </div>
     </div>
 </nav>
 
