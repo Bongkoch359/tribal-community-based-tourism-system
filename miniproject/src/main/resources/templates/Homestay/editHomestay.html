@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แก้ไขโฮมสเตย์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:  #2d5a27;
+    --green-main:  #3a7a30;
+    --orange:      #e8891a;
+    --bg:          #f0ede8;
+    --white:       #ffffff;
+    --gray-bg:     #f5f3f0;
+    --gray-border: #ddd9d4;
+    --gray-text:   #888;
+    --text:        #2c2c2c;
+    --danger:      #e53e3e;
+    --shadow:      0 2px 12px rgba(0,0,0,.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* Navbar */
+  .navbar {
+    background: var(--green-dark); height: 58px; padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 16px; text-decoration: none; }
+  .brand-icon { background: rgba(255,255,255,.15); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .nav-user { display: flex; align-items: center; gap: 10px; color: #fff; cursor: pointer; }
+  .nav-avatar { background: var(--orange); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+  .nav-name { font-size: 14px; }
+
+  /* Layout */
+  .wrapper { max-width: 820px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--green-main); font-size: 14px; font-weight: 500;
+    text-decoration: none; margin-bottom: 14px; transition: gap .15s;
+  }
+  .back-link:hover { gap: 10px; }
+
+  .page-title { font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+
+  /* Card */
+  .card { background: var(--white); border-radius: 14px; box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+  .card-head { background: linear-gradient(90deg, var(--orange), #f5a63a); padding: 10px 20px; }
+  .card-head h3 { color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; }
+  .card-body { padding: 24px; }
+
+  /* Form */
+  .fgroup { margin-bottom: 20px; }
+  .fgroup:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 7px; }
+  .req { color: var(--danger); }
+  input[type=text], textarea {
+    width: 100%; border: 1.5px solid var(--gray-border); border-radius: 8px;
+    padding: 10px 14px; font-family: 'Sarabun', sans-serif; font-size: 15px;
+    color: var(--text); background: var(--white); outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input[type=text]:focus, textarea:focus {
+    border-color: var(--green-main); box-shadow: 0 0 0 3px rgba(58,122,48,.1);
+  }
+  textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+  .hint { font-size: 12px; color: var(--gray-text); margin-top: 5px; }
+
+  /* Images */
+  .img-section-label { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .img-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; min-height: 10px; }
+  .img-thumb {
+    position: relative; width: 90px; height: 80px;
+    border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    animation: pop .2s ease;
+  }
+  @keyframes pop { from { opacity:0; transform:scale(.85); } to { opacity:1; transform:scale(1); } }
+  .img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-thumb .del {
+    position: absolute; top: 4px; right: 4px;
+    background: rgba(0,0,0,.5); border: none; border-radius: 50%;
+    width: 20px; height: 20px; cursor: pointer; color: #fff; font-size: 11px;
+    display: flex; align-items: center; justify-content: center; transition: background .15s;
+  }
+  .img-thumb .del:hover { background: var(--danger); }
+  .img-thumb .primary-badge {
+    position: absolute; bottom: 4px; left: 4px;
+    background: var(--orange); color: #fff;
+    font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px;
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--gray-border); border-radius: 12px;
+    padding: 28px 20px; text-align: center; cursor: pointer;
+    background: var(--gray-bg); transition: border-color .2s, background .2s; display: block;
+  }
+  .upload-zone:hover { border-color: var(--green-main); background: rgba(58,122,48,.04); }
+  .upload-zone input { display: none; }
+  .up-icon { font-size: 30px; color: var(--gray-text); margin-bottom: 8px; }
+  .up-text { font-size: 14px; font-weight: 600; color: var(--gray-text); margin-bottom: 3px; }
+  .up-hint { font-size: 12px; color: #aaa; }
+
+  /* Actions */
+  .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+  .btn {
+    padding: 11px 28px; border-radius: 9px; font-family: 'Sarabun', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer; border: none;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: opacity .15s, box-shadow .15s; text-decoration: none;
+  }
+  .btn-cancel { background: var(--white); color: var(--text); border: 1.5px solid var(--gray-border); }
+  .btn-cancel:hover { background: var(--gray-bg); }
+  .btn-save { background: linear-gradient(135deg, var(--green-main), var(--green-dark)); color: #fff; box-shadow: 0 4px 14px rgba(45,90,39,.28); }
+  .btn-save:hover { box-shadow: 0 6px 20px rgba(45,90,39,.38); }
+  .btn-save:disabled { opacity: .6; cursor: not-allowed; }
+
+  /* ── Overlay ── */
+.toast-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(3px);
+  opacity: 0; transition: opacity .3s;
+  pointer-events: none; z-index: 9998;
+}
+.toast-overlay.show { opacity: 1; }
+
+/* ── Toast modal ── */
+.toast {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  width: 360px;
+  background: linear-gradient(145deg, #2d5a27, #3a7a30);
+  color: #fff;
+  padding: 36px 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  border: 1px solid rgba(255,255,255,.15);
+  opacity: 0;
+  transition: opacity .3s, transform .3s;
+  pointer-events: none; z-index: 9999;
+}
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.toast.error {
+  background: linear-gradient(145deg, #c0392b, #e53e3e);
+}
+.toast-icon { font-size: 48px; margin-bottom: 12px; }
+.toast-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.toast-msg { font-size: 14px; opacity: .85; }
+
+  @media(max-width:600px) {
+    .wrapper { padding: 16px 12px 50px; }
+    .card-body { padding: 16px; }
+    .actions { flex-direction: column-reverse; }
+    .btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a th:href="@{/owner/homestays}" class="brand">
+    <span class="brand-icon">🏔️</span>
+    ระบบท่องเที่ยวชุมชนชนเผ่า
+  </a>
+  <div class="nav-user">
+    <div class="nav-avatar" th:text="${#strings.substring(ownername, 0, 2)}">UN</div>
+    <span class="nav-name" th:text="${ownername}">คุณนิคม สุขใจ</span>
+    <span style="color:rgba(255,255,255,.7);font-size:11px">▾</span>
+  </div>
+</nav>
+
+<div class="wrapper">
+
+  <!-- Back -->
+  <a th:href="@{/owner/homestays/{id}(id=${detail.homestay.homestayid})}" class="back-link">
+    ◀ ย้อนกลับ · <span th:text="${detail.homestay.homestayname}">โฮมสเตย์</span>
+  </a>
+
+  <div class="page-title">
+    <span>✏️</span> แก้ไขโฮมสเตย์
+  </div>
+
+  <!-- Card: ข้อมูลโฮมสเตย์ -->
+  <div class="card">
+    <div class="card-head"><h3>ข้อมูลโฮมสเตย์</h3></div>
+    <div class="card-body">
+
+      <div class="fgroup">
+        <label>ชื่อโฮมสเตย์ <span class="req">*</span></label>
+        <input type="text" id="homestayname"
+               th:value="${detail.homestay.homestayname}"
+               placeholder="ชื่อโฮมสเตย์">
+      </div>
+
+      <div class="fgroup">
+        <label>ที่อยู่ <span class="req">*</span></label>
+        <input type="text" id="address"
+               th:value="${detail.homestay.address}"
+               placeholder="ที่อยู่โฮมสเตย์">
+      </div>
+
+      <div class="fgroup">
+        <label>รายละเอียดโฮมสเตย์</label>
+        <textarea id="description"
+                  placeholder="อธิบายจุดเด่น บรรยากาศ และกิจกรรมที่นักท่องเที่ยวสามารถทำได้"
+                  th:text="${detail.homestay.description}"></textarea>
+        <div class="hint">อธิบายจุดเด่น บรรยากาศ และกิจกรรมที่นักท่องเที่ยวสามารถทำได้</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Card: รูปภาพ -->
+  <div class="card">
+    <div class="card-head"><h3>รูปภาพโฮมสเตย์ (IMAGES)</h3></div>
+    <div class="card-body">
+      <div class="img-section-label">รูปปัจจุบัน</div>
+      <div class="img-grid" id="imgGrid"></div>
+
+      <label class="upload-zone" for="fileInput">
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple>
+        <div class="up-icon">☁️</div>
+        <div class="up-text">คลิกเพื่อเพิ่มรูปภาพใหม่</div>
+        <div class="up-hint">PNG, JPG, WEBP · ขนาดไม่เกิน 5MB ต่อรูป</div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <a th:href="@{/owner/homestays/{id}(id=${detail.homestay.homestayid})}" class="btn btn-cancel">✕ ยกเลิก</a>
+    <button class="btn btn-save" id="saveBtn" onclick="handleSave()">💾 บันทึกข้อมูล</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ฝัง data จาก Thymeleaf → JavaScript -->
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const HOMESTAY_ID = /*[[${detail.homestay.homestayid}]]*/ 0;
+  // detail.allImages คือ List<String> จาก HomestayDetailDto ที่ split ให้แล้ว → ได้ JS array เลย
+  const DB_IMAGES   = /*[[${detail.allImages}]]*/ [];
+  /*]]>*/
+</script>
+
+<script>
+// ── Image state ──
+let images = []; // [{src, isNew}]
+
+// โหลดรูปจาก DB — DB_IMAGES คือ array ที่ HomestayDetailDto split มาให้แล้ว
+DB_IMAGES.forEach(src => {
+  if (src && src.trim()) {
+    // รูปตัวที่ 2+ จาก split("(?=,data:)") จะขึ้นต้นด้วย ",data:" → ตัด comma หน้าออก
+    images.push({ src: src.replace(/^,/, ''), isNew: false });
+  }
+});
+
+function renderImages() {
+  const grid = document.getElementById('imgGrid');
+  grid.innerHTML = '';
+  images.forEach((img, i) => {
+    const div = document.createElement('div');
+    div.className = 'img-thumb';
+    div.innerHTML = `
+      <img src="${img.src}" alt="รูป ${i + 1}">
+      ${i === 0 ? '<span class="primary-badge">หลัก</span>' : ''}
+      <button class="del" type="button" onclick="removeImg(${i})" title="ลบ">✕</button>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function removeImg(idx) {
+  images.splice(idx, 1);
+  renderImages();
+}
+
+// Upload ใหม่
+document.getElementById('fileInput').addEventListener('change', e => {
+  Array.from(e.target.files).forEach(file => {
+    if (file.size > 5 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 5MB: ' + file.name, true); return; }
+    const r = new FileReader();
+    r.onload = ev => { images.push({ src: ev.target.result, isNew: true }); renderImages(); };
+    r.readAsDataURL(file);
+  });
+  e.target.value = '';
+});
+
+// Drag & drop
+const zone = document.querySelector('.upload-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = 'var(--green-main)'; });
+zone.addEventListener('dragleave', () => zone.style.borderColor = '');
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.style.borderColor = '';
+  Array.from(e.dataTransfer.files).forEach(file => {
+    if (!file.type.match(/image\/(png|jpeg|webp)/)) return;
+    const r = new FileReader();
+    r.onload = ev => { images.push({ src: ev.target.result, isNew: true }); renderImages(); };
+    r.readAsDataURL(file);
+  });
+});
+
+// ── Save → PUT /owner/homestays/{id} ──
+async function handleSave() {
+  const name = document.getElementById('homestayname').value.trim();
+  const addr = document.getElementById('address').value.trim();
+  const desc = document.getElementById('description').value.trim();
+
+  if (!name) { showToast('กรุณากรอกชื่อโฮมสเตย์', true); return; }
+  if (!addr) { showToast('กรุณากรอกที่อยู่', true); return; }
+
+  // รวมรูปกลับเป็น string แบบที่ DB เก็บ:
+  // รูปแรก: "data:image/..." / รูปถัดไป: ",data:image/..."
+  let imagesStr = null;
+  if (images.length > 0) {
+    imagesStr = images
+      .map((img, i) => i === 0 ? img.src : ',' + img.src)
+      .join('');
+  }
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลังบันทึก...';
+
+  try {
+    const res = await fetch(`/owner/homestays/${HOMESTAY_ID}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ homestayname: name, address: addr, description: desc, images: imagesStr })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast('✅ บันทึกข้อมูลสำเร็จ');
+      setTimeout(() => window.location.href = `/owner/homestays/${HOMESTAY_ID}`, 1500);
+    } else {
+      showToast(data.message || 'เกิดข้อผิดพลาด', true);
+    }
+  } catch (err) {
+    showToast('ไม่สามารถเชื่อมต่อ server ได้', true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 บันทึกข้อมูล';
+  }
+}
+
+function showToast(msg, isError = false) {
+  const overlay = document.getElementById('toastOverlay');
+  const toast   = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent  = isError ? '❌' : '✅';
+  document.getElementById('toastTitle').textContent = isError ? 'เกิดข้อผิดพลาด' : 'บันทึกสำเร็จ';
+  document.getElementById('toastMsg').textContent   = msg;
+
+  toast.className   = 'toast'         + (isError ? ' error' : '') + ' show';
+  overlay.className = 'toast-overlay' + ' show';
+
+  setTimeout(() => {
+    toast.className   = 'toast'         + (isError ? ' error' : '');
+    overlay.className = 'toast-overlay';
+  }, 3500);
+}
+
+// Init
+renderImages();
+</script>
+</body>
+</html>

@@ -2,13 +2,13 @@ package com.example.miniproject.service.Homestay;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.example.miniproject.dto.Homestay.HomestayDetailDto;
 import com.example.miniproject.dto.Homestay.HomestayDto;
 import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.repository.Homestay.HomestayRepository;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class HomestayService {
@@ -47,4 +47,27 @@ public class HomestayService {
 
     return new HomestayDetailDto(h, avg, reviews, rooms, bookings);
 }
+    public void updateHomestay(Integer homestayid, Map<String, String> req) {
+    Homestay h = homestayRepository.findById(homestayid)
+            .orElseThrow(() -> new RuntimeException("ไม่พบโฮมสเตย์"));
+
+    String name = req.get("homestayname");
+    String addr = req.get("address");
+    String desc = req.get("description");
+    String imgs = req.get("images");
+
+    if (name != null && !name.isBlank())
+        h.setHomestayname(name.trim());
+
+    if (addr != null && !addr.isBlank())
+        h.setAddress(addr.trim());
+
+    h.setDescription(desc != null ? desc.trim() : "");
+
+    if (imgs != null)
+        h.setImages(imgs);
+
+    homestayRepository.save(h);
+}
+    
 }

@@ -1,100 +1,174 @@
- *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ═══════════════════════════════════════════════════
+   add-room-navbar.css
+   Navbar สำหรับหน้า addRoom / editRoom โดยเฉพาะ
+   ใช้ร่วมกับ dashboard.css ได้ โดยไม่ conflict
+═══════════════════════════════════════════════════ */
 
-        :root {
-            --green-dark:   #1a3d1f;
-            --green-mid:    #2d6a35;
-            --green-light:  #3d8b47;
-            --orange:       #e08a00;
-            --orange-light: #f5a623;
-            --bg:           #f0ece3;
-            --text-dark:    #1a2e1c;
-            --text-muted:   #6b7c6e;
-            --white:        #ffffff;
-            --card-shadow:  0 4px 24px rgba(0,0,0,.13);
-        }
+/* ── Reset navbar จาก dashboard.css ที่อาจ conflict ── */
+.navbar {
+    background: #1a3d1f !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 2rem !important;
+    height: 84px !important;          /* ← แก้ความสูงได้ตรงนี้ */
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,.25) !important;
+}
 
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background: var(--bg);
-            color: var(--text-dark);
-            min-height: 100vh;
-        }
+/* ── Brand ── */
+.navbar .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    margin-right: 2rem;
+    white-space: nowrap;
+}
+.navbar .navbar-brand i { font-size: 1.2rem; color: #fff; }
 
-        /* ─── NAVBAR ─── */
-        .navbar {
-            background: var(--green-dark);
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            height: 83px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,.25);
-        }
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: .6rem;
-            color: var(--white);
-            font-weight: 700;
-            font-size: 1.05rem;
-            text-decoration: none;
-            margin-right: 2.5rem;
-            white-space: nowrap;
-        }
-        .navbar-brand i { color: #ffffff; font-size: 1.2rem; }
+/* ── Nav links (ตรงกลาง) ── */
+.navbar .nav-links {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    flex: 1;
+}
+.navbar .nav-link {
+    color: rgba(255,255,255,.7);
+    text-decoration: none;
+    font-size: .92rem;
+    font-weight: 500;
+    padding: .45rem 1rem;
+    border-radius: 6px;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+}
+.navbar .nav-link:hover {
+    color: #fff;
+    background: rgba(255,255,255,.08);
+}
+.navbar .nav-link.active {
+    color: #fff;
+    border-bottom: 3px solid #7ecf88;
+    border-radius: 0;
+    padding-bottom: calc(.45rem - 3px);
+    background: transparent;
+}
 
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: .25rem;
-            flex: 1;
-        }
-        .nav-link {
-            color: rgba(255,255,255,.7);
-            text-decoration: none;
-            font-size: .92rem;
-            font-weight: 500;
-            padding: .45rem 1rem;
-            border-radius: 6px;
-            transition: all .2s;
-            display: flex;
-            align-items: center;
-            gap: .45rem;
-            white-space: nowrap;
-        }
-        .nav-link:hover { color: var(--white); background: rgba(255,255,255,.08); }
-        .nav-link.active {
-            color: var(--white);
-            border-bottom: 3px solid #7ecf88;
-            border-radius: 0;
-            padding-bottom: calc(.45rem - 3px);
-        }
-
-        /* จัดการตำแหน่ง Container หลัก */
-.nav-right {
+/* ── Right side (profile) ── */
+.navbar .nav-right {
+    margin-left: auto;
     display: flex;
     align-items: center;
 }
 
-.profile-dropdown {
+/* ── Profile Dropdown ── */
+.navbar .profile-dropdown {
     position: relative;
     display: inline-block;
-    cursor: pointer;
 }
-
-.profile-trigger {
+.navbar .profile-trigger {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 5px 10px;
+    padding: 6px 10px;
     border-radius: 8px;
-    transition: background 0.3s;
+    cursor: pointer;
+    transition: background .2s;
+}
+.navbar .profile-trigger:hover {
+    background: rgba(255,255,255,.1);
 }
 
-.profile-trigger:hover {
-    background-color: #f0f2f5;
+.navbar .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e08a00;
+    color: #fff;
+    font-weight: 700;
+    font-size: .85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.navbar .owner-name {
+    color: #fff;
+    font-size: .92rem;
+    font-weight: 500;
+}
+.navbar .profile-trigger .fa-chevron-down {
+    color: rgba(255,255,255,.7) !important;
+    font-size: .75rem !important;
+}
+
+/* ── Dropdown menu ── */
+.navbar .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: #fff;
+    min-width: 190px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.13);
+    border-radius: 10px;
+    padding: 6px 0;
+    border: 1px solid #eee;
+    z-index: 200;
+}
+
+/* สะพานเชื่อมป้องกัน hover หลุด */
+.navbar .dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 0;
+    width: 100%;
+    height: 12px;
+}
+
+.navbar .profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.navbar .dropdown-content a {
+    color: #333;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: .88rem;
+    transition: background .15s;
+}
+.navbar .dropdown-content a:hover {
+    background: #f8f9fa;
+    color: #2d6a35;
+}
+.navbar .dropdown-content hr {
+    margin: 4px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+.navbar .dropdown-content a.logout-item:hover {
+    color: #dc3545;
+    background: #fff5f5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .navbar .nav-links { display: none; }
+    .navbar { padding: 0 1rem !important; }
 }
 
 /* ส่วนเนื้อหา Dropdown */

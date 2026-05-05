@@ -8,9 +8,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/Homestay/add-room.css}" rel="stylesheet">
+    <!-- <link th:href="@{/css/Homestay/navbar.css}" rel="stylesheet"> -->
 
     <style>
-        /* ── Upload Zone ── */
+        .nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+           /* ── Upload Zone ── */
         .upload-box {
             border: 2px dashed #b5d6b5;
             border-radius: 12px;
@@ -77,6 +83,30 @@
             font-size: 12px; padding: 2px 10px;
             border-radius: 20px; margin-left: 8px;
         }
+
+        /* ── Status Dropdown ── */
+        .status-select-wrap {
+            position: relative;
+        }
+        .status-select-wrap select.form-control {
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 36px;
+            cursor: pointer;
+        }
+        .status-select-wrap::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 12px; top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            pointer-events: none;
+            font-size: .75rem;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -86,12 +116,7 @@
     <a class="navbar-brand" th:href="@{/}">
         <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
     </a>
-    <div class="nav-links">
-        <a class="nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
-        <a class="nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
-        <a class="nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
-        <a class="nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
-    </div>
+    
     <div class="nav-right">
         <div class="profile-dropdown">
             <div class="profile-trigger">
@@ -123,10 +148,6 @@
         <span class="homestay-tag" th:text="${homestayname}">บ้านระเบียงดาว</span>
     </div>
 
-    <!--
-        enctype="multipart/form-data" จำเป็นสำหรับ upload ไฟล์
-        name="images" ต้องตรงกับ @RequestParam("images") ใน Controller
-    -->
     <form id="addRoomForm" th:action="@{/addroom}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="homestayid" th:value="${homestayid}">
 
@@ -207,32 +228,22 @@
             </div>
         </div>
 
-        <!-- ─── ส่วนที่ 2: สถานะที่พัก ─── -->
+        <!-- ─── ส่วนที่ 2: สถานะที่พัก (Dropdown) ─── -->
         <div class="section-card">
             <div class="section-head">
                 <i class="fas fa-toggle-on" style="color:#2d6a2d;"></i>
                 <span class="label">สถานะที่พัก</span>
             </div>
             <div class="section-body">
-                <div class="status-options">
-                    <label class="status-option selected" id="opt-available">
-                        <input type="radio" name="status" value="available" checked
-                               onchange="selectStatus(this)">
-                        <div class="status-dot dot-available"></div>
-                        <div>
-                            <div class="status-option-label">ว่าง (Available)</div>
-                            <div class="status-hint">เลือกสถานะปัจจุบันของที่พักเพื่อแสดงผลให้นักเที่ยวได้</div>
-                        </div>
-                    </label>
-                    <label class="status-option" id="opt-unavailable">
-                        <input type="radio" name="status" value="unavailable"
-                               onchange="selectStatus(this)">
-                        <div class="status-dot dot-unavailable"></div>
-                        <div>
-                            <div class="status-option-label">ไม่ว่าง (Unavailable)</div>
-                            <div class="status-hint">ที่พักถูกจองหรือไม่พร้อมรับแขก</div>
-                        </div>
-                    </label>
+                <div class="form-group" style="max-width: 320px;">
+                    <label class="form-label">สถานะ <span class="req">*</span></label>
+                    <div class="status-select-wrap">
+                        <select id="status" name="status" class="form-control">
+                            <option value="เปิดจอง"     selected>✅ เปิดจอง</option>
+                            <option value="ปิดปรับปรุง">🔧 ปิดปรับปรุง</option>
+                            <option value="เต็ม">        🔴 เต็ม</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -246,28 +257,27 @@
             </div>
             <div class="section-body">
                 <div class="facilities-grid">
-    <label class="facility-chip" onclick="toggleChip(this)">
-        <input type="checkbox" name="facilitiesIds" value="F001">
-        <i class="fas fa-wifi"></i> Wi-Fi
-    </label>
-    <label class="facility-chip" onclick="toggleChip(this)">
-        <input type="checkbox" name="facilitiesIds" value="F002">
-        <i class="fas fa-wind"></i> แอร์
-    </label>
-    <label class="facility-chip" onclick="toggleChip(this)">
-        <input type="checkbox" name="facilitiesIds" value="F003">
-        <i class="fas fa-shower"></i> น้ำอุ่น
-    </label>
-    <label class="facility-chip" onclick="toggleChip(this)">
-        <input type="checkbox" name="facilitiesIds" value="F004">
-        <i class="fas fa-tv"></i> พัดลม
-    </label>
-    <label class="facility-chip" onclick="toggleChip(this)">
-        <input type="checkbox" name="facilitiesIds" value="F005">
-        <i class="fas fa-car"></i> ที่จอดรถ
-    </label>
-    
-</div>
+                    <label class="facility-chip" onclick="toggleChip(this)">
+                        <input type="checkbox" name="facilitiesIds" value="F001">
+                        <i class="fas fa-wifi"></i> Wi-Fi
+                    </label>
+                    <label class="facility-chip" onclick="toggleChip(this)">
+                        <input type="checkbox" name="facilitiesIds" value="F002">
+                        <i class="fas fa-wind"></i> แอร์
+                    </label>
+                    <label class="facility-chip" onclick="toggleChip(this)">
+                        <input type="checkbox" name="facilitiesIds" value="F003">
+                        <i class="fas fa-shower"></i> น้ำอุ่น
+                    </label>
+                    <label class="facility-chip" onclick="toggleChip(this)">
+                        <input type="checkbox" name="facilitiesIds" value="F004">
+                        <i class="fas fa-tv"></i> พัดลม
+                    </label>
+                    <label class="facility-chip" onclick="toggleChip(this)">
+                        <input type="checkbox" name="facilitiesIds" value="F005">
+                        <i class="fas fa-car"></i> ที่จอดรถ
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -279,8 +289,6 @@
                 <span id="imageCountBadge"></span>
             </div>
             <div class="section-body">
-
-                <!-- Drop Zone — คลิกก็ได้ ลากวางก็ได้ -->
                 <div class="upload-box"
                      id="dropZone"
                      onclick="document.getElementById('roomImages').click()"
@@ -303,9 +311,7 @@
                     </div>
                 </div>
 
-                <!-- Preview Grid (แสดงหลังเลือกรูป) -->
                 <div id="previewGrid"></div>
-
                 <span class="field-error" id="imageError"></span>
             </div>
         </div>

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>รายละเอียดประเภทห้องพัก</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,13 +25,17 @@
 
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        /* ── Navbar ── */
         .navbar {
-            background: var(--green-dark);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 28px; height: 56px;
-            position: sticky; top: 0; z-index: 100;
-        }
+    background: var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 35px;
+    height: 72px;   /* เพิ่มความสูง */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
         /* แก้ไขสี Navbar และฟอนต์ Brand ให้หนาขึ้น */
 .navbar-brand {
     display: flex;
@@ -117,7 +122,12 @@
         }
 
         /* ── Main Grid ── */
-        .main-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
+        .main-grid {
+    display: grid;
+    grid-template-columns: 35% 65%;
+    gap: 30px;
+    align-items: start;
+}
         .left-col { display: flex; flex-direction: column; gap: 14px; }
 
         /* ── Gallery ── */
@@ -207,19 +217,26 @@
 </head>
 <body>
 
-<!-- Navbar -->
+<!-- ─── NAVBAR ─── -->
 <nav class="navbar">
     <a class="navbar-brand" th:href="@{/}">
-    <!-- เปลี่ยนไอคอนเป็นรูปภูเขาปกติ -->
-    <i class="fas fa-mountain"></i> 
-    <span>ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-</a>
+        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
     
-    <div class="nav-user">
-        <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">นค</div>
-        <div style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <span th:text="${ownername}"></span>
-            <i class="fas fa-caret-down" style="font-size: 10px; opacity: 0.8;"></i>
+    <div class="nav-right">
+        <div class="profile-dropdown">
+            <div class="profile-trigger">
+                <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
+                <span class="owner-name" th:text="${ownername}">สมชาย ใจดี</span>
+                <i class="fas fa-chevron-down" style="font-size:.8rem; margin-left:5px; color:#fff;"></i>
+            </div>
+            <div class="dropdown-content">
+                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                <hr>
+                <a th:href="@{/owner/logout}" class="logout-item">
+                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                </a>
+            </div>
         </div>
     </div>
 </nav>
@@ -234,7 +251,7 @@
             <div class="room-id" th:text="'roomTypeId: ' + ${room.roomtypeid}"></div>
         </div>
         <div class="header-actions">
-            <a th:href="@{/editroom(roomtypeid=${room.roomtypeid})}" class="btn-edit">✏️ แก้ไขข้อมูล</a>
+            <a th:href="@{/owner/room/edit(roomtypeid=${room.roomtypeid})}" class="btn-edit">✏️ แก้ไขข้อมูล</a>
             
         </div>
     </div>

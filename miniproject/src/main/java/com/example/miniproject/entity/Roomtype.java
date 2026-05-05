@@ -34,6 +34,7 @@ public class Roomtype {
     private String images;
 
     private Integer totalrooms;
+    
     @Column(length = 50)
     private String status;
 

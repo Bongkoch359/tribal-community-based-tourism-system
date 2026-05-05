@@ -2,6 +2,8 @@ package com.example.miniproject.controller.HomestayOwner;
 
 import com.example.miniproject.dto.Homestay.RegisterOwnerRequest;
 import com.example.miniproject.dto.Homestay.UpdateProfileRequest;
+import com.example.miniproject.dto.Homestay.HomestayDetailDto;
+import com.example.miniproject.dto.Homestay.HomestayDto;
 import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.service.Homestay.HomestayOwnerService;
 import com.example.miniproject.service.Homestay.HomestayService;
@@ -15,15 +17,12 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.example.miniproject.dto.Homestay.HomestayDetailDto;
-import com.example.miniproject.dto.Homestay.HomestayDto;
-
 @Controller
 public class HomestayownerController {
 
     @Autowired
     private HomestayOwnerService ownerService;
-    @Autowired 
+    @Autowired
     private HomestayService homestayService;
 
     // ───── Pages ─────
@@ -97,15 +96,14 @@ public class HomestayownerController {
         return "redirect:/owner/login";
     }
 
-    // ───── Get Profile (ดึงจาก Session) ─────
-    // GET /owner/profile
+    // ───── Get Profile ─────
+
     @GetMapping("/owner/profile")
     @ResponseBody
     public ResponseEntity<?> getProfile(HttpSession session) {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
-        if (ownerid == null) {
+        if (ownerid == null)
             return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
-        }
         try {
             Homestayowner owner = ownerService.getProfile(ownerid);
             return ResponseEntity.ok(toSafeMap(owner));
@@ -114,50 +112,112 @@ public class HomestayownerController {
         }
     }
 
-    // ───── Update Profile (ใช้ Session ownerid) ─────
-    // PUT /owner/profile
+    // ───── Update Profile ─────
+
     @PutMapping("/owner/profile")
     @ResponseBody
-    public ResponseEntity<?> updateProfile(
-            @RequestBody UpdateProfileRequest req,
-            HttpSession session) {
-
+    public ResponseEntity<?> updateProfile(@RequestBody UpdateProfileRequest req,
+                                           HttpSession session) {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
-        if (ownerid == null) {
+        if (ownerid == null)
             return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
-        }
         try {
             Homestayowner updated = ownerService.updateProfile(ownerid, req);
-
-            // อัปเดต session ให้ตรงกับข้อมูลใหม่
             session.setAttribute("ownername", updated.getFirstname() + " " + updated.getLastname());
-
             return ResponseEntity.ok(toSafeMap(updated));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
         }
     }
 
-    // ───── Change Password (ใช้ Session ownerid) ─────
-    // PUT /owner/change-password
+    // ───── Change Password ─────
+
     @PutMapping("/owner/change-password")
     @ResponseBody
-    public ResponseEntity<?> changePassword(
-            @RequestBody Map<String, String> body,
-            HttpSession session) {
-
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body,
+                                            HttpSession session) {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
-        if (ownerid == null) {
+        if (ownerid == null)
             return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
-        }
         try {
-            ownerService.changePassword(
-                    ownerid,
-                    body.get("currentPassword"),
-                    body.get("newPassword")
-            );
+            ownerService.changePassword(ownerid, body.get("currentPassword"), body.get("newPassword"));
             return ResponseEntity.ok(Map.of("success", true, "message", "เปลี่ยนรหัสผ่านสำเร็จ"));
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    // ───── Homestays List ─────
+
+    @GetMapping("/owner/homestays")
+    public String homestaysPage(HttpSession session, Model model) {
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        if (ownerid == null) return "redirect:/owner/login";
+
+        Homestayowner owner = ownerService.getProfile(ownerid);
+        List<HomestayDto> homestays = homestayService.getHomestaysByOwner(owner);
+
+        model.addAttribute("ownername", session.getAttribute("ownername"));
+        model.addAttribute("homestays", homestays);
+        return "Homestay/homestays";
+    }
+
+    // ───── View Homestay Detail ─────
+
+    @GetMapping("/owner/homestays/{id}")
+    public String viewHomestay(@PathVariable Integer id,
+                               HttpSession session,
+                               Model model) {
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        if (ownerid == null) return "redirect:/owner/login";
+
+        HomestayDetailDto detail = homestayService.getHomestayDetail(id);
+        if (detail == null) return "redirect:/owner/homestays";
+
+        model.addAttribute("ownername", session.getAttribute("ownername"));
+        model.addAttribute("detail", detail);
+        return "Homestay/viewHomestay";
+    }
+
+    // ───── Edit Homestay Page ─────
+
+    @GetMapping("/owner/homestays/{id}/edit")
+    public String editHomestayPage(@PathVariable Integer id,
+                                   HttpSession session,
+                                   Model model) {
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        if (ownerid == null) return "redirect:/owner/login";
+
+        // ตรวจสอบว่า homestay นี้เป็นของ owner คนนี้
+        if (!homestayService.isOwnedBy(id, ownerid)) return "redirect:/owner/homestays";
+
+        HomestayDetailDto detail = homestayService.getHomestayDetail(id);
+        if (detail == null) return "redirect:/owner/homestays";
+
+        model.addAttribute("ownername", session.getAttribute("ownername"));
+        model.addAttribute("detail", detail);
+        return "Homestay/editHomestay";
+    }
+
+    // ───── Update Homestay (Save) ─────
+
+    @PutMapping("/owner/homestays/{id}")
+    @ResponseBody
+    public ResponseEntity<?> updateHomestay(@PathVariable Integer id,
+                                            @RequestBody Map<String, String> req,
+                                            HttpSession session) {
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        if (ownerid == null)
+            return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
+
+        if (!homestayService.isOwnedBy(id, ownerid))
+            return ResponseEntity.status(403).body(Map.of("message", "ไม่มีสิทธิ์แก้ไขโฮมสเตย์นี้"));
+
+        try {
+            homestayService.updateHomestay(id, req);
+            return ResponseEntity.ok(Map.of("success", true, "message", "บันทึกข้อมูลสำเร็จ"));
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
@@ -182,36 +242,4 @@ public class HomestayownerController {
         body.put("message", message);
         return body;
     }
-
-      @GetMapping("/owner/homestays")
-public String homestaysPage(HttpSession session, Model model) {
-    // ✅ เปลี่ยนจาก ownerLogin → ownerid
-    Integer ownerid = (Integer) session.getAttribute("ownerid");
-    if (ownerid == null) return "redirect:/owner/login";
-
-    // ดึง owner จาก DB ใหม่เลย
-    Homestayowner owner = ownerService.getProfile(ownerid);
-    List<HomestayDto> homestays = homestayService.getHomestaysByOwner(owner);
-    
-    model.addAttribute("ownername", session.getAttribute("ownername"));
-    model.addAttribute("homestays", homestays);
-    return "Homestay/homestays";
-}
-
-@GetMapping("/owner/homestays/{id}")
-public String viewHomestay(@PathVariable Integer id,
-                           HttpSession session,
-                           Model model) {
-
-    // ✅ เปลี่ยนจาก ownerLogin → ownerid
-    Integer ownerid = (Integer) session.getAttribute("ownerid");
-    if (ownerid == null) return "redirect:/owner/login";
-
-    HomestayDetailDto detail = homestayService.getHomestayDetail(id);
-    if (detail == null) return "redirect:/owner/homestays";
-
-    model.addAttribute("ownername", session.getAttribute("ownername"));
-    model.addAttribute("detail", detail);
-    return "Homestay/viewHomestay";
-}
 }
