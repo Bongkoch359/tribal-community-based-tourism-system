@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดโฮมสเตย์</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green-dark: #1f4d36;
+            --green-main: #2d6a4f;
+            --green-light: #d8f3dc;
+            --green-soft: #edf6ee;
+            --orange: #f59e0b;
+            --bg: #f5f1eb;
+            --white: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 2px 10px rgba(0,0,0,0.06);
+            --radius: 16px;
+            --navbar-h: 74px;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================================================
+           TOP BAR
+        ========================================================= */
+        .top-bar {
+            background: #143524;
+            color: white;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 5%;
+            gap: 14px;
+            font-size: 13px;
+        }
+
+        .top-bar a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.9;
+        }
+
+        .top-bar a:hover {
+            opacity: 1;
+        }
+
+        .top-bar svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* =========================================================
+           NAVBAR
+        ========================================================= */
+        .navbar {
+            height: var(--navbar-h);
+            background: var(--green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: white;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg,#40916c,#2d6a4f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-icon svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .brand-name-line1 {
+            font-size: 17px;
+            font-weight: 800;
+            display: block;
+        }
+
+        .brand-name-line2 {
+            font-size: 12px;
+            opacity: .8;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,.9);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .nav-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg,#f59e0b,#d97706);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           BREADCRUMB
+        ========================================================= */
+        .breadcrumb {
+            max-width: 1280px;
+            margin: 20px auto 0;
+            padding: 0 5%;
+            font-size: 14px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--green-main);
+        }
+
+        /* =========================================================
+           PAGE LAYOUT
+        ========================================================= */
+        .page {
+            max-width: 1280px;
+            margin: 20px auto 70px;
+            padding: 0 5%;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        /* =========================================================
+           HERO
+        ========================================================= */
+        .hero {
+            padding: 22px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .hero-left {
+            flex: 1;
+        }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--green-dark);
+            margin-bottom: 10px;
+        }
+
+        .hero-location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+
+        .hero-location svg {
+            width: 16px;
+            height: 16px;
+            color: #ef4444;
+        }
+
+        .hero-desc {
+            color: #4b5563;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .hero-image {
+            width: 260px;
+            height: 170px;
+            border-radius: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* =========================================================
+           SECTION TITLE
+        ========================================================= */
+        .section {
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--orange);
+        }
+
+        /* =========================================================
+           ROOM CARD
+        ========================================================= */
+        .room-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .room-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            transition: .2s;
+        }
+
+        .room-card:hover {
+            border-color: #b7d8c3;
+            transform: translateY(-2px);
+        }
+
+        .room-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .room-info {
+            flex: 1;
+        }
+
+        .room-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--green-dark);
+            margin-bottom: 8px;
+        }
+
+        .room-badge-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge.green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge.orange {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .room-desc {
+            color: #4b5563;
+            line-height: 1.7;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .room-feature {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .room-feature span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .room-feature svg {
+            width: 15px;
+            height: 15px;
+            color: var(--green-main);
+        }
+
+        .room-price {
+            width: 170px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .price {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--green-dark);
+            line-height: 1;
+        }
+
+        .per-night {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 5px;
+            margin-bottom: 18px;
+        }
+
+        .btn-book {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            background: var(--green-main);
+            color: white;
+            padding: 12px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-book:hover {
+            background: #1f513b;
+        }
+
+        .btn-book.disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        /* =========================================================
+           REVIEW SECTION
+        ========================================================= */
+        .review-summary {
+            display: flex;
+            gap: 26px;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .score-box {
+            width: 120px;
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 54px;
+            font-weight: 800;
+            color: var(--green-dark);
+            line-height: 1;
+        }
+
+        .stars {
+            color: #f59e0b;
+            font-size: 18px;
+            margin: 8px 0;
+        }
+
+        .score-text {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .rating-bars {
+            flex: 1;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bar-item span {
+            font-size: 13px;
+            color: var(--muted);
+            width: 18px;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg,#f59e0b,#d97706);
+            border-radius: 999px;
+        }
+
+        .review-item {
+            border-top: 1px solid var(--border);
+            padding-top: 18px;
+            margin-top: 18px;
+        }
+
+        .review-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--green-main);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .review-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .review-date {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .review-text {
+            color: #4b5563;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .side-card {
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .side-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .side-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--orange);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .contact-item svg {
+            width: 17px;
+            height: 17px;
+            color: var(--green-main);
+            margin-top: 2px;
+        }
+
+        .contact-item strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .contact-item p,
+        .contact-item a {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .map-box {
+            width: 100%;
+            height: 180px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #d1fae5;
+        }
+
+        .map-box iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .condition-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .condition-item {
+            display: flex;
+            gap: 10px;
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .condition-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--orange);
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+        @media (max-width: 980px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+            }
+
+            .hero-image {
+                width: 100%;
+                height: 240px;
+            }
+
+            .room-top {
+                flex-direction: column;
+            }
+
+            .room-price {
+                width: 100%;
+                text-align: left;
+            }
+
+            .review-summary {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+    <a href="#">ช่วยเหลือ</a>
+    <a href="#">การจองของฉัน</a>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+
+    <a href="/search" class="navbar-brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="white">
+                <path d="M3 17l6-8 4 5 3-3 5 6H3z"/>
+            </svg>
+        </div>
+
+        <div>
+            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
+            <span class="brand-name-line2">Tribal Community Tourism</span>
+        </div>
+    </a>
+
+    <div class="nav-links">
+        <a href="/search" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12l2-2 7-7 7 7 2 2"/>
+            </svg>
+            หน้าแรก
+        </a>
+
+        <a href="/tribe-info" class="nav-link">
+            ข้อมูลชนเผ่า
+        </a>
+
+        <a href="/about" class="nav-link">
+            เกี่ยวกับเรา
+        </a>
+    </div>
+
+    <button class="btn-login">เข้าสู่ระบบ / สมัครสมาชิก</button>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+    <a href="/search">หน้าแรก</a>
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6"/>
+    </svg>
+
+    <a href="/search?type=homestay">โฮมสเตย์</a>
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6"/>
+    </svg>
+
+    <span th:text="${homestay.homestayname}">บ้านสุขโฮมสเตย์</span>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+    <div class="layout">
+
+        <!-- LEFT -->
+        <div>
+
+            <!-- HERO -->
+            <div class="card hero">
+
+                <div class="hero-left">
+                   <h1 class="hero-title" th:text="${homestay.homestayname}">
+                        บ้านสุขโฮมสเตย์
+                    </h1>
+
+                    <div class="hero-location">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                        </svg>
+
+                        <span th:text="${homestay.address}">
+                            อำเภอเชียงดาว จังหวัดเชียงใหม่
+                        </span>
+                    </div>
+
+                    <div class="hero-desc" th:text="${homestay.description}">
+                        รายล้อมด้วยภูเขาและธรรมชาติอันเงียบสงบ สัมผัสวิถีชีวิตชุมชนชนเผ่า พร้อมกิจกรรมพื้นบ้านและอาหารท้องถิ่นแท้
+                    </div>
+                </div>
+
+                <div class="hero-image">
+    <img th:src="${firstImage}" 
+         src="https://images.unsplash.com/photo-1506744038136-46273834b3fb" 
+         alt="homestay">
+</div>
+
+            </div>
+
+            <!-- ROOM -->
+            <div class="card section">
+
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 10h18v10H3z"/>
+                    </svg>
+                    ประเภทห้องพัก
+                </div>
+
+                <div class="room-list">
+
+                    <!-- ROOM ITEM -->
+                    <div class="room-card" th:each="room : ${rooms}">
+
+                        <div class="room-top">
+
+                            <div class="room-info">
+
+                                <div class="room-name" th:text="${room.roomName}">
+                                    ห้องพักวิวภูเขา
+                                </div>
+
+                                <div class="room-badge-wrap">
+                                    <div class="badge green">รวมอาหารเช้า</div>
+                                    <div class="badge orange">พักได้ 2 คน</div>
+                                </div>
+
+                                <div class="room-desc" th:text="${room.description}">
+                                    ห้องพักไม้สไตล์ชนเผ่า พร้อมระเบียงชมวิวธรรมชาติและลำธาร บรรยากาศเงียบสงบเหมาะแก่การพักผ่อน
+                                </div>
+
+                                <div class="room-feature">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 7h18v10H3z"/>
+                                        </svg>
+                                        Wi‑Fi ฟรี
+                                    </span>
+
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 4h16v16H4z"/>
+                                        </svg>
+                                        ห้องน้ำส่วนตัว
+                                    </span>
+
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M2 12h20"/>
+                                        </svg>
+                                        ระเบียงชมวิว
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="room-price">
+                                <div class="price">
+                                    <span th:text="${room.price}">650</span>
+                                    ฿
+                                </div>
+
+                                <div class="per-night">ต่อคืน / ห้อง</div>
+
+                                <button class="btn-book">
+                                    จองที่พักนี้
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- REVIEW -->
+            <div class="card section">
+
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 .587l3.668 7.431L24 9.748l-6 5.847 1.417 8.263L12 19.771l-7.417 4.087L6 15.595 0 9.748l8.332-1.73z"/>
+                    </svg>
+                    รีวิวจากผู้เข้าพัก
+                </div>
+
+                <div class="review-summary">
+
+                    <div class="score-box">
+                        <div class="score-number">4.9</div>
+                        <div class="stars">★★★★★</div>
+                        <div class="score-text">จาก 124 รีวิว</div>
+                    </div>
+
+                    <div class="rating-bars">
+
+                        <div class="bar-item">
+                            <span>5</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:95%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bar-item">
+                            <span>4</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:70%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bar-item">
+                            <span>3</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:20%"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- REVIEW ITEM -->
+                <div class="review-item">
+
+                    <div class="review-head">
+
+                        <div class="avatar">A</div>
+
+                        <div>
+                            <div class="review-name">Anong</div>
+                            <div class="review-date">เข้าพักเมื่อ เมษายน 2026</div>
+                        </div>
+
+                    </div>
+
+                    <div class="review-text">
+                        บรรยากาศดีมาก เจ้าของโฮมสเตย์เป็นกันเอง อาหารอร่อย ห้องพักสะอาด เหมาะกับการมาพักผ่อนแบบธรรมชาติสุด ๆ
+                    </div>
+
+                </div>
+
+                <div class="review-item">
+
+                    <div class="review-head">
+
+                        <div class="avatar">S</div>
+
+                        <div>
+                            <div class="review-name">Somsri</div>
+                            <div class="review-date">เข้าพักเมื่อ มีนาคม 2026</div>
+                        </div>
+
+                    </div>
+
+                    <div class="review-text">
+                        วิวภูเขาสวยมาก ตอนเช้าอากาศเย็นสบาย มีกิจกรรมชุมชนให้ทำหลายอย่าง ประทับใจมากและจะกลับมาอีกแน่นอน
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="sidebar">
+
+            <!-- CONTACT -->
+            <div class="side-card">
+
+                <div class="side-title">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01z"/>
+                    </svg>
+                    ติดต่อโฮมสเตย์
+                </div>
+
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59"/>
+                    </svg>
+
+                    <div>
+                        <strong>โทรศัพท์</strong>
+                        <p>081-234-5678</p>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4v16h16V4z"/>
+                    </svg>
+
+                    <div>
+                        <strong>Email</strong>
+                        <a href="#">homestay@email.com</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MAP -->
+            <div class="side-card">
+
+                <div class="side-title">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                    </svg>
+                    ที่ตั้ง
+                </div>
+
+                <div class="map-box">
+                    <iframe src="https://maps.google.com/maps?q=เชียงใหม่&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+                </div>
+
+            </div>
+
+            <!-- CONDITION -->
+            <div class="side-card">
+
+                <div class="side-title">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                    </svg>
+                    เงื่อนไขการเข้าพัก
+                </div>
+
+                <div class="condition-list">
+
+                    <div class="condition-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                        </svg>
+                        เช็คอินหลังเวลา 14:00 น.
+                    </div>
+
+                    <div class="condition-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                        </svg>
+                        เช็คเอาท์ก่อน 12:00 น.
+                    </div>
+
+                    <div class="condition-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                        </svg>
+                        งดส่งเสียงดังหลัง 22:00 น.
+                    </div>
+
+                    <div class="condition-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                        </svg>
+                        ไม่อนุญาตให้นำสัตว์เลี้ยงเข้าพัก
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

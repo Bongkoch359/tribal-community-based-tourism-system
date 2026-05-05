@@ -28,6 +28,6 @@ public class ViewTourDetailController {
         model.addAttribute("tour", tour);
         model.addAttribute("reviews", List.of()); // ยังไม่มี review ส่ง list ว่างไปก่อน
 
-        return "Tour/tour-detail";
+        return "Tour/tour_detail";
     }
 }
