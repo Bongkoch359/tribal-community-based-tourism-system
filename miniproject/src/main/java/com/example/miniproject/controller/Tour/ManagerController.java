@@ -1,4 +1,4 @@
-package com.example.miniproject.controller.Manager;
+package com.example.miniproject.controller.Tour;
 
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.service.Owner.CommunityManagerService;
@@ -11,20 +11,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/manager/login")
-public class LoginManagerController {
+public class ManagerController {
 
     @Autowired
     private CommunityManagerService managerService;
 
     // เปิดหน้า login
-    @GetMapping
+    @GetMapping("/manager/login")
     public String openLoginPage() {
         return "Tour/manager_login";
     }
 
     // ตรวจสอบ login
-    @PostMapping
+    @PostMapping("/manager/login")
     public String loginManager(@RequestParam String email,
                                @RequestParam String password,
                                HttpSession session,
