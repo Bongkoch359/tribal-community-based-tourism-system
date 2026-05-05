@@ -28,6 +28,7 @@ public class ViewHomestayDetailController {
 
         model.addAttribute("homestay", detail.getHomestay());
         model.addAttribute("firstImage", detail.getFirstImage());
+        model.addAttribute("rooms", detail.getHomestay().getRoomtypes());
 
         return "Member/homestay_detail";
     }

@@ -24,6 +24,11 @@ public class RoomTypeService {
     @Autowired
     private FacilitiesRepository facilitiesRepository;
 
+    //member เพิ่มมม
+    public Roomtype getRoomById(String id){
+    return roomTypeRepository.findById(id).orElse(null);
+}
+
     // ─── Add ───────────────────────────────────────────────────────────────────
     public Roomtype addRoomType(AddRoomRequest req) {
 
