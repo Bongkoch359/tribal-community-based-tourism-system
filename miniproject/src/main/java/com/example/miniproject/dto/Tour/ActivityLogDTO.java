@@ -3,7 +3,7 @@ package com.example.miniproject.dto.Tour;
 public class ActivityLogDTO {
     
     private String message;
-    private String type;   // green, amber, red, gray
+    private String type;  
     private String timestamp;
  
     public String getMessage() { return message; }

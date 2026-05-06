@@ -45,4 +45,9 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     """)
     List<Tour> search(@Param("keyword") String keyword,
                       @Param("guests") Integer guests);
+
+    long countByStatus(String status);
+ 
+    @Query("SELECT t FROM Tour t LEFT JOIN t.bookingTourDetails d GROUP BY t ORDER BY COUNT(d) DESC")
+    List<Tour> findTopToursByBookingCount(@Param("limit") int limit);
 }

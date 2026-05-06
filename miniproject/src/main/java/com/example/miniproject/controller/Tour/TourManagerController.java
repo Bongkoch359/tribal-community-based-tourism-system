@@ -1,7 +1,7 @@
 package com.example.miniproject.controller.Tour;
 
 import com.example.miniproject.entity.Communitymanager;
-import com.example.miniproject.service.Owner.CommunityManagerService;
+import com.example.miniproject.service.Tour.CommunityManagerService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class ManagerController {
+public class TourManagerController {
 
     @Autowired
     private CommunityManagerService managerService;

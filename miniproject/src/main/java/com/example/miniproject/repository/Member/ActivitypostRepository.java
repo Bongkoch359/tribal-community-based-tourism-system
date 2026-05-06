@@ -7,4 +7,6 @@ import com.example.miniproject.entity.Activitypost;
 public interface ActivitypostRepository extends JpaRepository<Activitypost, String> {
     List<Activitypost> findByTitleContainingIgnoreCase(String title);
     List<Activitypost> findByLocationContainingIgnoreCase(String location);
+
+    List<Activitypost> findTop3ByOrderByCreateddateDesc();
 }

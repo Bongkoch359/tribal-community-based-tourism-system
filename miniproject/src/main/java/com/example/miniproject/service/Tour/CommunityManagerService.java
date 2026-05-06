@@ -1,7 +1,8 @@
-package com.example.miniproject.service.Owner;
+package com.example.miniproject.service.Tour;
 
 import com.example.miniproject.entity.Communitymanager;
-import com.example.miniproject.repository.Owner.ManagerRepository;
+import com.example.miniproject.repository.Tour.ManagerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

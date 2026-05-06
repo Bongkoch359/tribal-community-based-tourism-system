@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ภาพรวมระบบ - ผู้จัดการชุมชน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green-dark:   #1a5c2a;
+            --green-mid:    #2a7a3b;
+            --green-light:  #d4edda;
+            --amber:        #f0a500;
+            --amber-light:  #fff3cd;
+            --amber-text:   #856404;
+            --red-light:    #fde8e8;
+            --red-text:     #a32d2d;
+            --gray-light:   #e9ecef;
+            --gray-text:    #555;
+            --bg-page:      #f5f0e8;
+            --bg-card:      #ffffff;
+            --border:       #e2ddd4;
+            --text-main:    #1c1c1a;
+            --text-muted:   #6b6b68;
+            --text-hint:    #9a9a96;
+            --radius-card:  12px;
+            --radius-sm:    6px;
+            --shadow-card:  0 1px 3px rgba(0,0,0,0.07);
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ─── NAVBAR ─── */
+        .navbar {
+            background: var(--green-dark);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            height: 54px;
+            gap: 4px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-brand {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: auto;
+            letter-spacing: 0.01em;
+        }
+        .nav-brand svg { width: 18px; height: 18px; }
+        .nav-link {
+            color: rgba(255,255,255,0.72);
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .nav-link.active {
+            color: #fff;
+            border-bottom: 2px solid var(--amber);
+            border-radius: 0;
+            padding-bottom: 4px;
+        }
+        .nav-link svg { width: 14px; height: 14px; }
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.85);
+            font-size: 13px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        .nav-avatar {
+            width: 32px; height: 32px;
+            background: var(--amber);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 600; color: #fff;
+        }
+
+        /* ─── PAGE ─── */
+        .page { padding: 28px 28px 40px; max-width: 1200px; }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+        .page-title svg { width: 20px; height: 20px; }
+
+        /* ─── STAT CARDS ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            padding: 18px 20px;
+            box-shadow: var(--shadow-card);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+        .stat-sub {
+            font-size: 12px;
+            margin-top: 5px;
+            color: var(--text-hint);
+        }
+        .stat-sub.up { color: var(--green-mid); }
+
+        /* ─── SECTION ROW ─── */
+        .section-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* ─── CARD ─── */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            padding: 18px 20px;
+            box-shadow: var(--shadow-card);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* ─── BUTTONS ─── */
+        .btn-primary {
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            padding: 5px 14px;
+            background: var(--green-dark);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.15s;
+        }
+        .btn-primary:hover { background: var(--green-mid); }
+        .btn-outline {
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            padding: 5px 12px;
+            background: transparent;
+            color: var(--green-dark);
+            border: 1px solid var(--green-dark);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .btn-outline:hover { background: var(--green-light); }
+
+        /* ─── TABLE ─── */
+        .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .tbl th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-hint);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0 8px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .tbl td {
+            padding: 9px 8px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+        .tbl tr:last-child td { border-bottom: none; }
+        .tbl tr:hover td { background: #fafaf8; }
+
+        /* ─── BADGES ─── */
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .badge-green  { background: var(--green-light); color: var(--green-dark); }
+        .badge-amber  { background: var(--amber-light); color: var(--amber-text); }
+        .badge-gray   { background: var(--gray-light);  color: var(--gray-text);  }
+        .badge-red    { background: var(--red-light);   color: var(--red-text);   }
+
+        /* ─── TOUR ROWS ─── */
+        .tour-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .tour-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .tour-thumb {
+            width: 38px; height: 38px;
+            border-radius: 8px;
+            background: #c8d8b0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .tour-name { font-size: 13px; font-weight: 500; color: var(--text-main); }
+        .tour-meta { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+        .tour-price { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--green-dark); white-space: nowrap; }
+
+        /* ─── ACTIVITY LOG ─── */
+        .activity-item { display: flex; gap: 10px; padding: 8px 0; }
+        .activity-item:not(:last-child) { border-bottom: 1px solid var(--border); }
+        .act-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            margin-top: 6px; flex-shrink: 0;
+        }
+        .dot-green  { background: var(--green-mid); }
+        .dot-amber  { background: var(--amber); }
+        .dot-red    { background: #c0392b; }
+        .dot-gray   { background: #aaa; }
+        .act-msg  { font-size: 13px; color: var(--text-main); }
+        .act-time { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+
+        /* ─── EMPTY STATE ─── */
+        .empty { text-align: center; padding: 24px; color: var(--text-hint); font-size: 13px; }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 900px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .section-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 560px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .page { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        ระบบท่องเที่ยวชุมชนชนเผ่า
+    </div>
+
+    <a th:href="@{/manager/dashboard}" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        ภาพรวม
+    </a>
+    <a th:href="@{/manager/posts}" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        จัดการโพสต์
+    </a>
+    <a th:href="@{/manager/tours}" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        จัดการทัวร์
+    </a>
+    <a th:href="@{/manager/bookings}" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        ตรวจสอบการจอง
+    </a>
+
+    <div class="nav-user">
+        <div class="nav-avatar">CM</div>
+        ผู้จัดการชุมชน ▾
+    </div>
+</nav>
+
+<!-- ═══ PAGE ═══ -->
+<div class="page">
+    <div class="page-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        ภาพรวมระบบ
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-grid" th:if="${stats != null}">
+        <div class="stat-card">
+            <div class="stat-label">การจองทั้งหมด</div>
+            <div class="stat-value" th:text="${stats.totalBookings}">0</div>
+            <div class="stat-sub up">▲ อัปเดตล่าสุด</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">ทัวร์ที่เปิดรับ</div>
+            <div class="stat-value" th:text="${stats.activeTours}">0</div>
+            <div class="stat-sub" th:text="'จาก ' + ${stats.totalTours} + ' ทัวร์ทั้งหมด'">จาก 0 ทัวร์</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">โพสต์กิจกรรม</div>
+            <div class="stat-value" th:text="${stats.totalPosts}">0</div>
+            <div class="stat-sub up">▲ อัปเดตล่าสุด</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">รายได้รวม (บาท)</div>
+            <div class="stat-value"
+                 th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 0, 'POINT')}">0</div>
+            <div class="stat-sub up">▲ เฉพาะที่ชำระแล้ว</div>
+        </div>
+    </div>
+
+    <!-- ROW 1: Recent Bookings + Popular Tours -->
+    <div class="section-row">
+
+        <!-- Recent Bookings -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">การจองล่าสุด</span>
+                <a th:href="@{/manager/bookings}" class="btn-outline">ดูทั้งหมด</a>
+            </div>
+            <table class="tbl" th:if="${recentBookings != null and !recentBookings.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>รหัสการจอง</th>
+                        <th>สมาชิก</th>
+                        <th>ประเภท</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="b : ${recentBookings}">
+                        <td th:text="${b.bookingid}">-</td>
+                        <td th:text="${b.memberName}">-</td>
+                        <td th:text="${b.bookingType}">-</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${b.status == 'CONFIRMED'} ? 'badge-green'
+                                               : (${b.status == 'PENDING'}   ? 'badge-amber'
+                                               : (${b.status == 'CANCELLED'} ? 'badge-red'
+                                               : 'badge-gray'))"
+                                  th:text="${b.status}">-</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="empty" th:if="${recentBookings == null or recentBookings.isEmpty()}">
+                ยังไม่มีข้อมูลการจอง
+            </div>
+        </div>
+
+        <!-- Popular Tours -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">ทัวร์ยอดนิยม</span>
+                <a th:href="@{/manager/tours/create}" class="btn-primary">+ สร้างทัวร์</a>
+            </div>
+
+            <div th:if="${popularTours != null and !popularTours.isEmpty()}">
+                <div class="tour-row" th:each="t : ${popularTours}">
+                    <div class="tour-thumb">🏕️</div>
+                    <div>
+                        <div class="tour-name" th:text="${t.tourname}">-</div>
+                        <div class="tour-meta"
+                             th:text="'จอง ' + ${t.bookingCount} + ' ครั้ง'">-</div>
+                    </div>
+                    <div class="tour-price"
+                         th:text="'฿' + ${#numbers.formatDecimal(t.adultprice, 1, 'COMMA', 0, 'POINT')} + '/คน'">-</div>
+                </div>
+            </div>
+            <div class="empty" th:if="${popularTours == null or popularTours.isEmpty()}">
+                ยังไม่มีทัวร์
+            </div>
+        </div>
+    </div>
+
+    <!-- ROW 2: Recent Posts + Activity Log -->
+    <div class="section-row">
+
+        <!-- Recent Posts -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">โพสต์กิจกรรมล่าสุด</span>
+                <a th:href="@{/manager/posts/create}" class="btn-primary">+ สร้างโพสต์</a>
+            </div>
+            <table class="tbl" th:if="${recentPosts != null and !recentPosts.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>หัวข้อ</th>
+                        <th>สถานที่</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${recentPosts}">
+                        <td th:text="${p.title}">-</td>
+                        <td th:text="${p.location}">-</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${p.status == 'PUBLISHED'} ? 'badge-green'
+                                               : (${p.status == 'DRAFT'}     ? 'badge-gray'
+                                               : 'badge-amber')"
+                                  th:text="${p.status == 'PUBLISHED'} ? 'เผยแพร่'
+                                         : (${p.status == 'DRAFT'}    ? 'ฉบับร่าง' : ${p.status})">
+                                -
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="empty" th:if="${recentPosts == null or recentPosts.isEmpty()}">
+                ยังไม่มีโพสต์กิจกรรม
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">กิจกรรมล่าสุดในระบบ</span>
+            </div>
+            <div th:if="${recentActivities != null and !recentActivities.isEmpty()}">
+                <div class="activity-item" th:each="a : ${recentActivities}">
+                    <div class="act-dot"
+                         th:classappend="${a.type == 'green'} ? 'dot-green'
+                                       : (${a.type == 'amber'} ? 'dot-amber'
+                                       : (${a.type == 'red'}   ? 'dot-red'
+                                       : 'dot-gray'))">
+                    </div>
+                    <div>
+                        <div class="act-msg"  th:text="${a.message}">-</div>
+                        <div class="act-time" th:text="${a.timestamp}">-</div>
+                    </div>
+                </div>
+            </div>
+            <div class="empty" th:if="${recentActivities == null or recentActivities.isEmpty()}">
+                ยังไม่มีกิจกรรม
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

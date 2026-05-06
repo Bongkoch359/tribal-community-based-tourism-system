@@ -1,4 +1,4 @@
-package com.example.miniproject.repository.Owner;
+package com.example.miniproject.repository.Tour;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.miniproject.entity.Communitymanager;
