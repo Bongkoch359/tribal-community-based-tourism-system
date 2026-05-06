@@ -12,8 +12,8 @@ import jakarta.persistence.*;
 @Table(name = "Booking")
 public class Booking {
 	 @Id
-    @Column(name = "bookingid", length = 10)
-    private String bookingid;
+   @Column(name = "bookingid", length = 10)
+    private String bookingid; 
 
 	@Enumerated(EnumType.STRING)
     @Column(name = "booking_type", length = 50)

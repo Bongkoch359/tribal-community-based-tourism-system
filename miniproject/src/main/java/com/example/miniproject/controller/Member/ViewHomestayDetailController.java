@@ -1,8 +1,11 @@
 package com.example.miniproject.controller.Member;
 
-import com.example.miniproject.dto.Homestay.HomestayDetailDto;
+
+import com.example.miniproject.entity.Homestay;
+import com.example.miniproject.entity.Review;
 import com.example.miniproject.service.Homestay.HomestayService;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,19 +20,36 @@ public class ViewHomestayDetailController {
     @Autowired
     private HomestayService homestayService;
 
-    @GetMapping("/{id}")
-    public String homestayDetail(@PathVariable Integer id, Model model) {
+   @GetMapping("/{id}")
+public String homestayDetail(@PathVariable Integer id, Model model) {
 
-        HomestayDetailDto detail = homestayService.getHomestayDetail(id);
+    Homestay homestay = homestayService.getHomestayDetailForMember(id);
+    if (homestay == null) return "redirect:/search";
 
-        if (detail == null) {
-            return "redirect:/search";
+    // images เป็น Base64 ให้ใส่ prefix data:image/jpeg;base64,
+    String firstImage = null;
+    if (homestay.getImages() != null && !homestay.getImages().isBlank()) {
+        String raw = homestay.getImages().trim();
+        // ถ้ายังไม่มี prefix ให้ใส่เอง
+        if (raw.startsWith("data:")) {
+            firstImage = raw;
+        } else {
+            firstImage = "data:image/jpeg;base64," + raw;
         }
-
-        model.addAttribute("homestay", detail.getHomestay());
-        model.addAttribute("firstImage", detail.getFirstImage());
-        model.addAttribute("rooms", detail.getHomestay().getRoomtypes());
-
-        return "Member/homestay_detail";
     }
+
+    List<Review> reviews = homestayService.getReviewsByHomestay(id);
+    Double avgRating     = homestayService.getAvgRating(id);
+    Long reviewCount     = homestayService.getReviewCount(id);
+
+    model.addAttribute("homestay", homestay);
+    model.addAttribute("firstImage", firstImage);
+    model.addAttribute("rooms", homestay.getRoomtypes());
+    model.addAttribute("reviews", reviews);
+    model.addAttribute("avgRating", avgRating);
+    model.addAttribute("reviewCount", reviewCount);
+
+    return "Member/homestay_detail";
+}
+
 }

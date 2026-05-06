@@ -6,7 +6,11 @@ import com.example.miniproject.dto.Homestay.HomestayDetailDto;
 import com.example.miniproject.dto.Homestay.HomestayDto;
 import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Homestayowner;
+import com.example.miniproject.entity.Review;
 import com.example.miniproject.repository.Homestay.HomestayRepository;
+import com.example.miniproject.repository.Member.ReviewRepository;
+
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +19,9 @@ public class HomestayService {
 
     @Autowired
     private HomestayRepository homestayRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
     
 
     public boolean isOwnedBy(Integer homestayid, Integer ownerid) {  
@@ -70,4 +77,25 @@ public class HomestayService {
     homestayRepository.save(h);
 }
     
+
+@Transactional
+public Homestay getHomestayDetailForMember(Integer homestayid) {
+    Homestay h = homestayRepository.findById(homestayid).orElse(null);
+    if (h == null) return null;
+    h.getRoomtypes().forEach(r -> r.getFacilities().size());
+    return h;
+}
+
+public List<Review> getReviewsByHomestay(Integer homestayid) {
+    return reviewRepository.findByHomestayId(homestayid);
+}
+
+public Double getAvgRating(Integer homestayid) {
+    return homestayRepository.avgRatingByHomestayId(homestayid);
+}
+
+public Long getReviewCount(Integer homestayid) {
+    return homestayRepository.countReviewByHomestayId(homestayid);
+}
+
 }

@@ -597,73 +597,63 @@
 </div>
 </div> <!-- room-list -->
 </div>
+<!-- REVIEWS -->
+<div class="card section-card">
+  <div class="sec-title">
+    <div class="sec-accent"></div>
+    รีวิวจากผู้เข้าพัก
+  </div>
 
-      <!-- REVIEWS -->
-      <div class="card section-card">
-        <div class="sec-title">
-          <div class="sec-accent"></div>
-          รีวิวจากผู้เข้าพัก
-          <span style="font-size:13px;font-weight:500;color:var(--neutral-400);margin-left:4px;">(HomestayReview)</span>
-        </div>
-
-        <div class="review-summary">
-          <div class="score-box">
-            <div class="score-num">4.9</div>
-            <div class="stars">★★★★★</div>
-            <div class="score-label">จาก 124 รีวิว</div>
-          </div>
-          <div class="bar-rows">
-            <div class="bar-row">
-              <span class="bar-label">5</span>
-              <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">4</span>
-              <div class="bar-track"><div class="bar-fill" style="width:68%"></div></div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">3</span>
-              <div class="bar-track"><div class="bar-fill" style="width:18%"></div></div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">2</span>
-              <div class="bar-track"><div class="bar-fill" style="width:5%"></div></div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">1</span>
-              <div class="bar-track"><div class="bar-fill" style="width:2%"></div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="review-item">
-          <div class="review-head">
-            <div class="avatar">ก</div>
-            <div>
-              <div class="rev-name">กัญญาพัชร จ.</div>
-              <div class="rev-date">เข้าพักเมื่อ เมษายน 2026</div>
-              <div class="rev-stars">★★★★★</div>
-            </div>
-          </div>
-          <p class="rev-text">บรรยากาศดีมาก เจ้าของโฮมสเตย์เป็นกันเอง อาหารอร่อย ห้องพักสะอาด เหมาะกับการมาพักผ่อนแบบธรรมชาติ จะกลับมาอีกแน่นอน</p>
-        </div>
-
-        <div class="review-item">
-          <div class="review-head">
-            <div class="avatar">ธ</div>
-            <div>
-              <div class="rev-name">ธนัชชา ก.</div>
-              <div class="rev-date">เข้าพักเมื่อ มีนาคม 2026</div>
-              <div class="rev-stars">★★★★★</div>
-            </div>
-          </div>
-          <p class="rev-text">วิวภูเขาสวยมาก ตอนเช้าอากาศเย็นสบาย มีกิจกรรมชุมชนให้ทำหลายอย่าง ประทับใจมากและจะกลับมาอีกแน่นอน</p>
-        </div>
-
-      </div>
-
+  <!-- Summary -->
+  <div class="review-summary">
+    <div class="score-box">
+      <div class="score-num" th:text="${#numbers.formatDecimal(avgRating, 1, 1)}">0.0</div>
+      <div class="stars">★★★★★</div>
+      <div class="score-label" th:text="'จาก ' + ${reviewCount} + ' รีวิว'">จาก 0 รีวิว</div>
     </div>
-    <!-- /LEFT -->
+    <div class="bar-rows">
+      <div class="bar-row" th:each="star : ${#numbers.sequence(5, 1, -1)}">
+        <span class="bar-label" th:text="${star}">5</span>
+        <div class="bar-track">
+          <div class="bar-fill"
+               th:style="${reviewCount > 0}
+                 ? 'width:' + (${reviews.stream().filter(r -> r.rating == star).count() * 100 / reviewCount}) + '%'
+                 : 'width:0%'">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Items -->
+  <div th:if="${reviews.isEmpty()}">
+    <p style="color:var(--neutral-400);text-align:center;padding:20px 0;">ยังไม่มีรีวิว</p>
+  </div>
+
+  <div class="review-item" th:each="review : ${reviews}">
+    <div class="review-head">
+      <div class="avatar"
+           th:text="${#strings.substring(review.booking.member.firstname, 0, 1)}">
+        ก
+      </div>
+      <div>
+        <div class="rev-name"
+             th:text="${review.booking.member.firstname + ' ' + #strings.substring(review.booking.member.lastname, 0, 1) + '.'}">
+          ชื่อ น.
+        </div>
+        <div class="rev-date"
+             th:text="'เข้าพักเมื่อ ' + ${#dates.format(review.reviewdate, 'MMMM yyyy')}">
+          วันที่
+        </div>
+        <div class="rev-stars"
+             th:text="${'★'.repeat(review.rating)}">★★★★★</div>
+      </div>
+    </div>
+    <p class="rev-text" th:text="${review.comment}">ความคิดเห็น</p>
+  </div>
+
+</div>
+    </div>
 
     <!-- SIDEBAR -->
     <div class="sidebar">
