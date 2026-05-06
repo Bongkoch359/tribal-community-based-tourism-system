@@ -37,7 +37,7 @@ public class TourManagerController {
 
             session.setAttribute("loggedInManager", manager);
 
-            return "redirect:/manager/home";
+           return "redirect:/manager/dashboard";
         }
 
         // login ไม่สำเร็จ

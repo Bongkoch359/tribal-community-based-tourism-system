@@ -23,7 +23,7 @@ public class DashboardTourController {
         model.addAttribute("popularTours", dashboardService.getPopularTours(3));
         model.addAttribute("recentPosts", dashboardService.getRecentPosts(3));
         model.addAttribute("recentActivities", dashboardService.getRecentActivityLog(5));
-        return "manager/dashboard";
+        return "Tour/dashboardTour";
     }
 }
  

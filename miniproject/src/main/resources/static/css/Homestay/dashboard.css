@@ -1,4 +1,4 @@
- *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
             --green-dark:   #1a3d1f;
@@ -31,7 +31,9 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            gap: .5rem;
         }
+
         .navbar-brand {
             display: flex;
             align-items: center;
@@ -40,17 +42,18 @@
             font-weight: 700;
             font-size: 1.05rem;
             text-decoration: none;
-            margin-right: 2.5rem;
             white-space: nowrap;
+            margin-right: auto; /* ดันเมนูทั้งหมดไปขวา */
         }
         .navbar-brand i { color: #ffffff; font-size: 1.2rem; }
 
         .nav-links {
             display: flex;
             align-items: center;
-            gap: .25rem;
-            flex: 1;
+            gap: .15rem;
+            margin-right: 1.25rem; /* ระยะห่างก่อน profile */
         }
+
         .nav-link {
             color: rgba(255,255,255,.7);
             text-decoration: none;
@@ -72,117 +75,156 @@
             padding-bottom: calc(.45rem - 3px);
         }
 
-        /* จัดการตำแหน่ง Container หลัก */
-.nav-right {
-    display: flex;
-    align-items: center;
-}
+        /* ─── PROFILE AREA ─── */
+        .nav-right {
+            display: flex;
+            align-items: center;
+        }
 
-.profile-dropdown {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-}
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
 
-.profile-trigger {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 5px 10px;
-    border-radius: 8px;
-    transition: background 0.3s;
-}
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: .45rem .75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.12);
+            transition: background .2s, border-color .2s;
+        }
 
-.profile-trigger:hover {
-    background-color: #f0f2f5;
-}
+        .profile-trigger:hover {
+            background: rgba(255,255,255,.1);
+            border-color: rgba(255,255,255,.22);
+        }
 
-/* ส่วนเนื้อหา Dropdown */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 100%;
-    background-color: #ffffff;
-    min-width: 180px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
-    z-index: 1000;
-    border-radius: 8px;
-    margin-top: 10px; /* ช่องว่างที่ทำให้เกิดปัญหา */
-    padding: 8px 0;
-    border: 1px solid #eee;
-}
-
-/* --- เพิ่มส่วนนี้เพื่อสร้าง "สะพานเชื่อม" --- */
-.dropdown-content::before {
-    content: "";
-    position: absolute;
-    top: -15px; /* คลุมพื้นที่ว่างด้านบนเมนู */
-    left: 0;
-    width: 100%;
-    height: 15px; /* ความสูงต้องครอบคลุม margin-top */
-    display: block;
-}
-
-/* แสดง Dropdown เมื่อ Hover */
-.profile-dropdown:hover .dropdown-content {
-    display: block;
-}
-/* แสดง Dropdown เมื่อ Hover */
-.profile-dropdown:hover .dropdown-content {
-    display: block;
-}
-
-/* ตกแต่งลิงก์ข้างใน */
-.dropdown-content a {
-    color: #333;
-    padding: 10px 16px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    transition: background 0.2s;
-}
-
-.dropdown-content a:hover {
-    background-color: #f8f9fa;
-    color: #007bff;
-}
-
-.dropdown-content hr {
-    margin: 4px 0;
-    border: 0;
-    border-top: 1px solid #eee;
-}
-
-.dropdown-content a.logout-item:hover {
-    color: #dc3545; /* สีแดงสำหรับปุ่มออก */
-    background-color: #fff5f5;
-}
         .avatar {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: var(--orange);
+            background: linear-gradient(135deg, #e08a00, #f5a623);
             color: var(--white);
             font-weight: 700;
-            font-size: .85rem;
+            font-size: .82rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 0 0 2px rgba(255,255,255,.2);
+            flex-shrink: 0;
         }
+
         .owner-name {
             color: var(--white);
-            font-size: .92rem;
-            font-weight: 500;
+            font-size: .9rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
         }
-        .btn-logout {
-            color: rgba(255,255,255,.65);
-            font-size: .85rem;
+
+        .owner-role {
+            color: rgba(255,255,255,.55);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+        }
+
+        .profile-chevron {
+            font-size: .7rem;
+            color: rgba(255,255,255,.5);
+            margin-left: 2px;
+            transition: transform .2s;
+        }
+        .profile-dropdown:hover .profile-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* ─── DROPDOWN MENU ─── */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #ffffff;
+            min-width: 210px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+            z-index: 1000;
+            border-radius: 12px;
+            margin-top: 10px;
+            padding: 6px 0;
+            border: 1px solid #e8e8e8;
+        }
+
+        /* สะพานเชื่อมป้องกัน hover หลุด */
+        .dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            display: block;
+        }
+
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: .75rem 1rem .55rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+        .dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: #1a2e1c;
+        }
+        .dropdown-header .d-email {
+            font-size: .75rem;
+            color: #6b7c6e;
+            margin-top: 2px;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: .6rem 1rem;
             text-decoration: none;
-            transition: color .2s;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: .88rem;
+            transition: background .15s;
         }
-        .btn-logout:hover { color: var(--white); }
+
+        .dropdown-content a i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f5f8f5;
+            color: var(--green-dark);
+        }
+
+        .dropdown-content a:hover i {
+            color: var(--green-dark);
+        }
+
+        .dropdown-content hr {
+            margin: 4px 0;
+            border: 0;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .dropdown-content a.logout-item { color: #c0392b; }
+        .dropdown-content a.logout-item i { color: #c0392b; }
+        .dropdown-content a.logout-item:hover { background-color: #fff5f5; }
 
         /* ─── PAGE ─── */
         .page { padding: 2.5rem 2.5rem; max-width: 1280px; margin: 0 auto; }
@@ -341,38 +383,38 @@
         }
 
         html, body {
-    height: 100%;
-}
+            height: 100%;
+        }
 
-body {
-    display: flex;
-    flex-direction: column;
-}
+        body {
+            display: flex;
+            flex-direction: column;
+        }
 
-.page {
-    flex: 1;
-}
+        .page {
+            flex: 1;
+        }
 
         .footer {
-    margin-top: 3rem;
-    padding: 1rem 2rem;
-    background: #1a3d1f;
-    color: #d8f3dc;
-    font-size: 0.9rem;
-}
+            margin-top: 3rem;
+            padding: 1rem 2rem;
+            background: #1a3d1f;
+            color: #d8f3dc;
+            font-size: 0.9rem;
+        }
 
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.footer a {
-    color: #95d5b2;
-    text-decoration: none;
-    margin-left: 8px;
-}
+        .footer a {
+            color: #95d5b2;
+            text-decoration: none;
+            margin-left: 8px;
+        }
 
-.footer a:hover {
-    text-decoration: underline;
-}
+        .footer a:hover {
+            text-decoration: underline;
+        }

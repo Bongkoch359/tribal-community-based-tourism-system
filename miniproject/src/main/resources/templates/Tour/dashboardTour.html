@@ -4,36 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ภาพรวมระบบ - ผู้จัดการชุมชน</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --green-dark:   #1a5c2a;
-            --green-mid:    #2a7a3b;
-            --green-light:  #d4edda;
-            --amber:        #f0a500;
+            --green-dark:   #1a3d1f;
+            --green-mid:    #2d6a35;
+            --green-light:  #3d8b47;
+            --orange:       #e08a00;
+            --orange-light: #f5a623;
+            --bg:           #f0ece3;
+            --text-dark:    #1a2e1c;
+            --text-muted:   #6b7c6e;
+            --white:        #ffffff;
+            --card-shadow:  0 4px 24px rgba(0,0,0,.13);
+            /* aliases ให้ส่วนอื่นของหน้ายังทำงานได้ */
+            --bg-page:      #f0ece3;
+            --bg-card:      #ffffff;
+            --border:       #e2ddd4;
+            --text-main:    #1a2e1c;
+            --text-hint:    #9a9a96;
+            --amber:        #e08a00;
             --amber-light:  #fff3cd;
-            --amber-text:   #856404;
+            --amber-text:   #7a4000;
             --red-light:    #fde8e8;
             --red-text:     #a32d2d;
             --gray-light:   #e9ecef;
             --gray-text:    #555;
-            --bg-page:      #f5f0e8;
-            --bg-card:      #ffffff;
-            --border:       #e2ddd4;
-            --text-main:    #1c1c1a;
-            --text-muted:   #6b6b68;
-            --text-hint:    #9a9a96;
             --radius-card:  12px;
             --radius-sm:    6px;
-            --shadow-card:  0 1px 3px rgba(0,0,0,0.07);
+            --shadow-card:  0 4px 24px rgba(0,0,0,.13);
         }
 
         body {
             font-family: 'Sarabun', sans-serif;
-            background: var(--bg-page);
-            color: var(--text-main);
+            background: var(--bg);
+            color: var(--text-dark);
             font-size: 14px;
             line-height: 1.6;
         }
@@ -43,63 +51,136 @@
             background: var(--green-dark);
             display: flex;
             align-items: center;
-            padding: 0 24px;
-            height: 54px;
-            gap: 4px;
+            padding: 0 2rem;
+            height: 83px;
+            gap: .25rem;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,.25);
         }
         .nav-brand {
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
+            color: var(--white);
+            font-size: 1.05rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-right: auto;
-            letter-spacing: 0.01em;
+            gap: .6rem;
+            text-decoration: none;
+            white-space: nowrap;
         }
-        .nav-brand svg { width: 18px; height: 18px; }
+        .nav-brand i { color: #ffffff; font-size: 1.2rem; }
         .nav-link {
-            color: rgba(255,255,255,0.72);
-            font-size: 13px;
-            padding: 6px 14px;
-            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,.7);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: .45rem 1rem;
+            border-radius: 6px;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: background 0.15s, color 0.15s;
+            gap: .45rem;
+            transition: all .2s;
             white-space: nowrap;
         }
-        .nav-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .nav-link:hover { color: var(--white); background: rgba(255,255,255,.08); }
         .nav-link.active {
-            color: #fff;
-            border-bottom: 2px solid var(--amber);
+            color: var(--white);
+            border-bottom: 3px solid #7ecf88;
             border-radius: 0;
-            padding-bottom: 4px;
+            padding-bottom: calc(.45rem - 3px);
         }
-        .nav-link svg { width: 14px; height: 14px; }
+        .nav-link i { font-size: .9rem; }
         .nav-user {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: rgba(255,255,255,0.85);
-            font-size: 13px;
+            color: rgba(255,255,255,.85);
+            font-size: .92rem;
+            font-weight: 500;
             cursor: pointer;
-            margin-left: 8px;
+            margin-left: auto;
         }
         .nav-avatar {
-            width: 32px; height: 32px;
-            background: var(--amber);
+            width: 36px; height: 36px;
+            background: var(--orange);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 11px; font-weight: 600; color: #fff;
+            font-size: .85rem; font-weight: 700; color: #fff;
         }
 
+        /* ─── PROFILE DROPDOWN ─── */
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,.85);
+            font-size: .92rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: .4rem .6rem;
+            border-radius: 8px;
+            transition: background .2s;
+            user-select: none;
+        }
+        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
+        .nav-dropdown-trigger .chevron {
+            font-size: .75rem;
+            color: rgba(255,255,255,.6);
+            transition: transform .2s;
+        }
+        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.15);
+            border: 1px solid #e8e8e8;
+            min-width: 200px;
+            padding: 6px 0;
+            z-index: 200;
+        }
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: 0; right: 0;
+            height: 10px;
+        }
+        .nav-dropdown:hover .dropdown-menu { display: block; }
+
+        .dropdown-header {
+            padding: .7rem 1rem .5rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
+        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .6rem 1rem;
+            font-size: .88rem;
+            color: #333;
+            text-decoration: none;
+            transition: background .15s;
+        }
+        .dropdown-item i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
+        .dropdown-item:hover { background: #f5f8f5; color: var(--green-dark); }
+        .dropdown-item:hover i { color: var(--green-dark); }
+        .dropdown-divider { border: none; border-top: 1px solid #f0f0f0; margin: 4px 0; }
+        .dropdown-item.logout { color: #c0392b; }
+        .dropdown-item.logout i { color: #c0392b; }
+        .dropdown-item.logout:hover { background: #fff5f5; }
+
         /* ─── PAGE ─── */
-        .page { padding: 28px 28px 40px; max-width: 1200px; }
+        .page { padding: 28px 28px 40px; max-width: 1200px; margin: auto }
 
         .page-title {
             font-size: 20px;
@@ -284,53 +365,93 @@
             .stats-grid { grid-template-columns: 1fr; }
             .page { padding: 16px; }
         }
+
+         .footer {
+            margin-top: 3rem;
+            padding: 1rem 2rem;
+            background: #1a3d1f;
+            color: #d8f3dc;
+            font-size: 0.9rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer a {
+            color: #95d5b2;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
 <!-- ═══ NAVBAR ═══ -->
 <nav class="navbar">
-    <div class="nav-brand">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
+    <a class="nav-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun"></i>
         ระบบท่องเที่ยวชุมชนชนเผ่า
-    </div>
+    </a>
 
+    <!-- spacer ดันเมนูไปขวา -->
+    <div style="flex:1;"></div>
+
+    <!-- ภาพรวม -->
     <a th:href="@{/manager/dashboard}" class="nav-link active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-        </svg>
+        <i class="fas fa-globe"></i>
         ภาพรวม
     </a>
+
+    <!-- จัดการโพสต์ -->
     <a th:href="@{/manager/posts}" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
+        <i class="fas fa-bullhorn"></i>
         จัดการโพสต์
     </a>
+
+    <!-- จัดการทัวร์ -->
     <a th:href="@{/manager/tours}" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-        </svg>
+        <i class="fas fa-bus"></i>
         จัดการทัวร์
     </a>
+
+    <!-- ตรวจสอบการจอง -->
     <a th:href="@{/manager/bookings}" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/>
-            <line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
+        <i class="fas fa-calendar-days"></i>
         ตรวจสอบการจอง
     </a>
 
-    <div class="nav-user">
-        <div class="nav-avatar">CM</div>
-        ผู้จัดการชุมชน ▾
+    <!-- Profile Dropdown -->
+    <div class="nav-dropdown" style="margin-left:1rem;">
+        <div class="nav-dropdown-trigger">
+            <div class="nav-avatar"
+                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
+                           : 'CM'">CM</div>
+            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="dropdown-menu">
+            <div class="dropdown-header">
+                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</div>
+                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+            </div>
+            <a th:href="@{/manager/profile}" class="dropdown-item">
+                <i class="fas fa-user-pen"></i>
+                แก้ไขโปรไฟล์
+            </a>
+            <hr class="dropdown-divider">
+            <a th:href="@{/logout}" class="dropdown-item logout">
+                <i class="fas fa-right-from-bracket"></i>
+                ออกจากระบบ
+            </a>
+        </div>
     </div>
 </nav>
 
@@ -497,6 +618,18 @@
         </div>
     </div>
 </div>
-
+<!-- ─── FOOTER ─── -->
+<footer class="footer">
+    <div class="footer-content">
+        <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+        <span class="footer-right">
+            Version 1.0 |
+            <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+            <a href="#" onclick="openContactModal()">
+                <i class="fas fa-headset"></i> ติดต่อแอดมิน
+            </a>
+        </span>
+    </div>
+</footer>
 </body>
 </html>
