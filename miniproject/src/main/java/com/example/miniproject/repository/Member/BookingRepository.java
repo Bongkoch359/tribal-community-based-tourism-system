@@ -1,9 +1,10 @@
 package com.example.miniproject.repository.Member;
 
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.miniproject.entity.Booking;
@@ -26,4 +27,16 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 
     /** ดึงตาม status */
     List<Booking> findByBookingStatus(BookingStatus bookingStatus);
+
+    // BookingRepository.java
+@Query("""
+    SELECT b FROM Booking b
+    LEFT JOIN FETCH b.member
+    LEFT JOIN FETCH b.roomDetails rd
+    LEFT JOIN FETCH rd.roomtype rt
+    LEFT JOIN FETCH rt.homestay
+    LEFT JOIN FETCH b.guests
+    WHERE b.bookingid = :id
+""")
+Optional<Booking> findByIdWithDetails(@Param("id") String id);
 }

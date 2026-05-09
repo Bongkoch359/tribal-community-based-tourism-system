@@ -28,9 +28,9 @@ public class BookingService {
     @Autowired
     private RoomTypeRepository roomtypeRepository;
 
-    public Booking getBookingById(String bookingId) {
-        return bookingRepository.findById(bookingId).orElse(null);
-    }
+   public Booking getBookingById(String bookingId) {
+    return bookingRepository.findByIdWithDetails(bookingId).orElse(null);
+}
 
     // ════════════════════════════════════════════════════════
     //  LIST / COUNT
