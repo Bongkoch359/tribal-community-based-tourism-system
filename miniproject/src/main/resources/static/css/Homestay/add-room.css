@@ -142,3 +142,10 @@
         }
         .btn-save:hover { background: #c96d00; }
         .btn-save:disabled { background: #ccc; cursor: not-allowed; }
+
+        .field-error {
+    display: block;
+    color: #c00;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}

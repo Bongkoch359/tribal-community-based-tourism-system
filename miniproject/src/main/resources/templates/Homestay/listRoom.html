@@ -291,16 +291,23 @@
                     <td th:text="${room['totalrooms']} + ' ห้อง'"></td>
 
                     <!-- สถานะ -->
-                    <td>
-                        <span th:if="${room['status'] == 'available'}"
-                              class="status-badge status-available">
-                            <span class="status-dot"></span> ว่าง
-                        </span>
-                        <span th:unless="${room['status'] == 'available'}"
-                              class="status-badge status-unavailable">
-                            <span class="status-dot"></span> ไม่ว่าง
-                        </span>
-                    </td>
+                    <!-- ✅ แก้เป็น -->
+<td>
+    <span th:switch="${room['status']}">
+        <span th:case="'เปิดจอง'" class="status-badge status-available">
+            <span class="status-dot"></span> เปิดจอง
+        </span>
+        <span th:case="'ปิดปรับปรุง'" class="status-badge status-unavailable">
+            <span class="status-dot"></span> ปิดปรับปรุง
+        </span>
+        <span th:case="'เต็ม'" class="status-badge status-unavailable">
+            <span class="status-dot"></span> เต็ม
+        </span>
+        <span th:case="*" class="status-badge status-unavailable">
+            <span class="status-dot"></span> ไม่ว่าง
+        </span>
+    </span>
+</td>
 
                     <!-- Action -->
                     <td>

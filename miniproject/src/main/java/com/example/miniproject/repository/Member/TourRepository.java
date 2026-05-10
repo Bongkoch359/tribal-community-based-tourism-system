@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Tour;
 
 public interface TourRepository extends JpaRepository<Tour, String> {
@@ -21,6 +22,9 @@ public interface TourRepository extends JpaRepository<Tour, String> {
             String tourmname,
             String status
     );
+
+     // ─── ดึงตาม manager (ใหม่ — ใช้ใน listTour) ──────────
+    List<Tour> findByCommunitymanager(Communitymanager communitymanager);
 
     // ค้นหาตามจำนวนที่นั่ง
     @Query("""
@@ -45,9 +49,13 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     """)
     List<Tour> search(@Param("keyword") String keyword,
                       @Param("guests") Integer guests);
-
+    //นับตามสถานะ
     long countByStatus(String status);
- 
+    // ดึงทัวร์ยอดนิยม (เรียงตามจำนวนการจอง)
     @Query("SELECT t FROM Tour t LEFT JOIN t.bookingTourDetails d GROUP BY t ORDER BY COUNT(d) DESC")
     List<Tour> findTopToursByBookingCount(@Param("limit") int limit);
+
+    // ดึงทัวร์ของ manager คนนั้น
+    @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerId ORDER BY t.tourmname ASC")
+    List<Tour> findByManagerId(@Param("managerId") String managerId);
 }

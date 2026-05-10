@@ -24,7 +24,7 @@ public class ActivityPostController {
             return "redirect:/manager/login";
  
         model.addAttribute("posts", activityPostService.getAllPosts());
-        return "Tour/listPost"; // หน้ารายการ (ถ้ามี)
+        return "Tour/listPost"; 
     }
  
     // ─── แสดงฟอร์มสร้างโพสต์ ───

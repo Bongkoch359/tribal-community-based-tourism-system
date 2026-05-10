@@ -197,7 +197,7 @@
                         <label class="form-label">จำนวนผู้เข้าพักสูงสุด <span class="req">*</span></label>
                         <div class="input-suffix">
                             <input type="number" id="maxguest" name="maxguest"
-                                   class="form-control" placeholder="2" min="1" max="20">
+                                   class="form-control" placeholder="2" >
                             <span class="suffix-text">คน</span>
                         </div>
                         <span class="field-error" id="maxguestError"></span>
@@ -206,23 +206,27 @@
                         <label class="form-label">จำนวนห้องทั้งหมด <span class="req">*</span></label>
                         <div class="input-suffix">
                             <input type="number" id="totalrooms" name="totalrooms"
-                                   class="form-control" placeholder="1" min="1">
+                                   class="form-control" placeholder="1" >
                             <span class="suffix-text">ห้อง</span>
                         </div>
                         <span class="field-error" id="totalroomsError"></span>
                     </div>
                 </div>
 
+                <!-- คำอธิบาย -->
                 <div class="form-group">
                     <label class="form-label">คำอธิบาย</label>
                     <textarea id="description" name="description" class="form-control"
-                              placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
+                     placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
+                    <span class="field-error" id="descriptionError"></span>  <!-- ✅ เพิ่ม -->
                 </div>
 
+                <!-- เงื่อนไขการเข้าพัก -->
                 <div class="form-group">
                     <label class="form-label">เงื่อนไขการเข้าพัก</label>
                     <textarea id="roomcondition" name="roomcondition" class="form-control"
-                              placeholder="เช่น ห้ามสูบบุหรี่, เช็คอิน 14:00 น., เช็คเอาท์ 12:00 น..."></textarea>
+                    placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
+                    <span class="field-error" id="roomconditionError"></span>  <!-- ✅ เพิ่ม -->
                 </div>
 
             </div>
@@ -254,6 +258,7 @@
                 <i class="fas fa-star" style="color:#e07b00;"></i>
                 <span class="label">สิ่งอำนวยความสะดวก</span>
                 <span class="badge-tag orange">FACILITIES</span>
+                
             </div>
             <div class="section-body">
                 <div class="facilities-grid">
@@ -278,6 +283,7 @@
                         <i class="fas fa-car"></i> ที่จอดรถ
                     </label>
                 </div>
+                <span class="field-error" id="facilitiesError"></span>
             </div>
         </div>
 

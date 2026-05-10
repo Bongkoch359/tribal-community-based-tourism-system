@@ -140,25 +140,32 @@ function fileToBase64(file) {
 // ─── Submit — แปลงรูปเป็น Base64 แล้วส่งเป็น JSON ───
 async function submitForm() {
     const ok = [
-        validateField('typename', 'typenameError', [
-            { check: v => v, msg: 'กรุณาเลือกประเภทที่พัก' }
-        ]),
-        validateField('bedtype', 'bedtypeError', [
-            { check: v => v, msg: 'กรุณาเลือกประเภทเตียง' }
-        ]),
-        validateField('pricepernight', 'priceError', [
-            { check: v => v,                  msg: 'กรุณากรอกราคาต่อคืน' },
-            { check: v => parseFloat(v) > 0,  msg: 'ราคาต้องมากกว่า 0' }
-        ]),
-        validateField('maxguest', 'maxguestError', [
-            { check: v => v,                                         msg: 'กรุณากรอกจำนวนผู้เข้าพัก' },
-            { check: v => parseInt(v) >= 1 && parseInt(v) <= 20,    msg: 'ต้องอยู่ระหว่าง 1–20 คน' }
-        ]),
-        validateField('totalrooms', 'totalroomsError', [
-            { check: v => v,                msg: 'กรุณากรอกจำนวนห้อง' },
-            { check: v => parseInt(v) >= 1, msg: 'จำนวนห้องต้องมากกว่า 0' }
-        ]),
-    ].every(Boolean);
+    validateField('typename', 'typenameError', [
+        { check: v => v, msg: 'กรุณาเลือกประเภทที่พัก' }
+    ]),
+    validateField('bedtype', 'bedtypeError', [
+        { check: v => v, msg: 'กรุณาเลือกประเภทเตียง' }
+    ]),
+    validateField('pricepernight', 'priceError', [
+        { check: v => v,                 msg: 'กรุณากรอกราคาต่อคืน' },
+        { check: v => parseFloat(v) > 0, msg: 'ราคาต้องมากกว่า 0' }
+    ]),
+    validateField('maxguest', 'maxguestError', [
+        { check: v => v,                                      msg: 'กรุณากรอกจำนวนผู้เข้าพัก' },
+        { check: v => parseInt(v) >= 1 && parseInt(v) <= 10, msg: 'ต้องอยู่ระหว่าง 1–10 คน' }
+    ]),
+    validateField('totalrooms', 'totalroomsError', [
+        { check: v => v,                msg: 'กรุณากรอกจำนวนห้อง' },
+        { check: v => parseInt(v) >= 1, msg: 'จำนวนห้องต้องมากกว่า 0' }
+    ]),
+    validateField('description', 'descriptionError', [
+        { check: v => v, msg: 'กรุณากรอกคำอธิบาย' }
+    ]),
+    validateField('roomcondition', 'roomconditionError', [
+        { check: v => v, msg: 'กรุณากรอกเงื่อนไขการเข้าพัก' }
+    ]),
+].every(Boolean);
+
 
     if (!ok) {
         document.querySelector('.is-invalid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -170,7 +177,7 @@ async function submitForm() {
 
     // ✅ รวบรวม facilitiesIds ที่เลือก
     const facilitiesIds = Array.from(
-        document.querySelectorAll('input[name="facilitiesIds"]:checked')
+    document.querySelectorAll('input[name="facilitiesIds"]:checked')
     ).map(cb => cb.value);
 
     const payload = {
@@ -182,11 +189,38 @@ async function submitForm() {
         totalrooms:    document.getElementById('totalrooms').value,
         description:   document.getElementById('description').value,
         roomcondition: document.getElementById('roomcondition').value,
-        status:        document.querySelector('input[name="status"]:checked').value,
-        facilitiesIds: facilitiesIds,  // ✅ แก้จาก facilities → facilitiesIds
+        status:        document.getElementById('status').value,  
+        facilitiesIds: facilitiesIds,
         images:        base64Images
     };
 
+    const facErr = document.getElementById('facilitiesError');
+if (facilitiesIds.length === 0) {
+    facErr.textContent = 'กรุณาเลือกสิ่งอำนวยความสะดวกอย่างน้อย 1 รายการ';
+    facErr.style.display = 'block';
+    if (ok) { facErr.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    return;
+} else {
+    facErr.textContent = '';
+    facErr.style.display = 'none';
+}
+
+// ✅ เช็ครูป
+const imgErr = document.getElementById('imageError');
+if (selectedFiles.length === 0) {
+    imgErr.textContent = 'กรุณาอัปโหลดรูปภาพอย่างน้อย 1 รูป';
+    imgErr.style.display = 'block';
+    imgErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+} else {
+    imgErr.textContent = '';
+    imgErr.style.display = 'none';
+}
+
+if (!ok) {
+    document.querySelector('.is-invalid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+}
     // disable ปุ่ม
     const btn = document.querySelector('.btn-save');
     btn.disabled = true;
@@ -220,7 +254,7 @@ async function submitForm() {
         typename:      ['typenameError',   [{ check: v => v, msg: 'กรุณาเลือกประเภทที่พัก' }]],
         bedtype:       ['bedtypeError',    [{ check: v => v, msg: 'กรุณาเลือกประเภทเตียง' }]],
         pricepernight: ['priceError',      [{ check: v => v, msg: 'กรุณากรอกราคาต่อคืน' }, { check: v => parseFloat(v) > 0, msg: 'ราคาต้องมากกว่า 0' }]],
-        maxguest:      ['maxguestError',   [{ check: v => v, msg: 'กรุณากรอกจำนวนผู้เข้าพัก' }, { check: v => parseInt(v) >= 1 && parseInt(v) <= 20, msg: 'ต้องอยู่ระหว่าง 1–20 คน' }]],
+        maxguest:      ['maxguestError',   [{ check: v => v, msg: 'กรุณากรอกจำนวนผู้เข้าพัก' }, { check: v => parseInt(v) >= 1 && parseInt(v) <= 10, msg: 'ต้องอยู่ระหว่าง 1–10 คน' }]],
         totalrooms:    ['totalroomsError', [{ check: v => v, msg: 'กรุณากรอกจำนวนห้อง' }, { check: v => parseInt(v) >= 1, msg: 'จำนวนห้องต้องมากกว่า 0' }]],
     };
     document.getElementById(id)?.addEventListener('blur', () => {
