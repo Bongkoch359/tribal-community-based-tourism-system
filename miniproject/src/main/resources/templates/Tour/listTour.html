@@ -591,15 +591,8 @@
                                 <i class="fas fa-eye"></i> ดูรายละเอียด
                             </a>
 
-                            <!-- ปิดรับการจอง (แสดงเมื่อยังเปิดอยู่หรือเต็ม)
-                            <form th:if="${tour.status != 'ปิดรับการจอง'}"
-                                  th:action="@{/manager/tours/close/{id}(id=${tour.tourid})}"
-                                  method="post" style="display:inline;"
-                                  onsubmit="return confirm('ต้องการปิดรับการจองทัวร์นี้?')">
-                                <button type="submit" class="btn-close">
-                                    <i class="fas fa-ban"></i> ปิดจอง
-                                </button>
-                            </form> -->
+                            
+                            </form> 
                         </div>
                     </td>
                 </tr>

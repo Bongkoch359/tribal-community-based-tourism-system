@@ -859,22 +859,9 @@ document.getElementById('tourForm').addEventListener('submit', function (e) {
         return;
     }
 
-    /* ── สำหรับ demo / ทดสอบ UI:
-       ถ้า backend ยังไม่พร้อม ให้แสดง modal แทน submit จริง
-       ลบ e.preventDefault() และ showSuccessModal() ออกเมื่อ backend พร้อม ──  */
-
-    // หากต้องการใช้ modal สำหรับ real form submit ให้ backend redirect กลับพร้อม ?saved=1
-    // แล้วตรวจ URL param ด้านล่างแทน
-
-    // DEMO MODE (ลบออกเมื่อ backend พร้อม):
-    e.preventDefault();
-    showSuccessModal();
+    
 });
 
-/* ── ตรวจ ?saved=1 จาก redirect ของ backend (alternative approach) ──
-const params = new URLSearchParams(location.search);
-if (params.get('saved') === '1') showSuccessModal();
-*/
 </script>
 
 </body>

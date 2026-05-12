@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดทัวร์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* CSS คงเดิมตามที่คุณส่งมา */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --green-dark:  #1a3d1f; --green-mid:   #2d6a35; --green-light: #d4edda;
+            --amber:       #f0a500; --amber-hover: #c47700; --bg-page:     #f5f0e8;
+            --bg-card:     #ffffff; --border:      #e2ddd4; --text-main:   #1c1c1a;
+            --text-muted:  #6b6b68; --text-hint:   #9a9a96; --radius-card: 12px;
+            --radius-sm:   6px; --shadow-card: 0 1px 3px rgba(0,0,0,0.07); --red: #c0392b;
+        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-page); color: var(--text-main); font-size: 14px; line-height: 1.6; }
+        .navbar { background: var(--green-dark); display: flex; align-items: center; padding: 0 2rem; height: 83px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+        .nav-brand { color: #fff; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: .6rem; text-decoration: none; white-space: nowrap; }
+        .nav-brand i { font-size: 1.2rem; }
+        .nav-dropdown { position: relative; margin-left: auto; }
+        .nav-dropdown-trigger { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.85); font-size: .92rem; font-weight: 500; cursor: pointer; padding: .4rem .6rem; border-radius: 8px; transition: background .2s; user-select: none; }
+        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
+        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
+        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
+        .dropdown-menu { display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #fff; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.15); border: 1px solid #e8e8e8; min-width: 200px; padding: 6px 0; z-index: 200; }
+        .nav-dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
+        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
+        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
+        .dropdown-item { display: flex; align-items: center; gap: .65rem; padding: .6rem 1rem; font-size: .88rem; color: #333; text-decoration: none; }
+        .dropdown-item:hover { background: #f5f8f5; color: var(--green-dark); }
+        .dropdown-divider { border-top: 1px solid #f0f0f0; margin: 4px 0; }
+        .dropdown-item.logout { color: #c0392b; }
+        .nav-avatar { width: 36px; height: 36px; background: var(--amber); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; color: #fff; }
+        .page { padding: 28px 28px 60px; max-width: 1100px; margin: auto; }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 13px; text-decoration: none; margin-bottom: 16px; padding: 5px 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+        .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+        .page-title { font-size: 22px; font-weight: 700; color: var(--green-dark); }
+        .detail-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
+        .gallery-card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); overflow: hidden; }
+        .gallery-main { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+        .gallery-placeholder { width: 100%; aspect-ratio: 4/3; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f0ece3; color: var(--text-hint); }
+        .badge-card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); padding: 16px; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+        .badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .badge-open { background: var(--green-light); color: var(--green-dark); }
+        .card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+        .card-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; }
+        .price-row, .seats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .price-item, .seat-item { background: var(--bg-page); padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
+        .price-item-value, .seat-value { font-size: 20px; font-weight: 700; color: var(--green-dark); }
+        .detail-text { white-space: pre-wrap; line-height: 1.7; }
+        .info-row { display: flex; border-bottom: 1px solid var(--border); padding: 8px 0; }
+        .info-label { width: 130px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="nav-brand" th:href="@{/manager/tours}">
+        <i class="fas fa-mountain-sun"></i> ระบบท่องเที่ยวชุมชนเผ่า
+    </a>
+    <div class="nav-dropdown">
+        <div class="nav-dropdown-trigger">
+            <div class="nav-avatar" 
+                 th:text="${loggedInManager != null and loggedInManager.firstname != null} 
+                           ? ${#strings.substring(loggedInManager.firstname,0,1)} : 'CM'">CM</div>
+            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ผู้จัดการ</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="dropdown-menu">
+            <div class="dropdown-header">
+                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ชื่อผู้จัดการ</div>
+                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+            </div>
+            <a class="dropdown-item" th:href="@{/manager/profile}">
+                <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+            </a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item logout" th:href="@{/logout}">
+                <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="page">
+    <a class="back-link" th:href="@{/manager/tours}">
+        <i class="fas fa-arrow-left"></i> ย้อนกลับ
+    </a>
+
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-title">รายละเอียดทัวร์</div>
+            <div class="page-subtitle">รหัสทัวร์: <span th:text="${tour.tourid}">-</span></div>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="left-col">
+            <div class="gallery-card">
+                <th:block th:if="${tour.images != null and !#strings.isEmpty(tour.images)}">
+                    <img class="gallery-main" 
+                         th:src="${tour.images.startsWith('[') or tour.images.startsWith('data:') ? tour.images : 'data:image/jpeg;base64,' + tour.images}" 
+                         alt="รูปทัวร์" />
+                </th:block>
+                <div th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}" class="gallery-placeholder">
+                    <i class="fas fa-image"></i>
+                    <span>ยังไม่มีรูปภาพ</span>
+                </div>
+            </div>
+
+            <div class="badge-card">
+                <span class="badge badge-open" th:text="${tour.status}">สถานะ</span>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+                <div class="card-title">ราคาทัวร์</div>
+                <div class="price-row">
+                    <div class="price-item">
+                        <div class="price-item-label">ผู้ใหญ่</div>
+                        <div class="price-item-value" th:text="${#numbers.formatDecimal(tour.adultprice,1,'COMMA',0,'POINT')}">0</div>
+                        <div class="price-item-unit">บาท</div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-item-label">เด็ก</div>
+                        <div class="price-item-value" th:text="${#numbers.formatDecimal(tour.childprice,1,'COMMA',0,'POINT')}">0</div>
+                        <div class="price-item-unit">บาท</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-col">
+            <div class="card">
+                <div class="card-title">ข้อมูลพื้นฐาน</div>
+                <h2 style="margin-bottom:10px;" th:text="${tour.tourmname}">ชื่อทัวร์</h2>
+                <div class="seats-grid">
+                    <div class="seat-item">
+                        <div class="seat-label">ขั้นต่ำ</div>
+                        <div class="seat-value" th:text="${tour.minSeatstour}">0</div>
+                        <div class="seat-unit">ท่าน</div>
+                    </div>
+                    <div class="seat-item">
+                        <div class="seat-label">สูงสุด</div>
+                        <div class="seat-value" th:text="${tour.maxSeatstour}">0</div>
+                        <div class="seat-unit">ท่าน</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">รายละเอียด</div>
+                <div class="detail-text" th:text="${tour.tourdetail}">-</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">เงื่อนไข</div>
+                <div class="detail-text" th:text="${tour.conditiontour != null ? tour.conditiontour : 'ไม่มีเงื่อนไขเพิ่มเติม'}">-</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

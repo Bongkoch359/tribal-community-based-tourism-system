@@ -113,40 +113,18 @@ public class TourController {
     }
 
      // ─── แสดงรายละเอียดทัวร์ ─────────────────────────────
- 
-    @GetMapping("/{tourid}")
-    public String tourDetail(
-            @PathVariable String tourid,
-            @RequestParam(value = "success", required = false) String success,
-            HttpSession session,
-            Model model
-    ) {
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
- 
-        Tour tour = tourService.getTourByIdAny(tourid)
-                .orElse(null);
- 
-        if (tour == null) {
-            return "redirect:/manager/tours?error=notfound";
-        }
- 
-        // ─── แปลง JSON images → List<String> เพื่อส่งไป Thymeleaf ───
-        List<String> imageList = new ArrayList<>();
-        if (tour.getImages() != null && !tour.getImages().isBlank()) {
-            imageList = tourService.parseImageList(tour.getImages());
-        }
- 
-        if ("updated".equals(success)) {
-            model.addAttribute("successMessage", "อัปเดตสถานะทัวร์เรียบร้อยแล้ว");
-        } else if ("closed".equals(success)) {
-            model.addAttribute("successMessage", "ปิดรับการจองเรียบร้อยแล้ว");
-        }
- 
-        model.addAttribute("tour", tour);
-        model.addAttribute("images", imageList);
-        model.addAttribute("loggedInManager", manager);
-        return "Tour/tourDetail";
-    }
+
+@GetMapping("/{tourid}")
+public String tourDetail(@PathVariable("tourid") String tourid, HttpSession session, Model model) {
+    Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+    if (manager == null) return "redirect:/login";
+
+    Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
+    if (tour == null) return "redirect:/manager/tours?error=notfound";
+
+    model.addAttribute("tour", tour);
+    model.addAttribute("loggedInManager", manager); // ห้ามลืมบรรทัดนี้
+    return "Tour/tourDetail"; 
+}
    
 }
