@@ -1,5 +1,7 @@
 package com.example.miniproject.dto.Tour;
 
+import java.time.LocalDate;
+
 public class TourRowDTO {
     
     private String tourid;
@@ -7,6 +9,8 @@ public class TourRowDTO {
     private double adultprice;
     private String status;
     private int bookingCount;
+    private LocalDate createdate;
+    
  
     public String getTourid() { return tourid; }
     public void setTourid(String tourid) { this.tourid = tourid; }
@@ -22,4 +26,10 @@ public class TourRowDTO {
  
     public int getBookingCount() { return bookingCount; }
     public void setBookingCount(int bookingCount) { this.bookingCount = bookingCount; }
+    public LocalDate getCreatedate() {
+        return createdate;
+    }
+    public void setCreatedate(LocalDate createdate) {
+        this.createdate = createdate;
+    }
 }
