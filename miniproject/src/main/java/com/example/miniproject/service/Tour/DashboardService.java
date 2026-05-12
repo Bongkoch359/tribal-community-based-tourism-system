@@ -8,7 +8,7 @@ import com.example.miniproject.dto.Tour.ActivityLogDTO;
 import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.TourRepository;
 import com.example.miniproject.repository.Member.ActivitypostRepository;
-import com.example.miniproject.repository.Tour.PaymentRepository;
+import com.example.miniproject.repository.Member.PaymentRepository;
 import com.example.miniproject.entity.enums.BookingStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

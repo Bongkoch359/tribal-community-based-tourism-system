@@ -679,7 +679,69 @@ body{
 
             </div>
 
-            <!-- SECTION 2 -->
+            <!-- SECTION 1.5 : การจองนี้สำหรับใคร -->
+<div class="section">
+
+    <div class="section-title">
+        <div class="section-num">2</div>
+        การจองนี้สำหรับใคร?
+    </div>
+
+    <div class="radio-group" style="margin-bottom:14px;">
+
+        <label class="radio-item">
+            <input type="radio"
+                   name="isBookerGoing"
+                   value="true"
+                   checked
+                   onchange="toggleGuestForm(this.value)">
+            ฉันเข้าพักเอง
+        </label>
+
+        <label class="radio-item">
+            <input type="radio"
+                   name="isBookerGoing"
+                   value="false"
+                   onchange="toggleGuestForm(this.value)">
+            จองให้ผู้อื่น
+        </label>
+
+    </div>
+
+    <!-- ฟอร์มชื่อแขก (ซ่อนไว้ก่อน) -->
+    <div id="guestFormWrap" style="display:none;">
+
+        <div class="info-alert">
+            👤 กรุณากรอกชื่อผู้ที่จะเข้าพักจริง
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>ชื่อจริงผู้เข้าพัก</label>
+                <input class="form-control"
+                       type="text"
+                       id="guestFirstname"
+                       name="guestFirstname"
+                       placeholder="ชื่อจริง">
+            </div>
+
+            <div class="form-group">
+                <label>นามสกุลผู้เข้าพัก</label>
+                <input class="form-control"
+                       type="text"
+                       id="guestLastname"
+                       name="guestLastname"
+                       placeholder="นามสกุล">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+            <!-- SECTION 3 -->
             <div class="section">
 
                 <div class="section-title">
@@ -822,7 +884,7 @@ body{
 
             </div>
 
-            <!-- SECTION 3 -->
+            <!-- SECTION 4 -->
             <div class="section">
 
                 <div class="section-title">
@@ -1055,6 +1117,21 @@ function confirmBooking(){
         document.getElementById('real-submit').click();
     }
 }
+
+
+
+/* TOGGLE GUEST FORM */
+function toggleGuestForm(val){
+    const wrap = document.getElementById('guestFormWrap');
+    wrap.style.display = (val === 'false') ? 'block' : 'none';
+
+    // ล้างค่าเมื่อกลับไปเลือก "ฉันเข้าพักเอง"
+    if(val === 'true'){
+        document.getElementById('guestFirstname').value = '';
+        document.getElementById('guestLastname').value  = '';
+    }
+}
+
 
 /* PAGE LOAD */
 window.onload = function(){

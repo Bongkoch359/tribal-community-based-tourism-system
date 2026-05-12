@@ -1,469 +1,726 @@
 <!DOCTYPE html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>รายละเอียดการจอง</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-    <style>
-        :root {
-            --forest:      #2d6a4f;
-            --forest-mid:  #40916c;
-            --forest-lite: #74c69d;
-            --forest-bg:   #d8f3dc;
-            --cream:       #f8faf8;
-            --border:      #d1e8d5;
-            --text-main:   #1a2e1e;
-            --text-muted:  #6b7a6e;
-            --amber:       #e9820c;
-            --amber-lite:  #fef3e2;
-            --red-soft:    #dc2626;
-            --red-bg:      #fef2f2;
-            --white:       #ffffff;
-            --shadow-sm:   0 1px 3px rgba(45,106,79,.08);
-            --shadow-md:   0 4px 16px rgba(45,106,79,.12);
-            --shadow-lg:   0 8px 32px rgba(45,106,79,.16);
-            --radius:      14px;
-        }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Sarabun', sans-serif; background: var(--cream); color: var(--text-main); min-height: 100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายละเอียดการจองโฮมสเตย์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-        nav { background: var(--forest); padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
-        .nav-brand { display: flex; align-items: center; gap: 10px; color: var(--white); font-family: 'Prompt', sans-serif; font-size: 1rem; font-weight: 600; text-decoration: none; }
-        .nav-brand i { font-size: 1.2rem; color: var(--forest-lite); }
-        .nav-links { display: flex; align-items: center; gap: 24px; }
-        .nav-links a { color: rgba(255,255,255,.82); text-decoration: none; font-size: .9rem; }
-        .nav-links a:hover { color: var(--white); }
-        .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--forest-lite); display: flex; align-items: center; justify-content: center; color: var(--forest); font-weight: 700; font-size: .85rem; }
+:root {
+    --green-dark:#2d5a27;
+    --green-main:#3d7a35;
+    --green-light:#e8f5e1;
+    --green-accent:#5a9e50;
+    --orange:#e67e22;
+    --orange-light:#fdf3e7;
+    --red:#e53935;
+    --red-light:#fdecea;
+    --yellow:#f59e0b;
+    --yellow-light:#fffbeb;
+    --blue:#1d6fa4;
+    --blue-light:#e8f4fb;
+    --gray-100:#f3f4f6;
+    --gray-200:#e5e7eb;
+    --gray-400:#9ca3af;
+    --gray-600:#6b7280;
+    --gray-800:#1f2937;
+    --shadow:0 2px 12px rgba(0,0,0,.08);
+    --shadow-md:0 4px 20px rgba(0,0,0,.12);
+    --radius-lg:18px;
+}
 
-        .breadcrumb-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 32px; display: flex; align-items: center; gap: 6px; font-size: .84rem; color: var(--text-muted); }
-        .breadcrumb-bar a { color: var(--forest); text-decoration: none; }
-        .breadcrumb-bar i { font-size: .7rem; }
+body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-800); font-size:15px; }
 
-        .page { max-width: 1120px; margin: 0 auto; padding: 28px 24px 60px; }
+/* ── NAVBAR ── */
+.navbar {
+    background:var(--green-dark); height:54px; padding:0 2rem;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.navbar-brand { display:flex; align-items:center; gap:.6rem; color:#fff; font-weight:700; font-size:.95rem; text-decoration:none; }
+.logo-icon { width:30px; height:30px; background:var(--green-accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+.navbar-nav { display:flex; align-items:center; gap:.4rem; }
+.nav-link { color:rgba(255,255,255,.75); text-decoration:none; font-size:.88rem; padding:.35rem .75rem; border-radius:6px; transition:.2s; }
+.nav-link:hover { color:#fff; background:rgba(255,255,255,.15); }
+.nav-avatar { width:32px; height:32px; border-radius:50%; background:var(--green-accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.85rem; }
 
-        .status-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-        .status-badge { display: flex; align-items: center; gap: 10px; }
-        .status-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-        .s-PENDING          { background: var(--amber-lite); color: var(--amber); }
-        .s-WAITING_APPROVAL { background: #eff6ff; color: #2563eb; }
-        .s-CONFIRMED        { background: var(--forest-bg); color: var(--forest); }
-        .s-CANCEL           { background: var(--red-bg); color: var(--red-soft); }
-        .status-label h2 { font-family: 'Prompt', sans-serif; font-size: 1.15rem; font-weight: 600; }
-        .status-label .booking-ref { font-size: .82rem; color: var(--text-muted); margin-top: 1px; }
+/* ── BREADCRUMB ── */
+.breadcrumb { background:#fff; padding:.55rem 2rem; border-bottom:1px solid var(--gray-200); font-size:.8rem; color:var(--gray-600); }
+.breadcrumb a { color:var(--green-main); text-decoration:none; }
 
-        .btn-back { display: inline-flex; align-items: center; gap: 7px; background: transparent; border: 1.5px solid var(--forest); color: var(--forest); padding: 8px 18px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .9rem; font-weight: 500; text-decoration: none; transition: all .2s; }
-        .btn-back:hover { background: var(--forest); color: var(--white); }
+/* ── PAGE WRAP ── */
+.page-wrap { max-width:1160px; margin:0 auto; padding:1.5rem 1.25rem 3rem; }
 
-        .main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
-        @media (max-width: 780px) { .main-grid { grid-template-columns: 1fr; } }
+/* ── ALERT ── */
+.alert { border-radius:10px; padding:12px 16px; font-size:.88rem; font-weight:600; display:flex; align-items:center; gap:.5rem; margin-bottom:16px; }
+.alert-success { background:var(--green-light); border:1px solid #a5d6a7; color:var(--green-dark); }
+.alert-error   { background:var(--red-light);   border:1px solid #ef9a9a; color:#b71c1c; }
+.alert-info    { background:var(--blue-light);   border:1px solid #90caf9; color:#1e4f6b; }
 
-        .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; box-shadow: var(--shadow-sm); animation: fadeUp .35s ease both; }
-        .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.10s}
-        .card:nth-child(3){animation-delay:.15s} .card:nth-child(4){animation-delay:.20s}
-        @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+/* ── STATUS HEADER ── */
+.booking-header {
+    background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow);
+    padding:18px 22px; display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:20px; flex-wrap:wrap; gap:12px;
+}
+.booking-header-left { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.booking-id-label { font-size:.8rem; color:var(--gray-600); }
+.booking-id { font-size:1.05rem; font-weight:800; color:var(--gray-800); }
 
-        .card-header { background: linear-gradient(90deg,var(--forest-bg) 0%,#edf7f0 100%); padding: 12px 20px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--border); }
-        .card-header-icon { width: 28px; height: 28px; border-radius: 7px; background: var(--forest); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: .75rem; }
-        .card-header h3 { font-family: 'Prompt', sans-serif; font-size: .95rem; font-weight: 600; color: var(--forest); }
-        .card-body { padding: 20px; }
+.status-badge { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .9rem; border-radius:20px; font-size:.8rem; font-weight:700; }
+.status-PENDING          { background:var(--yellow-light); color:#92400e; border:1px solid #fcd34d; }
+.status-WAITING_APPROVAL { background:var(--blue-light);   color:#1e4f6b; border:1px solid #90caf9; }
+.status-CONFIRMED        { background:var(--green-light);  color:var(--green-dark); border:1px solid #a5d6a7; }
+.status-CANCEL           { background:var(--red-light);    color:#b71c1c; border:1px solid #ef9a9a; }
 
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
-        .info-grid.three { grid-template-columns: repeat(3, 1fr); }
-        .info-item label { display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
-        .info-item .value { font-size: .97rem; font-weight: 500; }
-        .info-item .value.big { font-family: 'Prompt', sans-serif; font-size: 1.05rem; }
-        .dash { color: var(--text-muted); font-size: .9rem; }
+.btn-edit {
+    display:inline-flex; align-items:center; gap:.4rem;
+    background:var(--orange); color:#fff; border:none; border-radius:8px;
+    padding:.6rem 1.2rem; font-size:.88rem; font-weight:700; cursor:pointer; transition:.2s;
+}
+.btn-edit:hover { background:#cf6d17; }
 
-        .booker-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--forest-bg); color: var(--forest); padding: 5px 12px; border-radius: 99px; font-size: .82rem; font-weight: 600; margin-top: 8px; }
+/* ── LAYOUT ── */
+.detail-layout { display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start; }
 
-        .guest-list { list-style: none; }
-        .guest-list li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: .93rem; }
-        .guest-list li:last-child { border-bottom: none; }
-        .guest-num { width: 24px; height: 24px; border-radius: 50%; background: var(--forest-bg); color: var(--forest); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; flex-shrink: 0; }
+/* ── CARDS ── */
+.card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; margin-bottom:16px; }
+.section-header { display:flex; align-items:center; gap:.5rem; padding:16px 20px; border-bottom:1px solid var(--gray-100); font-weight:800; font-size:.95rem; }
+.section-num { width:22px; height:22px; border-radius:50%; background:var(--green-main); color:#fff; font-size:.72rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.section-body { padding:18px 20px; }
 
-        .actions { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
-        .btn-cancel { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--red-soft); color: var(--red-soft); padding: 12px 20px; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: .95rem; font-weight: 600; cursor: pointer; transition: all .2s; }
-        .btn-cancel:hover { background: var(--red-bg); }
-        .btn-confirm { flex: 2; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--forest); border: none; color: var(--white); padding: 12px 24px; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: .95rem; font-weight: 600; cursor: pointer; transition: background .2s, transform .15s; box-shadow: 0 3px 10px rgba(45,106,79,.25); }
-        .btn-confirm:hover { background: var(--forest-mid); transform: translateY(-1px); }
+/* ── DETAIL GRID ── */
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.detail-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
+.detail-label { font-size:.75rem; color:var(--gray-600); font-weight:600; margin-bottom:4px; }
+.detail-value { font-size:.92rem; font-weight:700; color:var(--gray-800); }
+.detail-value.big { font-size:1.05rem; }
+.divider { height:1px; background:var(--gray-100); margin:14px 0; }
 
-        .sidebar { position: sticky; top: 24px; }
-        .property-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-md); animation: fadeUp .4s .1s ease both; }
-        .property-img { width: 100%; height: 180px; object-fit: cover; display: block; }
-        .property-img-placeholder { width: 100%; height: 180px; background: linear-gradient(135deg,#c8e6c9,#a5d6a7); display: flex; align-items: center; justify-content: center; color: var(--forest); font-size: 3rem; }
-        .property-info { padding: 16px; }
-        .property-name { font-family: 'Prompt', sans-serif; font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
-        .property-location { display: flex; align-items: center; gap: 5px; color: var(--text-muted); font-size: .82rem; margin-bottom: 14px; }
-        .property-location i { color: var(--forest-mid); }
-        .prop-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
-        .prop-tag { display: inline-flex; align-items: center; gap: 5px; background: var(--forest-bg); color: var(--forest); padding: 4px 10px; border-radius: 99px; font-size: .8rem; font-weight: 500; }
-        .price-table { width: 100%; border-collapse: collapse; }
-        .price-table td { padding: 6px 0; font-size: .88rem; }
-        .price-table td:last-child { text-align: right; color: var(--text-muted); }
-        .price-table .divider td { border-top: 1px solid var(--border); padding-top: 10px; }
-        .price-total { font-size: 1.05rem !important; font-weight: 700 !important; color: var(--forest) !important; }
+/* ── TAG ── */
+.tag { display:inline-flex; align-items:center; gap:.3rem; padding:.2rem .65rem; border-radius:20px; font-size:.75rem; font-weight:700; }
+.tag-green  { background:var(--green-light);  color:var(--green-dark); }
+.tag-orange { background:var(--orange-light); color:#a04000; }
 
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 999; align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; }
-        .modal { background: var(--white); border-radius: var(--radius); padding: 30px 28px; max-width: 380px; width: 90%; text-align: center; box-shadow: var(--shadow-lg); animation: fadeUp .25s ease; }
-        .modal-icon { font-size: 2.5rem; margin-bottom: 12px; }
-        .modal h3 { font-family: 'Prompt', sans-serif; font-size: 1.1rem; margin-bottom: 8px; }
-        .modal p { font-size: .9rem; color: var(--text-muted); margin-bottom: 22px; }
-        .modal-actions { display: flex; gap: 10px; }
-        .modal-actions button { flex: 1; padding: 11px; border-radius: 9px; font-size: .95rem; font-family: 'Sarabun', sans-serif; cursor: pointer; font-weight: 600; border: none; }
-        .modal-close { background: #f3f4f6; color: var(--text-main); }
-        .modal-confirm-red { background: var(--red-soft); color: var(--white); }
-        .modal-confirm-green { background: var(--forest); color: var(--white); }
-    </style>
+/* ── GUEST LIST ── */
+.guest-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--gray-100); }
+.guest-row:last-child { border-bottom:none; padding-bottom:0; }
+.guest-avatar { width:36px; height:36px; border-radius:50%; background:var(--green-light); color:var(--green-dark); display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0; }
+.guest-name { font-weight:700; font-size:.9rem; }
+.guest-role { font-size:.75rem; color:var(--gray-600); margin-top:2px; }
+.guest-empty { color:var(--gray-400); font-size:.85rem; font-style:italic; }
+
+/* ── NOTE ── */
+.note-text  { font-size:.9rem; line-height:1.6; }
+.note-empty { color:var(--gray-400); font-size:.85rem; font-style:italic; }
+
+/* ── ACTION BAR ── */
+.action-bar { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:16px 20px; display:flex; gap:12px; flex-wrap:wrap; }
+.btn-cancel-booking { flex:1; min-width:140px; background:#fff; color:var(--red); border:2px solid var(--red); border-radius:8px; padding:12px; font-size:.92rem; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit; }
+.btn-cancel-booking:hover { background:var(--red-light); }
+.btn-pay { flex:2; min-width:180px; background:var(--green-main); color:#fff; border:none; border-radius:8px; padding:12px; font-size:.92rem; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit; }
+.btn-pay:hover { background:var(--green-dark); }
+
+/* ── SIDEBAR ── */
+.summary-card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:sticky; top:70px; }
+.summary-img { width:100%; height:160px; object-fit:cover; display:block; }
+.summary-img-placeholder { width:100%; height:160px; background:linear-gradient(135deg,#c8e6c9,#a5d6a7); display:flex; align-items:center; justify-content:center; font-size:3rem; }
+.summary-body { padding:16px; }
+.homestay-name { font-size:1rem; font-weight:800; }
+.homestay-loc  { font-size:.78rem; color:var(--gray-600); margin-top:3px; }
+.summary-divider { height:1px; background:var(--gray-100); margin:12px 0; }
+.sum-row { display:flex; justify-content:space-between; padding:4px 0; font-size:.82rem; }
+.sum-row .label { color:var(--gray-600); }
+.sum-row .val   { font-weight:600; }
+.price-box { background:var(--green-light); border-radius:10px; padding:12px 14px; margin-top:10px; }
+.price-box-label { font-size:.78rem; color:var(--green-dark); font-weight:600; }
+.price-box-total { font-size:1.5rem; font-weight:800; color:var(--green-dark); margin-top:2px; }
+.price-box-note  { font-size:.72rem; color:var(--green-accent); margin-top:2px; }
+
+/* ── EDIT MODAL ── */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-md); width:100%; max-width:540px; max-height:90vh; overflow-y:auto; padding:24px; }
+.modal-title { font-size:1.05rem; font-weight:800; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; }
+.modal-close { background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--gray-600); }
+.form-group { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
+.form-group label { font-size:.83rem; font-weight:700; }
+.form-control { padding:10px 12px; border:1.5px solid var(--gray-200); border-radius:8px; font-size:.88rem; font-family:inherit; color:var(--gray-800); }
+.form-control:focus { outline:none; border-color:var(--green-accent); }
+.form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.modal-actions { display:flex; gap:10px; margin-top:18px; }
+.btn-modal-cancel { flex:1; background:#fff; color:var(--gray-600); border:1.5px solid var(--gray-200); border-radius:8px; padding:11px; font-size:.9rem; font-weight:700; cursor:pointer; font-family:inherit; }
+.btn-modal-save   { flex:2; background:var(--green-main); color:#fff; border:none; border-radius:8px; padding:11px; font-size:.9rem; font-weight:700; cursor:pointer; font-family:inherit; }
+.btn-modal-save:hover { background:var(--green-dark); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+    .detail-layout { grid-template-columns:1fr; }
+    .summary-card { position:static; }
+    .detail-grid.cols3 { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:560px){
+    .detail-grid, .detail-grid.cols3 { grid-template-columns:1fr; }
+    .form-grid-2 { grid-template-columns:1fr; }
+}
+</style>
 </head>
 <body>
 
-<nav>
-    <a href="/member/home" class="nav-brand">
-        <i class="fa-solid fa-mountain-sun"></i>
-        ระบบท่องเที่ยวชุมชนเผ่า
-    </a>
-    <div class="nav-links">
-        <a th:href="@{/member/home}">หน้าแรก</a>
-        <a th:href="@{/member/bookings/list}">รายการจองของฉัน</a>
-        <div class="nav-avatar"
-             th:text="${#strings.toUpperCase(#strings.substring(booking.member?.fullName?:'M',0,1))}">M</div>
+<div class="page-wrap">
+
+<div th:with="
+detail=${booking.roomDetails != null and !booking.roomDetails.isEmpty() ? booking.roomDetails[0] : null},
+sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'}">
+
+    <!-- SUCCESS -->
+    <div class="alert alert-success" th:if="${successMsg != null}">
+        <span th:text="${successMsg}"></span>
     </div>
-</nav>
 
-<div class="breadcrumb-bar">
-    <a th:href="@{/member/home}"><i class="fa-solid fa-house"></i> หน้าแรก</a>
-    <i class="fa-solid fa-chevron-right"></i>
-    <a th:href="@{/member/bookings/list}">รายการจองของฉัน</a>
-    <i class="fa-solid fa-chevron-right"></i>
-    <span>บ้านพัก/โฮมสเตย์</span>
-</div>
+    <!-- ERROR -->
+    <div class="alert alert-error" th:if="${errorMsg != null}">
+        <span th:text="${errorMsg}"></span>
+    </div>
 
-<div class="page">
-    <!--
-    ══════════════════════════════════════════════════════════════
-     th:with  →  rd  = booking.roomDetails[0]  (Bookingroomdetail)
-                 sts = booking.bookingStatus.name()
-    ══════════════════════════════════════════════════════════════
-    -->
-    <div th:with="
-        rd  = ${not #lists.isEmpty(booking.roomDetails) ? booking.roomDetails[0] : null},
-        sts = ${booking.bookingStatus.name()}">
+    <!-- HEADER -->
+    <div class="booking-header">
 
-        <!-- STATUS HEADER -->
-        <div class="status-header">
-            <div class="status-badge">
-                <div class="status-icon"
-                     th:classappend="${sts=='PENDING'} ? 's-PENDING'
-                                   : (${sts=='WAITING_APPROVAL'} ? 's-WAITING_APPROVAL'
-                                   : (${sts=='CONFIRMED'} ? 's-CONFIRMED' : 's-CANCEL'))">
-                    <i class="fa-solid"
-                       th:classappend="${sts=='PENDING'}           ? 'fa-clock'
-                                      :(${sts=='WAITING_APPROVAL'} ? 'fa-hourglass-half'
-                                      :(${sts=='CONFIRMED'}         ? 'fa-circle-check'
-                                      : 'fa-circle-xmark'))"></i>
-                </div>
-                <div class="status-label">
-                    <h2 th:text="${sts=='PENDING'}           ? 'รอการชำระเงิน'
-                                :(${sts=='WAITING_APPROVAL'} ? 'รอการอนุมัติ'
-                                :(${sts=='CONFIRMED'}         ? 'ยืนยันแล้ว'   : 'ยกเลิกแล้ว'))">
-                        รอการชำระเงิน</h2>
-                    <!-- booking.bookingid ← ชื่อ field จริงใน Booking entity -->
-                    <div class="booking-ref">
-                        หมายเลขการจอง: <strong th:text="${booking.bookingid}">BK05010001</strong>
-                    </div>
+        <div class="booking-header-left">
+
+            <div>
+                <div class="booking-id-label">รหัสการจอง</div>
+
+                <div class="booking-id"
+                     th:text="${booking.bookingid}">
                 </div>
             </div>
-            <a th:href="@{/member/bookings/list}" class="btn-back">
-                <i class="fa-solid fa-arrow-left"></i> รายการจองทั้งหมด
-            </a>
+
+            <!-- STATUS -->
+            <span class="status-badge"
+                  th:classappend="${'status-' + sts}">
+
+                <span th:if="${sts == 'PENDING'}">
+                    ⏳ รอการชำระเงิน
+                </span>
+
+                <span th:if="${sts == 'WAITING_APPROVAL'}">
+                    🔍 รอการอนุมัติ
+                </span>
+
+                <span th:if="${sts == 'CONFIRMED'}">
+                    ✅ ยืนยันแล้ว
+                </span>
+
+                <span th:if="${sts == 'CANCEL'}">
+                    ❌ ยกเลิกแล้ว
+                </span>
+
+            </span>
+
+            <span style="font-size:.8rem;color:#666;">
+                วันที่จอง :
+                <strong th:text="${booking.bookingdate != null ?
+                    #dates.format(booking.bookingdate,'dd/MM/yyyy') : '-'}">
+                </strong>
+            </span>
+
         </div>
 
-        <div class="main-grid">
+        <!-- EDIT BUTTON -->
+        <button class="btn-edit"
+                th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
+                onclick="openEditModal()">
+            ✏️ แก้ไขการจอง
+        </button>
 
-            <!-- ── LEFT ── -->
-            <div>
+    </div>
 
-                <!-- 1. ข้อมูลเช็คพัก  (ข้อมูลมาจาก Bookingroomdetail → rd) -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-header-icon"><i class="fa-solid fa-bed"></i></div>
-                        <h3>1. ข้อมูลเช็คพัก</h3>
-                    </div>
-                    <div class="card-body" th:if="${rd != null}">
-                        <div class="info-grid" style="margin-bottom:16px;">
-                            <div class="info-item">
-                                <label>ประเภทที่พัก</label>
-                                <!-- rd.roomtype.roomTypeName  ← field ใน Roomtype entity -->
-                                <div class="value big"
-                                     th:text="${rd.roomtype?.roomTypeName ?: 'โฮมสเตย์'}">โฮมสเตย์</div>
-                            </div>
-                            <div class="info-item">
-                                <label>จำนวนห้อง</label>
-                                <!-- rd.numofrooms  ← field ใน Bookingroomdetail -->
-                                <div class="value"
-                                     th:text="${rd.numofrooms != null ? rd.numofrooms + ' ห้อง' : '—'}">1 ห้อง</div>
-                            </div>
-                        </div>
-                        <div class="info-grid three">
-                            <div class="info-item">
-                                <label>วันที่เช็คอิน</label>
-                                <!-- rd.checkindate  ← java.sql.Date → #dates.format -->
-                                <div class="value"
-                                     th:text="${rd.checkindate != null ? #dates.format(rd.checkindate,'d/MM/yyyy') : '—'}">
-                                    15/03/2569</div>
-                            </div>
-                            <div class="info-item">
-                                <label>วันที่เช็คเอ้าท์</label>
-                                <!-- rd.checkoutdate  ← java.sql.Date -->
-                                <div class="value"
-                                     th:text="${rd.checkoutdate != null ? #dates.format(rd.checkoutdate,'d/MM/yyyy') : '—'}">
-                                    16/03/2569</div>
-                            </div>
-                            <div class="info-item">
-                                <label>ผู้เข้าพัก</label>
-                                <!-- rd.numofadults / rd.numofChcldren  ← field ใน Bookingroomdetail -->
-                                <div class="value">
-                                    <span th:text="${(rd.numofadults ?: 0) + ' ผู้ใหญ่'}">2 ผู้ใหญ่</span>
-                                    <span th:if="${rd.numofChcldren != null and rd.numofChcldren > 0}"
-                                          th:text="' / ' + rd.numofChcldren + ' เด็ก'"></span>
+    <!-- MAIN -->
+    <div class="detail-layout">
+
+        <!-- LEFT -->
+        <div>
+
+            <!-- SECTION 1 -->
+            <div class="card">
+
+                <div class="section-header">
+                    <div class="section-num">1</div>
+                    ข้อมูลการเข้าพัก
+                </div>
+
+                <div class="section-body">
+
+                    <div th:if="${detail != null}">
+
+                        <div class="detail-grid">
+
+                            <div>
+                                <div class="detail-label">ประเภทห้อง</div>
+
+                                <div class="detail-value"
+                                     th:text="${detail.roomtype != null ?
+                                        detail.roomtype.typename : '-'}">
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card-body" th:unless="${rd != null}">
-                        <p class="dash">ไม่พบข้อมูลการจองห้องพัก</p>
-                    </div>
-                </div>
 
-                <!-- 2. ข้อมูลผู้ติดต่อหลัก (มาจาก booking.member) -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-header-icon"><i class="fa-solid fa-user"></i></div>
-                        <h3>2. ข้อมูลผู้ติดต่อหลัก</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-grid" style="margin-bottom:14px;">
-                            <div class="info-item">
-                                <label>ชื่อ-นามสกุล</label>
-                                <!-- booking.member.fullName -->
-                                <div class="value big" th:text="${booking.member?.fullName ?: '—'}">คุณมะลิ มานี</div>
+                            <div>
+                                <div class="detail-label">จำนวนห้อง</div>
+
+                                <div class="detail-value">
+                                    <span th:text="${detail.numofrooms}"></span> ห้อง
+                                </div>
                             </div>
-                            <div class="info-item">
-                                <label>เบอร์โทรศัพท์</label>
-                                <!-- booking.member.phone -->
-                                <div class="value" th:text="${booking.member?.phone ?: '—'}">081-234-5678</div>
+
+                            <div>
+                                <div class="detail-label">เช็คอิน</div>
+
+                                <div class="detail-value"
+                                     th:text="${detail.checkindate != null ?
+                                        #dates.format(detail.checkindate,'dd MMMM yyyy') : '-'}">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="detail-label">เช็คเอาท์</div>
+
+                                <div class="detail-value"
+                                     th:text="${detail.checkoutdate != null ?
+                                        #dates.format(detail.checkoutdate,'dd MMMM yyyy') : '-'}">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="detail-grid cols3">
+
+                            <div>
+                                <div class="detail-label">ผู้ใหญ่</div>
+
+                                <div class="detail-value">
+                                    <span th:text="${detail.numofadults}"></span> คน
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="detail-label">เด็ก</div>
+
+                                <div class="detail-value">
+                                    <span th:text="${detail.numofChcldren}"></span> คน
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="detail-label">จำนวนคืน</div>
+
+                                <div class="detail-value" id="nights-display">
+                                    -
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <span id="js-checkin"
+                              th:attr="data-date=${detail.checkindate}"
+                              style="display:none;"></span>
+
+                        <span id="js-checkout"
+                              th:attr="data-date=${detail.checkoutdate}"
+                              style="display:none;"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SECTION 2 -->
+            <div class="card">
+
+                <div class="section-header">
+                    <div class="section-num">2</div>
+                    ข้อมูลผู้ติดต่อ
+                </div>
+
+                <div class="section-body">
+
+                    <div class="detail-grid">
+
+                        <div>
+                            <div class="detail-label">ชื่อ</div>
+
+                            <div class="detail-value"
+                                 th:text="${booking.member != null and booking.member.firstname != null ?
+                                    booking.member.firstname : '-'}">
                             </div>
                         </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>อีเมล์แอดเดรส</label>
-                                <!-- booking.member.email -->
-                                <div class="value" th:text="${booking.member?.email ?: '—'}">mali@example.com</div>
-                            </div>
-                            <div class="info-item">
-                                <label>ผู้ร่วมเดินทาง</label>
-                                <!-- booking.isBookerGoing  ← Boolean, getter = getIsBookerGoing() -->
-                                <span class="booker-tag" th:if="${booking.isBookerGoing}">
-                                    <i class="fa-solid fa-user-check"></i> ฉันเป็นผู้เข้าพักด้วย
-                                </span>
-                                <span class="dash" th:unless="${booking.isBookerGoing}">—</span>
+
+                        <div>
+                            <div class="detail-label">นามสกุล</div>
+
+                            <div class="detail-value"
+                                 th:text="${booking.member != null and booking.member.lastname != null ?
+                                    booking.member.lastname : '-'}">
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- 3. รายชื่อผู้เข้าพัก (booking.guests → List<Guest>) -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-header-icon"><i class="fa-solid fa-users"></i></div>
-                        <h3>3. รายชื่อผู้เข้าพัก</h3>
-                    </div>
-                    <div class="card-body">
-                        <!-- กรณีมี Guest records -->
-                        <ul class="guest-list"
-                            th:if="${booking.guests != null and not #lists.isEmpty(booking.guests)}">
-                            <li th:each="g, s : ${booking.guests}">
-                                <span class="guest-num" th:text="${s.index + 1}">1</span>
-                                <!-- ปรับ g.guestName ให้ตรงกับ field จริงใน Guest entity -->
-                                <span th:text="${g.guestName ?: '—'}">ชื่อผู้เข้าพัก</span>
-                            </li>
-                        </ul>
-                        <!-- fallback: ใช้ member name + booking.numofguest -->
-                        <ul class="guest-list"
-                            th:unless="${booking.guests != null and not #lists.isEmpty(booking.guests)}">
-                            <li>
-                                <span class="guest-num">1</span>
-                                <!-- booking.member.fullName -->
-                                <span th:text="${booking.member?.fullName ?: '—'}">คุณมะลิ มานี</span>
-                            </li>
-                            <!-- booking.numofguest  ← field ใน Booking entity -->
-                            <li th:if="${booking.numofguest != null and booking.numofguest > 1}">
-                                <span class="guest-num">2</span>
-                                <span class="dash">—</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                        <div>
+                            <div class="detail-label">โทรศัพท์</div>
 
-                <!-- 4. หมายเหตุ (booking.note) -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-header-icon"><i class="fa-solid fa-note-sticky"></i></div>
-                        <h3>4. หมายเหตุ</h3>
-                    </div>
-                    <div class="card-body">
-                        <!-- booking.note  ← field ใน Booking entity -->
-                        <p th:if="${booking.note != null and !booking.note.isBlank()}"
-                           th:text="${booking.note}"
-                           style="font-size:.95rem;line-height:1.7;"></p>
-                        <p class="dash" th:unless="${booking.note != null and !booking.note.isBlank()}">—</p>
-                    </div>
-                </div>
-
-                <!-- ACTION BUTTONS -->
-                <div class="actions" th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}">
-                    <button class="btn-cancel"
-                            onclick="document.getElementById('cancelModal').classList.add('open')">
-                        <i class="fa-regular fa-circle-xmark"></i> ยกเลิกการจอง
-                    </button>
-                    <button class="btn-confirm"
-                            th:if="${sts == 'PENDING'}"
-                            onclick="document.getElementById('confirmModal').classList.add('open')">
-                        <i class="fa-solid fa-circle-check"></i> ยืนยันการชำระเงิน
-                    </button>
-                </div>
-
-            </div><!-- /left -->
-
-            <!-- ── SIDEBAR ── -->
-            <div class="sidebar">
-                <div class="property-card" th:if="${rd != null}">
-
-                    <!-- rd.roomtype.homestay.imageUrl ← ปรับชื่อ field ตาม Homestay entity -->
-                    <img th:if="${rd.roomtype?.homestay?.imageUrl != null}"
-                         th:src="${rd.roomtype.homestay.imageUrl}"
-                         th:alt="${rd.roomtype.homestay.homestayName}"
-                         class="property-img"/>
-                    <div class="property-img-placeholder"
-                         th:unless="${rd.roomtype?.homestay?.imageUrl != null}">
-                        <i class="fa-solid fa-house-chimney"></i>
-                    </div>
-
-                    <div class="property-info">
-                        <!-- rd.roomtype.homestay.homestayName -->
-                        <div class="property-name"
-                             th:text="${rd.roomtype?.homestay?.homestayName ?: 'โฮมสเตย์'}">
-                            บ้านสิงโตโฮมสเตย์</div>
-                        <div class="property-location">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <!-- rd.roomtype.homestay.location ← ปรับชื่อ field ตาม Homestay entity -->
-                            <span th:text="${rd.roomtype?.homestay?.location ?: 'เชียงใหม่'}">
-                                เชียงดาว, เชียงใหม่</span>
+                            <div class="detail-value"
+                                 th:text="${booking.member != null and booking.member.phone != null ?
+                                    booking.member.phone : '-'}">
+                            </div>
                         </div>
 
-                        <div class="prop-tags">
-                            <span class="prop-tag">
-                                <i class="fa-regular fa-moon"></i>
-                                <!-- คำนวณจำนวนคืน: checkindate → checkoutdate -->
-                                <span th:if="${rd.checkindate != null and rd.checkoutdate != null}"
-                                      th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(
-                                                  rd.checkindate.toLocalDate(),
-                                                  rd.checkoutdate.toLocalDate())} + ' คืน'">1 คืน</span>
-                                <span th:unless="${rd.checkindate != null and rd.checkoutdate != null}">— คืน</span>
-                            </span>
-                            <span class="prop-tag">
-                                <i class="fa-solid fa-door-closed"></i>
-                                <!-- rd.numofrooms -->
-                                <span th:text="${(rd.numofrooms ?: 1) + ' ห้อง'}">1 ห้อง</span>
-                            </span>
-                            <span class="prop-tag">
-                                <i class="fa-solid fa-user-group"></i>
-                                <!-- booking.numofguest -->
-                                <span th:text="${(booking.numofguest ?: rd.numofadults ?: 1) + ' ท่าน'}">2 ท่าน</span>
-                            </span>
+                        <div>
+                            <div class="detail-label">อีเมล</div>
+
+                            <div class="detail-value"
+                                 th:text="${booking.member != null and booking.member.email != null ?
+                                    booking.member.email : '-'}">
+                            </div>
                         </div>
 
-                        <table class="price-table">
-                            <tr>
-                                <td>ค่าห้อง/คืน</td>
-                                <!-- rd.roomtype.pricepernight  ← field ใน Roomtype entity -->
-                                <td th:text="${rd.roomtype?.pricepernight != null
-                                             ? #numbers.formatDecimal(rd.roomtype.pricepernight,1,0) + ' ฿'
-                                             : '—'}">650 ฿</td>
-                            </tr>
-                            <tr>
-                                <td>จำนวนห้อง × คืน</td>
-                                <td th:if="${rd.checkindate != null and rd.checkoutdate != null}"
-                                    th:text="${(rd.numofrooms ?: 1) + ' × ' +
-                                              T(java.time.temporal.ChronoUnit).DAYS.between(
-                                                  rd.checkindate.toLocalDate(),
-                                                  rd.checkoutdate.toLocalDate())}">1 × 1</td>
-                                <td th:unless="${rd.checkindate != null and rd.checkoutdate != null}">—</td>
-                            </tr>
-                            <tr>
-                                <td>ค่าห้องรวม</td>
-                                <!-- rd.subtotalroom  ← คำนวณไว้ใน createHomestayBooking() -->
-                                <td th:text="${rd.subtotalroom != null
-                                             ? #numbers.formatDecimal(rd.subtotalroom,1,0) + ' ฿'
-                                             : '—'}">650 ฿</td>
-                            </tr>
-                            <tr class="divider">
-                                <td class="price-total">รวมทั้งสิ้น</td>
-                                <!-- booking.totalamount  ← field ใน Booking entity -->
-                                <td class="price-total"
-                                    th:text="${booking.totalamount != null
-                                             ? #numbers.formatDecimal(booking.totalamount,1,0) + ' ฿'
-                                             : '—'}">650 ฿</td>
-                            </tr>
-                        </table>
                     </div>
+
                 </div>
-            </div><!-- /sidebar -->
 
-        </div><!-- /main-grid -->
-    </div><!-- /th:with -->
-</div><!-- /page -->
+            </div>
 
-<!-- CANCEL MODAL -->
-<div class="modal-overlay" id="cancelModal">
-    <div class="modal">
-        <div class="modal-icon">🗑️</div>
-        <h3>ยืนยันการยกเลิก</h3>
-        <p>คุณต้องการยกเลิกการจองนี้ใช่หรือไม่?<br/>การยกเลิกไม่สามารถเรียกคืนได้</p>
-        <div class="modal-actions">
-            <button class="modal-close"
-                    onclick="document.getElementById('cancelModal').classList.remove('open')">ไม่ใช่</button>
-            <form th:action="@{/member/bookings/cancel/{id}(id=${booking.bookingid})}" method="post" style="flex:1;">
-                <button type="submit" class="modal-confirm-red" style="width:100%;">ยืนยัน ยกเลิก</button>
-            </form>
+            <!-- GUEST -->
+            <div class="card">
+
+                <div class="section-header">
+                    <div class="section-num">3</div>
+                    รายชื่อผู้เข้าพัก
+                </div>
+
+                <div class="section-body">
+
+                    <!-- SELF -->
+                    <div th:if="${booking.isBookerGoing}">
+
+                        <div class="guest-row">
+
+                            <div class="guest-avatar">
+                                👤
+                            </div>
+
+                            <div>
+
+                                <div class="guest-name"
+                                     th:text="${
+                                        (booking.member != null and booking.member.firstname != null ? booking.member.firstname : '')
+                                        + ' ' +
+                                        (booking.member != null and booking.member.lastname != null ? booking.member.lastname : '')
+                                     }">
+                                </div>
+
+                                <div class="guest-role">
+                                    ผู้จอง
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- OTHER GUEST -->
+                    <div th:if="${!booking.isBookerGoing and booking.guests != null}">
+
+                        <div class="guest-row"
+                             th:each="g : ${booking.guests}">
+
+                            <div class="guest-avatar">
+                                👥
+                            </div>
+
+                            <div>
+
+                                <div class="guest-name"
+                                     th:text="${
+                                        (g.firstname != null ? g.firstname : '')
+                                        + ' ' +
+                                        (g.lastname != null ? g.lastname : '')
+                                     }">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- NOTE -->
+            <div class="card">
+
+                <div class="section-header">
+                    <div class="section-num">4</div>
+                    หมายเหตุ
+                </div>
+
+                <div class="section-body">
+
+                    <p class="note-text"
+                       th:if="${booking.note != null and !booking.note.isEmpty()}"
+                       th:text="${booking.note}">
+                    </p>
+
+                    <p class="note-empty"
+                       th:if="${booking.note == null or booking.note.isEmpty()}">
+                        ไม่มีหมายเหตุ
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- ACTION -->
+            <div class="action-bar">
+
+                <!-- CANCEL -->
+                <button class="btn-cancel-booking"
+                        th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
+                        onclick="confirmCancel()">
+
+                    ❌ ยกเลิกการจอง
+
+                </button>
+
+                <!-- BACK -->
+                <button class="btn-pay"
+                        onclick="location.href='/member/bookings/list'">
+
+                    📋 กลับรายการการจอง
+
+                </button>
+
+            </div>
+
         </div>
+
+        <!-- RIGHT -->
+        <div class="summary-card">
+
+            <!-- IMAGE -->
+            <img class="summary-img"
+                 th:if="${detail != null
+                          and detail.roomtype != null
+                          and detail.roomtype.images != null
+                          and !detail.roomtype.images.isEmpty()}"
+                 th:src="${detail.roomtype.images}">
+
+            <div class="summary-img-placeholder"
+                 th:if="${detail == null
+                          or detail.roomtype == null
+                          or detail.roomtype.images == null
+                          or detail.roomtype.images.isEmpty()}">
+
+                🏠
+
+            </div>
+
+            <div class="summary-body">
+
+                <div class="homestay-name"
+                     th:text="${detail != null
+                                and detail.roomtype != null
+                                and detail.roomtype.homestay != null
+                                ? detail.roomtype.homestay.homestayname
+                                : '-'}">
+                </div>
+
+                <div class="homestay-loc">
+
+                    📍
+
+                    <span th:text="${detail != null
+                                     and detail.roomtype != null
+                                     and detail.roomtype.homestay != null
+                                     ? detail.roomtype.homestay.address
+                                     : '-'}">
+                    </span>
+
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="price-box">
+
+                    <div class="price-box-label">
+                        ราคารวมทั้งหมด
+                    </div>
+
+                    <div class="price-box-total">
+
+                        ฿
+
+                        <span th:text="${booking.totalamount != null ?
+                            #numbers.formatDecimal(
+                                booking.totalamount,
+                                0,
+                                'COMMA',
+                                0,
+                                'POINT'
+                            ) : '0'}">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal-overlay" id="editModal">
+
+        <div class="modal">
+
+            <div class="modal-title">
+                ✏️ แก้ไขการจอง
+            </div>
+
+            <form th:action="@{/booking/homestay/edit/{id}(id=${booking.bookingid})}"
+                  method="post">
+
+                <div class="form-grid-2">
+
+                    <div class="form-group">
+
+                        <label>เช็คอิน</label>
+
+                        <input class="form-control"
+                               type="date"
+                               name="checkin"
+                               id="edit-checkin"
+                               th:value="${detail != null and detail.checkindate != null ?
+                                   #dates.format(detail.checkindate,'yyyy-MM-dd') : ''}"
+                               required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>เช็คเอาท์</label>
+
+                        <input class="form-control"
+                               type="date"
+                               name="checkout"
+                               id="edit-checkout"
+                               th:value="${detail != null and detail.checkoutdate != null ?
+                                   #dates.format(detail.checkoutdate,'yyyy-MM-dd') : ''}"
+                               required>
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>หมายเหตุ</label>
+
+                    <textarea class="form-control"
+                              name="note"
+                              rows="3"
+                              th:text="${booking.note != null ? booking.note : ''}">
+                    </textarea>
+
+                </div>
+
+                <div class="modal-actions">
+
+                    <button type="button"
+                            class="btn-modal-cancel"
+                            onclick="closeEditModal()">
+
+                        ยกเลิก
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn-modal-save">
+
+                        💾 บันทึก
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- CANCEL FORM -->
+    <form id="cancelForm"
+          th:action="@{/booking/homestay/cancel/{id}(id=${booking.bookingid})}"
+          method="post"
+          style="display:none;">
+    </form>
+
 </div>
-
-<!-- CONFIRM PAYMENT MODAL -->
-<div class="modal-overlay" id="confirmModal">
-    <div class="modal">
-        <div class="modal-icon">✅</div>
-        <h3>ยืนยันการชำระเงิน</h3>
-        <p>ยืนยันว่าคุณได้ชำระเงินสำหรับการจองนี้แล้ว<br/>และรอการอนุมัติจากเจ้าของที่พัก</p>
-        <div class="modal-actions">
-            <button class="modal-close"
-                    onclick="document.getElementById('confirmModal').classList.remove('open')">ยกเลิก</button>
-            <form th:action="@{/member/bookings/confirm/{id}(id=${booking.bookingid})}" method="post" style="flex:1;">
-                <button type="submit" class="modal-confirm-green" style="width:100%;">ยืนยัน</button>
-            </form>
-        </div>
-    </div>
 </div>
 
 <script>
-    document.querySelectorAll('.modal-overlay').forEach(el => {
-        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
-    });
+
+window.addEventListener('DOMContentLoaded', function () {
+
+    const ciEl = document.getElementById('js-checkin');
+    const coEl = document.getElementById('js-checkout');
+
+    if (ciEl && coEl) {
+
+        const ci = new Date(ciEl.dataset.date);
+        const co = new Date(coEl.dataset.date);
+
+        if (!isNaN(ci) && !isNaN(co)) {
+
+            const nights = Math.round((co - ci) / 86400000);
+
+            const display = document.getElementById('nights-display');
+
+            if (display) {
+                display.textContent = nights + ' คืน';
+            }
+        }
+    }
+});
+
+function openEditModal() {
+    document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open');
+}
+
+function confirmCancel() {
+
+    if (confirm('ต้องการยกเลิกการจองใช่หรือไม่')) {
+
+        document.getElementById('cancelForm').submit();
+
+    }
+}
+
 </script>
+
 </body>
+
 </html>

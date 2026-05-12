@@ -4,7 +4,7 @@ import com.example.miniproject.entity.enums.BookingType;
 import com.example.miniproject.entity.enums.BookingStatus;
 import java.sql.Date;
 import java.util.List;
-
+import java.util.Set;
 
 
 import jakarta.persistence.*;
@@ -47,8 +47,9 @@ public class Booking {
     private Payment payment;
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private Review review;
+
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
-    private List<Guest> guests;
+    private Set<Guest> guests;
     
 	// ===== TOUR DETAILS =====
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
@@ -145,11 +146,11 @@ public class Booking {
 		this.review = review;
 	}
 
-	public List<Guest> getGuests() {
+	public Set<Guest> getGuests() {
 		return guests;
 	}
 
-	public void setGuests(List<Guest> guests) {
+	public void setGuests(Set<Guest> guests) {
 		this.guests = guests;
 	}
 
