@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขโปรไฟล์ - ผู้จัดการชุมชน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green-dark:  #1a3d1f;
+            --green-mid:   #2d6a35;
+            --green-light: #d4edda;
+            --amber:       #f0a500;
+            --amber-hover: #c47700;
+            --bg-page:     #f5f0e8;
+            --bg-card:     #ffffff;
+            --border:      #e2ddd4;
+            --text-main:   #1c1c1a;
+            --text-muted:  #6b6b68;
+            --text-hint:   #9a9a96;
+            --radius-card: 12px;
+            --radius-sm:   6px;
+            --shadow-card: 0 1px 3px rgba(0,0,0,0.07);
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ─── NAVBAR (เหมือน createpost) ─── */
+        .navbar {
+            background: var(--green-dark);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            height: 83px;
+            gap: .25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+        }
+        .nav-brand {
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .nav-brand i { color: #fff; font-size: 1.2rem; }
+        .nav-link {
+            color: rgba(255,255,255,.7);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: .45rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+        .nav-link i { font-size: .9rem; }
+        .nav-spacer { flex: 1; }
+
+        .nav-dropdown { position: relative; margin-left: 1rem; }
+        .nav-dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,.85);
+            font-size: .92rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: .4rem .6rem;
+            border-radius: 8px;
+            transition: background .2s;
+            user-select: none;
+        }
+        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
+        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
+        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0; top: calc(100% + 8px);
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.15);
+            border: 1px solid #e8e8e8;
+            min-width: 200px;
+            padding: 6px 0;
+            z-index: 200;
+        }
+        .dropdown-menu::before { content:''; position:absolute; top:-10px; left:0; right:0; height:10px; }
+        .nav-dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
+        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
+        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
+        .dropdown-item {
+            display: flex; align-items: center; gap: .65rem;
+            padding: .6rem 1rem; font-size: .88rem; color: #333;
+            text-decoration: none; transition: background .15s;
+        }
+        .dropdown-item i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
+        .dropdown-item:hover { background: #f5f8f5; color: var(--green-dark); }
+        .dropdown-item:hover i { color: var(--green-dark); }
+        .dropdown-divider { border: none; border-top: 1px solid #f0f0f0; margin: 4px 0; }
+        .dropdown-item.logout { color: #c0392b; }
+        .dropdown-item.logout i { color: #c0392b; }
+        .dropdown-item.logout:hover { background: #fff5f5; }
+        .nav-avatar {
+            width: 36px; height: 36px;
+            background: var(--amber);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .85rem; font-weight: 700; color: #fff;
+        }
+
+        /* ─── PAGE ─── */
+        .page { padding: 28px 28px 60px; max-width: 720px; margin: auto; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 13px;
+            text-decoration: none;
+            margin-bottom: 16px;
+            transition: color 0.15s;
+        }
+        .back-link:hover { color: var(--green-dark); }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--green-dark);
+            margin-bottom: 6px;
+        }
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        /* ─── ALERT ─── */
+        .alert {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .alert-error   { background: #fdecea; color: #b71c1c; border: 1px solid #ffcdd2; }
+
+        /* ─── CARD ─── */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            padding: 20px 24px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .card-title i { color: var(--green-mid); font-size: 13px; }
+
+        /* ─── PROFILE HEADER CARD ─── */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .avatar-big {
+            width: 72px; height: 72px;
+            background: var(--green-mid);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 700; color: #fff;
+            flex-shrink: 0;
+            border: 3px solid #c8e6c9;
+        }
+        .profile-info-text .p-name { font-size: 17px; font-weight: 600; color: var(--text-main); }
+        .profile-info-text .p-email { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+        .profile-info-text .p-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            margin-top: 6px;
+            background: #e8f5e9; color: var(--green-mid);
+            font-size: 11px; font-weight: 600;
+            padding: 3px 10px; border-radius: 20px;
+        }
+
+        /* ─── FORM ─── */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .form-group { margin-bottom: 14px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        .form-label .req { color: #e53935; }
+        .form-control {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            color: var(--text-main);
+            background: #faf8f4;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--green-mid);
+            box-shadow: 0 0 0 3px rgba(45,106,53,0.1);
+            background: #fff;
+        }
+        .form-control[readonly] {
+            background: #f0ece3;
+            color: var(--text-hint);
+            cursor: not-allowed;
+        }
+        .form-hint {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 4px;
+        }
+
+        /* ─── PASSWORD TOGGLE ─── */
+        .input-wrap { position: relative; }
+        .input-wrap .form-control { padding-right: 38px; }
+        .toggle-pw {
+            position: absolute;
+            right: 10px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none;
+            cursor: pointer;
+            color: var(--text-hint);
+            font-size: 14px;
+            padding: 2px;
+            transition: color 0.15s;
+        }
+        .toggle-pw:hover { color: var(--green-mid); }
+
+        /* ─── LOCK NOTICE ─── */
+        .lock-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #fffbec;
+            border: 1px solid #f5d88a;
+            border-radius: var(--radius-sm);
+            padding: 11px 14px;
+            font-size: 13px;
+            color: #7a5800;
+        }
+        .lock-notice i { color: var(--amber); margin-top: 2px; flex-shrink: 0; }
+
+        /* ─── ACTION BAR ─── */
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .btn-cancel {
+            padding: 9px 20px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 5px;
+            transition: background 0.15s;
+        }
+        .btn-cancel:hover { background: #f0ece3; }
+        .btn-save {
+            padding: 9px 22px;
+            background: var(--green-dark);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: background 0.15s;
+        }
+        .btn-save:hover { background: var(--green-mid); }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            margin-top: 3rem;
+            padding: 1rem 2rem;
+            background: #1a3d1f;
+            color: #d8f3dc;
+            font-size: 0.9rem;
+        }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; }
+        .footer a { color: #95d5b2; text-decoration: none; margin-left: 8px; }
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 560px) {
+            .form-row { grid-template-columns: 1fr; }
+            .page { padding: 16px 16px 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar">
+    <a class="nav-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun"></i>
+        ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
+
+    <div class="nav-spacer"></div>
+
+    
+
+    <!-- Profile Dropdown -->
+    <div class="nav-dropdown">
+        <div class="nav-dropdown-trigger">
+            <div class="nav-avatar"
+                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
+                           : 'CM'">CM</div>
+            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="dropdown-menu">
+            <div class="dropdown-header">
+                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</div>
+                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+            </div>
+            <a th:href="@{/manager/profile}" class="dropdown-item">
+                <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+            </a>
+            <hr class="dropdown-divider">
+            <a th:href="@{/logout}" class="dropdown-item logout">
+                <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══ PAGE ═══ -->
+<div class="page">
+
+    <a class="back-link" th:href="@{/manager/dashboard}">
+        <i class="fas fa-chevron-left" style="font-size:11px;"></i>
+        ย้อนกลับ
+    </a>
+
+    <div class="page-title">แก้ไขโปรไฟล์</div>
+    <div class="page-subtitle">อัปเดตข้อมูลส่วนตัวของบัญชีคุณ</div>
+
+    <!-- Alerts -->
+    <div class="alert alert-success" th:if="${successMessage}">
+        <i class="fas fa-circle-check"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div class="alert alert-error" th:if="${errorMessage}">
+        <i class="fas fa-circle-exclamation"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Profile Header -->
+    <div class="card">
+        <div class="profile-header">
+            <div class="avatar-big"
+                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
+                           : 'CM'">CM</div>
+            <div class="profile-info-text">
+                <div class="p-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : '-'">ชื่อ นามสกุล</div>
+                <div class="p-email" th:text="${loggedInManager != null} ? ${loggedInManager.email} : '-'">email@community.th</div>
+                <div class="p-badge">
+                    <i class="fas fa-shield-halved" style="font-size:10px;"></i>
+                    ผู้จัดการท่องเที่ยวชุมชน
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORM -->
+    <form th:action="@{/manager/profile/update}" method="post" id="profileForm">
+
+        <!-- ข้อมูลส่วนตัว -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-user"></i> ข้อมูลส่วนตัว
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">ชื่อ <span class="req">*</span></label>
+                    <input class="form-control" type="text" name="firstname" id="firstname"
+                           th:value="${loggedInManager?.firstname}"
+                           placeholder="ชื่อจริง" required/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">นามสกุล <span class="req">*</span></label>
+                    <input class="form-control" type="text" name="lastname" id="lastname"
+                           th:value="${loggedInManager?.lastname}"
+                           placeholder="นามสกุล" required/>
+                </div>
+            </div>
+
+            <!-- อีเมล -->
+            <div class="form-group">
+                <label class="form-label">อีเมล <span class="req">*</span></label>
+                <input class="form-control" type="email" name="email" id="emailInput"
+                    th:value="${loggedInManager?.email}"
+                    placeholder="email@example.com" required/>
+                <div class="form-hint" id="emailHint"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">เบอร์โทรศัพท์</label>
+                    <input class="form-control" type="text" name="phone" id="phoneInput"
+                        th:value="${loggedInManager?.phone}"
+                        placeholder="0812345678" maxlength="10" inputmode="numeric"/>
+                    <div class="form-hint" id="phoneHint"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ชนเผ่า / ชุมชน</label>
+                    <div class="input-wrap">
+                        <input class="form-control" type="text" name="tribe"
+                               th:value="${loggedInManager?.tribe}"
+                               readonly/>
+                        <i class="fas fa-lock toggle-pw" style="cursor:default;"></i>
+                    </div>
+                    <div class="form-hint">กำหนดโดยผู้แลระบบเท่านั้น</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ความปลอดภัย -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-shield-halved"></i> ความปลอดภัย
+            </div>
+
+            <div class="lock-notice">
+                <i class="fas fa-lock"></i>
+                <span>กรอกรหัสผ่านเฉพาะเมื่อต้องการเปลี่ยน — หากไม่กรอกระบบจะคงรหัสเดิมไว้</span>
+            </div>
+
+            <div style="margin-top:14px;">
+                <div class="form-group">
+                    <label class="form-label">รหัสผ่านปัจจุบัน</label>
+                    <div class="input-wrap">
+                        <input class="form-control" type="password" name="currentPassword"
+                               id="currentPassword" placeholder="กรอกรหัสผ่านปัจจุบัน"/>
+                        <button type="button" class="toggle-pw" onclick="togglePw('currentPassword',this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">รหัสผ่านใหม่</label>
+                        <div class="input-wrap">
+                            <input class="form-control" type="password" name="newPassword"
+                                   id="newPassword" placeholder="รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)"/>
+                            <button type="button" class="toggle-pw" onclick="togglePw('newPassword',this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ยืนยันรหัสผ่านใหม่</label>
+                        <div class="input-wrap">
+                            <input class="form-control" type="password" name="confirmPassword"
+                                   id="confirmPassword" placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง"/>
+                            <button type="button" class="toggle-pw" onclick="togglePw('confirmPassword',this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-hint" id="pwMatchHint"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <a class="btn-cancel" th:href="@{/manager/dashboard}">
+                <i class="fas fa-rotate-left"></i> รีเซ็ต
+            </a>
+            <button type="submit" class="btn-save">
+                <i class="fas fa-floppy-disk"></i>
+                บันทึกข้อมูล
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+        <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a></span>
+    </div>
+</footer>
+
+<script>
+    // ─── Toggle show/hide password ───
+    function togglePw(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon  = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    // ─── Regex ───
+    const nameRegex  = /^[ก-์a-zA-Z]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^0[689][0-9]{8}$/;
+
+    // ─── Real-time: ชื่อ / นามสกุล ───
+    function attachNameValidation(inputId, label) {
+        const input = document.getElementById(inputId);
+        const hint  = document.createElement('div');
+        hint.className = 'form-hint';
+        hint.id = inputId + 'Hint';
+        input.parentNode.insertBefore(hint, input.nextSibling);
+
+        input.addEventListener('input', () => {
+            const v = input.value.trim();
+            if (!v) {
+                hint.textContent = `กรุณากรอก${label}`;
+                hint.style.color = '#b71c1c';
+            } else if (!nameRegex.test(v)) {
+                hint.textContent = `${label}ใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ไม่มีเว้นวรรคหรืออักขระพิเศษ`;
+                hint.style.color = '#b71c1c';
+            } else {
+                hint.textContent = '';
+            }
+        });
+    }
+    attachNameValidation('firstname', 'ชื่อ');
+    attachNameValidation('lastname',  'นามสกุล');
+
+    // ─── Real-time: อีเมล ───
+    const emailInput = document.getElementById('emailInput');
+    const emailHint  = document.getElementById('emailHint');
+    emailInput.addEventListener('input', () => {
+        const v = emailInput.value.trim();
+        if (!v) {
+            emailHint.textContent = 'กรุณากรอกอีเมล';
+            emailHint.style.color = '#b71c1c';
+        } else if (!emailRegex.test(v)) {
+            emailHint.textContent = 'รูปแบบอีเมลไม่ถูกต้อง';
+            emailHint.style.color = '#b71c1c';
+        } else {
+            emailHint.textContent = '';
+        }
+    });
+
+    // ─── Real-time: เบอร์โทร ───
+    const phoneInput = document.getElementById('phoneInput');
+    const phoneHint  = document.getElementById('phoneHint');
+    phoneInput.addEventListener('input', () => {
+        const v = phoneInput.value;
+        if (!v) {
+            phoneHint.textContent = 'กรุณากรอกเบอร์โทร';
+            phoneHint.style.color = '#b71c1c';
+        } else if (!phoneRegex.test(v)) {
+            phoneHint.textContent = 'เบอร์โทรต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06 08 09 เท่านั้น';
+            phoneHint.style.color = '#b71c1c';
+        } else {
+            phoneHint.textContent = '✓ เบอร์โทรถูกต้อง';
+            phoneHint.style.color = '#2e7d32';
+        }
+    });
+
+    // ─── Real-time: confirm password ───
+    const newPw     = document.getElementById('newPassword');
+    const confirmPw = document.getElementById('confirmPassword');
+    const hint      = document.getElementById('pwMatchHint');
+
+    function checkMatch() {
+        if (!confirmPw.value) { hint.textContent = ''; hint.style.color = ''; return; }
+        if (newPw.value === confirmPw.value) {
+            hint.textContent = '✓ รหัสผ่านตรงกัน';
+            hint.style.color = '#2e7d32';
+        } else {
+            hint.textContent = '✗ รหัสผ่านไม่ตรงกัน';
+            hint.style.color = '#b71c1c';
+        }
+    }
+    newPw.addEventListener('input', checkMatch);
+    confirmPw.addEventListener('input', checkMatch);
+
+    // ─── Validate ก่อน submit ───
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+        const fn  = document.getElementById('firstname').value.trim();
+        const ln  = document.getElementById('lastname').value.trim();
+        const em  = emailInput.value.trim();
+        const ph  = phoneInput.value.trim();
+        const np  = newPw.value.trim();
+        const cp  = confirmPw.value.trim();
+        const cur = document.getElementById('currentPassword').value.trim();
+
+        if (!fn || !nameRegex.test(fn)) {
+            e.preventDefault();
+            alert('ชื่อต้องไม่ว่างและใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ไม่มีเว้นวรรคหรืออักขระพิเศษ');
+            return;
+        }
+        if (!ln || !nameRegex.test(ln)) {
+            e.preventDefault();
+            alert('นามสกุลต้องไม่ว่างและใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ไม่มีเว้นวรรคหรืออักขระพิเศษ');
+            return;
+        }
+        if (!em || !emailRegex.test(em)) {
+            e.preventDefault();
+            alert('กรุณากรอกอีเมลให้ถูกต้อง เช่น name@example.com');
+            return;
+        }
+        if (!ph) {
+            e.preventDefault();
+            alert('กรุณากรอกเบอร์โทร');
+            return;
+        }
+        if (!phoneRegex.test(ph)) {
+            e.preventDefault();
+            alert('เบอร์โทรต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06 08 09 เท่านั้น');
+            return;
+        }
+        if (np || cp || cur) {
+            if (!cur) {
+                e.preventDefault();
+                alert('กรุณากรอกรหัสผ่านปัจจุบันก่อน');
+                return;
+            }
+            if (np.length < 6) {
+                e.preventDefault();
+                alert('รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร');
+                return;
+            }
+            if (np !== cp) {
+                e.preventDefault();
+                alert('รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน');
+                return;
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

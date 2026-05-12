@@ -60,21 +60,31 @@ public class DashboardService {
                 .collect(Collectors.toList());
     }
  
-    // ทัวร์ยอดนิยม (เรียงตามจำนวนการจอง)
-    public List<TourRowDTO> getPopularTours(int limit) {
-        return tourRepository.findTopToursByBookingCount(limit)
-                .stream()
-                .map(t -> {
-                    TourRowDTO row = new TourRowDTO();
-                    row.setTourid(t.getTourid());
-                    row.setTourname(t.getTourmname());
-                    row.setAdultprice(t.getAdultprice());
-                    row.setStatus(t.getStatus());
-                    row.setBookingCount(t.getBookingTourDetails() != null ? t.getBookingTourDetails().size() : 0);
-                    return row;
-                })
-                .collect(Collectors.toList());
-    }
+    // ทัวร์ยอดนิยม — เรียงตามจำนวนการจองมากสุด (ใช้ query เดิมแต่ map bookingCount ให้ถูกต้อง)
+public List<TourRowDTO> getPopularTours(int limit) {
+    return tourRepository.findTopToursByBookingCount(limit)
+            .stream()
+            .map(t -> {
+                TourRowDTO row = new TourRowDTO();
+                row.setTourid(t.getTourid());
+                row.setTourname(t.getTourmname());
+                row.setAdultprice(t.getAdultprice());
+                row.setStatus(t.getStatus());
+                // นับจาก BookingTourDetail ที่มีสถานะ CONFIRMED เท่านั้น
+                long confirmedCount = t.getBookingTourDetails() != null
+                        ? t.getBookingTourDetails().stream()
+                            .filter(d -> d.getBooking() != null
+                                && BookingStatus.CONFIRMED.equals(d.getBooking().getBookingStatus()))
+                            .count()
+                        : 0;
+                row.setBookingCount((int) confirmedCount);
+                return row;
+            })
+            // เรียง descending ตาม bookingCount
+            .sorted((a, b) -> Integer.compare(b.getBookingCount(), a.getBookingCount()))
+            .limit(limit)
+            .collect(Collectors.toList());
+}
  
     // โพสต์กิจกรรมล่าสุด
     public List<PostRowDTO> getRecentPosts(int limit) {

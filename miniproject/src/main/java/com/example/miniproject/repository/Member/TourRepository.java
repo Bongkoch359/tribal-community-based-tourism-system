@@ -1,11 +1,10 @@
 package com.example.miniproject.repository.Member;
 
 import java.util.List;
-
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Tour;
 
@@ -54,6 +53,7 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     // ดึงทัวร์ยอดนิยม (เรียงตามจำนวนการจอง)
     @Query("SELECT t FROM Tour t LEFT JOIN t.bookingTourDetails d GROUP BY t ORDER BY COUNT(d) DESC")
     List<Tour> findTopToursByBookingCount(@Param("limit") int limit);
+
 
     // ดึงทัวร์ของ manager คนนั้น
     @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerId ORDER BY t.tourmname ASC")

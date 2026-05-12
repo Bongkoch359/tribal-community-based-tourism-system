@@ -1,5 +1,6 @@
 package com.example.miniproject.service.Member;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -7,10 +8,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.repository.Member.TourRepository;
+
+import aj.org.objectweb.asm.TypeReference;
 
 @Service
 public class TourService {
@@ -88,27 +90,29 @@ public class TourService {
         return tourRepository.save(existing);
     }
 
+   // ─────────────────────────────────────────────────────────
+    // แปลง JSON images string → List<String> base64
+    // รูปแบบ JSON: [{"base64":"data:image/...", "primary":true}, ...]
     // ─────────────────────────────────────────────────────────
-    // ปิดรับการจอง (ไม่ลบ เพื่อรักษาประวัติ)
-    // ─────────────────────────────────────────────────────────
-    @Transactional
-    public Tour closeBooking(String tourid) {
-        Tour tour = tourRepository.findById(tourid)
-                .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ ID: " + tourid));
-        tour.setStatus("ปิดรับการจอง");
-        return tourRepository.save(tour);
-    }
-
-    // ─────────────────────────────────────────────────────────
-    // เปลี่ยนสถานะ
-    // ─────────────────────────────────────────────────────────
-    @Transactional
-    public Tour changeStatus(String tourid, String newStatus) {
-        Tour tour = tourRepository.findById(tourid)
-                .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ ID: " + tourid));
-        tour.setStatus(newStatus);
-        return tourRepository.save(tour);
-    }
+    // public List<String> parseImageList(String imagesJson) {
+    //     List<String> result = new ArrayList<>();
+    //     if (imagesJson == null || imagesJson.isBlank()) return result;
+    //     try {
+    //         List<java.util.Map<String, Object>> list = objectMapper.readValue(
+    //                 imagesJson, new TypeReference<>() {});
+    //         // เรียงให้ primary มาก่อน (ใน addTour เราส่ง primary first อยู่แล้ว)
+    //         list.stream()
+    //             .filter(m -> Boolean.TRUE.equals(m.get("primary")))
+    //             .forEach(m -> result.add((String) m.get("base64")));
+    //         list.stream()
+    //             .filter(m -> !Boolean.TRUE.equals(m.get("primary")))
+    //             .forEach(m -> result.add((String) m.get("base64")));
+    //     } catch (Exception e) {
+    //         // fallback: ถ้าไม่ใช่ JSON array ให้ใช้ค่าตรง ๆ
+    //         result.add(imagesJson);
+    //     }
+    //     return result;
+    // }
 
     // ─────────────────────────────────────────────────────────
     // ค้นหาทัวร์ (keyword + จำนวนที่นั่ง)
