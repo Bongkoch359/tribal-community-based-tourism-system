@@ -4,6 +4,10 @@ import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.service.Member.TourService;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -108,27 +112,41 @@ public class TourController {
         }
     }
 
-     // ─── ปิดรับการจอง (แทนการลบ เพื่อรักษาประวัติ) ──────────
-    @PostMapping("/close/{tourid}")
-    public String closeTour(@PathVariable String tourid, HttpSession session) {
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
-        tourService.closeBooking(tourid);
-        return "redirect:/manager/tours?success=closed";
-    }
+     // ─── แสดงรายละเอียดทัวร์ ─────────────────────────────
  
-    // ─── เปลี่ยนสถานะทัวร์ ───────────────────────────────
- 
-    @PostMapping("/status/{tourid}")
-    public String changeTourStatus(
+    @GetMapping("/{tourid}")
+    public String tourDetail(
             @PathVariable String tourid,
-            @RequestParam("status") String status,
-            HttpSession session
+            @RequestParam(value = "success", required = false) String success,
+            HttpSession session,
+            Model model
     ) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
         if (manager == null) return "redirect:/login";
-        tourService.changeStatus(tourid, status);
-        return "redirect:/manager/tours?success=updated";
+ 
+        Tour tour = tourService.getTourByIdAny(tourid)
+                .orElse(null);
+ 
+        if (tour == null) {
+            return "redirect:/manager/tours?error=notfound";
+        }
+ 
+        // ─── แปลง JSON images → List<String> เพื่อส่งไป Thymeleaf ───
+        List<String> imageList = new ArrayList<>();
+        if (tour.getImages() != null && !tour.getImages().isBlank()) {
+            imageList = tourService.parseImageList(tour.getImages());
+        }
+ 
+        if ("updated".equals(success)) {
+            model.addAttribute("successMessage", "อัปเดตสถานะทัวร์เรียบร้อยแล้ว");
+        } else if ("closed".equals(success)) {
+            model.addAttribute("successMessage", "ปิดรับการจองเรียบร้อยแล้ว");
+        }
+ 
+        model.addAttribute("tour", tour);
+        model.addAttribute("images", imageList);
+        model.addAttribute("loggedInManager", manager);
+        return "Tour/tourDetail";
     }
    
 }
