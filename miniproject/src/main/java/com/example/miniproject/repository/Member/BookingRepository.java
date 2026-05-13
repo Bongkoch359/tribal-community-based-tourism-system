@@ -39,4 +39,13 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     WHERE b.bookingid = :id
 """)
 Optional<Booking> findByIdWithDetails(@Param("id") String id);
+
+@Query("SELECT COUNT(b) FROM Booking b " +
+       "JOIN b.roomDetails rd " +
+       "JOIN rd.roomtype rt " +
+       "WHERE rt.homestay.homestayid = :homestayId " +
+       "AND b.bookingStatus = :status")
+long countByRoomHomestayIdAndStatus(
+    @Param("homestayId") Integer homestayId,
+    @Param("status") BookingStatus status);
 }

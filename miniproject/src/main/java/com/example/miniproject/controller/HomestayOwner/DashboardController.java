@@ -1,12 +1,14 @@
 package com.example.miniproject.controller.HomestayOwner;
 
 import com.example.miniproject.entity.Roomtype;
+import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.service.Homestay.RoomTypeService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import com.example.miniproject.repository.Member.BookingRepository;
 
 import java.util.List;
 
@@ -15,6 +17,9 @@ public class DashboardController {
 
     @Autowired
     private RoomTypeService roomTypeService;
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @GetMapping("/owner/dashboard")
 public String dashboard(HttpSession session, Model model) {
@@ -39,7 +44,11 @@ public String dashboard(HttpSession session, Model model) {
     model.addAttribute("rooms",           rooms);
     model.addAttribute("totalRooms",      total);
     model.addAttribute("availableRooms",  available);
-    model.addAttribute("pendingBookings", 0);
+    //เพิ่ม
+    long pendingBookings = (homestayid != null)
+    ? bookingRepository.countByRoomHomestayIdAndStatus(homestayid, BookingStatus.WAITING_APPROVAL)
+    : 0;
+    model.addAttribute("pendingBookings", pendingBookings);
     model.addAttribute("lockedRooms",     0);
 
     return "Homestay/dashboard";

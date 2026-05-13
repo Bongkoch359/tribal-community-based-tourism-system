@@ -498,14 +498,14 @@ sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'}"
 
                 </button>
 
-                <!-- BACK -->
-                <button class="btn-pay"
-                        onclick="location.href='/member/bookings/list'">
+               <a th:if="${sts == 'PENDING'}"
+   th:href="@{/payment/homestay/{id}(id=${booking.bookingid})}"
+   class="btn-pay"
+   style="text-decoration:none;display:flex;align-items:center;justify-content:center;">
 
-                    📋 กลับรายการการจอง
+    💳 ไปหน้าชำระเงิน
 
-                </button>
-
+</a>
             </div>
 
         </div>
