@@ -87,6 +87,8 @@ public class BookingHomestayController {
             @RequestParam(value = "guest",         defaultValue = "1") Integer guest,
             @RequestParam(value = "children",      defaultValue = "0") Integer children,
             @RequestParam(value = "note",          required = false)   String  note,
+            @RequestParam(value = "guestFirstname", required = false)  String  guestFirstname,  // ← เพิ่ม
+            @RequestParam(value = "guestLastname",  required = false)  String  guestLastname,   // ← เพิ่ม
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -98,7 +100,8 @@ public class BookingHomestayController {
                     bookingId, member.getMemberid(),
                     checkin, checkout,
                     numofrooms, guest, children,
-                    note);
+                    note,
+                    guestFirstname, guestLastname);   // ← เพิ่ม
 
             redirectAttributes.addFlashAttribute("successMsg", "แก้ไขการจองเรียบร้อยแล้ว");
             return "redirect:/member/bookings/detail/" + bookingId;
@@ -112,7 +115,6 @@ public class BookingHomestayController {
             return "redirect:/member/bookings/detail/" + bookingId;
         }
     }
-
     // ════════════════════════════════════════════════════════
     //  POST : ยกเลิกการจอง
     // ════════════════════════════════════════════════════════

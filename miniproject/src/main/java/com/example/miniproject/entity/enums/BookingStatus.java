@@ -4,6 +4,7 @@ public enum BookingStatus {
     PENDING("รอชำระเงิน"),
     WAITING_APPROVAL("รอที่พักอนุมัติ"),
     CONFIRMED("อนุมัติแล้ว"),
+    COMPLETED("เสร็จสิ้น"),
     CANCEL("ยกเลิก");
 
     private final String label;

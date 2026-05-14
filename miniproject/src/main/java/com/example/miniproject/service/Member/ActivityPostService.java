@@ -22,6 +22,12 @@ public class ActivityPostService {
         return activityPostRepository.findAllByOrderByCreateddateDesc();
     }
  
+    // ─── ดึงโพสต์ตาม ID ───
+    public Activitypost getPostById(String activityId) {
+        return activityPostRepository.findById(activityId).orElse(null);
+    }
+ 
+    
     // ─── สร้างโพสต์ใหม่ ───
     public Activitypost createPost(
             String title,

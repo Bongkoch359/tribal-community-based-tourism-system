@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -162,6 +163,7 @@ public class BookingService {
     //  EDIT HOMESTAY BOOKING
     // ════════════════════════════════════════════════════════
 
+    
     @Transactional
     public void editHomestayBooking(
             String bookingId,
@@ -171,41 +173,43 @@ public class BookingService {
             Integer numofrooms,
             Integer numofAdults,
             Integer numofChildren,
-            String note) {
-
+            String note,
+            String guestFirstname,   // ← เพิ่ม
+            String guestLastname) {  // ← เพิ่ม
+ 
         // ── 1. ดึง Booking ─────────────────────────────────────
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
-
+ 
         // ── 2. ตรวจสิทธิ์ ──────────────────────────────────────
         if (!booking.getMember().getMemberid().equals(memberId))
             throw new IllegalArgumentException("ไม่มีสิทธิ์แก้ไขการจองนี้");
-
+ 
         // ── 3. ตรวจสถานะ (แก้ได้เฉพาะ PENDING / WAITING_APPROVAL) ──
         BookingStatus status = booking.getBookingStatus();
         if (status != BookingStatus.PENDING && status != BookingStatus.WAITING_APPROVAL)
             throw new IllegalStateException("ไม่สามารถแก้ไขข้อมูลการจองห้องพักได้ กรุณาลองใหม่อีกครั้ง");
-
+ 
         // ── 4. Validate dates ───────────────────────────────────
         LocalDate dateIn  = LocalDate.parse(checkin);
         LocalDate dateOut = LocalDate.parse(checkout);
         if (!dateOut.isAfter(dateIn))
             throw new IllegalArgumentException("วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน");
-
+ 
         // ── 5. ดึง Bookingroomdetail ────────────────────────────
         if (booking.getRoomDetails() == null || booking.getRoomDetails().isEmpty())
             throw new RuntimeException("ไม่พบรายละเอียดห้องพักของการจองนี้");
-
+ 
         Bookingroomdetail detail   = booking.getRoomDetails().get(0);
         Roomtype          roomtype = detail.getRoomtype();
-
+ 
         // ── 6. คำนวณราคาใหม่ ───────────────────────────────────
         int    rooms    = (numofrooms  != null && numofrooms  > 0) ? numofrooms  : 1;
         int    adults   = (numofAdults != null && numofAdults > 0) ? numofAdults : 1;
         int    children = (numofChildren != null)                  ? numofChildren : 0;
         long   nights   = ChronoUnit.DAYS.between(dateIn, dateOut);
         double subtotal = roomtype.getPricepernight() * nights * rooms;
-
+ 
         // ── 7. อัปเดต Bookingroomdetail ────────────────────────
         detail.setCheckindate(Date.valueOf(dateIn));
         detail.setCheckoutdate(Date.valueOf(dateOut));
@@ -214,14 +218,35 @@ public class BookingService {
         detail.setNumofChcldren(children);
         detail.setSubtotalroom(subtotal);
         bookingroomdetailRepository.save(detail);
-
+ 
         // ── 8. อัปเดต Booking หลัก ─────────────────────────────
         booking.setNumofguest(adults + children);
         booking.setNote(note);
         booking.setTotalamount(subtotal);
         bookingRepository.save(booking);
+ 
+        // ── 9. อัปเดตชื่อ Guest (กรณีจองให้ผู้อื่น) ───────────
+        if (Boolean.FALSE.equals(booking.getIsBookerGoing())
+                && guestFirstname != null && !guestFirstname.isBlank()) {
+ 
+            Set<Guest> guests = booking.getGuests();
+            if (guests != null && !guests.isEmpty()) {
+                // แก้ guest รายแรก
+                Guest g = guests.iterator().next();
+                g.setFirstname(guestFirstname.trim());
+                g.setLastname(guestLastname != null ? guestLastname.trim() : "");
+                guestRepository.save(g);
+            } else {
+                // ไม่มี guest เลย → สร้างใหม่
+                Guest g = new Guest();
+                g.setGuestid(generateGuestId());
+                g.setFirstname(guestFirstname.trim());
+                g.setLastname(guestLastname != null ? guestLastname.trim() : "");
+                g.setBooking(booking);
+                guestRepository.save(g);
+            }
+        }
     }
-
     // ════════════════════════════════════════════════════════
     //  CANCEL HOMESTAY BOOKING
     // ════════════════════════════════════════════════════════

@@ -623,6 +623,11 @@ body{
                name="roomtypeid"
                th:value="${room.roomtypeid}">
 
+                <!-- เพิ่มตรงนี้ -->
+    <input type="hidden"
+           id="pricePerNight"
+           th:value="${room.pricepernight}">
+
         <div class="card">
 
             <!-- SECTION 1 -->
@@ -1001,7 +1006,7 @@ body{
 
 <script>
 
-const pricePerNight = /*[[${room.pricepernight}]]*/ 1200;
+const pricePerNight = parseFloat(document.getElementById('pricePerNight').value) || 0;
 
 /* FORMAT DATE */
 function fmt(dateStr){
