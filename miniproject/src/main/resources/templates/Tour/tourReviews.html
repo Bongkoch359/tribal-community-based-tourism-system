@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รีวิวทัวร์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --green-dark:  #1a3d1f; --green-mid:   #2d6a35; --green-light: #d4edda;
+            --amber:       #f0a500; --amber-hover: #c47700; --bg-page:     #f5f0e8;
+            --bg-card:     #ffffff; --border:      #e2ddd4; --text-main:   #1c1c1a;
+            --text-muted:  #6b6b68; --text-hint:   #9a9a96; --radius-card: 12px;
+            --radius-sm:   6px; --shadow-card: 0 1px 3px rgba(0,0,0,0.07); --red: #c0392b;
+        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-page); color: var(--text-main); font-size: 14px; line-height: 1.6; }
+
+        /* ── Navbar ── */
+        .navbar { background: var(--green-dark); display: flex; align-items: center; padding: 0 2rem; height: 83px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+        .nav-brand { color: #fff; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: .6rem; text-decoration: none; white-space: nowrap; }
+        .nav-brand i { font-size: 1.2rem; }
+        .nav-dropdown { position: relative; margin-left: auto; }
+        .nav-dropdown-trigger { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.85); font-size: .92rem; font-weight: 500; cursor: pointer; padding: .4rem .6rem; border-radius: 8px; transition: background .2s; user-select: none; }
+        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
+        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
+        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
+        .dropdown-menu { display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #fff; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.15); border: 1px solid #e8e8e8; min-width: 200px; padding: 6px 0; z-index: 200; }
+        .nav-dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
+        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
+        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
+        .dropdown-item { display: flex; align-items: center; gap: .65rem; padding: .6rem 1rem; font-size: .88rem; color: #333; text-decoration: none; }
+        .dropdown-item:hover { background: #f5f8f5; color: var(--green-dark); }
+        .dropdown-divider { border-top: 1px solid #f0f0f0; margin: 4px 0; }
+        .dropdown-item.logout { color: #c0392b; }
+        .nav-avatar { width: 36px; height: 36px; background: var(--amber); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; color: #fff; }
+
+        /* ── Layout ── */
+        .page { padding: 28px 28px 60px; max-width: 1100px; margin: auto; }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 13px; text-decoration: none; margin-bottom: 16px; padding: 5px 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: background .15s; }
+        .back-link:hover { background: var(--bg-page); }
+        .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+        .page-title { font-size: 22px; font-weight: 700; color: var(--green-dark); }
+        .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+        /* ── Summary card ── */
+        .summary-bar { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); padding: 20px 24px; margin-bottom: 20px; box-shadow: var(--shadow-card); }
+        .avg-score-wrap { text-align: center; padding-right: 24px; border-right: 1px solid var(--border); }
+        .avg-score { font-size: 52px; font-weight: 700; color: var(--green-dark); line-height: 1; }
+        .avg-stars { display: flex; gap: 3px; justify-content: center; margin: 6px 0 4px; }
+        .avg-stars i { font-size: 18px; }
+        .avg-count { font-size: 12px; color: var(--text-hint); }
+        .rating-bars { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .rating-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+        .rating-row .star-label { width: 24px; text-align: right; color: var(--text-muted); font-weight: 600; }
+        .rating-row .bar-track { flex: 1; height: 8px; background: var(--bg-page); border-radius: 4px; overflow: hidden; }
+        .rating-row .bar-fill { height: 100%; background: var(--amber); border-radius: 4px; transition: width .4s ease; }
+        .rating-row .bar-count { width: 28px; color: var(--text-hint); }
+
+        /* ── Filter / sort ── */
+        .filter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .filter-row label { font-size: 13px; color: var(--text-muted); }
+        .filter-row select { padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'Sarabun', sans-serif; font-size: 13px; background: #fff; color: var(--text-main); outline: none; cursor: pointer; }
+        .filter-row select:focus { border-color: var(--green-mid); }
+        .count-badge { margin-left: auto; font-size: 12px; color: var(--text-muted); background: var(--bg-page); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; }
+
+        /* ── Review card ── */
+        .review-list { display: flex; flex-direction: column; gap: 14px; }
+        .review-card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); padding: 18px 20px; box-shadow: var(--shadow-card); }
+        .review-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+        .reviewer-info { display: flex; align-items: center; gap: 10px; }
+        .reviewer-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--green-light); color: var(--green-dark); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+        .reviewer-name { font-weight: 600; font-size: 14px; }
+        .reviewer-meta { font-size: 12px; color: var(--text-hint); margin-top: 1px; }
+        .review-right { text-align: right; flex-shrink: 0; }
+        .star-row { display: flex; gap: 2px; justify-content: flex-end; }
+        .star-row i { font-size: 14px; }
+        .review-date { font-size: 11px; color: var(--text-hint); margin-top: 3px; }
+        .review-comment { font-size: 14px; line-height: 1.7; color: var(--text-main); margin-bottom: 10px; white-space: pre-wrap; }
+        .review-image { width: 100%; max-width: 280px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); margin-top: 6px; cursor: pointer; transition: opacity .15s; }
+        .review-image:hover { opacity: .88; }
+        .booking-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-hint); background: var(--bg-page); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; margin-top: 8px; }
+
+        /* ── Star colors ── */
+        .star-gold { color: var(--amber); }
+        .star-empty { color: #d9d5cc; }
+
+        /* ── Empty state ── */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-hint); }
+        .empty-state i { font-size: 3rem; margin-bottom: 12px; display: block; }
+        .empty-state p { font-size: 15px; }
+
+        /* ── Lightbox ── */
+        .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.82); z-index: 999; align-items: center; justify-content: center; }
+        .lightbox.open { display: flex; }
+        .lightbox img { max-width: 90vw; max-height: 88vh; border-radius: 10px; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+        .lightbox-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 1.8rem; cursor: pointer; opacity: .7; }
+        .lightbox-close:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+    <a class="nav-brand" th:href="@{/manager/tours}">
+        <i class="fas fa-mountain-sun"></i> ระบบท่องเที่ยวชุมชนเผ่า
+    </a>
+    <div class="nav-dropdown">
+        <div class="nav-dropdown-trigger">
+            <div class="nav-avatar"
+                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+                           ? ${#strings.substring(loggedInManager.firstname,0,1)} : 'CM'">CM</div>
+            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ผู้จัดการ</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="dropdown-menu">
+            <div class="dropdown-header">
+                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ชื่อผู้จัดการ</div>
+                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+            </div>
+            <a class="dropdown-item" th:href="@{/manager/profile}">
+                <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+            </a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item logout" th:href="@{/logout}">
+                <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ── Page ── -->
+<div class="page">
+
+    <a class="back-link" th:href="@{/manager/tours/{id}(id=${tour.tourid})}">
+        <i class="fas fa-arrow-left"></i> ย้อนกลับ
+    </a>
+
+    <div class="page-header">
+        <div>
+            <div class="page-title">รีวิวทัวร์</div>
+            <div class="page-subtitle" th:text="${tour.tourmname}">ชื่อทัวร์</div>
+        </div>
+    </div>
+
+    <!-- ── Summary bar ── -->
+    <div class="summary-bar" th:if="${reviews != null and !reviews.isEmpty()}">
+        <div class="avg-score-wrap">
+            <div class="avg-score" th:text="${#numbers.formatDecimal(avgRating, 1, 1)}">0.0</div>
+            <div class="avg-stars">
+                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                    <i class="fas fa-star" th:classappend="${i <= avgRating} ? 'star-gold' : 'star-empty'"></i>
+                </th:block>
+            </div>
+            <div class="avg-count" th:text="${reviews.size()} + ' รีวิว'">0 รีวิว</div>
+        </div>
+        <div class="rating-bars">
+            <th:block th:each="star : ${#numbers.sequence(5, 1, -1)}">
+                <div class="rating-row">
+                    <span class="star-label" th:text="${star}">5</span>
+                    <i class="fas fa-star star-gold" style="font-size:11px;"></i>
+                    <div class="bar-track">
+                        <div class="bar-fill"
+                             th:style="'width:' + (${ratingCounts[star] != null} ? ${#numbers.formatDecimal(ratingCounts[star] * 100.0 / reviews.size(), 1, 0)} : '0') + '%'">
+                        </div>
+                    </div>
+                    <span class="bar-count" th:text="${ratingCounts[star] != null ? ratingCounts[star] : 0}">0</span>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- ── Filter ── -->
+    <div class="filter-row" th:if="${reviews != null and !reviews.isEmpty()}">
+        <label><i class="fas fa-filter"></i> กรองตามคะแนน:</label>
+        <select id="filterSelect" onchange="filterReviews()">
+            <option value="0">ทั้งหมด</option>
+            <option value="5">5 ดาว</option>
+            <option value="4">4 ดาว</option>
+            <option value="3">3 ดาว</option>
+            <option value="2">2 ดาว</option>
+            <option value="1">1 ดาว</option>
+        </select>
+        <span class="count-badge" id="countBadge"
+              th:text="${reviews.size()} + ' รายการ'">0 รายการ</span>
+    </div>
+
+    <!-- ── Review list ── -->
+    <div class="review-list" id="reviewList" th:if="${reviews != null and !reviews.isEmpty()}">
+
+        <div class="review-card"
+             th:each="review : ${reviews}"
+             th:attr="data-rating=${review.rating}">
+
+            <div class="review-card-header">
+                <div class="reviewer-info">
+                    <!-- Avatar: อักษรแรกของชื่อ member -->
+                    <div class="reviewer-avatar"
+                         th:text="${review.booking.member.firstname != null}
+                                   ? ${#strings.substring(review.booking.member.firstname, 0, 1)}
+                                   : 'U'">U</div>
+                    <div>
+                        <div class="reviewer-name"
+                             th:text="${review.booking.member.firstname + ' ' + review.booking.member.lastname}">ผู้รีวิว</div>
+                        <div class="reviewer-meta"
+                             th:text="'การจอง: ' + ${review.booking.bookingid}">-</div>
+                    </div>
+                </div>
+                <div class="review-right">
+                    <div class="star-row">
+                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i class="fas fa-star"
+                               th:classappend="${i <= review.rating} ? 'star-gold' : 'star-empty'"></i>
+                        </th:block>
+                    </div>
+                    <div class="review-date"
+                         th:text="${#temporals.format(review.reviewdate, 'd MMM yyyy')}">-</div>
+                </div>
+            </div>
+
+            <!-- Comment -->
+            <div class="review-comment"
+                 th:if="${review.comment != null and !#strings.isEmpty(review.comment)}"
+                 th:text="${review.comment}">-</div>
+            <div class="review-comment" style="color:var(--text-hint); font-style:italic;"
+                 th:unless="${review.comment != null and !#strings.isEmpty(review.comment)}">
+                ไม่มีความคิดเห็น
+            </div>
+
+            <!-- Review image -->
+            <div th:if="${review.reviewimage != null and !#strings.isEmpty(review.reviewimage)}">
+                <img class="review-image"
+                     th:src="${review.reviewimage}"
+                     alt="รูปรีวิว"
+                     onclick="openLightbox(this.src)">
+            </div>
+
+            <!-- Booking tag -->
+            <div class="booking-tag">
+                <i class="fas fa-ticket"></i>
+                <span th:text="'รหัสจอง ' + ${review.booking.bookingid}">-</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Empty state ── -->
+    <div class="empty-state" th:if="${reviews == null or reviews.isEmpty()}">
+        <i class="fas fa-star-half-stroke"></i>
+        <p>ยังไม่มีรีวิวสำหรับทัวร์นี้</p>
+    </div>
+
+</div>
+
+<!-- ── Lightbox ── -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close"><i class="fas fa-xmark"></i></span>
+    <img id="lightboxImg" src="" alt="รูปรีวิวขยาย">
+</div>
+
+<script>
+    function openLightbox(src) {
+        document.getElementById('lightboxImg').src = src;
+        document.getElementById('lightbox').classList.add('open');
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    function filterReviews() {
+        const val = parseInt(document.getElementById('filterSelect').value);
+        const cards = document.querySelectorAll('#reviewList .review-card');
+        let shown = 0;
+        cards.forEach(card => {
+            const r = parseInt(card.dataset.rating);
+            const show = val === 0 || r === val;
+            card.style.display = show ? '' : 'none';
+            if (show) shown++;
+        });
+        document.getElementById('countBadge').textContent = shown + ' รายการ';
+    }
+</script>
+
+</body>
+</html>

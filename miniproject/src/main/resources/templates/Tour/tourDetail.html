@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* CSS คงเดิมตามที่คุณส่งมา */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
             --green-dark:  #1a3d1f; --green-mid:   #2d6a35; --green-light: #d4edda;
@@ -39,6 +38,17 @@
         .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 13px; text-decoration: none; margin-bottom: 16px; padding: 5px 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); }
         .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
         .page-title { font-size: 22px; font-weight: 700; color: var(--green-dark); }
+        .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+        /* ปุ่มแก้ไขและรีวิว */
+        .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: 'Sarabun', sans-serif; cursor: pointer; text-decoration: none; border: none; transition: background .18s, box-shadow .18s, transform .1s; }
+        .btn:active { transform: scale(.97); }
+        .btn-edit { background: var(--amber); color: #fff; box-shadow: 0 2px 6px rgba(240,165,0,.35); }
+        .btn-edit:hover { background: var(--amber-hover); box-shadow: 0 4px 12px rgba(240,165,0,.45); }
+        .btn-review { background: var(--green-dark); color: #fff; box-shadow: 0 2px 6px rgba(26,61,31,.25); }
+        .btn-review:hover { background: var(--green-mid); box-shadow: 0 4px 12px rgba(26,61,31,.35); }
+
         .detail-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
         .gallery-card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); overflow: hidden; }
         .gallery-main { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
@@ -95,6 +105,16 @@
         <div class="page-header-left">
             <div class="page-title">รายละเอียดทัวร์</div>
             <div class="page-subtitle">รหัสทัวร์: <span th:text="${tour.tourid}">-</span></div>
+        </div>
+
+        <!-- ปุ่มแก้ไขข้อมูล และ ดูรีวิว -->
+        <div class="header-actions">
+            <a class="btn btn-edit" th:href="@{/manager/tours/{id}/edit(id=${tour.tourid})}">
+                <i class="fas fa-pen-to-square"></i> แก้ไขข้อมูล
+            </a>
+            <a class="btn btn-review" th:href="@{/manager/tours/{id}/reviews(id=${tour.tourid})}">
+                <i class="fas fa-star"></i> ดูรีวิว
+            </a>
         </div>
     </div>
 

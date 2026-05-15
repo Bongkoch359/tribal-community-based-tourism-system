@@ -13,13 +13,8 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, String> {
 
-    @Query("SELECT r FROM Review r " +
-           "JOIN r.booking b JOIN b.roomDetails rd JOIN rd.roomtype rt " +
-           "WHERE rt.homestay.homestayid = :homestayid")
-    List<Review> findByHomestayId(@Param("homestayid") Integer homestayid);
+    // ─── โฮมสเตย์ ─────────────────────────────────────────
 
-    
-    // ดึงรีวิวทั้งหมดของโฮมสเตย์ ผ่าน booking → roomDetails → roomtype → homestay
     @Query("""
         SELECT r FROM Review r
         JOIN r.booking b
@@ -28,7 +23,7 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
         WHERE rt.homestay.homestayid = :homestayId
         ORDER BY r.reviewdate DESC
     """)
-    List<Review> findByHomestayId(@Param("homestayId") String homestayId);
+    List<Review> findByHomestayId(@Param("homestayId") Integer homestayId);
 
     // เช็คว่า booking นี้ review ไปแล้วหรือยัง
     Optional<Review> findByBookingBookingid(String bookingId);
@@ -41,9 +36,30 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
         JOIN rd.roomtype rt
         WHERE rt.homestay.homestayid = :homestayId
     """)
-    Double avgRatingByHomestayId(@Param("homestayId") String homestayId);
+    Double avgRatingByHomestayId(@Param("homestayId") Integer homestayId);
 
-    // นับ ID สูงสุดเพื่อ generate ID ใหม่
+    // ─── ทัวร์ ────────────────────────────────────────────
+
+    // ดึงรีวิวทั้งหมดของทัวร์ ผ่าน booking → tourDetails → tour
+    @Query("""
+        SELECT r FROM Review r
+        JOIN r.booking b
+        JOIN b.tourDetails btd
+        WHERE btd.tour.tourid = :tourid
+        ORDER BY r.reviewdate DESC
+    """)
+    List<Review> findByTourId(@Param("tourid") String tourid);
+
+    // ค่าเฉลี่ย rating ของทัวร์
+    @Query("""
+        SELECT AVG(r.rating) FROM Review r
+        JOIN r.booking b
+        JOIN b.tourDetails btd
+        WHERE btd.tour.tourid = :tourid
+    """)
+    Double avgRatingByTourId(@Param("tourid") String tourid);
+
+    // นับจำนวน review ทั้งหมดเพื่อ generate ID ใหม่
     @Query("SELECT COUNT(r) FROM Review r")
     long countAll();
 }

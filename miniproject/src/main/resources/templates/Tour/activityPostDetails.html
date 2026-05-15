@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดโพสต์กิจกรรม</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green-dark:  #1a3d1f;
+            --green-mid:   #2d6a35;
+            --green-light: #d4edda;
+            --amber:       #f0a500;
+            --amber-light: #fff3cd;
+            --amber-text:  #856404;
+            --red-light:   #fde8e8;
+            --red-text:    #a32d2d;
+            --gray-light:  #e9ecef;
+            --gray-text:   #555;
+            --bg-page:     #f5f0e8;
+            --bg-card:     #ffffff;
+            --border:      #e2ddd4;
+            --text-main:   #1c1c1a;
+            --text-muted:  #6b6b68;
+            --text-hint:   #9a9a96;
+            --radius-card: 12px;
+            --radius-sm:   6px;
+            --shadow-card: 0 1px 3px rgba(0,0,0,0.07);
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ─── NAVBAR ─── */
+        .navbar {
+            background: var(--green-dark);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            height: 83px;
+            gap: .25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+        }
+        .nav-brand {
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .nav-brand i { color: #fff; font-size: 1.2rem; }
+        .nav-link {
+            color: rgba(255,255,255,.7);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: .45rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+        .nav-link.active {
+            color: #fff;
+            border-bottom: 3px solid #7ecf88;
+            border-radius: 0;
+            padding-bottom: calc(.45rem - 3px);
+        }
+        .nav-link i { font-size: .9rem; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-trigger {
+            display: flex; align-items: center; gap: 8px;
+            color: rgba(255,255,255,.85); font-size: .92rem; font-weight: 500;
+            cursor: pointer; padding: .4rem .6rem; border-radius: 8px;
+            transition: background .2s; user-select: none;
+        }
+        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
+        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
+        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
+        .dropdown-menu {
+            display: none; position: absolute; right: 0; top: calc(100% + 8px);
+            background: #fff; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.15);
+            border: 1px solid #e8e8e8; min-width: 200px; padding: 6px 0; z-index: 200;
+        }
+        .dropdown-menu::before { content:''; position:absolute; top:-10px; left:0; right:0; height:10px; }
+        .nav-dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
+        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
+        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
+        .dropdown-item {
+            display: flex; align-items: center; gap: .65rem;
+            padding: .6rem 1rem; font-size: .88rem; color: #333;
+            text-decoration: none; transition: background .15s;
+        }
+        .dropdown-item i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
+        .dropdown-item:hover { background: #f5f8f5; color: var(--green-dark); }
+        .dropdown-item:hover i { color: var(--green-dark); }
+        .dropdown-divider { border: none; border-top: 1px solid #f0f0f0; margin: 4px 0; }
+        .dropdown-item.logout { color: #c0392b; }
+        .dropdown-item.logout i { color: #c0392b; }
+        .dropdown-item.logout:hover { background: #fff5f5; }
+        .nav-avatar {
+            width: 36px; height: 36px; background: var(--amber); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .85rem; font-weight: 700; color: #fff;
+        }
+
+        /* ─── PAGE ─── */
+        .page {
+            padding: 28px 32px 60px;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* ─── BREADCRUMB ─── */
+        .breadcrumb {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 13px; color: var(--text-muted); margin-bottom: 18px;
+        }
+        .breadcrumb a {
+            color: var(--green-mid); text-decoration: none; font-weight: 500;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* ─── PAGE HEADER ─── */
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 22px; gap: 12px;
+        }
+        .page-title { font-size: 22px; font-weight: 700; color: var(--green-dark); }
+        .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+        /* ─── BUTTONS ─── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px;
+            font-size: 13px; font-weight: 600; font-family: 'Sarabun', sans-serif;
+            border: none; border-radius: var(--radius-sm); cursor: pointer;
+            text-decoration: none; transition: all 0.15s;
+        }
+        .btn-amber  { background: var(--amber); color: #fff; }
+        .btn-amber:hover { background: #c47700; color: #fff; }
+        .btn-danger { background: var(--red-light); color: var(--red-text); border: 1px solid #f5c6c6; }
+        .btn-danger:hover { background: #fbd0d0; }
+
+        /* ─── DETAIL CARD ─── */
+        .detail-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        /* ─── TWO-COLUMN ─── */
+        .card-body {
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            align-items: stretch;
+        }
+
+        /* ══════════════════
+           SLIDER (LEFT COL)
+        ══════════════════ */
+        .slider-col {
+            position: relative;
+            background: #111;
+            overflow: hidden;
+            border-radius: var(--radius-card) 0 0 var(--radius-card);
+            /* ล็อก aspect-ratio 4:3 — สี่เหลี่ยมผืนผ้ากว้างสวย */
+            aspect-ratio: 4 / 3;
+            width: 100%;
+            align-self: start;
+        }
+
+        .slider-viewport {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .slider-track {
+            display: flex;
+            height: 100%;
+            will-change: transform;
+            transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+        }
+
+        .slider-slide {
+            min-width: 100%;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .slider-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* No image */
+        .slider-no-image {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: absolute; inset: 0;
+            background: #e8e4de; color: var(--text-hint); gap: 12px;
+        }
+        .slider-no-image i { font-size: 3.5rem; opacity: 0.22; }
+        .slider-no-image span { font-size: 13px; }
+
+        /* Arrow buttons */
+        .slider-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(255,255,255,.88);
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--green-dark); font-size: 13px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.22);
+            transition: background .15s, opacity .2s;
+            z-index: 10; opacity: 0;
+        }
+        .slider-col:hover .slider-arrow { opacity: 1; }
+        .slider-arrow:hover { background: #fff; }
+        .slider-arrow.prev { left: 10px; }
+        .slider-arrow.next { right: 10px; }
+        .slider-arrow[disabled] { opacity: 0 !important; pointer-events: none; }
+
+        /* Dots */
+        .slider-dots {
+            position: absolute; bottom: 12px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 7px; z-index: 10;
+        }
+        .s-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: rgba(255,255,255,.45);
+            border: none; cursor: pointer; padding: 0;
+            transition: background .2s, transform .2s;
+        }
+        .s-dot.active { background: #fff; transform: scale(1.3); }
+
+        /* Counter */
+        .slider-counter {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(0,0,0,.48); color: #fff;
+            font-size: 11px; font-weight: 600;
+            padding: 3px 10px; border-radius: 20px;
+            z-index: 10; font-family: 'Sarabun', sans-serif;
+        }
+
+        /* ══════════════════
+           CONTENT (RIGHT COL)
+        ══════════════════ */
+        .content-col {
+            padding: 28px 30px 24px;
+            display: flex; flex-direction: column; gap: 0;
+            border-left: 1px solid var(--border);
+        }
+
+        .meta-label {
+            font-size: 11px; font-weight: 700; color: var(--text-hint);
+            text-transform: uppercase; letter-spacing: .06em;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+        }
+        .meta-label i { font-size: 10px; }
+
+        .post-main-title {
+            font-size: 19px; font-weight: 700; color: var(--text-main);
+            line-height: 1.45; margin-bottom: 18px;
+        }
+
+        .info-row {
+            display: flex; align-items: flex-start; gap: 8px;
+            font-size: 14px; color: var(--text-muted); margin-bottom: 10px;
+        }
+        .info-row i {
+            color: var(--green-mid); width: 16px; text-align: center;
+            flex-shrink: 0; margin-top: 3px;
+        }
+        .info-row .label { font-weight: 600; color: var(--text-main); margin-right: 2px; }
+
+        .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+        .section-label {
+            font-size: 12px; font-weight: 700; color: var(--green-dark);
+            display: flex; align-items: center; gap: 6px;
+            margin-bottom: 10px; text-transform: uppercase; letter-spacing: .04em;
+        }
+        .section-label i { font-size: 11px; }
+
+        .description-text {
+            font-size: 14px; color: var(--text-main);
+            line-height: 1.85; white-space: pre-line; flex: 1;
+        }
+
+        /* ─── BADGES ─── */
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 12px; padding: 4px 13px; border-radius: 20px; font-weight: 600;
+        }
+        .badge i { font-size: 9px; }
+        .badge-green { background: var(--green-light); color: var(--green-dark); }
+        .badge-amber { background: var(--amber-light); color: var(--amber-text); }
+        .badge-gray  { background: var(--gray-light);  color: var(--gray-text);  }
+
+        /* ─── CARD FOOTER ─── */
+        .card-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 30px; background: #faf8f4;
+            border-top: 1px solid var(--border);
+            gap: 16px; flex-wrap: wrap;
+        }
+        .footer-meta {
+            font-size: 12px; color: var(--text-hint);
+            display: flex; align-items: center; gap: 16px;
+        }
+        .footer-meta span { display: flex; align-items: center; gap: 5px; }
+        .footer-meta i { font-size: 11px; }
+
+        /* ─── RESERVE BAR ─── */
+        .reserve-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 30px;
+            background: linear-gradient(to right, #f0f9f2, #e8f5ec);
+            border-top: 1px solid #b8ddc2; gap: 16px;
+        }
+        .reserve-text { font-size: 14px; font-weight: 600; color: var(--green-dark); }
+        .reserve-text small {
+            display: block; font-size: 12px; font-weight: 400;
+            color: var(--text-muted); margin-top: 1px;
+        }
+        .btn-reserve {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px; background: var(--green-mid); color: #fff;
+            font-size: 14px; font-weight: 700; font-family: 'Sarabun', sans-serif;
+            border: none; border-radius: var(--radius-sm); cursor: pointer;
+            text-decoration: none; transition: background 0.15s; white-space: nowrap;
+        }
+        .btn-reserve:hover { background: var(--green-dark); }
+        .btn-reserve i { font-size: 13px; }
+
+        /* ─── ALERTS ─── */
+        .alert-success {
+            background: var(--green-light); border: 1px solid #a3d4af;
+            color: var(--green-dark); border-radius: 8px;
+            padding: 11px 14px; font-size: 13px; margin-bottom: 16px;
+        }
+        .alert-danger {
+            background: var(--red-light); border: 1px solid #f5c6c6;
+            color: var(--red-text); border-radius: 8px;
+            padding: 11px 14px; font-size: 13px; margin-bottom: 16px;
+        }
+
+        /* ─── SITE FOOTER ─── */
+        .footer {
+            padding: 1rem 2rem; background: #1a3d1f;
+            color: #d8f3dc; font-size: 0.9rem; margin-top: auto;
+        }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; }
+        .footer a { color: #95d5b2; text-decoration: none; margin-left: 8px; }
+        .footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar">
+    <a class="nav-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun"></i>
+        ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
+    <div style="flex:1;"></div>
+    <a th:href="@{/manager/dashboard}" class="nav-link">
+        <i class="fas fa-globe"></i> ภาพรวม
+    </a>
+    <a th:href="@{/manager/posts}" class="nav-link active">
+        <i class="fas fa-bullhorn"></i> จัดการโพสต์
+    </a>
+    <a th:href="@{/manager/tours}" class="nav-link">
+        <i class="fas fa-bus"></i> จัดการทัวร์
+    </a>
+    <a th:href="@{/manager/bookings}" class="nav-link">
+        <i class="fas fa-calendar-days"></i> ตรวจสอบการจอง
+    </a>
+    <div class="nav-dropdown" style="margin-left:1rem;">
+        <div class="nav-dropdown-trigger">
+            <div class="nav-avatar"
+                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
+                           : 'CM'">CM</div>
+            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="dropdown-menu">
+            <div class="dropdown-header">
+                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</div>
+                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+            </div>
+            <a th:href="@{/manager/profile}" class="dropdown-item">
+                <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+            </a>
+            <hr class="dropdown-divider">
+            <a th:href="@{/logout}" class="dropdown-item logout">
+                <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══ PAGE ═══ -->
+<div class="page">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a th:href="@{/manager/posts}">
+            <i class="fas fa-arrow-left"></i> ย้อนกลับ
+        </a>
+    </div>
+
+    <!-- Alerts -->
+    <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}"   class="alert-danger"  th:text="${errorMessage}"></div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title">รายละเอียดโพสต์กิจกรรม</div>
+        <div class="header-actions">
+            <a class="btn btn-amber"
+               th:href="@{/manager/posts/{id}/edit(id=${post.activityid})}">
+                <i class="fas fa-pen"></i> แก้ไขโพสต์
+            </a>
+            <form th:action="@{/manager/posts/{id}/delete(id=${post.activityid})}"
+                  method="post"
+                  onsubmit="return confirm('ยืนยันการลบโพสต์นี้?');"
+                  style="display:inline;">
+                <input type="hidden" name="_method" value="DELETE"/>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-can"></i> ลบโพสต์
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── DETAIL CARD ─── -->
+    <div class="detail-card">
+        <div class="card-body">
+
+            <!-- ══ LEFT: SLIDER ══ -->
+            <div class="slider-col" id="sliderCol">
+
+                <th:block th:if="${post.images != null and !post.images.isEmpty()}">
+                    <div class="slider-viewport">
+                        <div class="slider-track" id="sliderTrack">
+                            <th:block th:each="img : ${#strings.arraySplit(post.images, '||')}">
+                                <div class="slider-slide">
+                                    <img th:src="${img}" alt="รูปภาพกิจกรรม" draggable="false"/>
+                                </div>
+                            </th:block>
+                        </div>
+                    </div>
+
+                    <!-- Arrows -->
+                    <button class="slider-arrow prev" id="sliderPrev" aria-label="ก่อนหน้า">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="slider-arrow next" id="sliderNext" aria-label="ถัดไป">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+
+                    <!-- Dots -->
+                    <div class="slider-dots" id="sliderDots"></div>
+
+                    <!-- Counter -->
+                    <div class="slider-counter" id="sliderCounter">1 / 1</div>
+                </th:block>
+
+                <th:block th:unless="${post.images != null and !post.images.isEmpty()}">
+                    <div class="slider-no-image">
+                        <i class="fas fa-image"></i>
+                        <span>ไม่มีรูปภาพ</span>
+                    </div>
+                </th:block>
+            </div>
+
+            <!-- ══ RIGHT: CONTENT ══ -->
+            <div class="content-col">
+                <div class="meta-label">
+                    <i class="fas fa-tag"></i> ข้อมูลโพสต์
+                </div>
+
+                <div class="post-main-title" th:text="${post.title}">ชื่อกิจกรรม</div>
+
+                <div class="info-row">
+                    <i class="fas fa-location-dot"></i>
+                    <div>
+                        <span class="label">สถานที่</span><br/>
+                        <span th:text="${post.location}">-</span>
+                    </div>
+                </div>
+
+                <hr class="divider"/>
+
+                <div class="section-label">
+                    <i class="fas fa-align-left"></i> รายละเอียดโพสต์
+                </div>
+
+                <div class="description-text" th:text="${post.description}">-</div>
+            </div>
+
+        </div><!-- /card-body -->
+
+        <!-- ─── CARD FOOTER ─── -->
+        <div class="card-footer">
+            <span class="badge"
+                  th:classappend="${post.status != null and post.status.name() == 'PUBLISHED'} ? 'badge-green'
+                               : (${post.status != null and post.status.name() == 'DRAFT'} ? 'badge-gray' : 'badge-amber')">
+                <i class="fas fa-circle"></i>
+                <span th:text="${post.status != null and post.status.name() == 'PUBLISHED'} ? 'สถานะ: เปิดเผยโพสต์'
+                             : (${post.status != null and post.status.name() == 'DRAFT'} ? 'สถานะ: ฉบับร่าง' : '-')">-</span>
+            </span>
+            <div class="footer-meta">
+                <span>
+                    <i class="fas fa-calendar-plus"></i>
+                    <span th:text="${post.createddate != null} ? ${'สร้างเมื่อ ' + #dates.format(post.createddate,'dd/MM/yyyy')} : '-'">-</span>
+                </span>
+                <span>
+                    <i class="fas fa-hashtag"></i>
+                    <span th:text="${post.activityid}">-</span>
+                </span>
+            </div>
+        </div>
+
+      
+
+    </div><!-- /detail-card -->
+</div><!-- /page -->
+
+<!-- ─── SITE FOOTER ─── -->
+<footer class="footer">
+    <div class="footer-content">
+        <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+        <span>
+            Version 1.0 |
+            <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+            <a href="#"><i class="fas fa-headset"></i> ติดต่อแอดมิน</a>
+        </span>
+    </div>
+</footer>
+
+<!-- ══════════════════════════════
+     SLIDER JAVASCRIPT
+══════════════════════════════ -->
+<script>
+(function () {
+    const track   = document.getElementById('sliderTrack');
+    if (!track) return;   // no images on this post
+
+    const slides  = track.querySelectorAll('.slider-slide');
+    const total   = slides.length;
+    const btnPrev = document.getElementById('sliderPrev');
+    const btnNext = document.getElementById('sliderNext');
+    const dotsEl  = document.getElementById('sliderDots');
+    const counter = document.getElementById('sliderCounter');
+    let   current = 0;
+
+    // ── Build dots ──
+    if (total > 1) {
+        for (let i = 0; i < total; i++) {
+            const d = document.createElement('button');
+            d.className = 's-dot' + (i === 0 ? ' active' : '');
+            d.setAttribute('aria-label', 'ภาพที่ ' + (i + 1));
+            d.addEventListener('click', () => goTo(i));
+            dotsEl.appendChild(d);
+        }
+    } else {
+        // Single image — hide all controls
+        if (btnPrev) btnPrev.style.display = 'none';
+        if (btnNext) btnNext.style.display = 'none';
+        if (dotsEl)  dotsEl.style.display  = 'none';
+        if (counter) counter.style.display  = 'none';
+    }
+
+    function render() {
+        // Move track
+        track.style.transform = `translateX(-${current * 100}%)`;
+
+        // Update dots
+        dotsEl.querySelectorAll('.s-dot').forEach((d, i) => {
+            d.classList.toggle('active', i === current);
+        });
+
+        // Update counter
+        if (counter) counter.textContent = (current + 1) + ' / ' + total;
+
+        // Enable/disable arrows
+        if (total > 1) {
+            btnPrev.disabled = (current === 0);
+            btnNext.disabled = (current === total - 1);
+        }
+    }
+
+    function goTo(idx) {
+        current = Math.max(0, Math.min(idx, total - 1));
+        render();
+    }
+
+    // Arrow click handlers
+    if (btnPrev) btnPrev.addEventListener('click', () => goTo(current - 1));
+    if (btnNext) btnNext.addEventListener('click', () => goTo(current + 1));
+
+    // Keyboard (left / right arrow keys)
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft')  goTo(current - 1);
+        if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    // Touch swipe support
+    let touchStartX = null;
+    track.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    track.addEventListener('touchend', e => {
+        if (touchStartX === null) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 40) goTo(current - Math.sign(dx));
+        touchStartX = null;
+    });
+
+    render();
+})();
+</script>
+</body>
+</html>

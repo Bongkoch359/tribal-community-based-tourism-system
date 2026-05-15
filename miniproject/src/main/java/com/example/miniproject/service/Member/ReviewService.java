@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -32,7 +35,7 @@ public class ReviewService {
     }
 
     // ══════════════════════════════════════════════════════
-    //  Submit Review
+    //  Submit Review (เดิม — สำหรับ member)
     // ══════════════════════════════════════════════════════
     public void submitReview(String bookingId,
                              String memberId,
@@ -40,45 +43,31 @@ public class ReviewService {
                              String comment,
                              MultipartFile imageFile) throws IOException {
 
-        // 1. หา booking
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new IllegalArgumentException("ไม่พบการจองนี้"));
 
-        // 2. เช็คว่าเป็นของ member คนนี้
-        if (!booking.getMember().getMemberid().equals(memberId)) {
+        if (!booking.getMember().getMemberid().equals(memberId))
             throw new IllegalStateException("ไม่มีสิทธิ์รีวิวการจองนี้");
-        }
 
-        // 3. เช็ค status ต้องเป็น COMPLETED
-        if (booking.getBookingStatus() != BookingStatus.COMPLETED) {
+        if (booking.getBookingStatus() != BookingStatus.COMPLETED)
             throw new IllegalStateException("สามารถรีวิวได้เฉพาะการจองที่เข้าพักเสร็จสิ้นแล้ว");
-        }
 
-        // 4. เช็คว่าเคย review ไปแล้วหรือยัง
-        if (reviewRepository.findByBookingBookingid(bookingId).isPresent()) {
+        if (reviewRepository.findByBookingBookingid(bookingId).isPresent())
             throw new IllegalStateException("คุณได้รีวิวการจองนี้ไปแล้ว");
-        }
 
-        // 5. validate rating
-        if (rating == null || rating < 1 || rating > 5) {
+        if (rating == null || rating < 1 || rating > 5)
             throw new IllegalArgumentException("กรุณาให้คะแนน 1-5 ดาว");
-        }
 
-        // 6. จัดการไฟล์รูปภาพ (ถ้ามี)
         String imagePath = null;
         if (imageFile != null && !imageFile.isEmpty()) {
             String uploadDir = "uploads/reviews/";
             Files.createDirectories(Paths.get(uploadDir));
-
-            String filename = System.currentTimeMillis()
-                              + "_" + imageFile.getOriginalFilename();
+            String filename = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
             Path savePath = Paths.get(uploadDir + filename);
-            Files.copy(imageFile.getInputStream(), savePath,
-                       StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(imageFile.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
             imagePath = "/" + uploadDir + filename;
         }
 
-        // 7. บันทึก
         Review review = new Review();
         review.setReviewid(generateReviewId());
         review.setBooking(booking);
@@ -86,7 +75,30 @@ public class ReviewService {
         review.setComment(comment != null ? comment.trim() : "");
         review.setReviewimage(imagePath);
         review.setReviewdate(Date.valueOf(LocalDate.now()));
-
         reviewRepository.save(review);
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  ดึงรีวิวของทัวร์ (สำหรับ manager)
+    // ══════════════════════════════════════════════════════
+    public List<Review> getReviewsByTourId(String tourid) {
+        return reviewRepository.findByTourId(tourid);
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  ค่าเฉลี่ย rating ของทัวร์
+    // ══════════════════════════════════════════════════════
+    public double getAvgRatingByTourId(String tourid) {
+        Double avg = reviewRepository.avgRatingByTourId(tourid);
+        return avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  นับจำนวนรีวิวแต่ละดาว  →  Map<Integer(ดาว), Long(จำนวน)>
+    // ══════════════════════════════════════════════════════
+    public Map<Integer, Long> getRatingCountsByTourId(String tourid) {
+        List<Review> reviews = reviewRepository.findByTourId(tourid);
+        return reviews.stream()
+                .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
     }
 }
