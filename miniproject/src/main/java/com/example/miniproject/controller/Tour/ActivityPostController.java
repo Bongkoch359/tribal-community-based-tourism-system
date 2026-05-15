@@ -1,8 +1,6 @@
 package com.example.miniproject.controller.Tour;
 
-import com.example.miniproject.entity.Activitypost;
 import com.example.miniproject.entity.Communitymanager;
-import com.example.miniproject.entity.enums.ActivityStatus;
 import com.example.miniproject.service.Member.ActivityPostService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
