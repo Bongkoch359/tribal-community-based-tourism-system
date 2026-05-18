@@ -73,27 +73,27 @@ public class TourController {
         if (tourmname == null || tourmname.isBlank()) {
             model.addAttribute("errorMessage", "กรุณากรอกชื่อทัวร์");
             model.addAttribute("loggedInManager", manager);
-            return "Tour/addTour";
+            return "manager/tours/add-tour";
         }
         if (tourdetail == null || tourdetail.isBlank()) {
             model.addAttribute("errorMessage", "กรุณากรอกรายละเอียดทัวร์");
             model.addAttribute("loggedInManager", manager);
-            return "Tour/addTour";
+            return "manager/tours/add-tour";
         }
         if (minSeatstour == null || maxSeatstour == null) {
             model.addAttribute("errorMessage", "กรุณาระบุจำนวนที่นั่ง");
             model.addAttribute("loggedInManager", manager);
-            return "Tour/addTour";
+            return "manager/tours/add-tour";
         }
         if (minSeatstour > maxSeatstour) {
             model.addAttribute("errorMessage", "จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าสูงสุด");
             model.addAttribute("loggedInManager", manager);
-            return "Tour/addTour";
+            return "manager/tours/add-tour";
         }
         if (adultprice == null || childprice == null) {
             model.addAttribute("errorMessage", "กรุณาระบุราคาทัวร์");
             model.addAttribute("loggedInManager", manager);
-            return "Tour/addTour";
+            return "manager/tours/add-tour";
         }
 
         // ─── สร้าง entity แล้วบันทึก ───
@@ -114,7 +114,7 @@ public class TourController {
         } catch (Exception e) {
             model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
             model.addAttribute("loggedInManager", manager);
-            return "Tour/addTour";
+            return "manager/tours/add-tour";
         }
     }
 
@@ -208,7 +208,12 @@ public String tourDetail(@PathVariable("tourid") String tourid, HttpSession sess
         updated.setMaxSeatstour(maxSeatstour);
         updated.setAdultprice(adultprice);
         updated.setChildprice(childprice);
-        updated.setImages(images != null && !images.isBlank() ? images : null);
+        // "__KEEP__" = ผู้ใช้ไม่ได้เปลี่ยนรูป ให้คงรูปเดิมใน DB ไว้
+        if ("__KEEP__".equals(images)) {
+            updated.setImages(existing.getImages());
+        } else {
+            updated.setImages(images != null && !images.isBlank() ? images : null);
+        }
  
         try {
             tourService.updateTour(tourid, updated);
@@ -245,4 +250,3 @@ public String tourDetail(@PathVariable("tourid") String tourid, HttpSession sess
         return "Tour/tourReviews";
     }
 }
- 

@@ -6,8 +6,133 @@
     <title>รายละเอียดประเภทห้องพัก</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
-    <style>
+<style>
+        /* ═══════════════════════════════════════════════
+           NAVBAR — self-contained, no dashboard.css needed
+           ═══════════════════════════════════════════════ */
+        .hs-navbar {
+            background: #1a3d1f;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            height: 84px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            gap: .5rem;
+        }
+        .hs-navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            white-space: nowrap;
+            margin-right: auto;
+        }
+        .hs-navbar-brand i { color: #fff; font-size: 1.2rem; }
+        .hs-nav-links {
+            display: flex;
+            align-items: center;
+            gap: .15rem;
+            margin-right: 1.25rem;
+        }
+        .hs-nav-link {
+            color: rgba(255,255,255,.7);
+            text-decoration: none;
+            font-size: .92rem;
+            font-weight: 500;
+            padding: .45rem 1rem;
+            border-radius: 6px;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            white-space: nowrap;
+        }
+        .hs-nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+        .hs-nav-link.active {
+            color: #fff;
+            border-bottom: 3px solid #7ecf88;
+            border-radius: 0;
+            padding-bottom: calc(.45rem - 3px);
+        }
+        .hs-nav-right { display: flex; align-items: center; }
+        .hs-profile-dropdown { position: relative; display: inline-block; cursor: pointer; }
+        .hs-profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: .45rem .75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.12);
+            transition: background .2s, border-color .2s;
+        }
+        .hs-profile-trigger:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.22); }
+        .hs-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e08a00, #f5a623);
+            color: #fff;
+            font-weight: 700;
+            font-size: .82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 2px rgba(255,255,255,.2);
+            flex-shrink: 0;
+        }
+        .hs-owner-name { color: #fff; font-size: .9rem; font-weight: 600; display: block; line-height: 1.2; }
+        .hs-owner-role { color: rgba(255,255,255,.55); font-size: .72rem; display: block; line-height: 1; }
+        .hs-chevron { font-size: .7rem; color: rgba(255,255,255,.5); margin-left: 2px; transition: transform .2s; }
+        .hs-profile-dropdown:hover .hs-chevron { transform: rotate(180deg); }
+        .hs-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0; top: 100%;
+            background: #fff;
+            min-width: 210px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+            z-index: 1000;
+            border-radius: 12px;
+            margin-top: 10px;
+            padding: 6px 0;
+            border: 1px solid #e8e8e8;
+        }
+        .hs-dropdown-content::before {
+            content: ""; position: absolute; top: -10px; left: 0;
+            width: 100%; height: 10px; display: block;
+        }
+        .hs-profile-dropdown:hover .hs-dropdown-content { display: block; }
+        .hs-dropdown-header {
+            padding: .75rem 1rem .55rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+        .hs-dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
+        .hs-dropdown-header .d-email { font-size: .75rem; color: #6b7c6e; margin-top: 2px; }
+        .hs-dropdown-content a {
+            color: #333; padding: .6rem 1rem;
+            text-decoration: none; display: flex;
+            align-items: center; gap: .65rem;
+            font-size: .88rem; transition: background .15s;
+        }
+        .hs-dropdown-content a i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
+        .hs-dropdown-content a:hover { background: #f5f8f5; color: #1a3d1f; }
+        .hs-dropdown-content a:hover i { color: #1a3d1f; }
+        .hs-dropdown-content hr { margin: 4px 0; border: 0; border-top: 1px solid #f0f0f0; }
+        .hs-dropdown-content a.hs-logout { color: #c0392b; }
+        .hs-dropdown-content a.hs-logout i { color: #c0392b; }
+        .hs-dropdown-content a.hs-logout:hover { background: #fff5f5; }
+        @media (max-width: 768px) {
+            .hs-nav-links { display: none; }
+            .hs-navbar { padding: 0 1rem; }
+        }
+
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
@@ -25,62 +150,7 @@
 
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        .navbar {
-    background: var(--green-dark);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 35px;
-    height: 72px;   /* เพิ่มความสูง */
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-        /* แก้ไขสี Navbar และฟอนต์ Brand ให้หนาขึ้น */
-.navbar-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;           /* เว้นระยะห่างระหว่างไอคอนและข้อความ */
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 700;    /* เพิ่มความหนาของตัวอักษรให้เหมือนในรูป */
-    font-size: 16px;     /* ปรับขนาดให้ดูพอดีกับแถบเมนู */
-}
-
-.navbar-brand i {
-    font-size: 20px;     /* ปรับขนาดไอคอนภูเขาให้เด่นชัด */
-}
-
-/* เพิ่มเส้นแบ่งระหว่างเมนูกับชื่อผู้ใช้ (ถ้าต้องการให้เหมือนเป๊ะ) */
-.nav-user { 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    color: #fff; 
-    font-size: 14px; 
-    padding-left: 20px;
-    border-left: 1px solid rgba(255,255,255,0.1); /* เส้นแบ่งจางๆ */
-}
-
-/* แก้ไขสี Avatar เป็นสีส้มตามรูป */
-.avatar {
-    width: 32px; 
-    height: 32px; 
-    border-radius: 50%; 
-    background: #e67e22; /* สีส้มอมน้ำตาลตามรูป */
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    font-weight: 600; 
-    font-size: 12px; 
-    color: #fff;
-}
-        .nav-user { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 14px; }
-        .avatar {
-            width: 34px; height: 34px; border-radius: 50%; background: #d4a017;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 13px; color: #fff;
-        }
+        
 
         /* ── Layout ── */
         .container { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
@@ -218,24 +288,32 @@
 <body>
 
 <!-- ─── NAVBAR ─── -->
-<nav class="navbar">
-    <a class="navbar-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+<!-- ─── NAVBAR ─── -->
+<nav class="hs-navbar">
+    <a class="hs-navbar-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun"></i>
+        ระบบท่องเที่ยวชุมชนชนเผ่า
     </a>
-    
-    <div class="nav-right">
-        <div class="profile-dropdown">
-            <div class="profile-trigger">
-                <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
-                <span class="owner-name" th:text="${ownername}">สมชาย ใจดี</span>
-                <i class="fas fa-chevron-down" style="font-size:.8rem; margin-left:5px; color:#fff;"></i>
+    <!-- <div class="hs-nav-links">
+        <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
+        <a class="hs-nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
+        <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
+        <a class="hs-nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
+    </div> -->
+    <div class="hs-nav-right">
+        <div class="hs-profile-dropdown">
+            <div class="hs-profile-trigger">
+                <div class="hs-avatar" th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
+                <div>
+                    <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
+                    <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+                </div>
+                <i class="fas fa-chevron-down hs-chevron"></i>
             </div>
-            <div class="dropdown-content">
+            <div class="hs-dropdown-content">
                 <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
                 <hr>
-                <a th:href="@{/owner/logout}" class="logout-item">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
+                <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
             </div>
         </div>
     </div>

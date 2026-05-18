@@ -40,7 +40,6 @@
         .page-title { font-size: 22px; font-weight: 700; color: var(--green-dark); }
         .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
 
-        /* ปุ่มแก้ไขและรีวิว */
         .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: 'Sarabun', sans-serif; cursor: pointer; text-decoration: none; border: none; transition: background .18s, box-shadow .18s, transform .1s; }
         .btn:active { transform: scale(.97); }
@@ -107,7 +106,6 @@
             <div class="page-subtitle">รหัสทัวร์: <span th:text="${tour.tourid}">-</span></div>
         </div>
 
-        <!-- ปุ่มแก้ไขข้อมูล และ ดูรีวิว -->
         <div class="header-actions">
             <a class="btn btn-edit" th:href="@{/manager/tours/{id}/edit(id=${tour.tourid})}">
                 <i class="fas fa-pen-to-square"></i> แก้ไขข้อมูล
@@ -121,12 +119,15 @@
     <div class="detail-grid">
         <div class="left-col">
             <div class="gallery-card">
+                <!--
+                    [แก้ไข] ไม่ใส่ src ใน img tag โดยตรง
+                    ใช้ JS โหลดรูปแทนเพื่อป้องกันปัญหา Thymeleaf escape base64
+                -->
                 <th:block th:if="${tour.images != null and !#strings.isEmpty(tour.images)}">
-                    <img class="gallery-main" 
-                         th:src="${tour.images.startsWith('[') or tour.images.startsWith('data:') ? tour.images : 'data:image/jpeg;base64,' + tour.images}" 
-                         alt="รูปทัวร์" />
+                    <img class="gallery-main" id="tourImg" alt="รูปทัวร์" />
                 </th:block>
-                <div th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}" class="gallery-placeholder">
+                <div th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}" 
+                     class="gallery-placeholder">
                     <i class="fas fa-image"></i>
                     <span>ยังไม่มีรูปภาพ</span>
                 </div>
@@ -183,6 +184,28 @@
         </div>
     </div>
 </div>
+
+<!--
+    [แก้ไข] เก็บ base64 ใน hidden textarea (ไม่ใช่ attribute)
+    textarea รองรับ text content ยาวมากได้โดยไม่มีปัญหา encoding
+    ปลอดภัยกว่า data-attribute ที่อาจถูก truncate หรือ escape ผิดพลาด
+-->
+<textarea id="imgData" style="display:none;"
+          th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
+          th:text="${tour.images}"></textarea>
+
+<script>
+    (function () {
+        const ta = document.getElementById('imgData');
+        if (!ta) return;
+        const raw = ta.value;
+        if (!raw) return;
+        const img = document.getElementById('tourImg');
+        if (img) {
+            img.src = raw.startsWith('data:') ? raw : 'data:image/jpeg;base64,' + raw;
+        }
+    })();
+</script>
 
 </body>
 </html>

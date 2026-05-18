@@ -6,7 +6,7 @@
     <title>ข้อมูลโฮมสเตย์</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link th:href="@{/css/Homestay/homestay.css}" rel="stylesheet">
+    <link th:href="@{/css/Homestay/homestay.css}" rel="stylesheet">
 <style>
         /* ═══════════════════════════════════════════════
            NAVBAR — self-contained, no dashboard.css needed
@@ -133,12 +133,13 @@
             .hs-navbar { padding: 0 1rem; }
         }
 
-         .footer {
-            margin-top: auto;
+        /* ─── Footer ─── */
+        .footer {
             padding: 1rem 2rem;
             background: #1a3d1f;
             color: #d8f3dc;
             font-size: 0.9rem;
+            /* ไม่ต้อง margin-top:auto เพราะ body เป็น flex แล้ว .page มี flex:1 */
         }
         .footer-content {
             display: flex;
@@ -147,13 +148,11 @@
         }
         .footer a { color: #95d5b2; text-decoration: none; margin-left: 8px; }
         .footer a:hover { text-decoration: underline; }
-
-
 </style>
 </head>
-<body>
+<!-- body เป็น flex column เพื่อให้ footer ติดล่างเสมอ -->
+<body style="display:flex; flex-direction:column; min-height:100vh; margin:0; background:#f0ede8;">
 
-<!-- ─── NAVBAR ─── -->
 <!-- ─── NAVBAR ─── -->
 <nav class="hs-navbar">
     <a class="hs-navbar-brand" th:href="@{/}">
@@ -201,16 +200,15 @@
              class="homestay-card"
              th:classappend="${hs.homestay.status == 'active'} ? ' active' : ' pending'">
 
-            
-<!-- รูปภาพ -->
-<div class="hs-img">
-    <img th:if="${hs.firstImage != null}"
-         th:src="${hs.firstImage}"
-         alt="homestay"
-         style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
-    <i th:unless="${hs.firstImage != null}"
-       class="fas fa-house" style="font-size:2rem; color:#ccc;"></i>
-</div>
+            <!-- รูปภาพ -->
+            <div class="hs-img">
+                <img th:if="${hs.firstImage != null}"
+                     th:src="${hs.firstImage}"
+                     alt="homestay"
+                     style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                <i th:unless="${hs.firstImage != null}"
+                   class="fas fa-house" style="font-size:2rem; color:#ccc;"></i>
+            </div>
 
             <!-- ข้อมูล -->
             <div class="hs-info">
@@ -241,8 +239,8 @@
             <!-- Actions -->
             <div class="hs-actions" style="flex-direction: row; align-items: center;">
                 <a th:href="@{/owner/homestays/{id}(id=${hs.homestay.homestayid})}" class="btn-detail">
-    <i class="fas fa-circle-info"></i> ดูรายละเอียด
-</a>
+                    <i class="fas fa-circle-info"></i> ดูรายละเอียด
+                </a>
                 <a href="#" class="btn-review">
                     <i class="fas fa-star"></i>
                     รีวิว (<span th:text="${hs.reviewCount}">0</span>)
@@ -262,20 +260,20 @@
     </div>
 
 </div>
- <!-- ─── FOOTER ─── -->
+
+<!-- ─── FOOTER ─── -->
 <footer class="footer">
     <div class="footer-content">
         <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-
         <span class="footer-right">
             Version 1.0 |
             <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
-
             <a href="#" onclick="openContactModal()">
                 <i class="fas fa-headset"></i> ติดต่อแอดมิน
             </a>
         </span>
     </div>
 </footer>
+
 </body>
 </html>
