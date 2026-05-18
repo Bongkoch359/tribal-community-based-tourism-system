@@ -214,35 +214,62 @@
     background: #d4edda !important;
 }
 
+/* หัวตาราง */
 .table-card table thead th {
     background: #d4edda !important;
     color: #1a3d1f !important;
     border-bottom: 2px solid #c3dec9 !important;
+    padding: 18px 16px;
+    text-align: center;
+    vertical-align: middle;
 }
 
-        tbody tr {
-            border-bottom: 1px solid #f0f0f0;
-            transition: background .15s;
-        }
-        tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover { background: #fafff8; }
+/* ข้อมูลในตาราง */
+tbody td {
+    padding: 18px 16px;
+    vertical-align: middle;
+    text-align: center;   /* ทำให้ตรงกับหัว */
+}
 
-        tbody td {
-            padding: 14px 16px; vertical-align: middle;
-            font-size: .95rem; color: #333;
-        }
+/* คอลัมน์รูปภาพ */
+th:first-child,
+td:first-child {
+    width: 180px;
+    text-align: center;
+}
+
+/* คอลัมน์ปุ่มรายละเอียด */
+th:last-child,
+td:last-child {
+    width: 220px;
+    text-align: center;
+}
 
         /* ── Room image ── */
         .room-img {
-            width: 72px; height: 52px; border-radius: 8px;
-            object-fit: cover; display: block;
-            background: #eee;
-        }
-        .room-img-placeholder {
-            width: 72px; height: 52px; border-radius: 8px;
-            background: #e8ede8; display: flex; align-items: center;
-            justify-content: center; color: #aaa; font-size: 1.4rem;
-        }
+    width: 72px;
+    height: 52px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #eee;
+
+    display: block;
+    margin: 0 auto;   /* ทำให้รูปอยู่กึ่งกลาง */
+}
+
+.room-img-placeholder {
+    width: 72px;
+    height: 52px;
+    border-radius: 8px;
+    background: #e8ede8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 1.4rem;
+
+    margin: 0 auto;   /* placeholder อยู่กลางด้วย */
+}
 
         /* ── Type badge ── */
         .type-badge {

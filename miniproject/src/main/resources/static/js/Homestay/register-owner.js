@@ -294,7 +294,7 @@ function validateHsName(idx) {
     const val = input.value.trim();
     if (val === '') { showError(input, `hs_nameError_${idx}`, 'ชื่อโฮมสเตย์ต้องไม่เป็นค่าว่าง'); return false; }
     if (!/^[ก-๙a-zA-Z\s]+$/.test(val)) { showError(input, `hs_nameError_${idx}`, 'ชื่อโฮมสเตย์ใช้ได้เฉพาะตัวอักษรภาษาไทยหรืออังกฤษ'); return false; }
-    if (val.length < 3 || val.length > 100) { showError(input, `hs_nameError_${idx}`, 'ชื่อโฮมสเตย์ต้องมีความยาว 3–100 ตัวอักษร'); return false; }
+    if (val.length < 3 || val.length > 255) { showError(input, `hs_nameError_${idx}`, 'ชื่อโฮมสเตย์ต้องมีความยาว 3–255 ตัวอักษร'); return false; }
     showValid(input, `hs_nameError_${idx}`); return true;
 }
 function validateHsAddress(idx) {
@@ -309,7 +309,7 @@ function validateHsDesc(idx) {
     const input = document.getElementById(`hs_desc_${idx}`);
     const val = input.value.trim();
     if (val === '') { showValid(input, `hs_descError_${idx}`); return true; }
-    if (val.length < 3 || val.length > 100) { showError(input, `hs_descError_${idx}`, 'รายละเอียดโฮมสเตย์ต้องมีความยาว 3–100 ตัวอักษร (หากกรอก)'); return false; }
+    if (val.length < 3 || val.length > 255) { showError(input, `hs_descError_${idx}`, 'รายละเอียดโฮมสเตย์ต้องมีความยาว 3–255 ตัวอักษร (หากกรอก)'); return false; }
     showValid(input, `hs_descError_${idx}`); return true;
 }
 function validateAllHomestays() {
