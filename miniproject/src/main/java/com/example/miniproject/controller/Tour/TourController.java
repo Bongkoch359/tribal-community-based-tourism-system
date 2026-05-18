@@ -73,27 +73,27 @@ public class TourController {
         if (tourmname == null || tourmname.isBlank()) {
             model.addAttribute("errorMessage", "กรุณากรอกชื่อทัวร์");
             model.addAttribute("loggedInManager", manager);
-            return "manager/tours/add-tour";
+            return "Tour/addTour";
         }
         if (tourdetail == null || tourdetail.isBlank()) {
             model.addAttribute("errorMessage", "กรุณากรอกรายละเอียดทัวร์");
             model.addAttribute("loggedInManager", manager);
-            return "manager/tours/add-tour";
+            return "Tour/addTour";
         }
         if (minSeatstour == null || maxSeatstour == null) {
             model.addAttribute("errorMessage", "กรุณาระบุจำนวนที่นั่ง");
             model.addAttribute("loggedInManager", manager);
-            return "manager/tours/add-tour";
+            return "Tour/addTour";
         }
         if (minSeatstour > maxSeatstour) {
             model.addAttribute("errorMessage", "จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าสูงสุด");
             model.addAttribute("loggedInManager", manager);
-            return "manager/tours/add-tour";
+            return "Tour/addTour";
         }
         if (adultprice == null || childprice == null) {
             model.addAttribute("errorMessage", "กรุณาระบุราคาทัวร์");
             model.addAttribute("loggedInManager", manager);
-            return "manager/tours/add-tour";
+            return "Tour/addTour";
         }
 
         // ─── สร้าง entity แล้วบันทึก ───
@@ -114,7 +114,7 @@ public class TourController {
         } catch (Exception e) {
             model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
             model.addAttribute("loggedInManager", manager);
-            return "manager/tours/add-tour";
+            return "Tour/addTour";
         }
     }
 
