@@ -17,7 +17,7 @@
         }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg-page); color: var(--text-main); font-size: 14px; line-height: 1.6; }
 
-        /* ── Navbar (เหมือนกันทุกหน้า) ── */
+        /* ── Navbar ── */
         .navbar { background: var(--green-dark); display: flex; align-items: center; padding: 0 2rem; height: 83px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
         .nav-brand { color: #fff; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: .6rem; text-decoration: none; white-space: nowrap; }
         .nav-brand i { font-size: 1.2rem; }
@@ -178,12 +178,13 @@
                 <div class="card">
                     <div class="card-title">รูปภาพทัวร์</div>
                     <div class="img-preview-wrap" onclick="document.getElementById('fileInput').click()">
-                        <img id="previewImg"
-                             th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
-                             th:src="${tour.images.startsWith('data:') ? tour.images : 'data:image/jpeg;base64,' + tour.images}"
-                             alt="รูปทัวร์" />
-                        <div class="img-placeholder" id="imgPlaceholder"
-                             th:style="${tour.images != null and !#strings.isEmpty(tour.images)} ? 'display:none' : ''">
+                        <!--
+                            [แก้ไข] ลบ th:src ออก และลบ th:if ออก
+                            ใช้ JS โหลดรูปแทน เพื่อป้องกัน Thymeleaf render base64 ยาวลงใน HTML attribute
+                            ซึ่งทำให้ browser หยุด render ส่วนที่เหลือของหน้า
+                        -->
+                        <img id="previewImg" alt="รูปทัวร์" style="display:none;" />
+                        <div class="img-placeholder" id="imgPlaceholder">
                             <i class="fas fa-cloud-arrow-up"></i>
                             <span>คลิกเพื่ออัปโหลดรูป</span>
                         </div>
@@ -193,7 +194,19 @@
                         </div>
                     </div>
                     <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
-                    <input type="hidden" name="images" id="imagesInput" th:value="${tour.images}">
+                    <!--
+                        [แก้ไข] ลบ th:value="${tour.images}" ออก
+                        ตั้งค่าเริ่มต้นเป็น __KEEP__ แทน
+                        JS จะ set ค่าเป็น base64 จริงเมื่อผู้ใช้เลือกรูปใหม่
+                    -->
+                    <input type="hidden" name="images" id="imagesInput" value="__KEEP__">
+                    <!--
+                        [แก้ไข] เก็บ base64 เดิมใน hidden textarea
+                        textarea รองรับ text content ยาวมากได้โดยไม่มีปัญหา encoding
+                    -->
+                    <textarea id="imgData" style="display:none;"
+                              th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
+                              th:text="${tour.images}"></textarea>
                     <p class="hint" style="margin-top:8px;">รองรับ JPG, PNG ขนาดไม่เกิน 5 MB</p>
                 </div>
 
@@ -303,8 +316,25 @@
     </form>
 </div>
 
+<!--
+    [แก้ไข] อ่านค่า base64 จาก hidden textarea
+-->
 <script>
-    // ── Preview รูปก่อนอัปโหลด ──
+    (function () {
+        const ta = document.getElementById('imgData');
+        if (!ta) return;
+        const raw = ta.value;
+        if (!raw) return;
+
+        const img = document.getElementById('previewImg');
+        img.src = raw.startsWith('data:') ? raw : 'data:image/jpeg;base64,' + raw;
+        img.style.display = 'block';
+        document.getElementById('imgPlaceholder').style.display = 'none';
+    })();
+</script>
+
+<script>
+    // ── Preview รูปใหม่ที่เลือก ──
     function previewImage(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -313,31 +343,31 @@
             return;
         }
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const base64 = e.target.result;
-            let img = document.getElementById('previewImg');
-            if (!img) {
-                img = document.createElement('img');
-                img.id = 'previewImg';
-                document.querySelector('.img-preview-wrap').prepend(img);
-            }
+            const img = document.getElementById('previewImg');
             img.src = base64;
             img.style.display = 'block';
             document.getElementById('imgPlaceholder').style.display = 'none';
-            // ตัดส่วน prefix ออก แล้วเก็บแค่ base64 string
-            document.getElementById('imagesInput').value = base64.split(',')[1];
+
+            // เก็บ base64 (ตัด prefix ออก) และ mark ว่าเปลี่ยนรูปแล้ว
+            const imgInput = document.getElementById('imagesInput');
+            imgInput.value = base64.split(',')[1];
+            imgInput._changed = true;
         };
         reader.readAsDataURL(file);
     }
 
-    // ── Validate min <= max seats ──
-    document.getElementById('editForm').addEventListener('submit', function(e) {
+    // ── Validate ก่อน submit ──
+    document.getElementById('editForm').addEventListener('submit', function (e) {
         const min = parseInt(document.querySelector('[name="minSeatstour"]').value);
         const max = parseInt(document.querySelector('[name="maxSeatstour"]').value);
         if (min > max) {
             e.preventDefault();
             alert('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด');
+            return;
         }
+        // ถ้าไม่ได้เปลี่ยนรูป imagesInput จะยังเป็น __KEEP__ อยู่แล้ว ไม่ต้องทำอะไรเพิ่ม
     });
 </script>
 

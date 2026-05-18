@@ -346,26 +346,6 @@
             transition: background 0.15s;
         }
         .btn-view:hover { background: var(--green-mid); }
-        .btn-edit {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 6px 13px;
-            background: transparent; color: var(--text-muted);
-            font-size: 12px; font-family: 'Sarabun', sans-serif;
-            border: 1px solid var(--border); border-radius: var(--radius-sm);
-            cursor: pointer; text-decoration: none;
-            transition: all 0.15s;
-        }
-        .btn-edit:hover { border-color: var(--amber); color: var(--amber-hover); }
-        .btn-close {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 6px 13px;
-            background: transparent; color: var(--red-text);
-            font-size: 12px; font-family: 'Sarabun', sans-serif;
-            border: 1px solid #f5c0c0; border-radius: var(--radius-sm);
-            cursor: pointer; text-decoration: none;
-            transition: all 0.15s;
-        }
-        .btn-close:hover { background: var(--red-light); border-color: var(--red-text); }
 
         /* ─── EMPTY STATE ─── */
         .empty-state {
@@ -493,15 +473,12 @@
         </button>
         <button class="tab-btn" onclick="filterTours('เปิดจอง', this)" id="tab-open">
             🟢 เปิดจอง
-            <!-- <span class="tab-count" id="count-open">0</span> -->
         </button>
         <button class="tab-btn" onclick="filterTours('ปิดรับการจอง', this)" id="tab-closed">
             🔴 ปิดรับการจอง
-            <!-- <span class="tab-count" id="count-closed">0</span> -->
         </button>
         <button class="tab-btn" onclick="filterTours('เต็ม', this)" id="tab-full">
             🟡 เต็ม
-            <!-- <span class="tab-count" id="count-full">0</span> -->
         </button>
     </div>
 
@@ -524,17 +501,13 @@
                     th:attr="data-status=${tour.status}"
                     class="tour-row">
 
-                    <!-- รูปภาพ -->
+                    <!-- ─── รูปภาพ: ใช้ data-b64 + JS โหลดทีหลัง หลีกเลี่ยง HTML attribute size limit ─── -->
                     <td>
                         <th:block th:if="${tour.images != null and !#strings.isEmpty(tour.images)}">
-                            <!--
-                                images field เก็บ JSON array หรือ base64 เดี่ยว
-                                ถ้าเก็บ JSON array → parse หาตัวแรก
-                                ถ้าเก็บ base64 เดี่ยว → ใช้เลย
-                            -->
-                            <img class="tour-thumb"
-                                 th:src="${tour.images.startsWith('[') ? 'data:image/jpeg;base64,' : tour.images}"
-                                 alt="tour"/>
+                            <img class="tour-thumb lazy-thumb"
+                                 th:attr="data-b64=${tour.images}"
+                                 alt="tour"
+                                 src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/>
                         </th:block>
                         <th:block th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}">
                             <div class="thumb-placeholder">
@@ -543,14 +516,9 @@
                         </th:block>
                     </td>
 
-                    <!-- ชื่อทัวร์ + รายละเอียดย่อ -->
+                    <!-- ชื่อทัวร์ -->
                     <td>
                         <div class="tour-name" th:text="${tour.tourmname}">-</div>
-                        <!-- <div class="tour-meta">
-                            <span><i class="fas fa-users"></i>
-                                <span th:text="${tour.minSeatstour + '–' + tour.maxSeatstour + ' ท่าน'}">-</span>
-                            </span>
-                        </div> -->
                     </td>
 
                     <!-- ราคาผู้ใหญ่ -->
@@ -585,26 +553,23 @@
                     <!-- จัดการ -->
                     <td>
                         <div class="action-btns">
-                            <!-- ดูรายละเอียด -->
                             <a class="btn-view"
                                th:href="@{/manager/tours/{id}(id=${tour.tourid})}">
                                 <i class="fas fa-eye"></i> ดูรายละเอียด
                             </a>
-
-                            
-                            </form> 
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- Empty state -->
+        <!-- Empty state (JS filter) -->
         <div class="empty-state" id="emptyState" style="display:none;">
             <i class="fas fa-bus-simple"></i>
             <p>ไม่พบทัวร์ในหมวดหมู่นี้</p>
         </div>
 
+        <!-- Empty state (no tours in DB) -->
         <div class="empty-state" th:if="${tours == null or tours.isEmpty()}">
             <i class="fas fa-bus-simple"></i>
             <p>ยังไม่มีทัวร์ในระบบ</p>
@@ -629,10 +594,40 @@
 
 <script>
 /* ═══════════════════════════════════════════
+   โหลดรูป thumbnail จาก data-b64 ผ่าน JS
+   หลีกเลี่ยง HTML attribute ยาวเกิน limit
+═══════════════════════════════════════════ */
+document.querySelectorAll('.lazy-thumb').forEach(function(img) {
+    const raw = img.getAttribute('data-b64') || '';
+    if (!raw) return;
+
+    try {
+        if (raw.startsWith('[')) {
+            // กรณีเก็บเป็น JSON array
+            const arr = JSON.parse(raw);
+            const item = arr.find(i => i.primary) || arr[0];
+            if (item && item.base64) {
+                img.src = item.base64;
+            } else if (typeof item === 'string') {
+                img.src = item.startsWith('data:') ? item : 'data:image/jpeg;base64,' + item;
+            }
+        } else {
+            // กรณีเก็บเป็น base64 เดี่ยว
+            img.src = raw.startsWith('data:') ? raw : 'data:image/jpeg;base64,' + raw;
+        }
+    } catch (e) {
+        // ถ้า parse ไม่ได้ให้ซ่อนรูป
+        img.style.display = 'none';
+    }
+
+    // ล้าง data-b64 ออกหลังโหลดแล้วเพื่อลด memory
+    img.removeAttribute('data-b64');
+});
+
+/* ═══════════════════════════════════════════
    FILTER TABS — กรองตามสถานะ
 ═══════════════════════════════════════════ */
 function filterTours(status, btn) {
-    // toggle active tab
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
@@ -649,7 +644,6 @@ function filterTours(status, btn) {
         }
     });
 
-    // empty state
     const emptyState = document.getElementById('emptyState');
     if (emptyState) {
         emptyState.style.display = visible === 0 ? 'block' : 'none';
@@ -661,50 +655,12 @@ function filterTours(status, btn) {
 ═══════════════════════════════════════════ */
 function updateCounts() {
     const rows = document.querySelectorAll('.tour-row');
-    let total = 0, open = 0, closed = 0, full = 0;
-
-    rows.forEach(row => {
-        const s = row.getAttribute('data-status') || '';
-        total++;
-        if (s === 'เปิดจอง')       open++;
-        else if (s === 'ปิดรับการจอง') closed++;
-        else if (s === 'เต็ม')      full++;
-    });
-
-    setCount('count-all',    total);
-    setCount('count-open',   open);
-    setCount('count-closed', closed);
-    setCount('count-full',   full);
+    let total = 0;
+    rows.forEach(() => total++);
+    const el = document.getElementById('count-all');
+    if (el) el.textContent = total;
 }
 
-function setCount(id, n) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = n;
-}
-
-/* ═══════════════════════════════════════════
-   รูปภาพ: ถ้า images เก็บเป็น JSON array
-   ให้ดึง base64 ตัวแรกมาแสดง
-═══════════════════════════════════════════ */
-document.querySelectorAll('.tour-thumb').forEach(img => {
-    const src = img.getAttribute('src') || '';
-    if (src.startsWith('[')) {
-        try {
-            const arr = JSON.parse(src);
-            // หา primary ก่อน ถ้าไม่มีเอาตัวแรก
-            const primary = arr.find(i => i.primary) || arr[0];
-            if (primary && primary.base64) {
-                img.src = primary.base64;
-            } else if (typeof primary === 'string') {
-                img.src = primary;
-            }
-        } catch (e) {
-            img.style.display = 'none';
-        }
-    }
-});
-
-// init on load
 updateCounts();
 </script>
 
