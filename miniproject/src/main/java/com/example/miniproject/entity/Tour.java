@@ -19,10 +19,12 @@ public class Tour {
     @Column(length = 50)
     private String status;
 
-    @Column(length = 255)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String tourdetail;
 
-    @Column(length = 255)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String conditiontour;
 
     private Integer minSeatstour;

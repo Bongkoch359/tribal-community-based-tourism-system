@@ -9,293 +9,333 @@
 
 <style>
 *, *::before, *::after {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+    margin:0; padding:0; box-sizing:border-box;
 }
 
 :root {
-    --green-dark:#2d5a27;
-    --green-main:#3d7a35;
-    --green-light:#e8f5e1;
-    --green-accent:#5a9e50;
+    /* === ใช้ตัวแปรเดียวกับหน้า search === */
+    --green-950:#0a1f12;
+    --green-900:#14321e;
+    --green-800:#1a472a;
+    --green-700:#215c35;
+    --green-600:#2d7a4f;
+    --green-500:#3d9e68;
+    --green-400:#52b788;
+    --green-300:#86d4aa;
+    --green-200:#a7e3c3;
+    --green-100:#d8f3dc;
+    --green-50:#f0faf4;
+    --amber-700:#a16207;
+    --amber-600:#c27b04;
+    --amber-500:#e8960a;
+    --amber-400:#f5aa1f;
+    --amber-100:#fef3c7;
+    --neutral-800:#292524;
+    --neutral-700:#44403c;
+    --neutral-600:#57534e;
+    --neutral-500:#78716c;
+    --neutral-400:#a8a29e;
+    --neutral-300:#d6d3d1;
+    --neutral-200:#e7e5e4;
+    --neutral-100:#f5f5f4;
+    --neutral-50:#fafaf9;
+    --white:#ffffff;
+    --navbar-h:100px;
+
+    /* booking-specific */
     --orange:#e67e22;
     --orange-light:#fdf3e7;
-    --gray-50:#f9fafb;
-    --gray-100:#f3f4f6;
-    --gray-200:#e5e7eb;
-    --gray-400:#9ca3af;
-    --gray-600:#6b7280;
-    --gray-800:#1f2937;
-    --white:#ffffff;
     --radius-sm:8px;
     --radius-md:12px;
     --radius-lg:18px;
     --shadow:0 2px 12px rgba(0,0,0,.08);
 }
 
-body{
+body {
     font-family:'Sarabun',sans-serif;
     background:#f5f7f5;
-    color:var(--gray-800);
+    color:var(--neutral-800);
     font-size:15px;
 }
 
-/* NAVBAR */
-.navbar{
-    background:var(--green-dark);
-    height:54px;
-    padding:0 2rem;
+/* ============================================================
+   TOP BAR (เหมือนหน้า search)
+============================================================ */
+.top-bar {
+    background:var(--green-950);
+    padding:8px 5%;
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:flex-end;
+    gap:20px;
+}
+.top-bar a {
+    color:rgba(255,255,255,0.55);
+    font-size:14px;
+    font-weight:500;
+    transition:color .15s;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    text-decoration:none;
+}
+.top-bar a:hover { color:#fff; }
+.top-bar a svg { width:14px; height:14px; }
+.top-bar-divider { width:1px; height:14px; background:rgba(255,255,255,0.14); }
+
+/* ============================================================
+   NAVBAR (เหมือนหน้า search — green-800, height 100px)
+============================================================ */
+.navbar {
+    background:var(--green-800);
+    height:var(--navbar-h);
+    display:flex;
+    align-items:center;
+    padding:0 5%;
+    gap:8px;
     position:sticky;
     top:0;
-    z-index:100;
-    box-shadow:0 2px 8px rgba(0,0,0,.2);
+    z-index:1000;
+    box-shadow:0 3px 16px rgba(0,0,0,0.28);
 }
 
-.navbar-brand{
+/* Brand */
+.navbar-brand {
+    color:#fff;
+    margin-right:auto;
     display:flex;
     align-items:center;
-    gap:.6rem;
-    color:#fff;
-    font-weight:700;
-    font-size:.95rem;
+    gap:14px;
+    flex-shrink:0;
     text-decoration:none;
 }
-
-.logo-icon{
-    width:30px;
-    height:30px;
-    background:var(--green-accent);
-    border-radius:7px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.brand-icon {
+    width:48px; height:48px;
+    background:var(--green-400);
+    border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    box-shadow:0 4px 12px rgba(82,183,136,0.35);
 }
+.brand-icon svg { width:26px; height:26px; }
+.brand-name { display:flex; flex-direction:column; }
+.brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; }
+.brand-name-line2 { font-size:13px; font-weight:400; color:var(--green-200); opacity:.8; }
 
-.navbar-nav{
-    display:flex;
-    align-items:center;
-    gap:.4rem;
-}
-
-.nav-link{
-    color:rgba(255,255,255,.75);
+/* Nav links */
+.nav-links { display:flex; align-items:center; gap:2px; }
+.nav-link {
+    color:rgba(255,255,255,0.80);
+    font-size:16px;
+    font-weight:600;
+    padding:10px 16px;
+    border-radius:var(--radius-sm);
+    transition:background .15s, color .15s;
+    white-space:nowrap;
+    display:flex; align-items:center; gap:7px;
     text-decoration:none;
-    font-size:.88rem;
-    padding:.35rem .75rem;
-    border-radius:6px;
-    transition:.2s;
 }
+.nav-link svg { width:17px; height:17px; opacity:.7; flex-shrink:0; }
+.nav-link:hover { background:rgba(255,255,255,0.12); color:#fff; }
 
-.nav-link:hover{
-    color:#fff;
-    background:rgba(255,255,255,.15);
+.nav-divider { width:1px; height:32px; background:rgba(255,255,255,0.14); margin:0 8px; }
+
+/* ============================================================
+   USER MENU (logged-in เท่านั้น — เหมือนหน้า search)
+============================================================ */
+.auth-group { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+.user-menu-wrapper { position:relative; }
+.btn-user-menu {
+    display:flex; align-items:center; gap:10px;
+    background:rgba(255,255,255,0.12);
+    border:1.5px solid rgba(255,255,255,0.25);
+    border-radius:50px;
+    padding:8px 18px 8px 8px;
+    cursor:pointer; color:white;
+    transition:background .2s, border-color .2s;
 }
+.btn-user-menu:hover { background:rgba(255,255,255,0.22); border-color:rgba(255,255,255,0.45); }
 
-.nav-avatar{
-    width:32px;
-    height:32px;
+.user-avatar {
+    width:40px; height:40px;
     border-radius:50%;
-    background:var(--green-accent);
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:700;
+    background:linear-gradient(135deg, var(--green-400), var(--green-600));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:17px; color:white;
+    flex-shrink:0;
+    border:2px solid rgba(255,255,255,0.3);
 }
-
-/* BREADCRUMB */
-.breadcrumb{
-    background:#fff;
-    padding:.55rem 2rem;
-    border-bottom:1px solid var(--gray-200);
-    font-size:.8rem;
-    color:var(--gray-600);
+.user-info { display:flex; flex-direction:column; text-align:left; line-height:1.25; }
+.user-name {
+    font-size:15px; font-weight:700; color:white;
+    max-width:110px; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis;
 }
+.user-role { font-size:12px; color:rgba(255,255,255,0.65); font-weight:500; }
+.btn-user-menu .chevron { width:15px; height:15px; transition:transform .2s; flex-shrink:0; }
+.user-menu-wrapper.open .btn-user-menu .chevron { transform:rotate(180deg); }
 
-.breadcrumb a{
-    color:var(--green-main);
+.user-dropdown-menu {
+    display:none;
+    position:absolute;
+    top:calc(100% + 14px); right:0;
+    background:white;
+    border-radius:24px;
+    box-shadow:0 12px 48px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08);
+    min-width:240px; padding:8px;
+    z-index:1000;
+    border:1px solid var(--neutral-200);
+    animation:menuDrop .18s ease both;
+}
+@keyframes menuDrop {
+    from { opacity:0; transform:translateY(-8px) scale(0.98); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.user-menu-wrapper.open .user-dropdown-menu { display:block; }
+
+.udrop-item {
+    display:flex; align-items:center; gap:12px;
+    padding:11px 14px;
+    border-radius:12px;
+    color:var(--neutral-700);
     text-decoration:none;
+    transition:background .15s;
+    cursor:pointer;
 }
+.udrop-item:hover { background:var(--green-50); }
+.udrop-icon {
+    width:38px; height:38px;
+    border-radius:8px;
+    background:var(--neutral-100);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+}
+.udrop-icon svg { width:17px; height:17px; color:var(--neutral-600); }
+.udrop-item:hover .udrop-icon { background:var(--green-100); }
+.udrop-item:hover .udrop-icon svg { color:var(--green-700); }
+.udrop-text { flex:1; }
+.udrop-text span { display:block; font-size:15px; font-weight:600; color:var(--neutral-800); line-height:1.2; }
+.udrop-text small { font-size:12px; color:var(--neutral-400); }
+.udrop-divider { height:1px; background:var(--neutral-200); margin:8px 6px; }
+.udrop-logout:hover { background:#fef2f2; }
+.udrop-icon-red { background:#fee2e2; }
+.udrop-icon-red svg { color:#dc2626; }
+.udrop-logout .udrop-text span { color:#dc2626; }
+.udrop-logout .udrop-text small { color:#f87171; }
+.udrop-logout:hover .udrop-icon-red { background:#fecaca; }
 
-/* STEPPER */
-.stepper-wrap{
+/* ============================================================
+   BREADCRUMB
+============================================================ */
+.breadcrumb {
+    background:#fff;
+    padding:.55rem 5%;
+    border-bottom:1px solid var(--neutral-200);
+    font-size:.8rem;
+    color:var(--neutral-500);
+}
+.breadcrumb a { color:var(--green-600); text-decoration:none; }
+.breadcrumb a:hover { color:var(--green-800); }
+
+/* ============================================================
+   STEPPER
+============================================================ */
+.stepper-wrap {
     display:flex;
     justify-content:center;
     padding:1.5rem 1rem;
-}
-
-.stepper{
-    display:flex;
-    align-items:center;
-}
-
-.step{
-    display:flex;
-    align-items:center;
-    gap:.5rem;
-}
-
-.step-circle{
-    width:32px;
-    height:32px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:.8rem;
-    font-weight:700;
-    border:2px solid var(--gray-200);
     background:#fff;
-    color:var(--gray-400);
+    border-bottom:1px solid var(--neutral-200);
 }
-
-.step-circle.done{
-    background:var(--green-main);
-    border-color:var(--green-main);
-    color:#fff;
+.stepper { display:flex; align-items:center; }
+.step { display:flex; align-items:center; gap:.5rem; }
+.step-circle {
+    width:34px; height:34px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:.82rem; font-weight:700;
+    border:2px solid var(--neutral-200);
+    background:#fff; color:var(--neutral-400);
 }
+.step-circle.done { background:var(--green-600); border-color:var(--green-600); color:#fff; }
+.step-circle.active { background:var(--amber-500); border-color:var(--amber-500); color:#fff; }
+.step-label { font-size:.84rem; font-weight:600; color:var(--neutral-400); }
+.step-label.done { color:var(--green-600); }
+.step-label.active { color:var(--amber-600); }
+.step-line { width:80px; height:2px; background:var(--neutral-200); margin:0 .5rem; }
+.step-line.done { background:var(--green-600); }
 
-.step-circle.active{
-    background:var(--orange);
-    border-color:var(--orange);
-    color:#fff;
-}
-
-.step-label{
-    font-size:.82rem;
-    font-weight:600;
-    color:var(--gray-400);
-}
-
-.step-label.done{
-    color:var(--green-main);
-}
-
-.step-label.active{
-    color:var(--orange);
-}
-
-.step-line{
-    width:80px;
-    height:2px;
-    background:var(--gray-200);
-    margin:0 .5rem;
-}
-
-.step-line.done{
-    background:var(--green-main);
-}
-
-/* LAYOUT */
-.page-wrap{
+/* ============================================================
+   LAYOUT
+============================================================ */
+.page-wrap {
     max-width:1160px;
     margin:0 auto;
-    padding:0 1.25rem 3rem;
+    padding:1.5rem 1.25rem 3rem;
 }
-
-.booking-layout{
+.booking-layout {
     display:grid;
     grid-template-columns:1fr 340px;
     gap:20px;
     align-items:start;
 }
-
-.card{
+.card {
     background:#fff;
     border-radius:var(--radius-lg);
     box-shadow:var(--shadow);
     overflow:hidden;
+    border:1px solid var(--neutral-200);
 }
 
-/* ROOM BAR */
-.room-bar{
+/* ============================================================
+   ROOM BAR
+============================================================ */
+.room-bar {
     display:flex;
     align-items:center;
     justify-content:space-between;
     padding:14px 18px;
     background:#fff;
-    border:1.5px solid var(--gray-200);
+    border:1.5px solid var(--neutral-200);
     border-radius:var(--radius-md);
     margin-bottom:16px;
     gap:12px;
     flex-wrap:wrap;
+    box-shadow:var(--shadow);
+}
+.room-bar-left { display:flex; align-items:center; gap:12px; }
+.room-thumb { width:52px; height:52px; border-radius:12px; object-fit:cover; }
+.room-bar-name { font-weight:800; font-size:.98rem; color:var(--neutral-800); }
+.room-bar-meta { font-size:.78rem; color:var(--neutral-500); margin-top:3px; }
+.tag-pill {
+    display:inline-flex; align-items:center;
+    background:var(--amber-100); color:#92400e;
+    padding:.2rem .6rem; border-radius:20px;
+    font-size:.72rem; font-weight:700;
+}
+.room-bar-price { font-size:1.2rem; font-weight:800; color:var(--green-800); }
+
+/* ============================================================
+   SECTION
+============================================================ */
+.section { padding:20px 22px; border-bottom:1px solid var(--neutral-100); }
+.section-title {
+    font-size:.95rem; font-weight:800;
+    display:flex; align-items:center; gap:.5rem;
+    margin-bottom:16px; color:var(--neutral-800);
+}
+.section-num {
+    width:24px; height:24px; border-radius:50%;
+    background:var(--green-700); color:#fff;
+    font-size:.72rem; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
 }
 
-.room-bar-left{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.room-thumb{
-    width:44px;
-    height:44px;
-    border-radius:10px;
-    object-fit:cover;
-}
-
-.room-bar-name{
-    font-weight:700;
-    font-size:.95rem;
-}
-
-.room-bar-meta{
-    font-size:.78rem;
-    color:var(--gray-600);
-    margin-top:2px;
-}
-
-.tag-pill{
-    display:inline-flex;
-    align-items:center;
-    background:var(--orange-light);
-    color:#a04000;
-    padding:.2rem .6rem;
-    border-radius:20px;
-    font-size:.72rem;
-    font-weight:700;
-}
-
-.room-bar-price{
-    font-size:1.15rem;
-    font-weight:800;
-    color:var(--green-dark);
-}
-
-/* SECTION */
-.section{
-    padding:20px 22px;
-    border-bottom:1px solid var(--gray-100);
-}
-
-.section-title{
-    font-size:.95rem;
-    font-weight:800;
-    display:flex;
-    align-items:center;
-    gap:.5rem;
-    margin-bottom:16px;
-}
-
-.section-num{
-    width:22px;
-    height:22px;
-    border-radius:50%;
-    background:var(--green-main);
-    color:#fff;
-    font-size:.72rem;
-    font-weight:800;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-/* ALERT */
-.info-alert{
+/* ============================================================
+   ALERTS
+============================================================ */
+.info-alert {
     background:#fffbeb;
     border:1px solid #fcd34d;
     border-radius:8px;
@@ -305,222 +345,234 @@ body{
     color:#92400e;
 }
 
-/* FORM */
-.form-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-}
-
-.form-grid.cols3{
-    grid-template-columns:1fr 1fr 1fr;
-}
-
-.form-full{
-    grid-column:1/-1;
-}
-
-.form-group{
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-}
-
-.form-group label{
-    font-size:.83rem;
-    font-weight:700;
-}
-
-.form-control{
+/* ============================================================
+   FORM
+============================================================ */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
+.form-full { grid-column:1/-1; }
+.form-group { display:flex; flex-direction:column; gap:5px; }
+.form-group label { font-size:.83rem; font-weight:700; color:var(--neutral-700); }
+.form-control {
     padding:10px 12px;
-    border:1.5px solid var(--gray-200);
+    border:1.5px solid var(--neutral-200);
     border-radius:8px;
     font-size:.88rem;
     font-family:inherit;
+    color:var(--neutral-800);
+    transition:border-color .15s;
+}
+.form-control:focus { outline:none; border-color:var(--green-400); }
+.form-control[readonly] { background:var(--neutral-50); color:var(--neutral-600); }
+
+.num-input-wrap {
+    display:flex; align-items:center;
+    border:1.5px solid var(--neutral-200);
+    border-radius:8px; overflow:hidden;
+}
+.num-btn {
+    width:36px; height:40px; border:none;
+    background:var(--neutral-100); cursor:pointer;
+    font-size:1rem; color:var(--neutral-700);
+    transition:background .15s;
+}
+.num-btn:hover { background:var(--green-100); color:var(--green-800); }
+.num-val { flex:1; border:none; text-align:center; outline:none; font-family:inherit; font-size:.9rem; font-weight:700; }
+.num-unit {
+    padding:0 8px; font-size:.78rem;
+    background:var(--neutral-50); height:40px;
+    display:flex; align-items:center;
+    border-left:1px solid var(--neutral-200);
+    color:var(--neutral-500);
 }
 
-.form-control:focus{
-    outline:none;
-    border-color:var(--green-accent);
-}
+.radio-group { display:flex; gap:16px; }
+.radio-item { display:flex; align-items:center; gap:.4rem; font-size:.88rem; cursor:pointer; }
 
-.form-control[readonly]{
-    background:var(--gray-50);
-}
-
-.num-input-wrap{
-    display:flex;
-    align-items:center;
-    border:1.5px solid var(--gray-200);
-    border-radius:8px;
-    overflow:hidden;
-}
-
-.num-btn{
-    width:36px;
-    height:40px;
-    border:none;
-    background:var(--gray-100);
-    cursor:pointer;
-    font-size:1rem;
-}
-
-.num-val{
-    flex:1;
-    border:none;
-    text-align:center;
-    outline:none;
-}
-
-.num-unit{
-    padding:0 8px;
-    font-size:.78rem;
-    background:var(--gray-50);
-    height:40px;
-    display:flex;
-    align-items:center;
-    border-left:1px solid var(--gray-200);
-}
-
-.radio-group{
-    display:flex;
-    gap:12px;
-}
-
-.radio-item{
-    display:flex;
-    align-items:center;
-    gap:.4rem;
-}
-
-/* RIGHT */
-.summary-card{
+/* ============================================================
+   RIGHT SUMMARY CARD
+============================================================ */
+.summary-card {
     background:#fff;
-    border-radius:18px;
+    border-radius:var(--radius-lg);
     box-shadow:var(--shadow);
     overflow:hidden;
     position:sticky;
-    top:70px;
+    top:116px;
+    border:1px solid var(--neutral-200);
 }
-
-.summary-img{
-    width:100%;
-    height:160px;
-    object-fit:cover;
+.summary-img { width:100%; height:160px; object-fit:cover; }
+.summary-body { padding:16px; }
+.homestay-name { font-size:1rem; font-weight:800; color:var(--neutral-800); }
+.homestay-loc { font-size:.78rem; color:var(--neutral-500); margin-top:3px; }
+.divider { height:1px; background:var(--neutral-100); margin:12px 0; }
+.detail-row { display:flex; justify-content:space-between; padding:5px 0; font-size:.82rem; }
+.detail-row span:first-child { color:var(--neutral-500); }
+.detail-row span:last-child { font-weight:600; color:var(--neutral-800); }
+.price-total-row {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:8px; padding-top:10px;
+    border-top:2px solid var(--neutral-100);
 }
+.price-total-val { font-size:1.4rem; font-weight:800; color:var(--green-800); }
+.price-note { font-size:.72rem; color:var(--neutral-400); margin-top:3px; }
 
-.summary-body{
-    padding:16px;
+.btn-confirm {
+    width:100%; margin-top:14px;
+    background:var(--amber-500); color:#fff;
+    border:none; border-radius:8px;
+    padding:14px; font-size:.95rem; font-weight:800;
+    cursor:pointer; font-family:inherit;
+    transition:background .15s, transform .1s;
+    box-shadow:0 4px 16px rgba(232,150,10,0.35);
 }
+.btn-confirm:hover { background:var(--amber-600); transform:translateY(-1px); }
+.btn-confirm:active { transform:scale(0.98); }
 
-.homestay-name{
-    font-size:1rem;
-    font-weight:800;
+.cancel-note { text-align:center; font-size:.75rem; color:var(--neutral-400); margin-top:8px; }
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media(max-width:1024px) {
+    .booking-layout { grid-template-columns:1fr; }
+    .summary-card { position:static; }
+    .form-grid.cols3 { grid-template-columns:1fr 1fr; }
 }
-
-.homestay-loc{
-    font-size:.78rem;
-    color:var(--gray-600);
-    margin-top:3px;
+@media(max-width:768px) {
+    :root { --navbar-h:auto; }
+    .navbar { height:auto; padding:14px 5%; flex-wrap:wrap; gap:10px; }
+    .top-bar { display:none; }
 }
-
-.divider{
-    height:1px;
-    background:var(--gray-100);
-    margin:12px 0;
-}
-
-.detail-row{
-    display:flex;
-    justify-content:space-between;
-    padding:5px 0;
-    font-size:.82rem;
-}
-
-.price-total-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:8px;
-    padding-top:10px;
-    border-top:2px solid var(--gray-100);
-}
-
-.price-total-val{
-    font-size:1.3rem;
-    font-weight:800;
-    color:var(--green-dark);
-}
-
-.price-note{
-    font-size:.72rem;
-    color:var(--gray-400);
-    margin-top:3px;
-}
-
-.btn-confirm{
-    width:100%;
-    margin-top:14px;
-    background:var(--orange);
-    color:#fff;
-    border:none;
-    border-radius:8px;
-    padding:13px;
-    font-size:.95rem;
-    font-weight:800;
-    cursor:pointer;
-}
-
-.btn-confirm:hover{
-    background:#cf6d17;
-}
-
-.cancel-note{
-    text-align:center;
-    font-size:.75rem;
-    color:var(--gray-400);
-    margin-top:8px;
-}
-
-@media(max-width:900px){
-    .booking-layout{
-        grid-template-columns:1fr;
-    }
-
-    .summary-card{
-        position:static;
-    }
-
-    .form-grid.cols3{
-        grid-template-columns:1fr 1fr;
-    }
-}
-
-@media(max-width:560px){
-    .form-grid,
-    .form-grid.cols3{
-        grid-template-columns:1fr;
-    }
+@media(max-width:560px) {
+    .form-grid, .form-grid.cols3 { grid-template-columns:1fr; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
+<!-- ══════════════════════════════════════════
+     TOP BAR (เหมือนหน้า search)
+══════════════════════════════════════════ -->
+<div class="top-bar">
+    <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+        </svg>
+        ภาษาไทย
+    </a>
+    <div class="top-bar-divider"></div>
+    <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        ช่วยเหลือ
+    </a>
+    <div class="top-bar-divider"></div>
+    <a href="/member/bookings/list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        การจองของฉัน
+    </a>
+</div>
+
+<!-- ══════════════════════════════════════════
+     NAVBAR (green-800 + user menu logged-in)
+══════════════════════════════════════════ -->
 <nav class="navbar">
     <a href="/member/home" class="navbar-brand">
-        <div class="logo-icon">🏕</div>
-        <span>ระบบท่องเที่ยวชุมชนแม่เหม้า</span>
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="white">
+                <path d="M3 17l6-8 4 5 3-3 5 6H3z"/>
+            </svg>
+        </div>
+        <div class="brand-name">
+            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนแม่เหม้า</span>
+            <span class="brand-name-line2">Mae Hma Community Tourism</span>
+        </div>
     </a>
 
-    <div class="navbar-nav">
-        <a href="/member/home" class="nav-link">หน้าแรก</a>
-        <a href="/member/bookings/list" class="nav-link">รายการการจองของฉัน</a>
+    <div class="nav-links">
+        <a href="/member/home" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            หน้าแรก
+        </a>
+        <a href="/member/bookings/list" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            รายการจองของฉัน
+        </a>
+    </div>
 
-        <div class="nav-avatar"
-             th:text="${session.member != null ? #strings.substring(session.loggedInMember.membername,0,1) : 'M'}">
-            M
+    <div class="nav-divider"></div>
+
+    <!-- === USER MENU (logged-in เท่านั้น) === -->
+    <div class="auth-group">
+        <div class="user-menu-wrapper" id="userMenuWrapper">
+            <button class="btn-user-menu" onclick="toggleUserMenu()">
+                <div class="user-avatar"
+                     th:text="${session.loggedInMember != null
+                              ? #strings.substring(session.loggedInMember.firstname,0,1)
+                              : 'ม'}">ม</div>
+                <div class="user-info">
+                    <span class="user-name"
+                          th:text="${session.loggedInMember?.firstname ?: 'สมาชิก'}">
+                        สมชาย
+                    </span>
+                    <span class="user-role">สมาชิก</span>
+                </div>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
+
+            <div class="user-dropdown-menu" id="userDropdown">
+                <!-- โปรไฟล์ -->
+                <a href="/member/profile" class="udrop-item">
+                    <div class="udrop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text">
+                        <span>โปรไฟล์ของฉัน</span>
+                        <small>ดูและแก้ไขข้อมูลส่วนตัว</small>
+                    </div>
+                </a>
+                <!-- การจอง -->
+                <a href="/member/bookings/list" class="udrop-item">
+                    <div class="udrop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text">
+                        <span>การจองของฉัน</span>
+                        <small>ตรวจสอบสถานะการจอง</small>
+                    </div>
+                </a>
+
+                <div class="udrop-divider"></div>
+
+                <!-- ออกจากระบบ -->
+                <a href="/member/login/logout" class="udrop-item udrop-logout">
+                    <div class="udrop-icon udrop-icon-red">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text">
+                        <span>ออกจากระบบ</span>
+                        <small>Sign out</small>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </nav>
@@ -528,43 +580,35 @@ body{
 <!-- BREADCRUMB -->
 <div class="breadcrumb">
     <a href="/member/home">หน้าแรก</a>
-    <span>›</span>
-
-    <a th:href="@{/homestay/{id}(id=${room.homestay.homestayid})}">
-        โฮมสเตย์
-    </a>
-
-    <span>›</span>
+    <span> › </span>
+    <a th:href="@{/homestay/{id}(id=${room.homestay.homestayid})}">โฮมสเตย์</a>
+    <span> › </span>
     <span>จองโฮมสเตย์</span>
 </div>
 
 <!-- STEPPER -->
 <div class="stepper-wrap">
     <div class="stepper">
-
         <div class="step">
             <div class="step-circle done">✓</div>
             <span class="step-label done">เลือกที่พัก</span>
         </div>
-
         <div class="step-line done"></div>
-
         <div class="step">
             <div class="step-circle active">2</div>
             <span class="step-label active">กรอกข้อมูล</span>
         </div>
-
         <div class="step-line"></div>
-
         <div class="step">
             <div class="step-circle">3</div>
             <span class="step-label">เสร็จสิ้น</span>
         </div>
-
     </div>
 </div>
 
-<!-- CONTENT -->
+<!-- ══════════════════════════════════════════
+     CONTENT
+══════════════════════════════════════════ -->
 <div class="page-wrap">
 <div class="booking-layout">
 
@@ -573,45 +617,24 @@ body{
 
     <!-- ROOM BAR -->
     <div class="room-bar">
-
         <div class="room-bar-left">
-
             <img class="room-thumb"
                  th:src="${room.images}"
-                 src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200">
-
+                 src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200"
+                 alt="room">
             <div>
-
-                <div class="room-bar-name"
-                     th:text="${room.typename}">
-                    กระต๊อบไม้ไผ่
-                </div>
-
+                <div class="room-bar-name" th:text="${room.typename}">กระต๊อบไม้ไผ่</div>
                 <div class="room-bar-meta">
-
-                    <span class="tag-pill"
-                          th:text="${room.homestay.homestayname}">
-                        บ้านสัญโฮมสเตย์
-                    </span>
-
-                    <span th:text="${room.bedtype}">King</span>
-                    •
-
-                    รองรับ
-                    <span th:text="${room.maxguest}">4</span>
-                    ท่าน
-
+                    <span class="tag-pill" th:text="${room.homestay.homestayname}">บ้านสัญโฮมสเตย์</span>
+                    &nbsp;<span th:text="${room.bedtype}">King</span> •
+                    รองรับ <span th:text="${room.maxguest}">4</span> ท่าน
                 </div>
-
             </div>
-
         </div>
-
         <div class="room-bar-price">
             ฿<span th:text="${room.pricepernight}">1200</span>
-            <span style="font-size:.75rem;color:#666;">/คืน</span>
+            <span style="font-size:.75rem;color:#888;">/คืน</span>
         </div>
-
     </div>
 
     <!-- FORM -->
@@ -619,327 +642,164 @@ body{
           th:action="@{/booking/homestay/create}"
           method="post">
 
-        <input type="hidden"
-               name="roomtypeid"
-               th:value="${room.roomtypeid}">
-
-                <!-- เพิ่มตรงนี้ -->
-    <input type="hidden"
-           id="pricePerNight"
-           th:value="${room.pricepernight}">
+        <input type="hidden" name="roomtypeid" th:value="${room.roomtypeid}">
+        <input type="hidden" id="pricePerNight" th:value="${room.pricepernight}">
 
         <div class="card">
 
-            <!-- SECTION 1 -->
+            <!-- SECTION 1: ผู้ติดต่อ -->
             <div class="section">
-
                 <div class="section-title">
                     <div class="section-num">1</div>
                     ข้อมูลผู้ติดต่อหลัก
                 </div>
-
                 <div class="info-alert">
                     ⚠️ ระบบดึงข้อมูลจากโปรไฟล์สมาชิกโดยอัตโนมัติ
                 </div>
-
                 <div class="form-grid">
-
                     <div class="form-group">
                         <label>ชื่อจริง</label>
-
-                        <input class="form-control"
-                               type="text"
-                               th:value="${session.loggedInMember?.firstname}"
-                               readonly>
+                        <input class="form-control" type="text"
+                               th:value="${session.loggedInMember?.firstname}" readonly>
                     </div>
-
                     <div class="form-group">
                         <label>นามสกุล</label>
-
-                        <input class="form-control"
-                               type="text"
-                               th:value="${session.loggedInMember?.lastname}"
-                               readonly>
+                        <input class="form-control" type="text"
+                               th:value="${session.loggedInMember?.lastname}" readonly>
                     </div>
-
                     <div class="form-group">
                         <label>อีเมล</label>
-
-                        <input class="form-control"
-                               type="email"
-                               th:value="${session.loggedInMember?.email}"
-                               readonly>
+                        <input class="form-control" type="email"
+                               th:value="${session.loggedInMember?.email}" readonly>
                     </div>
-
                     <div class="form-group">
                         <label>เบอร์โทรศัพท์</label>
-
-                        <input class="form-control"
-                               type="text"
-                               th:value="${session.loggedInMember?.phone}"
-                               readonly>
+                        <input class="form-control" type="text"
+                               th:value="${session.loggedInMember?.phone}" readonly>
                     </div>
-
                 </div>
-
             </div>
 
-            <!-- SECTION 1.5 : การจองนี้สำหรับใคร -->
-<div class="section">
-
-    <div class="section-title">
-        <div class="section-num">2</div>
-        การจองนี้สำหรับใคร?
-    </div>
-
-    <div class="radio-group" style="margin-bottom:14px;">
-
-        <label class="radio-item">
-            <input type="radio"
-                   name="isBookerGoing"
-                   value="true"
-                   checked
-                   onchange="toggleGuestForm(this.value)">
-            ฉันเข้าพักเอง
-        </label>
-
-        <label class="radio-item">
-            <input type="radio"
-                   name="isBookerGoing"
-                   value="false"
-                   onchange="toggleGuestForm(this.value)">
-            จองให้ผู้อื่น
-        </label>
-
-    </div>
-
-    <!-- ฟอร์มชื่อแขก (ซ่อนไว้ก่อน) -->
-    <div id="guestFormWrap" style="display:none;">
-
-        <div class="info-alert">
-            👤 กรุณากรอกชื่อผู้ที่จะเข้าพักจริง
-        </div>
-
-        <div class="form-grid">
-
-            <div class="form-group">
-                <label>ชื่อจริงผู้เข้าพัก</label>
-                <input class="form-control"
-                       type="text"
-                       id="guestFirstname"
-                       name="guestFirstname"
-                       placeholder="ชื่อจริง">
-            </div>
-
-            <div class="form-group">
-                <label>นามสกุลผู้เข้าพัก</label>
-                <input class="form-control"
-                       type="text"
-                       id="guestLastname"
-                       name="guestLastname"
-                       placeholder="นามสกุล">
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-            <!-- SECTION 3 -->
+            <!-- SECTION 2: การจองสำหรับใคร -->
             <div class="section">
-
                 <div class="section-title">
                     <div class="section-num">2</div>
-                    รายละเอียดการเข้าพัก
+                    การจองนี้สำหรับใคร?
                 </div>
-
-                <div class="form-grid">
-
-                    <div class="form-group">
-                        <label>วันที่เช็คอิน</label>
-
-                        <input class="form-control"
-                               type="date"
-                               id="checkin"
-                               name="checkin"
-                               required
-                               onchange="updateSummary()">
-                    </div>
-
-                    <div class="form-group">
-                        <label>วันที่เช็คเอาท์</label>
-
-                        <input class="form-control"
-                               type="date"
-                               id="checkout"
-                               name="checkout"
-                               required
-                               onchange="updateSummary()">
-                    </div>
-
+                <div class="radio-group" style="margin-bottom:14px;">
+                    <label class="radio-item">
+                        <input type="radio" name="isBookerGoing" value="true" checked
+                               onchange="toggleGuestForm(this.value)">
+                        ฉันเข้าพักเอง
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="isBookerGoing" value="false"
+                               onchange="toggleGuestForm(this.value)">
+                        จองให้ผู้อื่น
+                    </label>
                 </div>
-
-                <br>
-
-                <div class="form-grid cols3">
-
-                    <!-- ROOM -->
-                    <div class="form-group">
-
-                        <label>จำนวนห้อง</label>
-
-                        <div class="num-input-wrap">
-
-                            <button type="button"
-                                    class="num-btn"
-                                    onclick="changeNum('numofrooms',-1)">
-                                −
-                            </button>
-
-                            <input class="num-val"
-                                   type="number"
-                                   id="numofrooms"
-                                   name="numofrooms"
-                                   value="1"
-                                   min="1"
-                                   th:max="${room.totalrooms}"
-                                   oninput="updateSummary()">
-
-                            <span class="num-unit">ห้อง</span>
-
-                            <button type="button"
-                                    class="num-btn"
-                                    onclick="changeNum('numofrooms',1)">
-                                +
-                            </button>
-
-                        </div>
-
+                <div id="guestFormWrap" style="display:none;">
+                    <div class="info-alert">
+                        👤 กรุณากรอกชื่อผู้ที่จะเข้าพักจริง
                     </div>
-
-                    <!-- GUEST -->
-                    <div class="form-group">
-
-                        <label>จำนวนผู้ใหญ่</label>
-
-                        <div class="num-input-wrap">
-
-                            <button type="button"
-                                    class="num-btn"
-                                    onclick="changeNum('guest',-1)">
-                                −
-                            </button>
-
-                            <input class="num-val"
-                                   type="number"
-                                   id="guest"
-                                   name="guest"
-                                   value="1"
-                                   min="1"
-                                   th:max="${room.maxguest}"
-                                   oninput="updateSummary()">
-
-                            <span class="num-unit">ท่าน</span>
-
-                            <button type="button"
-                                    class="num-btn"
-                                    onclick="changeNum('guest',1)">
-                                +
-                            </button>
-
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ชื่อจริงผู้เข้าพัก</label>
+                            <input class="form-control" type="text"
+                                   id="guestFirstname" name="guestFirstname" placeholder="ชื่อจริง">
                         </div>
-
-                    </div>
-
-                    <!-- CHILD -->
-                    <div class="form-group">
-
-                        <label>จำนวนเด็ก</label>
-
-                        <div class="num-input-wrap">
-
-                            <button type="button"
-                                    class="num-btn"
-                                    onclick="changeNum('children',-1)">
-                                −
-                            </button>
-
-                            <input class="num-val"
-                                   type="number"
-                                   id="children"
-                                   name="children"
-                                   value="0"
-                                   min="0"
-                                   oninput="updateSummary()">
-
-                            <span class="num-unit">ท่าน</span>
-
-                            <button type="button"
-                                    class="num-btn"
-                                    onclick="changeNum('children',1)">
-                                +
-                            </button>
-
+                        <div class="form-group">
+                            <label>นามสกุลผู้เข้าพัก</label>
+                            <input class="form-control" type="text"
+                                   id="guestLastname" name="guestLastname" placeholder="นามสกุล">
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
 
-            <!-- SECTION 4 -->
+            <!-- SECTION 3: วันเข้าพัก -->
             <div class="section">
-
                 <div class="section-title">
                     <div class="section-num">3</div>
-                    หมายเหตุเพิ่มเติม
+                    รายละเอียดการเข้าพัก
                 </div>
-
-                <div class="form-group">
-
-                    <label>หมายเหตุ / คำขอพิเศษ</label>
-
-                    <textarea class="form-control"
-                              name="note"
-                              rows="4"
-                              placeholder="ระบุความต้องการเพิ่มเติม"></textarea>
-
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>วันที่เช็คอิน</label>
+                        <input class="form-control" type="date"
+                               id="checkin" name="checkin" required onchange="updateSummary()">
+                    </div>
+                    <div class="form-group">
+                        <label>วันที่เช็คเอาท์</label>
+                        <input class="form-control" type="date"
+                               id="checkout" name="checkout" required onchange="updateSummary()">
+                    </div>
                 </div>
-
+                <br>
+                <div class="form-grid cols3">
+                    <div class="form-group">
+                        <label>จำนวนห้อง</label>
+                        <div class="num-input-wrap">
+                            <button type="button" class="num-btn" onclick="changeNum('numofrooms',-1)">−</button>
+                            <input class="num-val" type="number" id="numofrooms" name="numofrooms"
+                                   value="1" min="1" th:max="${room.totalrooms}" oninput="updateSummary()">
+                            <span class="num-unit">ห้อง</span>
+                            <button type="button" class="num-btn" onclick="changeNum('numofrooms',1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>จำนวนผู้ใหญ่</label>
+                        <div class="num-input-wrap">
+                            <button type="button" class="num-btn" onclick="changeNum('guest',-1)">−</button>
+                            <input class="num-val" type="number" id="guest" name="guest"
+                                   value="1" min="1" th:max="${room.maxguest}" oninput="updateSummary()">
+                            <span class="num-unit">ท่าน</span>
+                            <button type="button" class="num-btn" onclick="changeNum('guest',1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>จำนวนเด็ก</label>
+                        <div class="num-input-wrap">
+                            <button type="button" class="num-btn" onclick="changeNum('children',-1)">−</button>
+                            <input class="num-val" type="number" id="children" name="children"
+                                   value="0" min="0" oninput="updateSummary()">
+                            <span class="num-unit">ท่าน</span>
+                            <button type="button" class="num-btn" onclick="changeNum('children',1)">+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-        </div>
+            <!-- SECTION 4: หมายเหตุ -->
+            <div class="section">
+                <div class="section-title">
+                    <div class="section-num">4</div>
+                    หมายเหตุเพิ่มเติม
+                </div>
+                <div class="form-group">
+                    <label>หมายเหตุ / คำขอพิเศษ</label>
+                    <textarea class="form-control" name="note" rows="4"
+                              placeholder="ระบุความต้องการเพิ่มเติม เช่น ต้องการเตียงเสริม หรือมีอาหารแพ้"></textarea>
+                </div>
+            </div>
 
-        <button type="submit"
-                id="real-submit"
-                style="display:none;">
-        </button>
+        </div><!-- /card -->
 
+        <button type="submit" id="real-submit" style="display:none;"></button>
     </form>
 
-</div>
+</div><!-- /LEFT -->
 
 <!-- RIGHT -->
 <div class="summary-card">
-
     <img class="summary-img"
          th:src="${room.homestay.images}"
-         src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800">
-
+         src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+         alt="homestay">
     <div class="summary-body">
-
-        <div class="homestay-name"
-             th:text="${room.homestay.homestayname}">
-            บ้านสัญโฮมสเตย์
-        </div>
-
+        <div class="homestay-name" th:text="${room.homestay.homestayname}">บ้านสัญโฮมสเตย์</div>
         <div class="homestay-loc">
-            📍
-            <span th:text="${room.homestay.address}">
-                เชียงใหม่
-            </span>
+            📍 <span th:text="${room.homestay.address}">เชียงใหม่</span>
         </div>
 
         <div class="divider"></div>
@@ -948,22 +808,18 @@ body{
             <span>เช็คอิน</span>
             <span id="sum-checkin">—</span>
         </div>
-
         <div class="detail-row">
             <span>เช็คเอาท์</span>
             <span id="sum-checkout">—</span>
         </div>
-
         <div class="detail-row">
             <span>จำนวนคืน</span>
             <span id="sum-nights">0 คืน</span>
         </div>
-
         <div class="detail-row">
             <span>จำนวนห้อง</span>
             <span id="sum-rooms">1 ห้อง</span>
         </div>
-
         <div class="detail-row">
             <span>ผู้เข้าพัก</span>
             <span id="sum-guests">1 ท่าน</span>
@@ -972,184 +828,89 @@ body{
         <div class="divider"></div>
 
         <div class="price-total-row">
-
-            <span>ราคารวม</span>
-
-            <span class="price-total-val">
-                ฿<span id="sum-price">0</span>
-            </span>
-
+            <span style="font-size:.9rem;font-weight:700;color:var(--neutral-700);">ราคารวม</span>
+            <span class="price-total-val">฿<span id="sum-price">0</span></span>
         </div>
+        <div class="price-note">*ราคาเปลี่ยนตามจำนวนคืนและห้อง</div>
 
-        <div class="price-note">
-            *ราคาเปลี่ยนตามจำนวนคืน
-        </div>
-
-        <button type="button"
-                class="btn-confirm"
-                onclick="confirmBooking()">
-
+        <button type="button" class="btn-confirm" onclick="confirmBooking()">
             ✅ ยืนยันการจองของฉัน
-
         </button>
-
-        <div class="cancel-note">
-            สามารถแก้ไขข้อมูลได้ภายหลัง
-        </div>
-
+        <div class="cancel-note">สามารถแก้ไขข้อมูลได้ภายหลัง</div>
     </div>
-
 </div>
 
-</div>
-</div>
+</div><!-- /booking-layout -->
+</div><!-- /page-wrap -->
 
 <script>
-
 const pricePerNight = parseFloat(document.getElementById('pricePerNight').value) || 0;
 
-/* FORMAT DATE */
 function fmt(dateStr){
-
     if(!dateStr) return '—';
-
     const d = new Date(dateStr);
-
-    const months = [
-        'ม.ค.','ก.พ.','มี.ค.','เม.ย.',
-        'พ.ค.','มิ.ย.','ก.ค.','ส.ค.',
-        'ก.ย.','ต.ค.','พ.ย.','ธ.ค.'
-    ];
-
-    return d.getDate() + ' ' +
-           months[d.getMonth()] + ' ' +
-           (d.getFullYear() + 543);
+    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    return d.getDate()+' '+months[d.getMonth()]+' '+(d.getFullYear()+543);
 }
 
-/* CHANGE NUMBER */
 function changeNum(id, delta){
-
     const el = document.getElementById(id);
-
-    const min = parseInt(el.min) || 0;
-
-    const max = el.max
-        ? parseInt(el.max)
-        : 99;
-
-    el.value = Math.min(
-        max,
-        Math.max(min,
-        parseInt(el.value || 0) + delta)
-    );
-
+    const min = parseInt(el.min)||0;
+    const max = el.max ? parseInt(el.max) : 99;
+    el.value = Math.min(max, Math.max(min, parseInt(el.value||0)+delta));
     updateSummary();
 }
 
-/* UPDATE SUMMARY */
 function updateSummary(){
-
     const ci = document.getElementById('checkin').value;
     const co = document.getElementById('checkout').value;
-
-    const rooms =
-        parseInt(document.getElementById('numofrooms').value) || 1;
-
-    const adults =
-        parseInt(document.getElementById('guest').value) || 1;
-
-    const children =
-        parseInt(document.getElementById('children').value) || 0;
-
-    document.getElementById('sum-checkin').textContent =
-        fmt(ci);
-
-    document.getElementById('sum-checkout').textContent =
-        fmt(co);
-
-    document.getElementById('sum-rooms').textContent =
-        rooms + ' ห้อง';
-
-    document.getElementById('sum-guests').textContent =
-        (adults + children) + ' ท่าน';
-
+    const rooms = parseInt(document.getElementById('numofrooms').value)||1;
+    const adults = parseInt(document.getElementById('guest').value)||1;
+    const children = parseInt(document.getElementById('children').value)||0;
+    document.getElementById('sum-checkin').textContent = fmt(ci);
+    document.getElementById('sum-checkout').textContent = fmt(co);
+    document.getElementById('sum-rooms').textContent = rooms+' ห้อง';
+    document.getElementById('sum-guests').textContent = (adults+children)+' ท่าน';
     let nights = 0;
-
-    if(ci && co){
-
-        nights = Math.max(
-            0,
-            (new Date(co) - new Date(ci)) / 86400000
-        );
-    }
-
-    document.getElementById('sum-nights').textContent =
-        nights + ' คืน';
-
-    document.getElementById('sum-price').textContent =
-        (pricePerNight * nights * rooms).toLocaleString();
+    if(ci && co) nights = Math.max(0,(new Date(co)-new Date(ci))/86400000);
+    document.getElementById('sum-nights').textContent = nights+' คืน';
+    document.getElementById('sum-price').textContent = (pricePerNight*nights*rooms).toLocaleString();
 }
 
-/* CONFIRM BOOKING */
 function confirmBooking(){
-
-    const checkin =
-        document.getElementById('checkin').value;
-
-    const checkout =
-        document.getElementById('checkout').value;
-
-    if(!checkin || !checkout){
-
-        alert('กรุณาเลือกวันเช็คอินและเช็คเอาท์');
-
-        return;
-    }
-
-    if(new Date(checkout) <= new Date(checkin)){
-
-        alert('วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน');
-
-        return;
-    }
-
-    const ok = confirm(
-        'ยืนยันการจองโฮมสเตย์นี้ใช่หรือไม่?'
-    );
-
-    if(ok){
-
+    const checkin = document.getElementById('checkin').value;
+    const checkout = document.getElementById('checkout').value;
+    if(!checkin||!checkout){ alert('กรุณาเลือกวันเช็คอินและเช็คเอาท์'); return; }
+    if(new Date(checkout)<=new Date(checkin)){ alert('วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน'); return; }
+    if(confirm('ยืนยันการจองโฮมสเตย์นี้ใช่หรือไม่?')){
         document.getElementById('real-submit').click();
     }
 }
 
-
-
-/* TOGGLE GUEST FORM */
 function toggleGuestForm(val){
     const wrap = document.getElementById('guestFormWrap');
-    wrap.style.display = (val === 'false') ? 'block' : 'none';
-
-    // ล้างค่าเมื่อกลับไปเลือก "ฉันเข้าพักเอง"
-    if(val === 'true'){
-        document.getElementById('guestFirstname').value = '';
-        document.getElementById('guestLastname').value  = '';
+    wrap.style.display = (val==='false')?'block':'none';
+    if(val==='true'){
+        document.getElementById('guestFirstname').value='';
+        document.getElementById('guestLastname').value='';
     }
 }
 
-
-/* PAGE LOAD */
-window.onload = function(){
-
-    const today =
-        new Date().toISOString().split('T')[0];
-
-    document.getElementById('checkin').min = today;
-    document.getElementById('checkout').min = today;
-
-    updateSummary();
+function toggleUserMenu(){
+    document.getElementById('userMenuWrapper').classList.toggle('open');
 }
 
+document.addEventListener('click', function(e){
+    const w = document.getElementById('userMenuWrapper');
+    if(w && !w.contains(e.target)) w.classList.remove('open');
+});
+
+window.onload = function(){
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('checkin').min = today;
+    document.getElementById('checkout').min = today;
+    updateSummary();
+}
 </script>
 
 </body>
