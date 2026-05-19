@@ -761,14 +761,19 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 
         <!-- ─── RIGHT SIDEBAR ─── -->
         <div>
-            <div class="summary-card">
+            <div class="summary-card"
+     th:with="imgs=${detail != null and detail.tour != null and detail.tour.images != null ? #strings.arraySplit(detail.tour.images, '||') : null}">
 
-                <!-- รูปทัวร์ -->
-                <img class="summary-img"
-                     th:if="${detail != null and detail.tour != null and detail.tour.images != null and !detail.tour.images.isEmpty()}"
-                     th:src="${detail.tour.images}" alt="tour image">
-                <div class="summary-img-placeholder"
-                     th:if="${detail == null or detail.tour == null or detail.tour.images == null or detail.tour.images.isEmpty()}">🌲</div>
+    <!-- รูปทัวร์ -->
+    <img class="summary-img"
+         th:if="${imgs != null and imgs.length > 0}"
+         th:src="@{/uploads/tours/{img}(img=${imgs[0]})}"
+         alt="tour image">
+
+    <div class="summary-img-placeholder"
+         th:if="${imgs == null or imgs.length == 0}">
+        🌲
+    </div>
 
                 <div class="summary-body">
                     <div class="tour-name-sb"

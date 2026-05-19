@@ -1054,9 +1054,15 @@ img { display: block; }
     <!-- RIGHT COLUMN: Summary Sidebar -->
     <div>
       <div class="sidebar-card">
-        <div class="sidebar-img">
-          <img th:src="${tour.images}" alt="รูปภาพทัวร์">
-        </div>
+        <div class="sidebar-img"
+     th:with="imgs=${tour.images != null ? #strings.arraySplit(tour.images, '||') : null}">
+    
+    <img
+        th:if="${imgs != null and imgs.length > 0}"
+        th:src="@{/uploads/tours/{img}(img=${imgs[0]})}"
+        alt="รูปภาพทัวร์"
+    />
+</div>
         <div class="sidebar-body">
           <div class="tour-name" th:text="${tour.tourmname}">ชื่อทัวร์</div>
           <div class="tour-meta" style="margin-bottom: 14px;">

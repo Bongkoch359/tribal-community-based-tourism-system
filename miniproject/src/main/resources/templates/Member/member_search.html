@@ -496,9 +496,12 @@
       <!-- ── ทัวร์ชุมชน ── -->
       <th:block th:each="t : ${tours}">
         <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
-          <div class="fcard-img">
-            <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=500&h=300&fit=crop"
-                 alt="" loading="lazy"/>
+         <div class="fcard-img">
+
+    <img th:src="@{'/uploads/tours/' + ${t.images}}"
+         alt=""
+         loading="lazy"/>
+
             <span class="fcard-badge badge-tour">ทัวร์ชุมชน</span>
             <button class="fcard-fav" onclick="toggleFav(this);event.preventDefault();">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -696,8 +699,12 @@
     <div class="grid">
       <th:block th:each="t : ${tours}">
         <div class="card">
-          <div class="card-img">
-            <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&h=380&fit=crop" alt="" loading="lazy"/>
+           <div class="fcard-img">
+
+    <img th:src="@{'/uploads/tours/' + ${t.images}}"
+         alt=""
+         loading="lazy"/>
+         
             <span class="card-badge badge-tour">ทัวร์ชุมชน</span>
             <button class="card-fav" onclick="toggleFav(this); event.preventDefault();">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>

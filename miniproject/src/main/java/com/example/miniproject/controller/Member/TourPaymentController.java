@@ -1,11 +1,14 @@
 package com.example.miniproject.controller.Member;
 
-
+import com.example.miniproject.dto.Member.PaymentDTO;
 import com.example.miniproject.service.Member.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/payment/tour")
@@ -15,5 +18,48 @@ public class TourPaymentController {
     @Qualifier("tourPaymentService")
     private PaymentService paymentService;
 
-    // TODO: implement tour payment endpoints
+    // GET: แสดงหน้าชำระเงินทัวร์
+    @GetMapping("/{bookingId}")
+    public String showPaymentPage(@PathVariable String bookingId, Model model) {
+        try {
+            PaymentDTO payment = paymentService.getPaymentPageData(bookingId);
+            model.addAttribute("payment", payment);
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", "ไม่พบข้อมูลการจอง: " + e.getMessage());
+            model.addAttribute("payment", new PaymentDTO());
+        }
+        return "Member/tour-payment";
+    }
+
+    // POST: รับสลิปและยืนยันการชำระเงิน
+    @PostMapping("/{bookingId}/confirm")
+    public String confirmPayment(
+            @PathVariable String bookingId,
+            @RequestParam(value = "slipFile", required = false) MultipartFile slipFile,
+            @RequestParam(value = "payNote", required = false) String payNote,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            paymentService.confirmPayment(bookingId, slipFile, payNote);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMsg",
+                    "ส่งหลักฐานการชำระเงินสำเร็จ! กรุณารอการยืนยันจากทัวร์");
+
+            return "redirect:/member/tour-bookings/detail/" + bookingId;
+
+        } catch (IllegalArgumentException e) {
+
+            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+            return "redirect:/payment/tour/" + bookingId;
+
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMsg",
+                    "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+
+            return "redirect:/payment/tour/" + bookingId;
+        }
+    }
 }
