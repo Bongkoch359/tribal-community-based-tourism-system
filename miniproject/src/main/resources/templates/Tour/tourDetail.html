@@ -16,6 +16,8 @@
             --radius-sm:   6px; --shadow-card: 0 1px 3px rgba(0,0,0,0.07); --red: #c0392b;
         }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg-page); color: var(--text-main); font-size: 14px; line-height: 1.6; }
+
+        /* ── Navbar ── */
         .navbar { background: var(--green-dark); display: flex; align-items: center; padding: 0 2rem; height: 83px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
         .nav-brand { color: #fff; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: .6rem; text-decoration: none; white-space: nowrap; }
         .nav-brand i { font-size: 1.2rem; }
@@ -34,24 +36,56 @@
         .dropdown-divider { border-top: 1px solid #f0f0f0; margin: 4px 0; }
         .dropdown-item.logout { color: #c0392b; }
         .nav-avatar { width: 36px; height: 36px; background: var(--amber); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; color: #fff; }
+
+        /* ── Page ── */
         .page { padding: 28px 28px 60px; max-width: 1100px; margin: auto; }
         .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 13px; text-decoration: none; margin-bottom: 16px; padding: 5px 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); }
         .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
         .page-title { font-size: 22px; font-weight: 700; color: var(--green-dark); }
         .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
-
         .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: 'Sarabun', sans-serif; cursor: pointer; text-decoration: none; border: none; transition: background .18s, box-shadow .18s, transform .1s; }
         .btn:active { transform: scale(.97); }
         .btn-edit { background: var(--amber); color: #fff; box-shadow: 0 2px 6px rgba(240,165,0,.35); }
-        .btn-edit:hover { background: var(--amber-hover); box-shadow: 0 4px 12px rgba(240,165,0,.45); }
-        .btn-review { background: var(--green-dark); color: #fff; box-shadow: 0 2px 6px rgba(26,61,31,.25); }
-        .btn-review:hover { background: var(--green-mid); box-shadow: 0 4px 12px rgba(26,61,31,.35); }
+        .btn-edit:hover { background: var(--amber-hover); }
+        .btn-review { background: var(--green-dark); color: #fff; }
+        .btn-review:hover { background: var(--green-mid); }
 
+        /* ── Detail grid ── */
         .detail-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
-        .gallery-card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); overflow: hidden; }
-        .gallery-main { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
-        .gallery-placeholder { width: 100%; aspect-ratio: 4/3; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f0ece3; color: var(--text-hint); }
+
+        /* ══ SLIDER ══ */
+        .slider-col {
+            position: relative; background: #111; overflow: hidden;
+            border-radius: var(--radius-card); aspect-ratio: 4/3;
+            width: 100%; align-self: start;
+        }
+        .slider-viewport { position: absolute; inset: 0; overflow: hidden; }
+        .slider-track { display: flex; height: 100%; will-change: transform; transition: transform 0.4s cubic-bezier(.4,0,.2,1); }
+        .slider-slide { min-width: 100%; height: 100%; flex-shrink: 0; }
+        .slider-slide img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
+        .slider-no-image { display: flex; flex-direction: column; align-items: center; justify-content: center; position: absolute; inset: 0; background: #e8e4de; color: var(--text-hint); gap: 12px; }
+        .slider-no-image i { font-size: 3rem; opacity: .22; }
+        .slider-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,.88); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--green-dark); font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.22); z-index: 10;
+            opacity: 0; transition: opacity .2s;
+        }
+        .slider-col:hover .slider-arrow { opacity: 1; }
+        .slider-arrow:hover { background: #fff; }
+        .slider-arrow.prev { left: 8px; }
+        .slider-arrow.next { right: 8px; }
+        .slider-arrow[disabled] { opacity: 0 !important; pointer-events: none; }
+        .slider-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 10; }
+        .s-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.45); border: none; cursor: pointer; padding: 0; transition: background .2s, transform .2s; }
+        .s-dot.active { background: #fff; transform: scale(1.3); }
+        .slider-counter { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.48); color: #fff; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; z-index: 10; }
+
+        /* ── Cards ── */
         .badge-card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); padding: 16px; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
         .badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
         .badge-open { background: var(--green-light); color: var(--green-dark); }
@@ -61,8 +95,6 @@
         .price-item, .seat-item { background: var(--bg-page); padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
         .price-item-value, .seat-value { font-size: 20px; font-weight: 700; color: var(--green-dark); }
         .detail-text { white-space: pre-wrap; line-height: 1.7; }
-        .info-row { display: flex; border-bottom: 1px solid var(--border); padding: 8px 0; }
-        .info-label { width: 130px; color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -73,8 +105,8 @@
     </a>
     <div class="nav-dropdown">
         <div class="nav-dropdown-trigger">
-            <div class="nav-avatar" 
-                 th:text="${loggedInManager != null and loggedInManager.firstname != null} 
+            <div class="nav-avatar"
+                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
                            ? ${#strings.substring(loggedInManager.firstname,0,1)} : 'CM'">CM</div>
             <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ผู้จัดการ</span>
             <i class="fas fa-chevron-down chevron"></i>
@@ -84,28 +116,21 @@
                 <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ชื่อผู้จัดการ</div>
                 <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
             </div>
-            <a class="dropdown-item" th:href="@{/manager/profile}">
-                <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-            </a>
+            <a class="dropdown-item" th:href="@{/manager/profile}"><i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์</a>
             <hr class="dropdown-divider">
-            <a class="dropdown-item logout" th:href="@{/logout}">
-                <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-            </a>
+            <a class="dropdown-item logout" th:href="@{/logout}"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
         </div>
     </div>
 </nav>
 
 <div class="page">
-    <a class="back-link" th:href="@{/manager/tours}">
-        <i class="fas fa-arrow-left"></i> ย้อนกลับ
-    </a>
+    <a class="back-link" th:href="@{/manager/tours}"><i class="fas fa-arrow-left"></i> ย้อนกลับ</a>
 
     <div class="page-header">
-        <div class="page-header-left">
+        <div>
             <div class="page-title">รายละเอียดทัวร์</div>
             <div class="page-subtitle">รหัสทัวร์: <span th:text="${tour.tourid}">-</span></div>
         </div>
-
         <div class="header-actions">
             <a class="btn btn-edit" th:href="@{/manager/tours/{id}/edit(id=${tour.tourid})}">
                 <i class="fas fa-pen-to-square"></i> แก้ไขข้อมูล
@@ -118,19 +143,24 @@
 
     <div class="detail-grid">
         <div class="left-col">
-            <div class="gallery-card">
-                <!--
-                    [แก้ไข] ไม่ใส่ src ใน img tag โดยตรง
-                    ใช้ JS โหลดรูปแทนเพื่อป้องกันปัญหา Thymeleaf escape base64
-                -->
+
+            <!-- ══ SLIDER (รูปสร้างโดย JS จาก textarea) ══ -->
+            <div class="slider-col" id="sliderCol">
                 <th:block th:if="${tour.images != null and !#strings.isEmpty(tour.images)}">
-                    <img class="gallery-main" id="tourImg" alt="รูปทัวร์" />
+                    <div class="slider-viewport">
+                        <div class="slider-track" id="sliderTrack"></div>
+                    </div>
+                    <button class="slider-arrow prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="slider-arrow next" id="sliderNext"><i class="fas fa-chevron-right"></i></button>
+                    <div class="slider-dots" id="sliderDots"></div>
+                    <div class="slider-counter" id="sliderCounter"></div>
                 </th:block>
-                <div th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}" 
-                     class="gallery-placeholder">
-                    <i class="fas fa-image"></i>
-                    <span>ยังไม่มีรูปภาพ</span>
-                </div>
+                <th:block th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}">
+                    <div class="slider-no-image">
+                        <i class="fas fa-image"></i>
+                        <span>ยังไม่มีรูปภาพ</span>
+                    </div>
+                </th:block>
             </div>
 
             <div class="badge-card">
@@ -141,14 +171,14 @@
                 <div class="card-title">ราคาทัวร์</div>
                 <div class="price-row">
                     <div class="price-item">
-                        <div class="price-item-label">ผู้ใหญ่</div>
+                        <div>ผู้ใหญ่</div>
                         <div class="price-item-value" th:text="${#numbers.formatDecimal(tour.adultprice,1,'COMMA',0,'POINT')}">0</div>
-                        <div class="price-item-unit">บาท</div>
+                        <div>บาท</div>
                     </div>
                     <div class="price-item">
-                        <div class="price-item-label">เด็ก</div>
+                        <div>เด็ก</div>
                         <div class="price-item-value" th:text="${#numbers.formatDecimal(tour.childprice,1,'COMMA',0,'POINT')}">0</div>
-                        <div class="price-item-unit">บาท</div>
+                        <div>บาท</div>
                     </div>
                 </div>
             </div>
@@ -160,23 +190,21 @@
                 <h2 style="margin-bottom:10px;" th:text="${tour.tourmname}">ชื่อทัวร์</h2>
                 <div class="seats-grid">
                     <div class="seat-item">
-                        <div class="seat-label">ขั้นต่ำ</div>
+                        <div>ขั้นต่ำ</div>
                         <div class="seat-value" th:text="${tour.minSeatstour}">0</div>
-                        <div class="seat-unit">ท่าน</div>
+                        <div>ท่าน</div>
                     </div>
                     <div class="seat-item">
-                        <div class="seat-label">สูงสุด</div>
+                        <div>สูงสุด</div>
                         <div class="seat-value" th:text="${tour.maxSeatstour}">0</div>
-                        <div class="seat-unit">ท่าน</div>
+                        <div>ท่าน</div>
                     </div>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-title">รายละเอียด</div>
                 <div class="detail-text" th:text="${tour.tourdetail}">-</div>
             </div>
-
             <div class="card">
                 <div class="card-title">เงื่อนไข</div>
                 <div class="detail-text" th:text="${tour.conditiontour != null ? tour.conditiontour : 'ไม่มีเงื่อนไขเพิ่มเติม'}">-</div>
@@ -185,27 +213,93 @@
     </div>
 </div>
 
-<!--
-    [แก้ไข] เก็บ base64 ใน hidden textarea (ไม่ใช่ attribute)
-    textarea รองรับ text content ยาวมากได้โดยไม่มีปัญหา encoding
-    ปลอดภัยกว่า data-attribute ที่อาจถูก truncate หรือ escape ผิดพลาด
--->
-<textarea id="imgData" style="display:none;"
-          th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
-          th:text="${tour.images}"></textarea>
+<!-- ใช้ hidden input เก็บ filename จาก DB -->
+<input type="hidden" id="imgData"
+       th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
+       th:value="${tour.images}" />
 
 <script>
-    (function () {
-        const ta = document.getElementById('imgData');
-        if (!ta) return;
-        const raw = ta.value;
-        if (!raw) return;
-        const img = document.getElementById('tourImg');
-        if (img) {
-            img.src = raw.startsWith('data:') ? raw : 'data:image/jpeg;base64,' + raw;
-        }
-    })();
-</script>
+(function () {
+    var el = document.getElementById('imgData');
+    if (!el) return;
 
+    var raw = el.value;
+    if (!raw) return;
+
+    var parts = raw.split('||').map(function(s){ return s.trim(); }).filter(Boolean);
+    var total = parts.length;
+    if (total === 0) return;
+
+    var track   = document.getElementById('sliderTrack');
+    var btnPrev = document.getElementById('sliderPrev');
+    var btnNext = document.getElementById('sliderNext');
+    var dotsEl  = document.getElementById('sliderDots');
+    var counter = document.getElementById('sliderCounter');
+    var current = 0;
+
+    parts.forEach(function (name, i) {
+        // ✅ แก้ตรงนี้ — ใช้ path แทน base64
+        var src   = '/uploads/tours/' + name;
+        var slide = document.createElement('div');
+        slide.className = 'slider-slide';
+        var img = document.createElement('img');
+        img.src = src;
+        img.alt = 'รูปที่ ' + (i + 1);
+        slide.appendChild(img);
+        track.appendChild(slide);
+    });
+
+    if (total > 1) {
+        for (var i = 0; i < total; i++) {
+            var d = document.createElement('button');
+            d.className = 's-dot' + (i === 0 ? ' active' : '');
+            d.setAttribute('aria-label', 'ภาพที่ ' + (i + 1));
+            (function(idx){ d.addEventListener('click', function(){ goTo(idx); }); })(i);
+            dotsEl.appendChild(d);
+        }
+    } else {
+        if (btnPrev) btnPrev.style.display = 'none';
+        if (btnNext) btnNext.style.display = 'none';
+        if (dotsEl)  dotsEl.style.display  = 'none';
+        if (counter) counter.style.display  = 'none';
+    }
+
+    function render() {
+        track.style.transform = 'translateX(-' + (current * 100) + '%)';
+        dotsEl.querySelectorAll('.s-dot').forEach(function(d, i){
+            d.classList.toggle('active', i === current);
+        });
+        if (counter) counter.textContent = (current + 1) + ' / ' + total;
+        if (total > 1) {
+            btnPrev.disabled = (current === 0);
+            btnNext.disabled = (current === total - 1);
+        }
+    }
+
+    function goTo(idx) {
+        current = Math.max(0, Math.min(idx, total - 1));
+        render();
+    }
+
+    if (btnPrev) btnPrev.addEventListener('click', function(){ goTo(current - 1); });
+    if (btnNext) btnNext.addEventListener('click', function(){ goTo(current + 1); });
+
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'ArrowLeft')  goTo(current - 1);
+        if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    var touchStartX = null;
+    track.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', function(e){
+        if (touchStartX === null) return;
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 40) goTo(current - Math.sign(dx));
+        touchStartX = null;
+    });
+
+    render();
+})();
+</script>
 </body>
 </html>
