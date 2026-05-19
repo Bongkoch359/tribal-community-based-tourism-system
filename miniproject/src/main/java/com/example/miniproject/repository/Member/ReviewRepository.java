@@ -62,4 +62,6 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
     // นับจำนวน review ทั้งหมดเพื่อ generate ID ใหม่
     @Query("SELECT COUNT(r) FROM Review r")
     long countAll();
+
+    
 }
