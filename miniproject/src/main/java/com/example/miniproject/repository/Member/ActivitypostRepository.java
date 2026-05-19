@@ -21,4 +21,8 @@ public interface ActivitypostRepository extends JpaRepository<Activitypost, Stri
  
     // ดึงของ manager คนใดคนหนึ่ง
     List<Activitypost> findByCommunitymanagerManageridOrderByCreateddateDesc(String managerid);
+
+    // long countByManager_Managerid(String managerid);
+    // List<Activitypost> findTop3ByManager_ManageridOrderByCreateddateDesc(String managerid);
+
 }

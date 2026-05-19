@@ -53,8 +53,9 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     @Query("SELECT t FROM Tour t LEFT JOIN t.bookingTourDetails d GROUP BY t ORDER BY COUNT(d) DESC")
     List<Tour> findTopToursByBookingCount(@Param("limit") int limit);
 
-
     // ดึงทัวร์ของ manager คนนั้น
-    @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerId ORDER BY t.tourmname ASC")
-    List<Tour> findByManagerId(@Param("managerId") String managerId);
+    @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerid ORDER BY t.tourmname ASC")
+    List<Tour> findByManagerId(@Param("managerid") String managerid);
+
+
 }

@@ -2,6 +2,8 @@ package com.example.miniproject.repository.Member;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.boot.data.autoconfigure.web.DataWebProperties.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -48,4 +50,11 @@ Optional<Booking> findByIdWithDetails(@Param("id") String id);
 long countByRoomHomestayIdAndStatus(
     @Param("homestayId") Integer homestayId,
     @Param("status") BookingStatus status);
+
+    // // นับจำนวนการจองเฉพาะของ manager
+    // long countByCommunitymanager_Managerid(String managerid);
+
+    // // ดึงการจอง 5 รายการล่าสุดเฉพาะของ manager
+    // @Query("SELECT b FROM Booking b WHERE b.communitymanager.managerid = :managerId ORDER BY b.bookingdate DESC")
+    // List<Booking> findTopByManager(@Param("managerId") String managerId, Pageable pageable);
 }

@@ -43,4 +43,5 @@ List<Payment> findByHomestayId(@Param("homestayId") String homestayId);
 List<Payment> findByHomestayIdAndStatus(@Param("homestayId") String homestayId,
                                         @Param("status") PaymentStatus status);
 
+   
 }

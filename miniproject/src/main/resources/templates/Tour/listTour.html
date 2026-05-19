@@ -505,7 +505,7 @@
                     <td>
                         <th:block th:if="${tour.images != null and !#strings.isEmpty(tour.images)}">
                             <img class="tour-thumb lazy-thumb"
-                                 th:attr="data-b64=${tour.images}"
+                                 th:attr="data-src=${tour.images}"
                                  alt="tour"
                                  src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/>
                         </th:block>
@@ -598,30 +598,14 @@
    หลีกเลี่ยง HTML attribute ยาวเกิน limit
 ═══════════════════════════════════════════ */
 document.querySelectorAll('.lazy-thumb').forEach(function(img) {
-    const raw = img.getAttribute('data-b64') || '';
+    const raw = img.getAttribute('data-src') || '';
     if (!raw) return;
 
-    try {
-        if (raw.startsWith('[')) {
-            // กรณีเก็บเป็น JSON array
-            const arr = JSON.parse(raw);
-            const item = arr.find(i => i.primary) || arr[0];
-            if (item && item.base64) {
-                img.src = item.base64;
-            } else if (typeof item === 'string') {
-                img.src = item.startsWith('data:') ? item : 'data:image/jpeg;base64,' + item;
-            }
-        } else {
-            // กรณีเก็บเป็น base64 เดี่ยว
-            img.src = raw.startsWith('data:') ? raw : 'data:image/jpeg;base64,' + raw;
-        }
-    } catch (e) {
-        // ถ้า parse ไม่ได้ให้ซ่อนรูป
-        img.style.display = 'none';
-    }
+    // ใช้รูปแรกจาก filename1.jpg||filename2.jpg
+    const firstName = raw.split('||')[0].trim();
+    img.src = '/uploads/tours/' + firstName;
 
-    // ล้าง data-b64 ออกหลังโหลดแล้วเพื่อลด memory
-    img.removeAttribute('data-b64');
+    img.removeAttribute('data-src');
 });
 
 /* ═══════════════════════════════════════════

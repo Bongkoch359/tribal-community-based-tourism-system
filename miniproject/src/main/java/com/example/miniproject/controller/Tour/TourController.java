@@ -16,6 +16,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -32,73 +34,58 @@ public class TourController {
 
     private static final String UPLOAD_DIR = "uploads/tours/";
 
-    // ─── บันทึกรูปจาก base64 JSON ที่ส่งมาจาก hidden input ─────────────────────
-    // รับ JSON array string เช่น [{"base64":"data:image/jpeg;base64,...","primary":true}, ...]
-    // หรือ base64 string เดี่ยว (จาก editTour) เช่น "/9j/4AAQ..."
-    // คืนค่าเป็น "filename1.jpg||filename2.jpg" หรือ null ถ้าไม่มีรูป
+    // ─── บันทึกรูปจาก imagesJson ──────────────────────────────────────────────────
+    // รับ 3 format:
+    //   1. "__KEEP__"                    → ไม่เปลี่ยนรูป คืน null
+    //   2. "__FILENAMES__:a.jpg||b.jpg"  → รูปเดิมทั้งหมด คืน "a.jpg||b.jpg"
+    //   3. JSON array                    → มีรูปใหม่ บันทึกไฟล์แล้วคืน filenames
     private String saveImagesFromBase64(String imagesJson, String tourid) {
         if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__")) return null;
+
+        // ── format 2: รูปเดิมทั้งหมด ──
+        if (imagesJson.startsWith("__FILENAMES__:")) {
+            return imagesJson.substring("__FILENAMES__:".length());
+        }
+
+        // ── format 3: JSON array — ใช้ Jackson ที่มีใน Spring Boot ──
+        if (!imagesJson.trim().startsWith("[")) return null;
 
         try {
             Path dir = Paths.get(UPLOAD_DIR).toAbsolutePath();
             Files.createDirectories(dir);
             System.out.println("📁 บันทึกรูปที่: " + dir);
 
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.JsonNode arr = mapper.readTree(imagesJson);
+
             List<String> names = new ArrayList<>();
-
-            // ── กรณี editTour ส่งมาเป็น base64 เดี่ยว (ไม่ใช่ JSON array) ──
-            if (!imagesJson.trim().startsWith("[")) {
-                String b64 = imagesJson.trim();
-                String ext = "jpg";
-                String data = b64;
-                if (b64.startsWith("data:")) {
-                    ext  = b64.contains("png") ? "png" : b64.contains("webp") ? "webp" : "jpg";
-                    data = b64.split(",")[1];
-                }
-                byte[] bytes = Base64.getDecoder().decode(data);
-                String filename = tourid + "_1." + ext;
-                Files.write(dir.resolve(filename), bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                System.out.println("✅ บันทึกสำเร็จ: " + filename);
-                names.add(filename);
-                return String.join("||", names);
-            }
-
-            // ── กรณี addTour ส่งมาเป็น JSON array ──
-            // parse ด้วย substring แทน library เพื่อไม่ต้อง import org.json
-            String json = imagesJson.trim();
-            // ดึง base64 แต่ละรูปออกมา
             int idx = 1;
-            int pos = 0;
-            while (pos < json.length()) {
-                int start = json.indexOf("\"base64\"", pos);
-                if (start < 0) break;
-                start = json.indexOf("\"", start + 8); // เปิด "
-                if (start < 0) break;
-                start++; // ข้าม "
-                // หา " ปิด (ต้องข้าม escaped quote)
-                int end = start;
-                while (end < json.length()) {
-                    if (json.charAt(end) == '"' && json.charAt(end - 1) != '\\') break;
-                    end++;
+
+            for (com.fasterxml.jackson.databind.JsonNode node : arr) {
+                String b64 = node.has("base64") ? node.get("base64").asText() : "";
+                if (b64.isBlank()) { idx++; continue; }
+
+                // รูปเดิมที่ไม่ได้เปลี่ยน
+                if (b64.startsWith("__OLD__:")) {
+                    names.add(b64.substring("__OLD__:".length()));
+                    idx++;
+                    continue;
                 }
-                String b64 = json.substring(start, end);
-                String ext  = "jpg";
-                String data = b64;
-                if (b64.startsWith("data:")) {
-                    ext  = b64.contains("png") ? "png" : b64.contains("webp") ? "webp" : "jpg";
-                    data = b64.split(",")[1];
-                }
+
+                // รูปใหม่
+                String ext  = b64.contains("png") ? "png" : b64.contains("webp") ? "webp" : "jpg";
+                String data = b64.contains(",") ? b64.split(",")[1] : b64;
                 try {
                     byte[] bytes = Base64.getDecoder().decode(data);
                     String filename = tourid + "_" + idx + "." + ext;
-                    Files.write(dir.resolve(filename), bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    Files.write(dir.resolve(filename), bytes,
+                            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     System.out.println("✅ บันทึกสำเร็จ: " + filename);
                     names.add(filename);
                     idx++;
                 } catch (Exception ex) {
                     System.out.println("❌ decode ไม่ได้: " + ex.getMessage());
                 }
-                pos = end + 1;
             }
 
             return names.isEmpty() ? null : String.join("||", names);
@@ -115,9 +102,9 @@ public class TourController {
     @GetMapping
     public String listTours(HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
+        if (manager == null) return "redirect:/manager/login";
 
-        model.addAttribute("tours", tourService.getAllTours());
+        model.addAttribute("tours", tourService.getToursByManager(manager));
         model.addAttribute("loggedInManager", manager);
         return "Tour/listTour";
     }
@@ -127,7 +114,7 @@ public class TourController {
     @GetMapping("/create")
     public String showCreateForm(HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
+        if (manager == null) return "redirect:/manager/login";
 
         model.addAttribute("tour", new Tour());
         model.addAttribute("loggedInManager", manager);
@@ -151,7 +138,7 @@ public class TourController {
             Model model
     ) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
+        if (manager == null) return "/manager/login";
 
         // ─── Server-side validation ───
         if (tourmname == null || tourmname.isBlank()) {
@@ -215,7 +202,7 @@ public class TourController {
     public String tourDetail(@PathVariable("tourid") String tourid,
                              HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
+        if (manager == null) return "redirect:/manager/login";
 
         Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
         if (tour == null) return "redirect:/manager/tours?error=notfound";
@@ -231,7 +218,7 @@ public class TourController {
     public String showEditForm(@PathVariable("tourid") String tourid,
                                HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
+        if (manager == null) return "redirect:/manager/login";
 
         Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
         if (tour == null) return "redirect:/manager/tours?error=notfound";
@@ -264,7 +251,7 @@ public class TourController {
             RedirectAttributes redirectAttributes
     ) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
+        if (manager == null) return "redirect:/manager/login";
 
         Tour existing = tourService.getTourByIdAny(tourid).orElse(null);
         if (existing == null) return "redirect:/manager/tours?error=notfound";
@@ -324,7 +311,7 @@ public class TourController {
     public String tourReviews(@PathVariable("tourid") String tourid,
                               HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/login";
+        if (manager == null) return "redirect:/manager/login";
 
         Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
         if (tour == null) return "redirect:/manager/tours?error=notfound";

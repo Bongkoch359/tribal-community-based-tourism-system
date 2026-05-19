@@ -81,16 +81,29 @@
         /* ── 2-col grid inside card ── */
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        /* ── Image preview ── */
-        .img-preview-wrap { position: relative; width: 100%; aspect-ratio: 4/3; border-radius: 8px; overflow: hidden; background: #f0ece3; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color .2s; }
-        .img-preview-wrap:hover { border-color: var(--green-mid); }
-        .img-preview-wrap img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-        .img-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-hint); font-size: 13px; }
-        .img-placeholder i { font-size: 2rem; }
-        .img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.45); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #fff; font-size: 13px; opacity: 0; transition: opacity .2s; }
-        .img-preview-wrap:hover .img-overlay { opacity: 1; }
-        .img-overlay i { font-size: 1.5rem; }
-        #fileInput { display: none; }
+        /* ── Image upload zone ── */
+        .img-upload-zone { border: 2px dashed var(--border); border-radius: 10px; background: #faf8f4; padding: 22px 16px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s; margin-bottom: 12px; }
+        .img-upload-zone:hover, .img-upload-zone.drag-over { border-color: var(--green-mid); background: #f0f7f1; }
+        .img-upload-zone i { font-size: 28px; color: var(--text-hint); margin-bottom: 6px; display: block; }
+        .img-upload-zone .upload-title { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 3px; }
+        .img-upload-zone .upload-hint { font-size: 11px; color: var(--text-hint); }
+        .upload-btn-label { display: inline-flex; align-items: center; gap: 5px; background: var(--green-dark); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: background .15s; }
+        .upload-btn-label:hover { background: var(--green-mid); }
+        input[type="file"] { display: none; }
+        /* ── Image grid ── */
+        .img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-top: 4px; }
+        .img-thumb { position: relative; aspect-ratio: 4/3; border-radius: 8px; overflow: hidden; border: 2px solid var(--border); background: #f0ece3; }
+        .img-thumb:hover { border-color: var(--green-mid); }
+        .img-thumb.primary { border-color: var(--amber); }
+        .img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .thumb-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background .15s; display: flex; align-items: flex-start; justify-content: flex-end; padding: 5px; gap: 4px; }
+        .img-thumb:hover .thumb-overlay { background: rgba(0,0,0,.3); }
+        .thumb-btn { width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; opacity: 0; transition: opacity .15s; }
+        .img-thumb:hover .thumb-btn { opacity: 1; }
+        .thumb-btn.del-btn { background: var(--red); color: #fff; }
+        .thumb-btn.star-btn { background: var(--amber); color: #fff; }
+        .primary-badge { position: absolute; bottom: 4px; left: 4px; background: var(--amber); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 20px; }
+        .img-count-note { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
 
         /* ── Buttons ── */
         .btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
@@ -177,37 +190,32 @@
                 <!-- รูปภาพ -->
                 <div class="card">
                     <div class="card-title">รูปภาพทัวร์</div>
-                    <div class="img-preview-wrap" onclick="document.getElementById('fileInput').click()">
-                        <!--
-                            [แก้ไข] ลบ th:src ออก และลบ th:if ออก
-                            ใช้ JS โหลดรูปแทน เพื่อป้องกัน Thymeleaf render base64 ยาวลงใน HTML attribute
-                            ซึ่งทำให้ browser หยุด render ส่วนที่เหลือของหน้า
-                        -->
-                        <img id="previewImg" alt="รูปทัวร์" style="display:none;" />
-                        <div class="img-placeholder" id="imgPlaceholder">
-                            <i class="fas fa-cloud-arrow-up"></i>
-                            <span>คลิกเพื่ออัปโหลดรูป</span>
-                        </div>
-                        <div class="img-overlay">
-                            <i class="fas fa-camera"></i>
-                            <span>เปลี่ยนรูป</span>
-                        </div>
+
+                    <!-- zone drag & drop -->
+                    <div class="img-upload-zone" id="uploadZone"
+                         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
+                         onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-arrow-up"></i>
+                        <div class="upload-title">ลากรูปมาวางหรือคลิกเพื่อเลือก</div>
+                        <label class="upload-btn-label" onclick="event.stopPropagation()">
+                            <i class="fas fa-folder-open"></i> เลือกรูป
+                            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
+                                   onchange="addFiles(Array.from(this.files)); this.value='';">
+                        </label>
+                        <div class="upload-hint">jpg · png · webp | สูงสุด 10 รูป</div>
                     </div>
-                    <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
-                    <!--
-                        [แก้ไข] ลบ th:value="${tour.images}" ออก
-                        ตั้งค่าเริ่มต้นเป็น __KEEP__ แทน
-                        JS จะ set ค่าเป็น base64 จริงเมื่อผู้ใช้เลือกรูปใหม่
-                    -->
+
+                    <!-- grid รูป -->
+                    <div class="img-grid" id="imgGrid"></div>
+                    <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
+
+                    <!-- hidden inputs -->
+                    <!-- เก็บ filename เดิมจาก DB เพื่อให้ JS โหลดแสดง -->
+                    <input type="hidden" id="imgData"
+                           th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
+                           th:value="${tour.images}" />
+                    <!-- ส่งผลลัพธ์ไปยัง Controller: JSON array base64 หรือ __KEEP__ -->
                     <input type="hidden" name="images" id="imagesInput" value="__KEEP__">
-                    <!--
-                        [แก้ไข] เก็บ base64 เดิมใน hidden textarea
-                        textarea รองรับ text content ยาวมากได้โดยไม่มีปัญหา encoding
-                    -->
-                    <textarea id="imgData" style="display:none;"
-                              th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
-                              th:text="${tour.images}"></textarea>
-                    <p class="hint" style="margin-top:8px;">รองรับ JPG, PNG ขนาดไม่เกิน 5 MB</p>
                 </div>
 
                 <!-- สถานะ -->
@@ -316,59 +324,119 @@
     </form>
 </div>
 
-<!--
-    [แก้ไข] อ่านค่า base64 จาก hidden textarea
--->
 <script>
-    (function () {
-        const ta = document.getElementById('imgData');
-        if (!ta) return;
-        const raw = ta.value;
-        if (!raw) return;
+const MAX_IMAGES = 10;
+let imageDataList = []; // { src: 'data:...' หรือ '/uploads/tours/...' , base64: '...' หรือ null, name: '...' }
+let primaryIndex  = 0;
 
-        const img = document.getElementById('previewImg');
-        img.src = raw.startsWith('data:') ? raw : 'data:image/jpeg;base64,' + raw;
-        img.style.display = 'block';
-        document.getElementById('imgPlaceholder').style.display = 'none';
-    })();
-</script>
+const imgGrid      = document.getElementById('imgGrid');
+const imgCountNote = document.getElementById('imgCountNote');
+const imagesInput  = document.getElementById('imagesInput');
+const uploadZone   = document.getElementById('uploadZone');
 
-<script>
-    // ── Preview รูปใหม่ที่เลือก ──
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        if (file.size > 5 * 1024 * 1024) {
-            alert('ขนาดไฟล์ต้องไม่เกิน 5 MB');
-            return;
-        }
+// ── โหลดรูปเดิมจาก DB ──
+(function loadExisting() {
+    const el = document.getElementById('imgData');
+    if (!el || !el.value) return;
+    const names = el.value.split('||').map(s => s.trim()).filter(Boolean);
+    names.forEach(name => {
+        imageDataList.push({ src: '/uploads/tours/' + name, base64: null, name: name });
+    });
+    renderGrid();
+})();
+
+// ── Drag & Drop ──
+function handleDragOver(e)  { e.preventDefault(); uploadZone.classList.add('drag-over'); }
+function handleDragLeave(e) { uploadZone.classList.remove('drag-over'); }
+function handleDrop(e) {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    addFiles(Array.from(e.dataTransfer.files));
+}
+
+// ── เพิ่มไฟล์ใหม่ ──
+function addFiles(files) {
+    const allowed = MAX_IMAGES - imageDataList.length;
+    files = files.slice(0, allowed);
+    if (files.length === 0) return;
+    let loaded = 0;
+    files.forEach(file => {
+        if (!file.type.match(/^image\/(jpeg|png|webp)$/)) { loaded++; return; }
         const reader = new FileReader();
-        reader.onload = function (e) {
-            const base64 = e.target.result;
-            const img = document.getElementById('previewImg');
-            img.src = base64;
-            img.style.display = 'block';
-            document.getElementById('imgPlaceholder').style.display = 'none';
-
-            // เก็บ base64 (ตัด prefix ออก) และ mark ว่าเปลี่ยนรูปแล้ว
-            const imgInput = document.getElementById('imagesInput');
-            imgInput.value = base64.split(',')[1];
-            imgInput._changed = true;
+        reader.onload = e => {
+            imageDataList.push({ src: e.target.result, base64: e.target.result, name: file.name });
+            loaded++;
+            if (loaded === files.length) renderGrid();
         };
         reader.readAsDataURL(file);
+    });
+}
+
+// ── Render grid ──
+function renderGrid() {
+    imgGrid.innerHTML = '';
+    imageDataList.forEach((img, i) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'img-thumb' + (i === primaryIndex ? ' primary' : '');
+        thumb.innerHTML = `
+            <img src="${img.src}" alt="${img.name}"/>
+            <div class="thumb-overlay">
+                <button type="button" class="thumb-btn star-btn" onclick="setPrimary(${i})" title="ตั้งรูปหลัก"><i class="fas fa-star"></i></button>
+                <button type="button" class="thumb-btn del-btn"  onclick="removeImage(${i})"  title="ลบรูป"><i class="fas fa-trash"></i></button>
+            </div>
+            ${i === primaryIndex ? '<div class="primary-badge">หลัก</div>' : ''}
+        `;
+        imgGrid.appendChild(thumb);
+    });
+
+    if (imageDataList.length > 0) {
+        imgCountNote.style.display = 'block';
+        imgCountNote.textContent = `เลือกแล้ว ${imageDataList.length}/${MAX_IMAGES} รูป`;
+    } else {
+        imgCountNote.style.display = 'none';
     }
 
-    // ── Validate ก่อน submit ──
-    document.getElementById('editForm').addEventListener('submit', function (e) {
-        const min = parseInt(document.querySelector('[name="minSeatstour"]').value);
-        const max = parseInt(document.querySelector('[name="maxSeatstour"]').value);
-        if (min > max) {
-            e.preventDefault();
-            alert('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด');
-            return;
-        }
-        // ถ้าไม่ได้เปลี่ยนรูป imagesInput จะยังเป็น __KEEP__ อยู่แล้ว ไม่ต้องทำอะไรเพิ่ม
-    });
+    packImages();
+}
+
+// ── pack ส่งไป Controller ──
+function packImages() {
+    if (imageDataList.length === 0) {
+        imagesInput.value = '__KEEP__';
+        return;
+    }
+    // ถ้ามีรูปใหม่ (base64 != null) ให้ส่ง JSON array
+    const hasNew = imageDataList.some(i => i.base64 !== null);
+    if (hasNew) {
+        // รูปเดิมที่ไม่ได้เปลี่ยน ให้ส่ง base64 ว่างเป็น marker __OLD__:filename
+        const arr = imageDataList.map((img, i) => ({
+            base64: img.base64 !== null ? img.base64 : '__OLD__:' + img.name,
+            primary: i === primaryIndex
+        }));
+        imagesInput.value = JSON.stringify(arr);
+    } else {
+        // ทุกรูปเป็นรูปเดิม — ส่งแค่ชื่อไฟล์
+        const names = imageDataList.map(i => i.name).join('||');
+        imagesInput.value = '__FILENAMES__:' + names;
+    }
+}
+
+function setPrimary(index) { primaryIndex = index; renderGrid(); }
+function removeImage(index) {
+    imageDataList.splice(index, 1);
+    if (primaryIndex >= imageDataList.length) primaryIndex = 0;
+    renderGrid();
+}
+
+// ── Validate ──
+document.getElementById('editForm').addEventListener('submit', function (e) {
+    const min = parseInt(document.querySelector('[name="minSeatstour"]').value);
+    const max = parseInt(document.querySelector('[name="maxSeatstour"]').value);
+    if (min > max) {
+        e.preventDefault();
+        alert('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด');
+    }
+});
 </script>
 
 </body>
