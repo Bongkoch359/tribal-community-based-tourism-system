@@ -33,8 +33,7 @@ public class HomestayPaymentServiceImpl implements PaymentService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    @Value("${app.upload.slip-dir:uploads/slips/}")
-    private String slipUploadDir;
+    private final String slipUploadDir = System.getProperty("user.dir") + "/uploads/slips/";
 
     // ─────────────────────────────────────────────────────────────
     // ดึงข้อมูลสำหรับแสดงหน้าชำระเงิน

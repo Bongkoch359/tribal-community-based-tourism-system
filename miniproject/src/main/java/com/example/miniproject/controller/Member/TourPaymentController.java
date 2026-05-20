@@ -46,7 +46,7 @@ public class TourPaymentController {
                     "successMsg",
                     "ส่งหลักฐานการชำระเงินสำเร็จ! กรุณารอการยืนยันจากทัวร์");
 
-            return "redirect:/member/tour-bookings/detail/" + bookingId;
+            return "redirect:/member/bookings/detail/" + bookingId;
 
         } catch (IllegalArgumentException e) {
 

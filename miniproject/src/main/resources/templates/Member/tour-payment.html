@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ชำระเงิน – การจองทัวร์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+    --green-dark:#2d5a27;
+    --green-main:#3d7a35;
+    --green-light:#e8f5e1;
+    --green-accent:#5a9e50;
+    --orange:#e67e22;
+    --red:#e53935;
+    --red-light:#fdecea;
+    --blue:#1d6fa4;
+    --blue-light:#e8f4fb;
+    --gray-100:#f3f4f6;
+    --gray-200:#e5e7eb;
+    --gray-400:#9ca3af;
+    --gray-600:#6b7280;
+    --gray-800:#1f2937;
+    --shadow:0 2px 12px rgba(0,0,0,.08);
+    --radius-lg:18px;
+}
+
+body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-800); font-size:15px; }
+
+/* ── NAVBAR ── */
+.navbar {
+    background:var(--green-dark); height:54px; padding:0 2rem;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.navbar-brand { display:flex; align-items:center; gap:.6rem; color:#fff; font-weight:700; font-size:.95rem; text-decoration:none; }
+.logo-icon { width:30px; height:30px; background:var(--green-accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+
+/* ── BREADCRUMB ── */
+.breadcrumb { background:#fff; padding:.55rem 2rem; border-bottom:1px solid var(--gray-200); font-size:.8rem; color:var(--gray-600); }
+.breadcrumb a { color:var(--green-main); text-decoration:none; }
+
+/* ── STEPS ── */
+.steps-wrap { background:#fff; border-bottom:1px solid var(--gray-200); padding:.75rem 2rem; }
+.steps { display:flex; align-items:center; max-width:540px; margin:0 auto; }
+.step { display:flex; align-items:center; gap:.45rem; flex:1; justify-content:center; }
+.step-circle {
+    width:28px; height:28px; border-radius:50%; border:2px solid var(--gray-200);
+    background:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:.72rem; font-weight:800; color:var(--gray-400); flex-shrink:0;
+}
+.step.done .step-circle   { background:var(--green-main); border-color:var(--green-main); color:#fff; }
+.step.active .step-circle { background:var(--orange);     border-color:var(--orange);     color:#fff; }
+.step-label { font-size:.75rem; font-weight:600; color:var(--gray-400); white-space:nowrap; }
+.step.done .step-label   { color:var(--green-main); }
+.step.active .step-label { color:var(--orange); font-weight:700; }
+.step-line { width:40px; flex-shrink:0; height:2px; background:var(--gray-200); }
+.step-line.done { background:var(--green-main); }
+
+/* ── PAGE WRAP ── */
+.page-wrap { max-width:1100px; margin:0 auto; padding:1.5rem 1.25rem 3rem; }
+
+/* ── ALERT ── */
+.alert { border-radius:10px; padding:12px 16px; font-size:.88rem; font-weight:600; display:flex; align-items:center; gap:.5rem; margin-bottom:16px; }
+.alert-error   { background:var(--red-light); border:1px solid #ef9a9a; color:#b71c1c; }
+.alert-success { background:var(--green-light); border:1px solid #a5d6a7; color:var(--green-dark); }
+.alert-info    { background:var(--blue-light);  border:1px solid #90caf9; color:#1e4f6b; }
+
+/* ── LAYOUT ── */
+.pay-layout { display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start; }
+
+/* ── CARD ── */
+.card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; margin-bottom:16px; }
+.section-header { display:flex; align-items:center; gap:.5rem; padding:15px 20px; border-bottom:1px solid var(--gray-100); font-weight:800; font-size:.95rem; }
+.section-num { width:22px; height:22px; border-radius:50%; background:var(--green-main); color:#fff; font-size:.72rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.section-body { padding:18px 20px; }
+
+/* ── BOOKING BANNER ── */
+.booking-banner {
+    background:linear-gradient(135deg,var(--green-dark),var(--green-accent));
+    border-radius:14px; padding:18px 20px; margin-bottom:16px;
+    color:#fff; display:flex; align-items:center; gap:16px;
+}
+.booking-banner-icon { font-size:2rem; flex-shrink:0; }
+.booking-banner-content { flex:1; }
+.booking-banner-title { font-size:1.1rem; font-weight:800; margin-bottom:2px; }
+.booking-banner-sub { font-size:.8rem; opacity:.85; }
+.booking-banner-id { background:rgba(255,255,255,.2); border-radius:8px; padding:6px 12px; font-size:.8rem; font-weight:700; white-space:nowrap; }
+
+/* ── COUNTDOWN ── */
+.countdown-wrap {
+    background:linear-gradient(135deg,#fffbeb,#fef3c7);
+    border:1px solid #fcd34d; border-radius:12px;
+    padding:14px 18px; display:flex; align-items:center; gap:14px; margin-bottom:16px;
+}
+.countdown-icon  { font-size:1.6rem; }
+.countdown-label { font-size:.78rem; color:#92400e; font-weight:600; }
+.countdown-time  { font-size:1.4rem; font-weight:800; color:#b45309; letter-spacing:.04em; }
+.countdown-sub   { font-size:.72rem; color:#a16207; margin-top:1px; }
+
+/* ── BANK BOX ── */
+.bank-box {
+    background:var(--blue-light); border:1px solid #90caf9;
+    border-radius:12px; padding:16px 18px; margin-bottom:4px;
+    display:flex; align-items:center; gap:16px;
+}
+.bank-logo {
+    width:52px; height:52px; border-radius:10px; background:#1a56db;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem; flex-shrink:0;
+}
+.bank-info    { flex:1; }
+.bank-name    { font-weight:800; font-size:.88rem; color:var(--blue); margin-bottom:2px; }
+.bank-account { font-size:1.2rem; font-weight:800; color:var(--gray-800); letter-spacing:.06em; margin:2px 0; }
+.bank-holder  { font-size:.78rem; color:var(--gray-600); }
+.btn-copy {
+    background:var(--blue); color:#fff; border:none; border-radius:8px;
+    padding:8px 14px; font-size:.78rem; font-weight:700;
+    cursor:pointer; font-family:inherit; white-space:nowrap; transition:.2s;
+}
+.btn-copy:hover  { background:#1558b0; }
+.btn-copy.copied { background:var(--green-main); }
+.bank-note { font-size:.75rem; color:var(--gray-600); padding:6px 2px 0; }
+
+/* ── SLIP UPLOAD ── */
+.upload-zone {
+    border:2px dashed var(--gray-200); border-radius:12px; padding:28px 20px;
+    text-align:center; cursor:pointer; transition:.2s; position:relative;
+}
+.upload-zone:hover, .upload-zone.drag { border-color:var(--green-main); background:var(--green-light); }
+.upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.upload-icon  { font-size:2rem; margin-bottom:8px; }
+.upload-title { font-weight:700; font-size:.9rem; }
+.upload-sub   { font-size:.75rem; color:var(--gray-600); margin-top:4px; }
+
+.preview-wrap   { position:relative; display:inline-block; }
+.preview-img    { width:100%; max-height:240px; object-fit:contain; border-radius:10px; border:1px solid var(--gray-200); display:block; }
+.btn-remove-img {
+    position:absolute; top:6px; right:6px; background:var(--red); color:#fff;
+    border:none; border-radius:50%; width:26px; height:26px; font-size:.85rem;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+
+/* ── FORM ── */
+.form-group   { display:flex; flex-direction:column; gap:5px; margin-bottom:0; }
+.form-control { padding:10px 12px; border:1.5px solid var(--gray-200); border-radius:8px; font-size:.88rem; font-family:inherit; color:var(--gray-800); }
+.form-control:focus { outline:none; border-color:var(--green-accent); }
+
+/* ── SUBMIT BAR ── */
+.submit-bar { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:16px 20px; }
+.btn-back {
+    background:#fff; color:var(--gray-600); border:1.5px solid var(--gray-200);
+    border-radius:8px; padding:12px 18px; font-size:.9rem; font-weight:700;
+    cursor:pointer; font-family:inherit; transition:.2s; margin-bottom:10px; width:100%;
+}
+.btn-back:hover { background:var(--gray-100); }
+.btn-submit {
+    width:100%; background:var(--green-main); color:#fff; border:none;
+    border-radius:10px; padding:14px; font-size:1rem; font-weight:800;
+    cursor:pointer; font-family:inherit; transition:.2s;
+    display:flex; align-items:center; justify-content:center; gap:.5rem;
+}
+.btn-submit:hover    { background:var(--green-dark); }
+.btn-submit:disabled { background:var(--gray-400); cursor:not-allowed; }
+.secure-row { display:flex; align-items:center; justify-content:center; gap:.4rem; font-size:.72rem; color:var(--gray-400); padding:10px 0 0; }
+
+/* ── SIDEBAR ── */
+.summary-card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:sticky; top:70px; }
+.summary-img { width:100%; height:148px; object-fit:cover; display:block; }
+.summary-img-placeholder { width:100%; height:148px; background:linear-gradient(135deg,#c8e6c9,#a5d6a7); display:flex; align-items:center; justify-content:center; font-size:2.8rem; }
+.summary-body { padding:14px 16px; }
+.tour-name { font-size:.95rem; font-weight:800; }
+.tour-loc  { font-size:.75rem; color:var(--gray-600); margin-top:3px; }
+.sum-divider { height:1px; background:var(--gray-100); margin:10px 0; }
+.sum-row { display:flex; justify-content:space-between; padding:3px 0; font-size:.8rem; }
+.sum-row .label { color:var(--gray-600); }
+.sum-row .val   { font-weight:600; }
+.sum-row .val.hi { color:var(--green-main); }
+.price-box { background:var(--green-light); border-radius:10px; padding:12px 14px; margin-top:10px; }
+.price-box-label { font-size:.75rem; color:var(--green-dark); font-weight:600; }
+.price-box-total { font-size:1.45rem; font-weight:800; color:var(--green-dark); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+    .pay-layout { grid-template-columns:1fr; }
+    .summary-card { position:static; order:-1; }
+    .booking-banner { flex-direction:column; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        <div class="logo-icon">🏕️</div>
+        HomestayHub
+    </a>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+    <a href="/member/bookings/list">การจองของฉัน</a> &nbsp;›&nbsp;
+    <a th:href="@{/member/bookings/detail/{id}(id=${payment.bookingId})}">รายละเอียดการจอง</a>
+    &nbsp;›&nbsp; ชำระเงิน
+</div>
+
+<!-- STEPS -->
+<div class="steps-wrap">
+    <div class="steps">
+        <div class="step done">
+            <div class="step-circle">✓</div>
+            <div class="step-label">จองทัวร์</div>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step active">
+            <div class="step-circle">2</div>
+            <div class="step-label">ชำระเงิน</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-label">รอยืนยัน</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+            <div class="step-circle">4</div>
+            <div class="step-label">เสร็จสมบูรณ์</div>
+        </div>
+    </div>
+</div>
+
+<div class="page-wrap">
+
+    <!-- ALERTS -->
+    <div class="alert alert-error"   th:if="${errorMsg}">⚠️ <span th:text="${errorMsg}"></span></div>
+    <div class="alert alert-success" th:if="${successMsg}">✅ <span th:text="${successMsg}"></span></div>
+
+    <!-- BOOKING BANNER -->
+    <div class="booking-banner" th:if="${payment != null and payment.bookingId != null}">
+        <div class="booking-banner-icon">🎒</div>
+        <div class="booking-banner-content">
+            <div class="booking-banner-title"
+                 th:text="${payment.roomTypeName != null ? payment.roomTypeName : 'การจองทัวร์'}"></div>
+            <div class="booking-banner-sub">
+                🏕️ <span th:text="${payment.homestayName != null ? payment.homestayName : '-'}"></span>
+                <span th:if="${payment.homestayAddress != null}">
+                    &nbsp;·&nbsp;<span th:text="${payment.homestayAddress}"></span>
+                </span>
+            </div>
+        </div>
+        <div class="booking-banner-id">#<span th:text="${payment.bookingId}"></span></div>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown-wrap">
+        <div class="countdown-icon">⏱️</div>
+        <div>
+            <div class="countdown-label">กรุณาชำระเงินภายในเวลา</div>
+            <div class="countdown-time" id="countdown">--:--:--</div>
+            <div class="countdown-sub">หากหมดเวลาการจองจะถูกยกเลิกอัตโนมัติ</div>
+        </div>
+    </div>
+
+    <div class="pay-layout">
+
+        <!-- ─── LEFT ─── -->
+        <div>
+
+            <!-- ① ข้อมูลการชำระเงิน -->
+            <div class="card">
+                <div class="section-header">
+                    <div class="section-num">1</div>
+                    ข้อมูลการชำระเงิน
+                </div>
+                <div class="section-body">
+
+                    <!-- มีบัญชีธนาคาร -->
+                    <div th:if="${payment.bankAccount != null}">
+                        <p style="font-size:.82rem;color:var(--gray-600);font-weight:600;margin-bottom:10px;">
+                            โปรดโอนเงินมาที่บัญชีด้านล่าง แล้วอัปโหลดสลิปในขั้นตอนถัดไป
+                        </p>
+                        <div class="bank-box">
+                            <div class="bank-logo">🏦</div>
+                            <div class="bank-info">
+                                <div class="bank-name"
+                                     th:text="${payment.bankName != null ? payment.bankName : 'ธนาคาร'}"></div>
+                                <div class="bank-account" th:text="${payment.bankAccount}"></div>
+                                <div class="bank-holder"
+                                     th:text="${payment.homestayName != null ? payment.homestayName : '-'}"></div>
+                            </div>
+                            <button class="btn-copy"
+                                    th:data-account="${payment.bankAccount}"
+                                    onclick="copyAccount(this)"
+                                    type="button">คัดลอก</button>
+                        </div>
+                        <div class="bank-note">
+                            💡 กรุณาโอนจำนวน
+                            <strong th:text="${payment.totalAmount != null ?
+                                '฿' + #numbers.formatDecimal(payment.totalAmount,0,'COMMA',2,'POINT') : '-'}"></strong>
+                            ให้ตรงกับยอดที่ระบุ
+                        </div>
+                    </div>
+
+                    <!-- ยังไม่มีบัญชี (รอหลังบ้าน) -->
+                    <div class="alert alert-info" th:if="${payment.bankAccount == null}"
+                         style="margin-bottom:0;">
+                        ℹ️ ยังไม่ได้ระบุบัญชีธนาคาร กรุณาติดต่อผู้จัดทัวร์โดยตรง
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ② อัปโหลดสลิป -->
+            <div class="card">
+                <div class="section-header">
+                    <div class="section-num">2</div>
+                    อัปโหลดหลักฐานการโอนเงิน
+                </div>
+                <div class="section-body">
+                    <div id="uploadArea">
+                        <div class="upload-zone" id="dropZone">
+                            <input type="file" id="slipFile" name="slipFile"
+                                   accept="image/*,.pdf"
+                                   onchange="handleFileSelect(this)">
+                            <div class="upload-icon">🧾</div>
+                            <div class="upload-title">คลิกหรือลากไฟล์สลิปมาวาง</div>
+                            <div class="upload-sub">รองรับ JPG, PNG, PDF ขนาดไม่เกิน 5 MB</div>
+                        </div>
+                    </div>
+                    <div id="previewArea" style="display:none; text-align:center;">
+                        <div class="preview-wrap">
+                            <img id="previewImg" class="preview-img" src="" alt="สลิป">
+                            <button class="btn-remove-img" onclick="removeFile()" type="button">✕</button>
+                        </div>
+                        <div style="font-size:.78rem;color:var(--gray-600);margin-top:6px;" id="fileName"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ③ หมายเหตุ -->
+            <div class="card">
+                <div class="section-header">
+                    <div class="section-num">3</div>
+                    หมายเหตุเพิ่มเติม (ถ้ามี)
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <textarea class="form-control" id="payNoteInput" rows="3"
+                                  placeholder="เช่น โอนจากบัญชีสำรอง, ชื่อผู้โอน…"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUBMIT -->
+            <div class="submit-bar">
+                <button class="btn-back" type="button"
+                        th:data-url="@{/member/bookings/detail/{id}(id=${payment.bookingId})}"
+                        onclick="location.href=this.dataset.url">
+                    ← ย้อนกลับ
+                </button>
+                <button class="btn-submit" id="submitBtn" onclick="submitPayment()" type="button">
+                    ✅ ยืนยันการชำระเงิน
+                </button>
+                <div class="secure-row">🔒 ข้อมูลของคุณปลอดภัย · เข้ารหัส SSL</div>
+            </div>
+
+        </div>
+        <!-- /LEFT -->
+
+        <!-- ─── RIGHT SIDEBAR ─── -->
+        <div class="summary-card">
+            <img class="summary-img"
+                 th:if="${payment.roomImageUrl != null}"
+                 th:src="${payment.roomImageUrl}" alt="ทัวร์">
+            <div class="summary-img-placeholder"
+                 th:if="${payment.roomImageUrl == null}">🎒</div>
+
+            <div class="summary-body">
+                <div class="tour-name"
+                     th:text="${payment.roomTypeName != null ? payment.roomTypeName : '-'}"></div>
+                <div class="tour-loc">
+                    🏕️ <span th:text="${payment.homestayName != null ? payment.homestayName : '-'}"></span>
+                </div>
+
+                <div class="sum-divider"></div>
+
+                <div class="sum-row">
+                    <span class="label">รหัสการจอง</span>
+                    <span class="val" th:text="${payment.bookingId}">-</span>
+                </div>
+                <div class="sum-row">
+                    <span class="label">ชื่อทัวร์</span>
+                    <span class="val"
+                          th:text="${payment.roomTypeName != null ? payment.roomTypeName : '-'}">-</span>
+                </div>
+
+                <div class="sum-divider"></div>
+
+                <div class="sum-row">
+                    <span class="label">วันเริ่มทัวร์</span>
+                    <span class="val"
+                          th:text="${payment.checkIn != null ?
+                            #dates.format(payment.checkIn,'dd MMM yyyy') : '-'}">-</span>
+                </div>
+
+                <div class="sum-divider"></div>
+
+                <div class="sum-row">
+                    <span class="label">ผู้ใหญ่</span>
+                    <span class="val"
+                          th:text="${(payment.numOfAdults != null ? payment.numOfAdults : 0) + ' คน'}">0 คน</span>
+                </div>
+                <div class="sum-row">
+                    <span class="label">เด็ก</span>
+                    <span class="val"
+                          th:text="${(payment.numOfChildren != null ? payment.numOfChildren : 0) + ' คน'}">0 คน</span>
+                </div>
+
+                <div class="price-box">
+                    <div class="price-box-label">ยอดที่ต้องชำระ</div>
+                    <div class="price-box-total">
+                        ฿ <span th:text="${payment.totalAmount != null ?
+                            #numbers.formatDecimal(payment.totalAmount,0,'COMMA',2,'POINT') : '0.00'}">0.00</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px;font-size:.72rem;color:var(--gray-400);line-height:1.5;">
+                    ราคารวม VAT · ยืนยันการจองภายใน 24 ชั่วโมงหลังชำระเงิน
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- HIDDEN FORM -->
+    <form id="paymentForm"
+          th:action="@{/payment/tour/{id}/confirm(id=${payment.bookingId})}"
+          method="post" enctype="multipart/form-data" style="display:none;">
+        <input type="hidden" name="payNote" id="hPayNote">
+    </form>
+
+</div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+/* ── COUNTDOWN 24h ── */
+(function () {
+    const deadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const el = document.getElementById('countdown');
+    function tick() {
+        const diff = deadline - Date.now();
+        if (diff <= 0) { el.textContent = '00:00:00'; return; }
+        const h = String(Math.floor(diff / 3600000)).padStart(2,'0');
+        const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+        const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+        el.textContent = `${h}:${m}:${s}`;
+        setTimeout(tick, 1000);
+    }
+    tick();
+})();
+
+/* ── COPY ACCOUNT ── */
+function copyAccount(btn) {
+    const acc = btn.dataset.account;
+    navigator.clipboard.writeText(acc).then(() => {
+        btn.textContent = '✅ คัดลอกแล้ว';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'คัดลอก'; btn.classList.remove('copied'); }, 2000);
+    });
+}
+
+/* ── FILE UPLOAD ── */
+function handleFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+        alert('ไฟล์ขนาดเกิน 5 MB กรุณาเลือกไฟล์ใหม่');
+        input.value = ''; return;
+    }
+    if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('uploadArea').style.display = 'none';
+            document.getElementById('previewArea').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('fileName').textContent = '📄 ' + file.name;
+        document.getElementById('uploadArea').style.display = 'none';
+        document.getElementById('previewArea').style.display = 'block';
+    }
+}
+
+function removeFile() {
+    document.getElementById('slipFile').value = '';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('uploadArea').style.display = 'block';
+    document.getElementById('previewArea').style.display = 'none';
+}
+
+/* ── DRAG & DROP ── */
+const dz = document.getElementById('dropZone');
+['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+dz.addEventListener('drop', e => {
+    const f = e.dataTransfer.files[0]; if (!f) return;
+    const dt = new DataTransfer(); dt.items.add(f);
+    const input = document.getElementById('slipFile');
+    input.files = dt.files; handleFileSelect(input);
+});
+
+/* ── SUBMIT ── */
+function submitPayment() {
+    const fileInput = document.getElementById('slipFile');
+    if (!fileInput.files[0]) { alert('กรุณาอัปโหลดสลิปการโอนเงิน'); return; }
+    if (!confirm('ยืนยันการส่งหลักฐานการชำระเงินใช่หรือไม่?')) return;
+
+    const form = document.getElementById('paymentForm');
+    const cloned = fileInput.cloneNode(true);
+    cloned.name = 'slipFile';
+    form.appendChild(cloned);
+    document.getElementById('hPayNote').value = document.getElementById('payNoteInput').value;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = '⏳ กำลังส่งข้อมูล…';
+    form.submit();
+}
+/*]]>*/
+</script>
+</body>
+</html>

@@ -8,47 +8,165 @@
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
+/* ── GLOBAL VARS ── */
 :root {
-    --green-dark:#2d5a27;
-    --green-main:#3d7a35;
-    --green-light:#e8f5e1;
-    --green-accent:#5a9e50;
+    /* ── Green ramp (จาก global CSS) ── */
+    --green-950:#0a1f12; --green-900:#14321e; --green-800:#1a472a;
+    --green-700:#215c35; --green-600:#2d7a4f; --green-500:#3d9e68;
+    --green-400:#52b788; --green-300:#86d4aa; --green-200:#a7e3c3;
+    --green-100:#d8f3dc; --green-50:#f0faf4;
+    /* ── Amber ── */
+    --amber-700:#a16207; --amber-600:#c27b04; --amber-500:#e8960a;
+    /* ── Neutral ── */
+    --neutral-800:#292524; --neutral-700:#44403c; --neutral-600:#57534e;
+    --neutral-500:#78716c; --neutral-400:#a8a29e;
+    --neutral-300:#d6d3d1; --neutral-200:#e7e5e4;
+    --neutral-100:#f5f5f4; --neutral-50:#fafaf9;
+    /* ── Misc ── */
+    --blue:#1d6fa4; --blue-light:#e8f4fb;
+    --red:#e53935; --red-light:#fdecea;
     --orange:#e67e22;
-    --orange-light:#fdf3e7;
-    --red:#e53935;
-    --red-light:#fdecea;
-    --yellow:#f59e0b;
-    --yellow-light:#fffbeb;
-    --blue:#1d6fa4;
-    --blue-light:#e8f4fb;
-    --gray-100:#f3f4f6;
-    --gray-200:#e5e7eb;
-    --gray-400:#9ca3af;
-    --gray-600:#6b7280;
-    --gray-800:#1f2937;
-    --shadow:0 2px 12px rgba(0,0,0,.08);
-    --shadow-md:0 4px 20px rgba(0,0,0,.14);
-    --radius-lg:18px;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+    --shadow-md:0 4px 16px rgba(0,0,0,.09);
+    --shadow-lg:0 12px 40px rgba(0,0,0,.12);
+    --shadow-xl:0 24px 64px rgba(0,0,0,.16),0 8px 20px rgba(0,0,0,.08);
+    --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px;
+    --navbar-h:54px;
+    /* payment-specific */
+    --green-dark:#2d5a27; --green-main:#3d7a35; --green-light:#e8f5e1;
+    --green-accent:#5a9e50;
+    --gray-100:#f3f4f6; --gray-200:#e5e7eb; --gray-400:#9ca3af;
+    --gray-600:#6b7280; --gray-800:#1f2937;
+    --shadow:0 2px 12px rgba(0,0,0,.08); --radius-lg:18px;
 }
 
 body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-800); font-size:15px; }
+a { text-decoration:none; color:inherit; }
+button { font-family:'Sarabun',sans-serif; cursor:pointer; }
 
-/* ── NAVBAR ── */
-.navbar {
-    background:var(--green-dark); height:54px; padding:0 2rem;
-    display:flex; align-items:center; justify-content:space-between;
-    position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,.2);
+/* ════════════════════════════
+   TOP BAR
+════════════════════════════ */
+.top-bar {
+    background:var(--green-950); padding:8px 5%;
+    display:flex; align-items:center; justify-content:flex-end; gap:20px;
 }
-.navbar-brand { display:flex; align-items:center; gap:.6rem; color:#fff; font-weight:700; font-size:.95rem; text-decoration:none; }
-.logo-icon { width:30px; height:30px; background:var(--green-accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+.top-bar a {
+    color:rgba(255,255,255,.55); font-size:14px; font-weight:500;
+    display:flex; align-items:center; gap:5px; transition:color .15s;
+}
+.top-bar a:hover { color:#fff; }
+.top-bar a svg { width:14px; height:14px; }
+.top-bar-divider { width:1px; height:14px; background:rgba(255,255,255,.14); }
 
-/* ── BREADCRUMB ── */
-.breadcrumb { background:#fff; padding:.55rem 2rem; border-bottom:1px solid var(--gray-200); font-size:.8rem; color:var(--gray-600); }
-.breadcrumb a { color:var(--green-main); text-decoration:none; }
+/* ════════════════════════════
+   NAVBAR
+════════════════════════════ */
+.top-navbar {
+    background:var(--green-800); height:64px;
+    display:flex; align-items:center; padding:0 5%; gap:8px;
+    position:sticky; top:0; z-index:1000;
+    box-shadow:0 3px 16px rgba(0,0,0,.28);
+}
+.navbar-brand {
+    color:#fff; margin-right:auto;
+    display:flex; align-items:center; gap:14px; flex-shrink:0;
+}
+.brand-icon {
+    width:42px; height:42px; background:var(--green-400);
+    border-radius:12px; display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; box-shadow:0 4px 12px rgba(82,183,136,.35);
+}
+.brand-icon svg { width:22px; height:22px; }
+.brand-name { display:flex; flex-direction:column; }
+.brand-name-line1 { font-size:18px; font-weight:800; line-height:1.15; }
+.brand-name-line2 { font-size:12px; font-weight:400; color:var(--green-200); opacity:.8; }
 
-/* ── STEPS BAR ── */
-.steps-wrap { background:#fff; border-bottom:1px solid var(--gray-200); padding:.75rem 2rem; }
-.steps { display:flex; align-items:center; gap:0; max-width:520px; }
+.nav-links { display:flex; align-items:center; gap:2px; }
+.nav-link {
+    color:rgba(255,255,255,.80); font-size:15px; font-weight:600;
+    padding:9px 14px; border-radius:var(--r-sm);
+    transition:background .15s,color .15s; white-space:nowrap;
+    display:flex; align-items:center; gap:7px;
+}
+.nav-link svg { width:16px; height:16px; opacity:.7; flex-shrink:0; }
+.nav-link:hover { background:rgba(255,255,255,.12); color:#fff; }
+.nav-divider { width:1px; height:32px; background:rgba(255,255,255,.14); margin:0 8px; }
+
+/* ── USER MENU ── */
+.user-menu-wrapper { position:relative; }
+.btn-user-menu {
+    display:flex; align-items:center; gap:10px;
+    background:rgba(255,255,255,.12);
+    border:1.5px solid rgba(255,255,255,.25);
+    border-radius:50px; padding:7px 16px 7px 7px;
+    color:white; transition:background .2s,border-color .2s;
+}
+.btn-user-menu:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.45); }
+.user-avatar {
+    width:36px; height:36px; border-radius:50%;
+    background:linear-gradient(135deg,var(--green-400),var(--green-600));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:15px; color:white; flex-shrink:0;
+    border:2px solid rgba(255,255,255,.3);
+}
+.user-info { display:flex; flex-direction:column; text-align:left; line-height:1.25; }
+.user-name { font-size:14px; font-weight:700; color:white; max-width:110px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.user-role { font-size:11px; color:rgba(255,255,255,.65); font-weight:500; }
+.btn-user-menu .chevron { width:14px; height:14px; transition:transform .2s; flex-shrink:0; }
+.user-menu-wrapper.open .btn-user-menu .chevron { transform:rotate(180deg); }
+
+.user-dropdown-menu {
+    display:none; position:absolute; top:calc(100% + 12px); right:0;
+    background:#fff; border-radius:var(--r-xl);
+    box-shadow:var(--shadow-xl); min-width:238px; padding:8px;
+    z-index:2000; border:1px solid var(--neutral-200);
+    animation:menuDrop .18s ease both;
+}
+@keyframes menuDrop {
+    from { opacity:0; transform:translateY(-8px) scale(.98); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.user-menu-wrapper.open .user-dropdown-menu { display:block; }
+
+.udrop-item {
+    display:flex; align-items:center; gap:12px;
+    padding:10px 13px; border-radius:var(--r-md);
+    color:var(--neutral-700); transition:background .15s;
+}
+.udrop-item:hover { background:var(--green-50); }
+.udrop-icon {
+    width:36px; height:36px; border-radius:var(--r-sm);
+    background:var(--neutral-100);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.udrop-icon svg { width:16px; height:16px; color:var(--neutral-600); }
+.udrop-item:hover .udrop-icon { background:var(--green-100); }
+.udrop-item:hover .udrop-icon svg { color:var(--green-700); }
+.udrop-text { flex:1; }
+.udrop-text span  { display:block; font-size:14px; font-weight:600; color:var(--neutral-800); line-height:1.2; }
+.udrop-text small { font-size:12px; color:var(--neutral-400); }
+.udrop-divider { height:1px; background:var(--neutral-200); margin:8px 6px; }
+.udrop-logout:hover { background:#fef2f2; }
+.udrop-icon-red { background:#fee2e2 !important; }
+.udrop-icon-red svg { color:#dc2626 !important; }
+.udrop-logout .udrop-text span { color:#dc2626; }
+.udrop-logout .udrop-text small { color:#f87171; }
+
+/* ════════════════════════════
+   BREADCRUMB  (ใช้ซ้ำจาก global)
+════════════════════════════ */
+.breadcrumb {
+    background:#fff; padding:.55rem 5%;
+    border-bottom:1px solid var(--gray-200); font-size:.8rem; color:var(--gray-600);
+}
+.breadcrumb a { color:var(--green-main); }
+
+/* ════════════════════════════
+   STEPS
+════════════════════════════ */
+.steps-wrap { background:#fff; border-bottom:1px solid var(--gray-200); padding:.75rem 5%; }
+.steps { display:flex; align-items:center; max-width:520px; }
 .step { display:flex; align-items:center; gap:.5rem; flex:1; }
 .step-circle {
     width:28px; height:28px; border-radius:50%; border:2px solid var(--gray-200);
@@ -63,27 +181,33 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .step-line { flex:1; height:2px; background:var(--gray-200); margin:0 6px; }
 .step-line.done { background:var(--green-main); }
 
-/* ── PAGE WRAP ── */
+/* ════════════════════════════
+   PAGE WRAP & LAYOUT
+════════════════════════════ */
 .page-wrap { max-width:1100px; margin:0 auto; padding:1.5rem 1.25rem 3rem; }
-
-/* ── ALERT ── */
-.alert { border-radius:10px; padding:12px 16px; font-size:.88rem; font-weight:600; display:flex; align-items:center; gap:.5rem; margin-bottom:16px; }
-.alert-error   { background:var(--red-light);  border:1px solid #ef9a9a; color:#b71c1c; }
-.alert-info    { background:var(--blue-light);  border:1px solid #90caf9; color:#1e4f6b; }
-.alert-success { background:var(--green-light); border:1px solid #a5d6a7; color:var(--green-dark); }
-
-/* ── LAYOUT ── */
 .pay-layout { display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start; }
 
-/* ── CARD ── */
+/* ════════════════════════════
+   ALERT
+════════════════════════════ */
+.alert { border-radius:10px; padding:12px 16px; font-size:.88rem; font-weight:600; display:flex; align-items:center; gap:.5rem; margin-bottom:16px; }
+.alert-error   { background:var(--red-light);   border:1px solid #ef9a9a; color:#b71c1c; }
+.alert-info    { background:var(--blue-light);   border:1px solid #90caf9; color:#1e4f6b; }
+.alert-success { background:var(--green-light);  border:1px solid #a5d6a7; color:var(--green-dark); }
+
+/* ════════════════════════════
+   CARD / SECTION
+════════════════════════════ */
 .card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; margin-bottom:16px; }
 .section-header { display:flex; align-items:center; gap:.5rem; padding:15px 20px; border-bottom:1px solid var(--gray-100); font-weight:800; font-size:.95rem; }
 .section-num { width:22px; height:22px; border-radius:50%; background:var(--green-main); color:#fff; font-size:.72rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
 .section-body { padding:18px 20px; }
 
-/* ── BOOKING INFO BANNER ── */
+/* ════════════════════════════
+   BOOKING BANNER
+════════════════════════════ */
 .booking-banner {
-    background:linear-gradient(135deg, var(--green-dark), var(--green-accent));
+    background:linear-gradient(135deg,var(--green-dark),var(--green-accent));
     border-radius:14px; padding:18px 20px; margin-bottom:16px;
     color:#fff; display:flex; align-items:center; gap:16px;
 }
@@ -91,12 +215,11 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .booking-banner-content { flex:1; }
 .booking-banner-title { font-size:1.1rem; font-weight:800; margin-bottom:2px; }
 .booking-banner-sub { font-size:.8rem; opacity:.85; }
-.booking-banner-id {
-    background:rgba(255,255,255,.2); border-radius:8px;
-    padding:6px 12px; font-size:.8rem; font-weight:700; white-space:nowrap;
-}
+.booking-banner-id { background:rgba(255,255,255,.2); border-radius:8px; padding:6px 12px; font-size:.8rem; font-weight:700; white-space:nowrap; }
 
-/* ── COUNTDOWN ── */
+/* ════════════════════════════
+   COUNTDOWN
+════════════════════════════ */
 .countdown-wrap {
     background:linear-gradient(135deg,#fffbeb,#fef3c7);
     border:1px solid #fcd34d; border-radius:12px;
@@ -104,35 +227,61 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 }
 .countdown-icon { font-size:1.6rem; }
 .countdown-label { font-size:.78rem; color:#92400e; font-weight:600; }
-.countdown-time { font-size:1.4rem; font-weight:800; color:#b45309; letter-spacing:.04em; }
-.countdown-sub { font-size:.72rem; color:#a16207; margin-top:1px; }
+.countdown-time  { font-size:1.4rem; font-weight:800; color:#b45309; letter-spacing:.04em; }
+.countdown-sub   { font-size:.72rem; color:#a16207; margin-top:1px; }
 
-/* ── SLIP UPLOAD ── */
+/* ════════════════════════════
+   BANK BOX
+════════════════════════════ */
+.bank-box {
+    background:var(--blue-light); border:1px solid #90caf9;
+    border-radius:12px; padding:16px 18px; margin-bottom:4px;
+    display:flex; align-items:center; gap:16px;
+}
+.bank-logo { width:52px; height:52px; border-radius:10px; background:#1a56db; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; }
+.bank-info    { flex:1; }
+.bank-name    { font-weight:800; font-size:.88rem; color:var(--blue); margin-bottom:2px; }
+.bank-account { font-size:1.2rem; font-weight:800; color:var(--gray-800); letter-spacing:.06em; margin:2px 0; }
+.bank-holder  { font-size:.78rem; color:var(--gray-600); }
+.btn-copy {
+    background:var(--blue); color:#fff; border:none; border-radius:8px;
+    padding:8px 14px; font-size:.78rem; font-weight:700;
+    cursor:pointer; font-family:inherit; white-space:nowrap; transition:.2s;
+}
+.btn-copy:hover  { background:#1558b0; }
+.btn-copy.copied { background:var(--green-main); }
+.bank-note { font-size:.75rem; color:var(--gray-600); padding:6px 2px 0; }
+
+/* ════════════════════════════
+   UPLOAD
+════════════════════════════ */
 .upload-zone {
     border:2px dashed var(--gray-200); border-radius:12px; padding:28px 20px;
     text-align:center; cursor:pointer; transition:.2s; position:relative;
 }
-.upload-zone:hover, .upload-zone.drag { border-color:var(--green-main); background:var(--green-light); }
+.upload-zone:hover,.upload-zone.drag { border-color:var(--green-main); background:var(--green-light); }
 .upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-.upload-icon { font-size:2rem; margin-bottom:8px; }
+.upload-icon  { font-size:2rem; margin-bottom:8px; }
 .upload-title { font-weight:700; font-size:.9rem; }
-.upload-sub { font-size:.75rem; color:var(--gray-600); margin-top:4px; }
-
+.upload-sub   { font-size:.75rem; color:var(--gray-600); margin-top:4px; }
 .preview-wrap { position:relative; display:inline-block; }
-.preview-img { width:100%; max-height:240px; object-fit:contain; border-radius:10px; border:1px solid var(--gray-200); display:block; }
+.preview-img  { width:100%; max-height:240px; object-fit:contain; border-radius:10px; border:1px solid var(--gray-200); display:block; }
 .btn-remove-img {
     position:absolute; top:6px; right:6px; background:var(--red); color:#fff;
     border:none; border-radius:50%; width:26px; height:26px; font-size:.85rem;
     cursor:pointer; display:flex; align-items:center; justify-content:center;
 }
 
-/* ── FORM ── */
-.form-group { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
-.form-label { font-size:.82rem; font-weight:700; }
+/* ════════════════════════════
+   FORM
+════════════════════════════ */
+.form-group { display:flex; flex-direction:column; gap:5px; }
 .form-control { padding:10px 12px; border:1.5px solid var(--gray-200); border-radius:8px; font-size:.88rem; font-family:inherit; color:var(--gray-800); }
 .form-control:focus { outline:none; border-color:var(--green-accent); }
 
-/* ── SUBMIT BAR ── */
+/* ════════════════════════════
+   SUBMIT BAR
+════════════════════════════ */
 .submit-bar { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:16px 20px; }
 .btn-back {
     background:#fff; color:var(--gray-600); border:1.5px solid var(--gray-200);
@@ -143,13 +292,16 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .btn-submit {
     width:100%; background:var(--green-main); color:#fff; border:none;
     border-radius:10px; padding:14px; font-size:1rem; font-weight:800;
-    cursor:pointer; font-family:inherit; transition:.2s; display:flex;
-    align-items:center; justify-content:center; gap:.5rem;
+    cursor:pointer; font-family:inherit; transition:.2s;
+    display:flex; align-items:center; justify-content:center; gap:.5rem;
 }
 .btn-submit:hover { background:var(--green-dark); }
 .btn-submit:disabled { background:var(--gray-400); cursor:not-allowed; }
+.secure-row { display:flex; align-items:center; justify-content:center; gap:.4rem; font-size:.72rem; color:var(--gray-400); padding:10px 0 0; }
 
-/* ── SIDEBAR SUMMARY ── */
+/* ════════════════════════════
+   SIDEBAR SUMMARY
+════════════════════════════ */
 .summary-card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:sticky; top:70px; }
 .summary-img { width:100%; height:148px; object-fit:cover; display:block; }
 .summary-img-placeholder { width:100%; height:148px; background:linear-gradient(135deg,#c8e6c9,#a5d6a7); display:flex; align-items:center; justify-content:center; font-size:2.8rem; }
@@ -165,25 +317,205 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .price-box-label { font-size:.75rem; color:var(--green-dark); font-weight:600; }
 .price-box-total { font-size:1.45rem; font-weight:800; color:var(--green-dark); }
 
-/* ── SECURE BADGE ── */
-.secure-row { display:flex; align-items:center; justify-content:center; gap:.4rem; font-size:.72rem; color:var(--gray-400); padding:10px 0 0; }
-
-/* ── RESPONSIVE ── */
+/* ════════════════════════════
+   RESPONSIVE
+════════════════════════════ */
 @media(max-width:900px){
     .pay-layout { grid-template-columns:1fr; }
     .summary-card { position:static; order:-1; }
     .booking-banner { flex-direction:column; text-align:center; }
+    .top-navbar { height:auto; padding:12px 5%; flex-wrap:wrap; gap:10px; }
+    .nav-links { display:none; }
 }
 </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-    <a href="/" class="navbar-brand">
-        <div class="logo-icon">🏡</div>
-        HomestayHub
+<!-- ══════════════════════════════════════════
+     TOP BAR
+══════════════════════════════════════════ -->
+<div class="top-bar">
+    <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+        </svg>
+        ภาษาไทย
     </a>
+    <div class="top-bar-divider"></div>
+    <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        ช่วยเหลือ
+    </a>
+    <div class="top-bar-divider"></div>
+    <a href="/member/bookings/list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        การจองของฉัน
+    </a>
+</div>
+
+<!-- ══════════════════════════════════════════
+     NAVBAR (แสดงเฉพาะ user ที่ล็อกอินแล้ว)
+══════════════════════════════════════════ -->
+<nav class="top-navbar">
+    <a href="/" class="navbar-brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="white">
+                <path d="M3 17l6-8 4 5 3-3 5 6H3z"/>
+            </svg>
+        </div>
+        <div class="brand-name">
+            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
+            <span class="brand-name-line2">Tribal Community Tourism</span>
+        </div>
+    </a>
+
+    <div class="nav-links">
+        <a href="/search" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            หน้าแรก
+        </a>
+        <a th:href="@{/tribe-info}" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+            </svg>
+            ข้อมูลชนเผ่า
+        </a>
+        <a href="/about" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            เกี่ยวกับเรา
+        </a>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <!-- USER MENU (ล็อกอินแล้วเสมอในหน้านี้) -->
+    <div class="user-menu-wrapper" id="userMenuWrapper">
+        <button class="btn-user-menu" onclick="toggleUserMenu()" type="button">
+            <div class="user-avatar">
+                <span th:if="${session.loggedInMember  != null}"
+                      th:text="${#strings.substring(session.loggedInMember.firstname,  0, 1)}">ม</span>
+                <span th:if="${session.loggedInManager != null}"
+                      th:text="${#strings.substring(session.loggedInManager.firstname, 0, 1)}">จ</span>
+                <span th:if="${session.loggedInOwner   != null}"
+                      th:text="${#strings.substring(session.loggedInOwner.firstname,   0, 1)}">พ</span>
+                <span th:if="${session.loggedInAdmin   != null}">A</span>
+            </div>
+            <div class="user-info">
+                <span class="user-name"
+                      th:text="${session.loggedInMember  != null} ? ${session.loggedInMember.firstname}  :
+                               (${session.loggedInManager != null} ? ${session.loggedInManager.firstname} :
+                               (${session.loggedInOwner   != null} ? ${session.loggedInOwner.firstname}   : 'Admin'))">
+                </span>
+                <span class="user-role"
+                      th:text="${session.loggedInMember  != null} ? 'สมาชิก' :
+                               (${session.loggedInManager != null} ? 'ผู้จัดการ' :
+                               (${session.loggedInOwner   != null} ? 'เจ้าของโฮมสเตย์' : 'ผู้ดูแลระบบ'))">
+                    บทบาท
+                </span>
+            </div>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M6 9l6 6 6-6"/>
+            </svg>
+        </button>
+
+        <div class="user-dropdown-menu" id="userDropdown">
+
+            <!-- Member -->
+            <th:block th:if="${session.loggedInMember != null}">
+                <a href="/member/profile" class="udrop-item">
+                    <div class="udrop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text">
+                        <span>โปรไฟล์ของฉัน</span>
+                        <small>ดูและแก้ไขข้อมูลส่วนตัว</small>
+                    </div>
+                </a>
+                <a href="/member/bookings/list" class="udrop-item">
+                    <div class="udrop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text">
+                        <span>การจองของฉัน</span>
+                        <small>ตรวจสอบสถานะการจอง</small>
+                    </div>
+                </a>
+            </th:block>
+
+            <!-- Manager -->
+            <th:block th:if="${session.loggedInManager != null}">
+                <a href="/manager/dashboard" class="udrop-item">
+                    <div class="udrop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text"><span>แดชบอร์ด</span><small>ภาพรวมการจัดการ</small></div>
+                </a>
+                <a href="/manager/tours" class="udrop-item">
+                    <div class="udrop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text"><span>จัดการทัวร์</span><small>เพิ่ม / แก้ไข / ลบทัวร์</small></div>
+                </a>
+            </th:block>
+
+            <!-- Owner -->
+            <th:block th:if="${session.loggedInOwner != null}">
+                <a href="/owner/dashboard" class="udrop-item">
+                    <div class="udrop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text"><span>จัดการโฮมสเตย์</span><small>ห้องพัก ราคา การจอง</small></div>
+                </a>
+            </th:block>
+
+            <!-- Admin -->
+            <th:block th:if="${session.loggedInAdmin != null}">
+                <a href="/admin/dashboard" class="udrop-item">
+                    <div class="udrop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div class="udrop-text"><span>Admin Dashboard</span><small>จัดการระบบทั้งหมด</small></div>
+                </a>
+            </th:block>
+
+            <div class="udrop-divider"></div>
+
+            <a href="/member/login/logout" class="udrop-item udrop-logout">
+                <div class="udrop-icon udrop-icon-red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                </div>
+                <div class="udrop-text">
+                    <span>ออกจากระบบ</span>
+                    <small>Sign out</small>
+                </div>
+            </a>
+        </div>
+    </div>
 </nav>
 
 <!-- BREADCRUMB -->
@@ -221,26 +553,21 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 
 <div class="page-wrap">
 
-    <!-- ALERT ERROR -->
     <div class="alert alert-error" th:if="${errorMsg}">
         ⚠️ <span th:text="${errorMsg}"></span>
     </div>
 
-    <!-- BOOKING BANNER – ชื่อรายการจอง -->
+    <!-- BOOKING BANNER -->
     <div class="booking-banner" th:if="${payment != null and payment.bookingId != null}">
         <div class="booking-banner-icon">🏠</div>
         <div class="booking-banner-content">
             <div class="booking-banner-title"
-                 th:text="${payment.roomTypeName != null ? payment.roomTypeName : 'การจองห้องพัก'}">
-                การจองห้องพัก
-            </div>
+                 th:text="${payment.roomTypeName != null ? payment.roomTypeName : 'การจองห้องพัก'}"></div>
             <div class="booking-banner-sub">
                 📍 <span th:text="${payment.homestayAddress != null ? payment.homestayAddress : '-'}"></span>
             </div>
         </div>
-        <div class="booking-banner-id">
-            #<span th:text="${payment.bookingId}"></span>
-        </div>
+        <div class="booking-banner-id">#<span th:text="${payment.bookingId}"></span></div>
     </div>
 
     <!-- COUNTDOWN -->
@@ -254,29 +581,61 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
     </div>
 
     <div class="pay-layout">
-
-        <!-- ─── LEFT ─── -->
         <div>
 
-            <!-- ① อัปโหลดสลิป -->
+            <!-- ① ข้อมูลการชำระเงิน -->
             <div class="card">
                 <div class="section-header">
                     <div class="section-num">1</div>
+                    ข้อมูลการชำระเงิน
+                </div>
+                <div class="section-body">
+                    <div th:if="${payment.bankAccount != null}">
+                        <p style="font-size:.82rem;color:var(--gray-600);font-weight:600;margin-bottom:10px;">
+                            โปรดโอนเงินมาที่บัญชีด้านล่าง แล้วอัปโหลดสลิปในขั้นตอนถัดไป
+                        </p>
+                        <div class="bank-box">
+                            <div class="bank-logo">🏦</div>
+                            <div class="bank-info">
+                                <div class="bank-name"
+                                     th:text="${payment.bankName != null ? payment.bankName : 'ธนาคาร'}"></div>
+                                <div class="bank-account" th:text="${payment.bankAccount}"></div>
+                                <div class="bank-holder"
+                                     th:text="${payment.homestayName != null ? payment.homestayName : '-'}"></div>
+                            </div>
+                            <button class="btn-copy"
+                                    th:data-account="${payment.bankAccount}"
+                                    onclick="copyAccount(this)" type="button">คัดลอก</button>
+                        </div>
+                        <div class="bank-note">
+                            💡 กรุณาโอนจำนวน
+                            <strong th:text="${payment.totalAmount != null ?
+                                '฿' + #numbers.formatDecimal(payment.totalAmount,0,'COMMA',2,'POINT') : '-'}"></strong>
+                            ให้ตรงกับยอดที่ระบุ
+                        </div>
+                    </div>
+                    <div class="alert alert-info" th:if="${payment.bankAccount == null}" style="margin-bottom:0;">
+                        ℹ️ ยังไม่ได้ระบุบัญชีธนาคาร กรุณาติดต่อเจ้าของโฮมสเตย์โดยตรง
+                    </div>
+                </div>
+            </div>
+
+            <!-- ② อัปโหลดสลิป -->
+            <div class="card">
+                <div class="section-header">
+                    <div class="section-num">2</div>
                     อัปโหลดหลักฐานการโอนเงิน
                 </div>
                 <div class="section-body">
-
                     <div id="uploadArea">
                         <div class="upload-zone" id="dropZone">
                             <input type="file" id="slipFile" name="slipFile"
-                                   accept="image/*,.pdf"
-                                   onchange="handleFileSelect(this)">
+                                   accept="image/*,.pdf" onchange="handleFileSelect(this)">
                             <div class="upload-icon">🧾</div>
                             <div class="upload-title">คลิกหรือลากไฟล์สลิปมาวาง</div>
                             <div class="upload-sub">รองรับ JPG, PNG, PDF ขนาดไม่เกิน 5 MB</div>
                         </div>
                     </div>
-
                     <div id="previewArea" style="display:none; text-align:center;">
                         <div class="preview-wrap">
                             <img id="previewImg" class="preview-img" src="" alt="สลิป">
@@ -284,18 +643,17 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                         </div>
                         <div style="font-size:.78rem;color:var(--gray-600);margin-top:6px;" id="fileName"></div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- ② หมายเหตุ -->
+            <!-- ③ หมายเหตุ -->
             <div class="card">
                 <div class="section-header">
-                    <div class="section-num">2</div>
+                    <div class="section-num">3</div>
                     หมายเหตุเพิ่มเติม (ถ้ามี)
                 </div>
                 <div class="section-body">
-                    <div class="form-group" style="margin-bottom:0;">
+                    <div class="form-group">
                         <textarea class="form-control" id="payNoteInput" rows="3"
                                   placeholder="เช่น โอนจากบัญชีสำรอง, ชื่อผู้โอน…"></textarea>
                     </div>
@@ -305,239 +663,190 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
             <!-- SUBMIT -->
             <div class="submit-bar">
                 <button class="btn-back" type="button"
-        th:data-url="@{/member/bookings/{id}(id=${payment.bookingId})}"
-        onclick="location.href=this.dataset.url">
+                        th:data-url="@{/member/bookings/{id}(id=${payment.bookingId})}"
+                        onclick="location.href=this.dataset.url">
+                    ← ย้อนกลับ
                 </button>
-
                 <button class="btn-submit" id="submitBtn" onclick="submitPayment()" type="button">
                     ✅ ยืนยันการชำระเงิน
                 </button>
-
-                <div class="secure-row">
-                    🔒 ข้อมูลของคุณปลอดภัย · เข้ารหัส SSL
-                </div>
+                <div class="secure-row">🔒 ข้อมูลของคุณปลอดภัย · เข้ารหัส SSL</div>
             </div>
-
         </div>
 
-        <!-- ─── RIGHT SIDEBAR ─── -->
+        <!-- SIDEBAR -->
         <div class="summary-card">
-
             <img class="summary-img"
                  th:if="${payment.roomImageUrl != null}"
-                 th:src="${payment.roomImageUrl}"
-                 alt="ห้องพัก">
-
+                 th:src="${payment.roomImageUrl}" alt="ห้องพัก">
             <div class="summary-img-placeholder"
                  th:if="${payment.roomImageUrl == null}">🏠</div>
-
             <div class="summary-body">
-
                 <div class="homestay-name"
-                     th:text="${payment.roomTypeName != null ? payment.roomTypeName : '-'}">
-                    ชื่อโฮมสเตย์
-                </div>
+                     th:text="${payment.roomTypeName != null ? payment.roomTypeName : '-'}"></div>
                 <div class="homestay-loc">
                     📍 <span th:text="${payment.homestayAddress != null ? payment.homestayAddress : '-'}"></span>
                 </div>
-
                 <div class="sum-divider"></div>
-
                 <div class="sum-row">
                     <span class="label">รหัสการจอง</span>
                     <span class="val" th:text="${payment.bookingId}">-</span>
                 </div>
                 <div class="sum-row">
                     <span class="label">ประเภทห้อง</span>
-                    <span class="val"
-                          th:text="${payment.roomTypeName != null ? payment.roomTypeName : '-'}">-</span>
+                    <span class="val" th:text="${payment.roomTypeName != null ? payment.roomTypeName : '-'}">-</span>
                 </div>
                 <div class="sum-row">
                     <span class="label">จำนวนห้อง</span>
                     <span class="val"
-                          th:text="${(payment.numOfRooms != null ? payment.numOfRooms : 1) + ' ห้อง'}">
-                        1 ห้อง
-                    </span>
+                          th:text="${(payment.numOfRooms != null ? payment.numOfRooms : 1) + ' ห้อง'}">1 ห้อง</span>
                 </div>
-
                 <div class="sum-divider"></div>
-
                 <div class="sum-row">
                     <span class="label">เช็คอิน</span>
                     <span class="val"
-                          th:text="${payment.checkIn != null ?
-                            #dates.format(payment.checkIn,'dd MMM yyyy') : '-'}">-</span>
+                          th:text="${payment.checkIn != null ? #dates.format(payment.checkIn,'dd MMM yyyy') : '-'}">-</span>
                 </div>
                 <div class="sum-row">
                     <span class="label">เช็คเอาท์</span>
                     <span class="val"
-                          th:text="${payment.checkOut != null ?
-                            #dates.format(payment.checkOut,'dd MMM yyyy') : '-'}">-</span>
+                          th:text="${payment.checkOut != null ? #dates.format(payment.checkOut,'dd MMM yyyy') : '-'}">-</span>
                 </div>
                 <div class="sum-row">
                     <span class="label">จำนวนคืน</span>
                     <span class="val hi" id="sidebar-nights">-</span>
                 </div>
-
                 <div class="sum-divider"></div>
-
-                <!-- ✅ FIX: เพิ่มปิด quote ที่หายไปใน numOfAdults -->
                 <div class="sum-row">
                     <span class="label">ผู้ใหญ่</span>
                     <span class="val"
-                          th:text="${(payment.numOfAdults != null ? payment.numOfAdults : 1) + ' คน'}">
-                        1 คน
-                    </span>
+                          th:text="${(payment.numOfAdults != null ? payment.numOfAdults : 1) + ' คน'}">1 คน</span>
                 </div>
                 <div class="sum-row">
                     <span class="label">เด็ก</span>
                     <span class="val"
-                          th:text="${(payment.numOfChildren != null ? payment.numOfChildren : 0) + ' คน'}">
-                        0 คน
-                    </span>
+                          th:text="${(payment.numOfChildren != null ? payment.numOfChildren : 0) + ' คน'}">0 คน</span>
                 </div>
-
                 <div class="price-box">
                     <div class="price-box-label">ยอดที่ต้องชำระ</div>
                     <div class="price-box-total">
                         ฿ <span th:text="${payment.totalAmount != null ?
-                            #numbers.formatDecimal(payment.totalAmount,0,'COMMA',2,'POINT') : '0.00'}">
-                            0.00
-                        </span>
+                            #numbers.formatDecimal(payment.totalAmount,0,'COMMA',2,'POINT') : '0.00'}">0.00</span>
                     </div>
                 </div>
-
                 <div style="margin-top:12px;font-size:.72rem;color:var(--gray-400);line-height:1.5;">
                     ราคารวม VAT · ยกเว้นภาษีท้องถิ่น<br>
                     ยืนยันการจองภายใน 24 ชั่วโมงหลังชำระเงิน
                 </div>
-
             </div>
         </div>
-
     </div>
 
-    <!-- HIDDEN FORM – submit จริง -->
+    <!-- HIDDEN FORM -->
     <form id="paymentForm"
           th:action="@{/payment/homestay/{id}/confirm(id=${payment.bookingId})}"
-          method="post"
-          enctype="multipart/form-data"
-          style="display:none;">
+          method="post" enctype="multipart/form-data" style="display:none;">
         <input type="hidden" name="payNote" id="hPayNote">
     </form>
 
-</div><!-- /page-wrap -->
+</div>
 
-<!-- ─── JS ─── -->
 <script th:inline="javascript">
 /*<![CDATA[*/
 const checkIn  = /*[[${payment.checkIn}]]*/ null;
 const checkOut = /*[[${payment.checkOut}]]*/ null;
 
-/* ── COUNTDOWN 24 h ── */
-(function () {
-    const deadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
+/* ── COUNTDOWN 24h ── */
+(function(){
+    const deadline = new Date(Date.now() + 24*60*60*1000);
     const el = document.getElementById('countdown');
-
-    function tick() {
+    function tick(){
         const diff = deadline - Date.now();
-        if (diff <= 0) { el.textContent = '00:00:00'; return; }
-        const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-        const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-        const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-        el.textContent = `${h}:${m}:${s}`;
-        setTimeout(tick, 1000);
+        if(diff <= 0){ el.textContent='00:00:00'; return; }
+        const h=String(Math.floor(diff/3600000)).padStart(2,'0');
+        const m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+        const s=String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+        el.textContent=`${h}:${m}:${s}`;
+        setTimeout(tick,1000);
     }
     tick();
 })();
 
 /* ── NIGHTS ── */
-(function () {
-    if (!checkIn || !checkOut) return;
-    const ci = new Date(checkIn), co = new Date(checkOut);
-    if (isNaN(ci) || isNaN(co)) return;
-    const nights = Math.round((co - ci) / 86400000);
-    const el = document.getElementById('sidebar-nights');
-    if (el) el.textContent = nights + ' คืน';
+(function(){
+    if(!checkIn||!checkOut) return;
+    const ci=new Date(checkIn), co=new Date(checkOut);
+    if(isNaN(ci)||isNaN(co)) return;
+    const el=document.getElementById('sidebar-nights');
+    if(el) el.textContent=Math.round((co-ci)/86400000)+' คืน';
 })();
 
-/* ── FILE UPLOAD ── */
-function handleFileSelect(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-        alert('ไฟล์ขนาดเกิน 5 MB กรุณาเลือกไฟล์ใหม่');
-        input.value = '';
-        return;
-    }
-    if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            document.getElementById('previewImg').src = e.target.result;
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('uploadArea').style.display = 'none';
-            document.getElementById('previewArea').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    } else {
-        document.getElementById('fileName').textContent = '📄 ' + file.name;
-        document.getElementById('uploadArea').style.display = 'none';
-        document.getElementById('previewArea').style.display = 'block';
-    }
+/* ── COPY ACCOUNT ── */
+function copyAccount(btn){
+    navigator.clipboard.writeText(btn.dataset.account).then(()=>{
+        btn.textContent='✅ คัดลอกแล้ว'; btn.classList.add('copied');
+        setTimeout(()=>{ btn.textContent='คัดลอก'; btn.classList.remove('copied'); },2000);
+    });
 }
 
-function removeFile() {
-    document.getElementById('slipFile').value = '';
-    document.getElementById('previewImg').src = '';
-    document.getElementById('uploadArea').style.display = 'block';
-    document.getElementById('previewArea').style.display = 'none';
+/* ── FILE UPLOAD ── */
+function handleFileSelect(input){
+    const file=input.files[0]; if(!file) return;
+    if(file.size>5*1024*1024){ alert('ไฟล์ขนาดเกิน 5 MB กรุณาเลือกไฟล์ใหม่'); input.value=''; return; }
+    if(file.type.startsWith('image/')){
+        const r=new FileReader();
+        r.onload=e=>{
+            document.getElementById('previewImg').src=e.target.result;
+            document.getElementById('fileName').textContent=file.name;
+            document.getElementById('uploadArea').style.display='none';
+            document.getElementById('previewArea').style.display='block';
+        };
+        r.readAsDataURL(file);
+    } else {
+        document.getElementById('fileName').textContent='📄 '+file.name;
+        document.getElementById('uploadArea').style.display='none';
+        document.getElementById('previewArea').style.display='block';
+    }
+}
+function removeFile(){
+    document.getElementById('slipFile').value='';
+    document.getElementById('previewImg').src='';
+    document.getElementById('uploadArea').style.display='block';
+    document.getElementById('previewArea').style.display='none';
 }
 
 /* ── DRAG & DROP ── */
-const dz = document.getElementById('dropZone');
-['dragenter','dragover'].forEach(ev =>
-    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
-['dragleave','drop'].forEach(ev =>
-    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
-dz.addEventListener('drop', e => {
-    const f = e.dataTransfer.files[0];
-    if (!f) return;
-    const dt = new DataTransfer();
-    dt.items.add(f);
-    const input = document.getElementById('slipFile');
-    input.files = dt.files;
-    handleFileSelect(input);
+const dz=document.getElementById('dropZone');
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag');}));
+dz.addEventListener('drop',e=>{
+    const f=e.dataTransfer.files[0]; if(!f) return;
+    const dt=new DataTransfer(); dt.items.add(f);
+    const input=document.getElementById('slipFile'); input.files=dt.files; handleFileSelect(input);
 });
 
 /* ── SUBMIT ── */
-function submitPayment() {
-    const fileInput = document.getElementById('slipFile');
-    const file = fileInput.files[0];
-
-    if (!file) {
-        alert('กรุณาอัปโหลดสลิปการโอนเงิน');
-        return;
-    }
-    if (!confirm('ยืนยันการส่งหลักฐานการชำระเงินใช่หรือไม่?')) return;
-
-    const form = document.getElementById('paymentForm');
-
-    // Clone file input เข้า form จริง
-    const cloned = fileInput.cloneNode(true);
-    cloned.name = 'slipFile';
-    form.appendChild(cloned);
-
-    document.getElementById('hPayNote').value =
-        document.getElementById('payNoteInput').value;
-
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = '⏳ กำลังส่งข้อมูล…';
-
+function submitPayment(){
+    const fileInput=document.getElementById('slipFile');
+    if(!fileInput.files[0]){ alert('กรุณาอัปโหลดสลิปการโอนเงิน'); return; }
+    if(!confirm('ยืนยันการส่งหลักฐานการชำระเงินใช่หรือไม่?')) return;
+    const form=document.getElementById('paymentForm');
+    const cloned=fileInput.cloneNode(true); cloned.name='slipFile'; form.appendChild(cloned);
+    document.getElementById('hPayNote').value=document.getElementById('payNoteInput').value;
+    const btn=document.getElementById('submitBtn');
+    btn.disabled=true; btn.textContent='⏳ กำลังส่งข้อมูล…';
     form.submit();
 }
+
+/* ── USER MENU TOGGLE ── */
+function toggleUserMenu(){
+    document.getElementById('userMenuWrapper').classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+    const wrapper=document.getElementById('userMenuWrapper');
+    if(wrapper && !wrapper.contains(e.target)) wrapper.classList.remove('open');
+});
 /*]]>*/
 </script>
-
 </body>
 </html>

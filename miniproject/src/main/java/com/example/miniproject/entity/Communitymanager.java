@@ -33,6 +33,12 @@ public class Communitymanager {
     @Column(length = 100)
     private String tribe;
 
+    @Column(name = "bank_name", length = 100)
+    private String bankName;
+
+    @Column(name = "account_number", length = 30)
+    private String accountNumber;
+
     // วันที่สร้างบัญชี
     @Column(name = "created_date")
     private LocalDateTime createdDate;
@@ -110,6 +116,22 @@ public class Communitymanager {
 
     public void setTribe(String tribe) {
         this.tribe = tribe;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public LocalDateTime getCreatedDate() {

@@ -12,6 +12,10 @@ public class PaymentDTO {
     // จาก Booking
     private Integer numOfGuests;
 
+    private String bankName;
+    private String bankAccount;
+
+
     // จาก Bookingroomdetail
     private Date checkIn;           // checkindate
     private Date checkOut;          // checkoutdate
@@ -40,6 +44,13 @@ public class PaymentDTO {
 
     public String getPaymentStatus() { return paymentStatus; }
     public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+
+
+    public String getBankName() { return bankName; }
+    public void setBankName(String bankName) { this.bankName = bankName; }
+
+    public String getBankAccount() { return bankAccount; }
+    public void setBankAccount(String bankAccount) { this.bankAccount = bankAccount; }
 
     public Integer getNumOfGuests() { return numOfGuests; }
     public void setNumOfGuests(Integer numOfGuests) { this.numOfGuests = numOfGuests; }
