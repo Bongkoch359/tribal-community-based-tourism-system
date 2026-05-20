@@ -8,10 +8,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        
-        String uploadPath = System.getProperty("user.dir") + "/uploads/tours/";
-        System.out.println("📁 Static resource path: " + uploadPath);
+
+        // ── Tours ──────────────────────────────────────────────────────────
+        String tourPath = System.getProperty("user.dir") + "/uploads/tours/";
+        System.out.println("📁 Tours resource path: " + tourPath);
         registry.addResourceHandler("/uploads/tours/**")
-                .addResourceLocations("file:" + uploadPath);
+                .addResourceLocations("file:" + tourPath);
+
+        // ── Room images ────────────────────────────────────────────────────
+        String roomPath = System.getProperty("user.dir") + "/uploads/rooms/";
+        System.out.println("📁 Rooms resource path: " + roomPath);
+        registry.addResourceHandler("/uploads/rooms/**")
+                .addResourceLocations("file:" + roomPath);
     }
 }

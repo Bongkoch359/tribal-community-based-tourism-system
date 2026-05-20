@@ -24,10 +24,10 @@ public class RoomTypeService {
     @Autowired
     private FacilitiesRepository facilitiesRepository;
 
-    //member เพิ่มมม
-    public Roomtype getRoomById(String id){
-    return roomTypeRepository.findById(id).orElse(null);
-}
+    // member เพิ่มมม
+    public Roomtype getRoomById(String id) {
+        return roomTypeRepository.findById(id).orElse(null);
+    }
 
     // ─── Add ───────────────────────────────────────────────────────────────────
     public Roomtype addRoomType(AddRoomRequest req) {
@@ -51,10 +51,9 @@ public class RoomTypeService {
         homestay.setHomestayid(req.getHomestayid());
         room.setHomestay(homestay);
 
-        // เก็บ Base64 คั่นด้วย ","
-        if (req.getImages() != null && !req.getImages().isEmpty()) {
-            room.setImages(String.join(",", req.getImages()));
-        }
+        // เก็บ URL paths คั่นด้วย "," (ส่งมาจาก Controller แล้ว)
+        String images = req.getImages();
+        room.setImages((images != null && !images.isBlank()) ? images : null);
 
         // ผูก Facilities
         if (req.getFacilitiesIds() != null && !req.getFacilitiesIds().isEmpty()) {
@@ -81,28 +80,9 @@ public class RoomTypeService {
         room.setRoomcondition(req.getRoomcondition());
         room.setStatus(req.getStatus());
 
-        // ── รวมรูปเดิม + รูปใหม่ ──────────────────────────────────────────────
-        List<String> allImages = new ArrayList<>();
-
-        // รูปเดิมที่ยังเก็บอยู่ (ส่งมาจาก front-end ในรูป comma-separated base64)
-        String existing = req.getExistingImages();
-        if (existing != null && !existing.isBlank()) {
-            // split ตาม ",data:" เหมือนเดิม
-            String[] parts = existing.split("(?=,data:)");
-            for (String p : parts) {
-                String trimmed = p.startsWith(",") ? p.substring(1) : p;
-                if (!trimmed.isBlank()) allImages.add(trimmed);
-            }
-        }
-
-        // รูปใหม่ที่อัปโหลดเพิ่ม
-        if (req.getImages() != null) {
-            for (String img : req.getImages()) {
-                if (img != null && !img.isBlank()) allImages.add(img);
-            }
-        }
-
-        room.setImages(allImages.isEmpty() ? null : String.join(",", allImages));
+        // images ถูก merge (เดิม + ใหม่) มาจาก Controller แล้ว เก็บตรงๆ
+        String images = req.getImages();
+        room.setImages((images != null && !images.isBlank()) ? images : null);
 
         // ── อัปเดต Facilities ─────────────────────────────────────────────────
         if (req.getFacilitiesIds() != null) {

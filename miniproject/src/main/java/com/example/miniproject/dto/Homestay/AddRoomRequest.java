@@ -7,49 +7,49 @@ public class AddRoomRequest {
     private Integer homestayid;
     private String  typename;
     private String  bedtype;
-    private Double  pricepernight;
-    private Integer maxguest;
-    private Integer totalrooms;
+    private double  pricepernight;
+    private int     maxguest;
+    private int     totalrooms;
     private String  description;
     private String  roomcondition;
     private String  status;
     private List<String> facilitiesIds;
-    private List<String> images; // ✅ Base64 strings
 
-    public Integer getHomestayid()     { return homestayid; }
-    public void setHomestayid(Integer homestayid) { this.homestayid = homestayid; }
+    /** comma-separated URL paths เช่น "/uploads/rooms/uuid1.jpg,/uploads/rooms/uuid2.jpg" */
+    private String images;
 
-    public String getTypename()        { return typename; }
-    public void setTypename(String typename) { this.typename = typename; }
+    // ── Getters & Setters ──────────────────────────────────────────────────────
 
-    public String getBedtype()         { return bedtype; }
-    public void setBedtype(String bedtype) { this.bedtype = bedtype; }
+    public Integer getHomestayid()              { return homestayid; }
+    public void    setHomestayid(Integer v)     { this.homestayid = v; }
 
-    public Double getPricepernight()   { return pricepernight; }
-    public void setPricepernight(Double pricepernight) { this.pricepernight = pricepernight; }
+    public String  getTypename()                { return typename; }
+    public void    setTypename(String v)        { this.typename = v; }
 
-    public Integer getMaxguest()       { return maxguest; }
-    public void setMaxguest(Integer maxguest) { this.maxguest = maxguest; }
+    public String  getBedtype()                 { return bedtype; }
+    public void    setBedtype(String v)         { this.bedtype = v; }
 
-    public Integer getTotalrooms()     { return totalrooms; }
-    public void setTotalrooms(Integer totalrooms) { this.totalrooms = totalrooms; }
+    public double  getPricepernight()           { return pricepernight; }
+    public void    setPricepernight(double v)   { this.pricepernight = v; }
 
-    public String getDescription()     { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public int     getMaxguest()                { return maxguest; }
+    public void    setMaxguest(int v)           { this.maxguest = v; }
 
-    public String getRoomcondition()   { return roomcondition; }
-    public void setRoomcondition(String roomcondition) { this.roomcondition = roomcondition; }
+    public int     getTotalrooms()              { return totalrooms; }
+    public void    setTotalrooms(int v)         { this.totalrooms = v; }
 
-    public String getStatus()          { return status; }
-    public void setStatus(String status) { this.status = status; }
-    
+    public String  getDescription()             { return description; }
+    public void    setDescription(String v)     { this.description = v; }
 
-    public List<String> getImages()    { return images; }
-    public void setImages(List<String> images) { this.images = images; }
-    public List<String> getFacilitiesIds() {
-        return facilitiesIds;
-    }
-    public void setFacilitiesIds(List<String> facilitiesIds) {
-        this.facilitiesIds = facilitiesIds;
-    }
+    public String  getRoomcondition()           { return roomcondition; }
+    public void    setRoomcondition(String v)   { this.roomcondition = v; }
+
+    public String  getStatus()                  { return status; }
+    public void    setStatus(String v)          { this.status = v; }
+
+    public List<String> getFacilitiesIds()               { return facilitiesIds; }
+    public void         setFacilitiesIds(List<String> v) { this.facilitiesIds = v; }
+
+    public String  getImages()                  { return images; }
+    public void    setImages(String v)          { this.images = v; }
 }

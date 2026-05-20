@@ -13,7 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,6 +29,10 @@ public class RoomTypeController {
 
     @Autowired
     private HomestayService homestayService;
+
+    /** โฟลเดอร์เก็บรูปห้องพัก (สร้างอัตโนมัติถ้ายังไม่มี) */
+    private static final String ROOM_UPLOAD_DIR =
+            System.getProperty("user.dir") + "/uploads/rooms/";
 
     // ─── GET: รายการห้องพักทั้งหมด ───────────────────────────────────────────
     @GetMapping("/owner/rooms")
@@ -60,11 +68,14 @@ public class RoomTypeController {
             m.put("totalrooms",    room.getTotalrooms());
             m.put("status",        room.getStatus());
 
+            // รูปแรก: เป็น URL path (/uploads/rooms/xxx.jpg)
             String firstImg = null;
             String imgs = room.getImages();
             if (imgs != null && !imgs.isBlank()) {
-                int nextIdx = imgs.indexOf(",data:");
-                firstImg = (nextIdx > 0) ? imgs.substring(0, nextIdx) : imgs;
+                String[] parts = imgs.split(",");
+                if (parts.length > 0 && !parts[0].isBlank()) {
+                    firstImg = parts[0].trim();
+                }
             }
             m.put("firstImageUrl", firstImg);
             return m;
@@ -92,12 +103,39 @@ public class RoomTypeController {
         return "Homestay/addRoom";
     }
 
-    // ─── POST: บันทึกห้องพักใหม่ (JSON + Base64) ─────────────────────────────
-    @PostMapping("/addroom")
+    // ─── POST: บันทึกห้องพักใหม่ (multipart/form-data) ───────────────────────
+    @PostMapping(value = "/addroom", consumes = "multipart/form-data")
     @ResponseBody
-    public ResponseEntity<?> addRoom(@RequestBody AddRoomRequest req,
-                                     HttpSession session) {
+    public ResponseEntity<?> addRoom(
+            @RequestParam("homestayid")                    Integer homestayid,
+            @RequestParam("typename")                      String typename,
+            @RequestParam("bedtype")                       String bedtype,
+            @RequestParam("pricepernight")                 double pricepernight,
+            @RequestParam("maxguest")                      int maxguest,
+            @RequestParam("totalrooms")                    int totalrooms,
+            @RequestParam(value = "description",    required = false, defaultValue = "") String description,
+            @RequestParam(value = "roomcondition",  required = false, defaultValue = "") String roomcondition,
+            @RequestParam("status")                        String status,
+            @RequestParam(value = "facilitiesIds",  required = false) List<String> facilitiesIds,
+            @RequestParam(value = "images",         required = false) List<MultipartFile> images,
+            HttpSession session) {
         try {
+            // บันทึกรูปและเก็บ URL path
+            String imageUrls = saveImages(images);
+
+            AddRoomRequest req = new AddRoomRequest();
+            req.setHomestayid(homestayid);
+            req.setTypename(typename);
+            req.setBedtype(bedtype);
+            req.setPricepernight(pricepernight);
+            req.setMaxguest(maxguest);
+            req.setTotalrooms(totalrooms);
+            req.setDescription(description);
+            req.setRoomcondition(roomcondition);
+            req.setStatus(status);
+            req.setFacilitiesIds(facilitiesIds != null ? facilitiesIds : Collections.emptyList());
+            req.setImages(imageUrls); // เก็บ path แทน Base64
+
             roomTypeService.addRoomType(req);
             return ResponseEntity.ok(Map.of("success", true));
         } catch (Exception e) {
@@ -146,7 +184,6 @@ public class RoomTypeController {
         Roomtype room = roomTypeService.getRoomTypeById(roomtypeid);
         if (room == null) return "redirect:/owner/rooms";
 
-        // รายการ facilities ทั้งหมด + id ที่ห้องนี้มีอยู่แล้ว
         List<Facilities> allFacilities = roomTypeService.getAllFacilities();
         Set<String> checkedIds = (room.getFacilities() == null)
                 ? Collections.emptySet()
@@ -154,7 +191,6 @@ public class RoomTypeController {
                         .map(Facilities::getFacilitiesid)
                         .collect(Collectors.toSet());
 
-        // แยกรูปทุกรูปเป็น List<String>
         List<String> imageList = buildImageList(room.getImages());
 
         model.addAttribute("ownername",     orDefault(session, "ownername"));
@@ -167,16 +203,48 @@ public class RoomTypeController {
         return "Homestay/editRoom";
     }
 
-    // ─── POST: บันทึกการแก้ไขห้องพัก (JSON + Base64) ─────────────────────────
-    @PostMapping("/owner/room/edit")
+    // ─── POST: บันทึกการแก้ไขห้องพัก (multipart/form-data) ──────────────────
+    @PostMapping(value = "/owner/room/edit", consumes = "multipart/form-data")
     @ResponseBody
-    public ResponseEntity<?> updateRoom(@RequestBody UpdateRoomRequest req,
-                                        HttpSession session) {
+    public ResponseEntity<?> updateRoom(
+            @RequestParam("roomtypeid")                    String roomtypeid,
+            @RequestParam("typename")                      String typename,
+            @RequestParam("bedtype")                       String bedtype,
+            @RequestParam("pricepernight")                 double pricepernight,
+            @RequestParam("maxguest")                      int maxguest,
+            @RequestParam("totalrooms")                    int totalrooms,
+            @RequestParam(value = "description",    required = false, defaultValue = "") String description,
+            @RequestParam(value = "roomcondition",  required = false, defaultValue = "") String roomcondition,
+            @RequestParam("status")                        String status,
+            @RequestParam(value = "facilitiesIds",  required = false) List<String> facilitiesIds,
+            // รูปเดิมที่ยังคงไว้ (URL path คั่นด้วย comma)
+            @RequestParam(value = "existingImages", required = false, defaultValue = "") String existingImages,
+            // รูปใหม่ที่อัปโหลดเพิ่ม
+            @RequestParam(value = "newImages",      required = false) List<MultipartFile> newImages,
+            HttpSession session) {
+
         if (session.getAttribute("ownerid") == null) {
             return ResponseEntity.status(401)
                     .body(Map.of("success", false, "message", "กรุณาเข้าสู่ระบบ"));
         }
         try {
+            // รวม path รูปเดิม + รูปใหม่ที่อัปโหลด
+            String newImageUrls = saveImages(newImages);
+            String allImages = mergeImagePaths(existingImages, newImageUrls);
+
+            UpdateRoomRequest req = new UpdateRoomRequest();
+            req.setRoomtypeid(roomtypeid);
+            req.setTypename(typename);
+            req.setBedtype(bedtype);
+            req.setPricepernight(pricepernight);
+            req.setMaxguest(maxguest);
+            req.setTotalrooms(totalrooms);
+            req.setDescription(description);
+            req.setRoomcondition(roomcondition);
+            req.setStatus(status);
+            req.setFacilitiesIds(facilitiesIds != null ? facilitiesIds : Collections.emptyList());
+            req.setImages(allImages);
+
             roomTypeService.updateRoomType(req);
             return ResponseEntity.ok(Map.of("success", true));
         } catch (Exception e) {
@@ -186,14 +254,56 @@ public class RoomTypeController {
         }
     }
 
+    // ─── helper: บันทึกไฟล์รูป → คืน URL paths คั่นด้วย comma ──────────────
+    private String saveImages(List<MultipartFile> files) throws IOException {
+        if (files == null || files.isEmpty()) return "";
+
+        Path uploadDir = Paths.get(ROOM_UPLOAD_DIR);
+        if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
+
+        List<String> urls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (file == null || file.isEmpty()) continue;
+
+            String original  = Objects.requireNonNullElse(file.getOriginalFilename(), "img");
+            String ext       = original.contains(".")
+                    ? original.substring(original.lastIndexOf('.'))
+                    : ".jpg";
+            String filename  = UUID.randomUUID() + ext;
+
+            Path dest = uploadDir.resolve(filename);
+            file.transferTo(dest.toFile());
+
+            urls.add("/uploads/rooms/" + filename);
+        }
+        return String.join(",", urls);
+    }
+
+    // ─── helper: รวม path รูปเดิม + รูปใหม่ ─────────────────────────────────
+    private String mergeImagePaths(String existing, String newPaths) {
+        List<String> result = new ArrayList<>();
+        if (existing != null && !existing.isBlank()) {
+            for (String p : existing.split(",")) {
+                String t = p.trim();
+                if (!t.isEmpty()) result.add(t);
+            }
+        }
+        if (newPaths != null && !newPaths.isBlank()) {
+            for (String p : newPaths.split(",")) {
+                String t = p.trim();
+                if (!t.isEmpty()) result.add(t);
+            }
+        }
+        return String.join(",", result);
+    }
+
     // ─── helper: split images string → List<String> ──────────────────────────
     private List<String> buildImageList(String imgs) {
         List<String> list = new ArrayList<>();
         if (imgs != null && !imgs.isBlank()) {
-            String[] parts = imgs.split("(?=,data:)");
-            for (String p : parts) {
-                String trimmed = p.startsWith(",") ? p.substring(1) : p;
-                if (!trimmed.isBlank()) list.add(trimmed);
+            for (String p : imgs.split(",")) {
+                String t = p.trim();
+                if (!t.isEmpty()) list.add(t);
             }
         }
         return list;

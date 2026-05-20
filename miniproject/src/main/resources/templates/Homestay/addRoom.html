@@ -106,7 +106,23 @@
             font-size: .75rem;
         }
 
-        
+        /* ── Facility chip checked state (CSS-only, no JS needed) ── */
+        .facility-chip {
+            cursor: pointer;
+            user-select: none;
+            transition: background .15s, border-color .15s, color .15s;
+        }
+        .facility-chip input[type="checkbox"] {
+            display: none; /* ซ่อน checkbox จริง */
+        }
+        .facility-chip:has(input:checked) {
+            background: #2d6a2d !important;
+            border-color: #2d6a2d !important;
+            color: #fff !important;
+        }
+        .facility-chip:has(input:checked) i {
+            color: #fff !important;
+        }
     </style>
 </head>
 <body>
@@ -243,9 +259,10 @@
                     <label class="form-label">สถานะ <span class="req">*</span></label>
                     <div class="status-select-wrap">
                         <select id="status" name="status" class="form-control">
-                            <option value="เปิดจอง"     selected>✅ เปิดจอง</option>
+                            <option value="" disabled selected>-- เลือกสถานะ --</option>
+                            <option value="เปิดจอง">✅ เปิดจอง</option>
                             <option value="ปิดปรับปรุง">🔧 ปิดปรับปรุง</option>
-                            <option value="เต็ม">        🔴 เต็ม</option>
+                            <option value="เต็ม">🔴 เต็ม</option>
                         </select>
                     </div>
                 </div>
@@ -262,23 +279,23 @@
             </div>
             <div class="section-body">
                 <div class="facilities-grid">
-                    <label class="facility-chip" onclick="toggleChip(this)">
+                    <label class="facility-chip">
                         <input type="checkbox" name="facilitiesIds" value="F001">
                         <i class="fas fa-wifi"></i> Wi-Fi
                     </label>
-                    <label class="facility-chip" onclick="toggleChip(this)">
+                    <label class="facility-chip">
                         <input type="checkbox" name="facilitiesIds" value="F002">
                         <i class="fas fa-wind"></i> แอร์
                     </label>
-                    <label class="facility-chip" onclick="toggleChip(this)">
+                    <label class="facility-chip">
                         <input type="checkbox" name="facilitiesIds" value="F003">
                         <i class="fas fa-shower"></i> น้ำอุ่น
                     </label>
-                    <label class="facility-chip" onclick="toggleChip(this)">
+                    <label class="facility-chip">
                         <input type="checkbox" name="facilitiesIds" value="F004">
                         <i class="fas fa-tv"></i> พัดลม
                     </label>
-                    <label class="facility-chip" onclick="toggleChip(this)">
+                    <label class="facility-chip">
                         <input type="checkbox" name="facilitiesIds" value="F005">
                         <i class="fas fa-car"></i> ที่จอดรถ
                     </label>
@@ -335,6 +352,137 @@
     </form>
 </div>
 
-<script th:src="@{/js/Homestay/add-room.js}"></script>
+<script>
+// ─── ไฟล์รูปที่เลือกไว้ (DataTransfer list) ───────────────────────────────
+let selectedFiles = [];
+
+// ─── Drag & Drop / Click upload ──────────────────────────────────────────
+function handleDragOver(e)  { e.preventDefault(); document.getElementById('dropZone').classList.add('dragover'); }
+function handleDragLeave()  { document.getElementById('dropZone').classList.remove('dragover'); }
+function handleDrop(e)      { e.preventDefault(); handleDragLeave(); handleFileSelect(e.dataTransfer.files); }
+
+function handleFileSelect(files) {
+    const MAX = 5 * 1024 * 1024; // 5 MB
+    Array.from(files).forEach(file => {
+        if (file.size > MAX) { alert('ไฟล์ ' + file.name + ' ใหญ่เกิน 5 MB'); return; }
+        if (!file.type.startsWith('image/')) return;
+        selectedFiles.push(file);
+        addPreviewCard(file, selectedFiles.length - 1);
+    });
+    updateUI();
+}
+
+function addPreviewCard(file, index) {
+    const grid = document.getElementById('previewGrid');
+    const reader = new FileReader();
+    reader.onload = e => {
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+        card.dataset.index = index;
+        card.innerHTML =
+            `<img src="${e.target.result}" alt="preview">
+             <button type="button" class="remove-btn" onclick="removePreview(${index})">✕</button>
+             <span class="file-size-label">${(file.size/1024).toFixed(0)} KB</span>`;
+        grid.appendChild(card);
+    };
+    reader.readAsDataURL(file);
+}
+
+function removePreview(index) {
+    selectedFiles[index] = null; // mark as removed
+    const card = document.querySelector(`.preview-card[data-index="${index}"]`);
+    if (card) card.remove();
+    updateUI();
+}
+
+function updateUI() {
+    const count = selectedFiles.filter(f => f !== null).length;
+    const badge = document.getElementById('imageCountBadge');
+    const grid  = document.getElementById('previewGrid');
+    if (count > 0) {
+        badge.style.display = 'inline';
+        badge.textContent   = count + ' รูป';
+        grid.style.display  = 'grid';
+    } else {
+        badge.style.display = 'none';
+        grid.style.display  = 'none';
+    }
+}
+
+// ─── Validate ────────────────────────────────────────────────────────────
+function validate() {
+    const fields = [
+        { id: 'typename',     label: 'ประเภทที่พัก' },
+        { id: 'bedtype',      label: 'ประเภทเตียง'  },
+        { id: 'pricepernight',label: 'ราคาต่อคืน'   },
+        { id: 'maxguest',     label: 'จำนวนผู้เข้าพัก' },
+        { id: 'totalrooms',   label: 'จำนวนห้อง'    },
+        { id: 'status',       label: 'สถานะ'        },
+    ];
+    for (const f of fields) {
+        const el = document.getElementById(f.id);
+        if (!el || !el.value || el.value.trim() === '' || el.value === '0') {
+            const errId = f.id === 'pricepernight' ? 'priceError' : f.id + 'Error';
+            const errEl = document.getElementById(errId);
+            if (errEl) errEl.textContent = 'กรุณากรอก ' + f.label;
+            el && el.focus();
+            return false;
+        }
+        const errId = f.id === 'pricepernight' ? 'priceError' : f.id + 'Error';
+        const errEl = document.getElementById(errId);
+        if (errEl) errEl.textContent = '';
+    }
+    return true;
+}
+
+// ─── Submit → multipart/form-data ────────────────────────────────────────
+async function submitForm() {
+    if (!validate()) return;
+
+    const fd = new FormData();
+    // Hidden field
+    fd.append('homestayid',    document.querySelector('input[name="homestayid"]').value);
+    // Form fields
+    fd.append('typename',      document.getElementById('typename').value);
+    fd.append('bedtype',       document.getElementById('bedtype').value);
+    fd.append('pricepernight', document.getElementById('pricepernight').value);
+    fd.append('maxguest',      document.getElementById('maxguest').value);
+    fd.append('totalrooms',    document.getElementById('totalrooms').value);
+    fd.append('description',   document.getElementById('description').value);
+    fd.append('roomcondition', document.getElementById('roomcondition').value);
+    fd.append('status',        document.getElementById('status').value);
+
+    // Facilities
+    document.querySelectorAll('input[name="facilitiesIds"]:checked').forEach(cb => {
+        fd.append('facilitiesIds', cb.value);
+    });
+
+    // รูปภาพ (เฉพาะที่ยังไม่ลบ)
+    selectedFiles.filter(f => f !== null).forEach(file => {
+        fd.append('images', file);
+    });
+
+    const btn = document.querySelector('.btn-save');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+
+    try {
+        const res  = await fetch('/addroom', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.success) {
+            const homestayid = document.querySelector('input[name="homestayid"]').value;
+            window.location.href = '/owner/rooms?homestayid=' + homestayid;
+        } else {
+            alert('เกิดข้อผิดพลาด: ' + (data.message || ''));
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
+        }
+    } catch (err) {
+        alert('ไม่สามารถเชื่อมต่อ server');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
+    }
+}
+</script>
 </body>
 </html>

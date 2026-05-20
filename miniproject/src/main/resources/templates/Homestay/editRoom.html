@@ -495,24 +495,20 @@
     /*<![CDATA[*/
 
     // ─── ข้อมูลจาก server ────────────────────────────────────────────────────
-    const ROOM_ID    = /*[[${room.roomtypeid}]]*/ '';
+    const ROOM_ID     = /*[[${room.roomtypeid}]]*/ '';
     const HOMESTAY_ID = /*[[${homestayid}]]*/ '';
 
-    // ─── Facility highlight ───────────────────────────────────────────────────
-    function toggleFacilityStyle(cb) {
-        cb.closest('.facility-item').classList.toggle('checked', cb.checked);
-    }
+    // ─── ไฟล์ใหม่ที่เลือกไว้ (File objects) ─────────────────────────────────
+    let newFileList = [];
 
-    // ─── Facility icon mapping ────────────────────────────────────────────────
+    // ─── Facility icon ────────────────────────────────────────────────────────
     const FAC_ICONS = {
-        'wifi':        '📶', 'wi-fi':      '📶', 'wi fi':      '📶',
-        'แอร์':        '❄️', 'เครื่องปรับอากาศ': '❄️',
-        'น้ำอุ่น':     '🚿', 'ฝักบัวน้ำอุ่น': '🚿',
-        'พัดลม':       '🌀',
-        'ที่จอดรถ':    '🚗', 'จอดรถ':     '🚗',
-        
+        'wifi': '📶', 'wi-fi': '📶',
+        'แอร์': '❄️', 'เครื่องปรับอากาศ': '❄️',
+        'น้ำอุ่น': '🚿', 'ฝักบัวน้ำอุ่น': '🚿',
+        'พัดลม': '🌀',
+        'ที่จอดรถ': '🚗', 'จอดรถ': '🚗',
     };
-
     function getFacIcon(name) {
         const key = name.toLowerCase().trim();
         for (const [k, v] of Object.entries(FAC_ICONS)) {
@@ -520,82 +516,80 @@
         }
         return '✨';
     }
-
-    // ใส่ icon ให้ทุก pill ตอน DOM ready
     document.querySelectorAll('.fac-icon-wrap[data-name]').forEach(el => {
         el.textContent = getFacIcon(el.dataset.name);
     });
 
-    // ─── รูปภาพ: ลบ thumb ────────────────────────────────────────────────────
+    function toggleFacilityStyle(cb) {
+        cb.closest('.facility-item').classList.toggle('checked', cb.checked);
+    }
+
+    // ─── ลบรูปเดิม (เอา DOM ออก → ไม่ส่ง path นั้นกลับไป) ─────────────────
     function removeThumb(btn) {
         btn.closest('.img-thumb').remove();
     }
 
-    // ─── รูปภาพ: อัปโหลดใหม่ ─────────────────────────────────────────────────
+    // ─── อัปโหลดรูปใหม่: แสดง preview (ไม่แปลง Base64 จริง ใช้ ObjectURL) ──
     const fileInput = document.getElementById('fileInput');
     const imgGrid   = document.getElementById('imgGrid');
 
     fileInput.addEventListener('change', function () {
-        const files = Array.from(this.files);
-        files.forEach(file => {
+        Array.from(this.files).forEach(file => {
             if (file.size > 5 * 1024 * 1024) {
                 showToast('ไฟล์ ' + file.name + ' ใหญ่เกิน 5 MB', true);
                 return;
             }
-            const reader = new FileReader();
-            reader.onload = e => {
-                const thumb = document.createElement('div');
-                thumb.className = 'img-thumb new-thumb';
-                thumb.innerHTML =
-                    `<img src="${e.target.result}" alt="new image"/>
-                     <button type="button" class="remove-img" onclick="removeThumb(this)">✕</button>`;
-                imgGrid.appendChild(thumb);
-            };
-            reader.readAsDataURL(file);
+            const idx = newFileList.length;
+            newFileList.push(file);
+
+            const thumb = document.createElement('div');
+            thumb.className = 'img-thumb new-thumb';
+            thumb.dataset.newIndex = idx;
+            thumb.innerHTML =
+                `<img src="${URL.createObjectURL(file)}" alt="new"/>
+                 <button type="button" class="remove-img" onclick="removeNewThumb(this,${idx})">✕</button>`;
+            imgGrid.appendChild(thumb);
         });
         this.value = '';
     });
 
-    // ─── Collect existing images (Base64 src จาก DOM) ────────────────────────
-    function collectExistingImages() {
-        const thumbs = imgGrid.querySelectorAll('.existing-thumb img');
-        return Array.from(thumbs).map(img => img.src).join(',');
+    function removeNewThumb(btn, idx) {
+        newFileList[idx] = null;
+        btn.closest('.img-thumb').remove();
     }
 
-    // ─── Collect new images ───────────────────────────────────────────────────
-    function collectNewImages() {
-        const thumbs = imgGrid.querySelectorAll('.new-thumb img');
-        return Array.from(thumbs).map(img => img.src);
-    }
-
-    // ─── Collect checked facilities ──────────────────────────────────────────
-    function collectFacilities() {
-        return Array.from(
-            document.querySelectorAll('#facilitiesGrid input[type=checkbox]:checked')
-        ).map(cb => cb.value);
+    // ─── Collect URL path ของรูปเดิมที่ยังคงอยู่ใน DOM ──────────────────────
+    function collectExistingPaths() {
+        return Array.from(imgGrid.querySelectorAll('.existing-thumb img'))
+            .map(img => {
+                // img.src เป็น absolute URL → เอาแค่ path (/uploads/rooms/xxx.jpg)
+                try { return new URL(img.src).pathname; } catch { return img.src; }
+            })
+            .filter(Boolean)
+            .join(',');
     }
 
     // ─── Validate ─────────────────────────────────────────────────────────────
     function validate() {
         const required = [
-            { id: 'typename',     label: 'ประเภทที่พัก' },
-            { id: 'bedtype',      label: 'ประเภทเตียง'  },
-            { id: 'pricepernight',label: 'ราคาต่อคืน'   },
-            { id: 'maxguest',     label: 'รองรับสูงสุด'  },
-            { id: 'totalrooms',   label: 'จำนวนห้องทั้งหมด' },
+            { id: 'typename',      label: 'ประเภทที่พัก' },
+            { id: 'bedtype',       label: 'ประเภทเตียง'  },
+            { id: 'pricepernight', label: 'ราคาต่อคืน'   },
+            { id: 'maxguest',      label: 'รองรับสูงสุด' },
+            { id: 'totalrooms',    label: 'จำนวนห้องทั้งหมด' },
         ];
         for (const f of required) {
             const el = document.getElementById(f.id);
-            if (!el.value || el.value.trim() === '' || el.value === '0') {
+            if (!el || !el.value || el.value.trim() === '' || el.value === '0') {
                 showToast('กรุณากรอก: ' + f.label, true);
-                el.focus();
+                el && el.focus();
                 return false;
             }
         }
         return true;
     }
 
-    // ─── Submit ───────────────────────────────────────────────────────────────
+    // ─── Submit → multipart/form-data ─────────────────────────────────────────
     async function submitEdit() {
         if (!validate()) return;
 
@@ -603,27 +597,27 @@
         btn.disabled = true;
         document.getElementById('loadingOverlay').classList.add('show');
 
-        const payload = {
-            roomtypeid:     ROOM_ID,
-            typename:       document.getElementById('typename').value.trim(),
-            bedtype:        document.getElementById('bedtype').value,
-            pricepernight:  parseFloat(document.getElementById('pricepernight').value),
-            maxguest:       parseInt(document.getElementById('maxguest').value),
-            totalrooms:     parseInt(document.getElementById('totalrooms').value),
-            description:    document.getElementById('description').value.trim(),
-            roomcondition:  document.getElementById('roomcondition').value.trim(),
-            status:         document.getElementById('statusSelect').value,
-            facilitiesIds:  collectFacilities(),
-            existingImages: collectExistingImages(),
-            images:         collectNewImages(),
-        };
+        const fd = new FormData();
+        fd.append('roomtypeid',     ROOM_ID);
+        fd.append('typename',       document.getElementById('typename').value.trim());
+        fd.append('bedtype',        document.getElementById('bedtype').value);
+        fd.append('pricepernight',  document.getElementById('pricepernight').value);
+        fd.append('maxguest',       document.getElementById('maxguest').value);
+        fd.append('totalrooms',     document.getElementById('totalrooms').value);
+        fd.append('description',    document.getElementById('description').value.trim());
+        fd.append('roomcondition',  document.getElementById('roomcondition').value.trim());
+        fd.append('status',         document.getElementById('statusSelect').value);
+        fd.append('existingImages', collectExistingPaths());
+
+        // Facilities
+        document.querySelectorAll('#facilitiesGrid input[type=checkbox]:checked')
+            .forEach(cb => fd.append('facilitiesIds', cb.value));
+
+        // รูปใหม่ (File objects)
+        newFileList.filter(f => f !== null).forEach(file => fd.append('newImages', file));
 
         try {
-            const res  = await fetch('/owner/room/edit', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(payload),
-            });
+            const res  = await fetch('/owner/room/edit', { method: 'POST', body: fd });
             const data = await res.json();
 
             if (data.success) {
@@ -643,7 +637,7 @@
         }
     }
 
-    // ─── Toast helper ─────────────────────────────────────────────────────────
+    // ─── Toast ────────────────────────────────────────────────────────────────
     let toastTimer;
     function showToast(msg, isError = false) {
         const t = document.getElementById('toast');

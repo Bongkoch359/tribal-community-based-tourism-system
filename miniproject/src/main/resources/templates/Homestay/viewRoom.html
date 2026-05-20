@@ -383,11 +383,14 @@
                         </div>
                         <div class="info-item">
                             <label>สถานะ</label>
-                            <span class="badge-status badge-open" th:if="${room.status == 'available'}">
+                            <span class="badge-status badge-open" th:if="${room.status == 'เปิดจอง'}">
                                 <span class="dot"></span> เปิดจอง
                             </span>
-                            <span class="badge-status badge-close" th:unless="${room.status == 'available'}">
-                                <span class="dot"></span> ปิดการใช้งาน
+                            <span class="badge-status badge-close" th:if="${room.status == 'ปิดปรับปรุง'}">
+                                <span class="dot"></span> ปิดปรับปรุง
+                            </span>
+                            <span class="badge-status badge-close" th:if="${room.status == 'เต็ม'}">
+                                <span class="dot"></span> เต็ม
                             </span>
                         </div>
                         <div class="info-item">
