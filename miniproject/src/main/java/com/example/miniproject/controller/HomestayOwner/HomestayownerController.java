@@ -87,7 +87,7 @@ public class HomestayownerController {
                     if (!savedPaths.isEmpty()) {
                         Map<String, String> imgUpdate = new HashMap<>();
                         imgUpdate.put("images", String.join(",", savedPaths));
-                        homestayService.updateImages(hsId, imgUpdate);
+                       ownerService.updateImages(hsId, imgUpdate);
                     }
                 }
             }
