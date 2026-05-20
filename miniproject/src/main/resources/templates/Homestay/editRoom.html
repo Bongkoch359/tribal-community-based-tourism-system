@@ -6,249 +6,391 @@
     <title>แก้ไขข้อมูลห้องพัก</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --green-dark:  #2d5a27;
-            --green-mid:   #3d7a35;
-            --green-light: #5a9e50;
-            --orange:      #e07b39;
-            --orange-dark: #c5672a;
-            --bg:          #f5f3ee;
-            --card:        #ffffff;
-            --border:      #d9d4c8;
-            --text:        #2c2c2c;
-            --text-muted:  #7a7060;
-            --red:         #c0392b;
-            --radius:      10px;
-        }
-
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        /* ── Navbar ── */
-        .navbar {
-            background: var(--green-dark);
-            padding: 0 28px;
-            height: 84px;
+<style>
+        /* ═══════════════════════════════════════════════
+           NAVBAR
+           ═══════════════════════════════════════════════ */
+        .hs-navbar {
+            background: #1a3d1f;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            padding: 0 2rem;
+            height: 84px;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            gap: .5rem;
         }
-        .navbar-brand { color: #fff; font-size: 1.05rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .navbar-brand svg { width: 22px; height: 22px; }
-        .navbar-user {
-            display: flex; align-items: center; gap: 10px; color: #fff;
-            font-size: .9rem; cursor: pointer;
-        }
-        .avatar {
-            width: 34px; height: 34px; border-radius: 50%;
-            background: var(--orange);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: .85rem; color: #fff;
-        }
-
-        /* ── Page wrapper ── */
-        .page { max-width: 1140px; margin: 0 auto; padding: 28px 20px 60px; }
-
-        .back-btn {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: var(--green-dark); color: #fff;
-            border: none; border-radius: 8px;
-            padding: 7px 16px; font-size: .875rem; font-family: inherit;
-            cursor: pointer; text-decoration: none; margin-bottom: 18px;
-            transition: background .2s;
-        }
-        .back-btn:hover { background: var(--green-mid); }
-
-        .page-title { font-size: 1.65rem; font-weight: 700; color: var(--text); line-height: 1.2; }
-        .page-subtitle { font-size: .85rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 24px; }
-
-        /* ── Grid ── */
-        .layout { display: grid; grid-template-columns: 1fr 340px; gap: 22px; }
-        @media(max-width: 860px) { .layout { grid-template-columns: 1fr; } }
-
-        /* ── Card ── */
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 22px 24px;
-            margin-bottom: 20px;
-        }
-        .card-title {
-            font-size: .7rem; font-weight: 700; letter-spacing: .1em;
-            text-transform: uppercase; color: var(--text-muted);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px; margin-bottom: 18px;
-        }
-
-        /* ── Form ── */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
-        .form-row.single { grid-template-columns: 1fr; }
-        @media(max-width: 540px) { .form-row { grid-template-columns: 1fr; } }
-
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: .82rem; font-weight: 600; color: var(--text-muted); }
-        label span.req { color: var(--orange); margin-left: 2px; }
-
-        .input-wrap { position: relative; display: flex; align-items: center; }
-        .input-wrap input, .input-wrap select, .input-wrap textarea {
-            width: 100%; padding: 9px 12px;
-            border: 1.5px solid var(--border);
-            border-radius: 7px; font-family: inherit; font-size: .92rem;
-            background: #fafaf8; color: var(--text);
-            transition: border-color .2s, box-shadow .2s; outline: none;
-        }
-        .input-wrap input:focus,
-        .input-wrap select:focus,
-        .input-wrap textarea:focus {
-            border-color: var(--green-mid);
-            box-shadow: 0 0 0 3px rgba(61,122,53,.12);
-        }
-        .input-wrap .unit {
-            position: absolute; right: 11px;
-            font-size: .8rem; color: var(--text-muted); pointer-events: none;
-        }
-        .input-wrap input.has-unit { padding-right: 46px; }
-        textarea { resize: vertical; min-height: 90px; }
-
-        /* status checkbox */
-        .status-wrap { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 7px; background: #fafaf8; cursor: pointer; }
-        .status-wrap input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--green-mid); cursor: pointer; }
-        .status-label { font-size: .92rem; }
-
-        /* ── Image section ── */
-        .img-preview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-        .img-thumb {
-            position: relative;
-            aspect-ratio: 1;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1.5px solid var(--border);
-        }
-        .img-thumb img {
-            width: 100%; height: 100%;
-            object-fit: cover; display: block;
-        }
-        .img-thumb .remove-img {
-            position: absolute; top: 4px; right: 4px;
-            width: 22px; height: 22px; border-radius: 50%;
-            background: rgba(0,0,0,.55); color: #fff;
-            border: none; font-size: .85rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            line-height: 1;
-        }
-        .img-thumb .remove-img:hover { background: var(--red); }
-
-        .upload-btn {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 6px; padding: 12px;
-            border: 2px dashed var(--border);
-            border-radius: 8px; cursor: pointer;
-            background: #fafaf8;
-            font-size: .8rem; color: var(--text-muted);
-            transition: border-color .2s, background .2s;
-        }
-        .upload-btn:hover { border-color: var(--green-mid); background: #f0f5ee; }
-        .upload-btn svg { width: 24px; height: 24px; opacity: .6; }
-        #fileInput { display: none; }
-
-        /* ── Facilities pill/sticker style ── */
-        .facilities-grid {
+        .hs-navbar-brand {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            align-items: center;
+            gap: .6rem;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            white-space: nowrap;
+            margin-right: auto;
         }
+        .hs-navbar-brand i { color: #fff; font-size: 1.2rem; }
+        .hs-nav-right { display: flex; align-items: center; }
+        .hs-profile-dropdown { position: relative; display: inline-block; cursor: pointer; }
+        .hs-profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: .45rem .75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.12);
+            transition: background .2s, border-color .2s;
+        }
+        .hs-profile-trigger:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.22); }
+        .hs-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e08a00, #f5a623);
+            color: #fff;
+            font-weight: 700;
+            font-size: .82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 2px rgba(255,255,255,.2);
+            flex-shrink: 0;
+        }
+        .hs-owner-name { color: #fff; font-size: .9rem; font-weight: 600; display: block; line-height: 1.2; }
+        .hs-owner-role { color: rgba(255,255,255,.55); font-size: .72rem; display: block; line-height: 1; }
+        .hs-chevron { font-size: .7rem; color: rgba(255,255,255,.5); margin-left: 2px; transition: transform .2s; }
+        .hs-profile-dropdown:hover .hs-chevron { transform: rotate(180deg); }
+        .hs-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0; top: 100%;
+            background: #fff;
+            min-width: 210px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+            z-index: 1000;
+            border-radius: 12px;
+            margin-top: 10px;
+            padding: 6px 0;
+            border: 1px solid #e8e8e8;
+        }
+        .hs-dropdown-content::before {
+            content: ""; position: absolute; top: -10px; left: 0;
+            width: 100%; height: 10px; display: block;
+        }
+        .hs-profile-dropdown:hover .hs-dropdown-content { display: block; }
+        .hs-dropdown-header {
+            padding: .75rem 1rem .55rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+        .hs-dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
+        .hs-dropdown-header .d-email { font-size: .75rem; color: #6b7c6e; margin-top: 2px; }
+        .hs-dropdown-content a {
+            color: #333; padding: .6rem 1rem;
+            text-decoration: none; display: flex;
+            align-items: center; gap: .65rem;
+            font-size: .88rem; transition: background .15s;
+        }
+        .hs-dropdown-content a i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
+        .hs-dropdown-content a:hover { background: #f5f8f5; color: #1a3d1f; }
+        .hs-dropdown-content a:hover i { color: #1a3d1f; }
+        .hs-dropdown-content hr { margin: 4px 0; border: 0; border-top: 1px solid #f0f0f0; }
+        .hs-dropdown-content a.hs-logout { color: #c0392b; }
+        .hs-dropdown-content a.hs-logout i { color: #c0392b; }
+        .hs-dropdown-content a.hs-logout:hover { background: #fff5f5; }
+        @media (max-width: 768px) {
+            .hs-navbar { padding: 0 1rem; }
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green-dark:   #1e3a0f;
+            --green-main:   #2d5a16;
+            --green-accent: #3a7020;
+            --green-light:  #e8f0df;
+            --bg:           #f0ede6;
+            --card:         #ffffff;
+            --text:         #2c2c2c;
+            --text-muted:   #888;
+            --border:       #dde5d4;
+            --price-bg:     #f0f7e8;
+            --orange:       #e07b39;
+            --orange-dark:  #c5672a;
+            --red:          #c0392b;
+        }
+
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ── Layout ── */
+        .container { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+
+        /* ── Back ── */
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--green-main); color: #fff;
+            border: none; border-radius: 6px;
+            padding: 7px 16px; font-size: 13.5px; font-family: inherit;
+            cursor: pointer; text-decoration: none;
+            margin-bottom: 20px; transition: background .18s;
+        }
+        .btn-back:hover { background: var(--green-accent); }
+
+        /* ── Page header ── */
+        .page-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            margin-bottom: 24px; gap: 16px;
+        }
+        .page-title h1 { font-size: 26px; font-weight: 700; }
+        .page-title .room-id { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        .btn-cancel {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #fff; color: var(--text);
+            border: 1.5px solid var(--border); border-radius: 6px;
+            padding: 7px 16px; font-size: 13.5px; font-family: inherit;
+            cursor: pointer; text-decoration: none; white-space: nowrap;
+            transition: border-color .18s;
+        }
+        .btn-cancel:hover { border-color: #aaa; }
+
+        .btn-save {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--orange); color: #fff;
+            border: none; border-radius: 6px;
+            padding: 7px 16px; font-size: 13.5px; font-family: inherit;
+            cursor: pointer; font-weight: 600; white-space: nowrap;
+            transition: background .18s;
+        }
+        .btn-save:hover { background: var(--orange-dark); }
+        .btn-save:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* ── Main Grid (same as viewRoom: 35% / 65%) ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 35% 65%;
+            gap: 30px;
+            align-items: start;
+        }
+        .left-col { display: flex; flex-direction: column; gap: 14px; }
+
+        /* ── Gallery / Image edit ── */
+        .gallery-wrap { border-radius: 12px; overflow: hidden; background: #ddd; }
+        .gallery-main { position: relative; aspect-ratio: 4/3; overflow: hidden; }
+        .gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .no-image { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); background: #e8e8e8; }
+
+        .gallery-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,.4); color: #fff; border: none; border-radius: 50%;
+            width: 30px; height: 30px; font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; z-index: 2;
+        }
+        .gallery-arrow:hover { background: rgba(0,0,0,.65); }
+        .gallery-arrow.prev { left: 8px; }
+        .gallery-arrow.next { right: 8px; }
+        .gallery-counter {
+            position: absolute; bottom: 8px; right: 10px;
+            background: rgba(0,0,0,.5); color: #fff;
+            font-size: 11px; padding: 2px 8px; border-radius: 10px;
+        }
+        .gallery-thumbs { display: flex; gap: 6px; padding: 8px; background: #f0ede6; overflow-x: auto; flex-wrap: wrap; }
+        .gallery-thumbs .thumb-wrap {
+            position: relative; flex-shrink: 0;
+        }
+        .gallery-thumbs img {
+            width: 54px; height: 54px; object-fit: cover; border-radius: 6px;
+            cursor: pointer; display: block; border: 2px solid transparent; opacity: .7;
+            transition: border-color .15s, opacity .15s;
+        }
+        .gallery-thumbs img.active { border-color: var(--green-main); opacity: 1; }
+        .thumb-remove {
+            position: absolute; top: -4px; right: -4px;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: rgba(0,0,0,.6); color: #fff;
+            border: none; font-size: .65rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            line-height: 1; z-index: 3;
+        }
+        .thumb-remove:hover { background: var(--red); }
+
+        /* Upload strip */
+        .upload-strip {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px;
+            background: #f7fbf2;
+            border-top: 1px solid var(--border);
+        }
+        .upload-label {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 20px;
+            border: 1.5px dashed var(--border);
+            font-size: 12px; color: var(--text-muted);
+            cursor: pointer; transition: border-color .2s, background .2s;
+            white-space: nowrap;
+        }
+        .upload-label:hover { border-color: var(--green-main); background: #edf4ec; color: var(--green-main); }
+        #fileInput { display: none; }
+        .upload-hint { font-size: 11px; color: var(--text-muted); }
+
+        /* ── Price card (editable) ── */
+        .price-card {
+            background: var(--price-bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 18px 20px; text-align: center;
+        }
+        .price-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+        .price-input-wrap {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .price-input-wrap input {
+            width: 130px; text-align: center;
+            font-size: 26px; font-weight: 700; color: var(--green-dark);
+            border: 2px solid var(--border); border-radius: 8px;
+            padding: 4px 8px; font-family: inherit;
+            background: #fff; outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .price-input-wrap input:focus {
+            border-color: var(--green-main);
+            box-shadow: 0 0 0 3px rgba(45,90,22,.12);
+        }
+        .price-input-wrap .currency { font-size: 22px; font-weight: 700; color: var(--green-dark); }
+        .price-unit { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+        /* ── Cards ── */
+        .right-col { display: flex; flex-direction: column; gap: 16px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .card-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 11px 18px; border-bottom: 1px solid var(--border);
+            font-size: 14px; font-weight: 600; color: var(--green-dark);
+            background: #f7fbf2;
+        }
+        .card-body { padding: 16px 18px; }
+
+        /* ── Info grid (editable version) ── */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+        .info-item label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .info-item label .req { color: var(--orange); margin-left: 2px; }
+        .info-item.full { grid-column: 1 / -1; }
+        .info-item.half { grid-column: span 2; }
+
+        /* ── Form inputs styled to match view labels ── */
+        .field-input {
+            width: 100%; padding: 7px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 7px; font-family: inherit; font-size: 14px;
+            font-weight: 600; color: var(--text);
+            background: #fafaf9; outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .field-input:focus {
+            border-color: var(--green-main);
+            box-shadow: 0 0 0 3px rgba(45,90,22,.1);
+            background: #fff;
+        }
+        select.field-input { cursor: pointer; }
+        textarea.field-input { resize: vertical; min-height: 80px; font-weight: 400; font-size: 13.5px; line-height: 1.8; }
+
+        .input-with-unit { position: relative; display: flex; align-items: center; }
+        .input-with-unit .field-input { padding-right: 42px; }
+        .input-unit {
+            position: absolute; right: 10px;
+            font-size: 12px; color: var(--text-muted); pointer-events: none; font-weight: 400;
+        }
+
+        /* ── Status badge preview ── */
+        .status-preview {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
+            margin-top: 4px;
+        }
+        .status-preview.open  { background: #d4f0c8; color: #1e7a10; }
+        .status-preview.close { background: #fde8e8; color: #b32020; }
+        .status-preview .dot  { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+        /* ── Facilities ── */
+        .facility-list { display: flex; flex-wrap: wrap; gap: 8px; }
         .facility-item {
             display: inline-flex; align-items: center; gap: 7px;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border: 2px solid var(--border);
             border-radius: 999px;
             cursor: pointer;
             transition: border-color .15s, background .15s, box-shadow .15s;
-            font-size: .88rem;
+            font-size: 13px; font-weight: 500;
             background: #fff;
             user-select: none;
             white-space: nowrap;
         }
-        .facility-item:hover {
-            border-color: var(--green-mid);
-            background: #f0f5ee;
-        }
-        .facility-item input[type=checkbox] {
-            display: none; /* ซ่อน checkbox จริง ใช้ visual pill แทน */
-        }
+        .facility-item:hover { border-color: var(--green-main); background: #f0f5ee; }
+        .facility-item input[type=checkbox] { display: none; }
         .facility-item.checked {
-            border-color: var(--green-mid);
-            background: #edf4ec;
-            box-shadow: 0 0 0 1px var(--green-mid);
-        }
-        .facility-item.checked .fac-icon-wrap {
-            background: var(--green-mid);
-            color: #fff;
+            border-color: var(--green-main);
+            background: #e8f0df;
+            box-shadow: 0 0 0 1px var(--green-main);
+            color: var(--green-dark);
         }
         .fac-icon-wrap {
-            width: 26px; height: 26px; border-radius: 50%;
+            width: 22px; height: 22px; border-radius: 50%;
             background: #f0ece4;
             display: flex; align-items: center; justify-content: center;
-            font-size: .95rem; flex-shrink: 0;
-            transition: background .15s, color .15s;
+            font-size: .85rem; flex-shrink: 0;
+            transition: background .15s;
         }
-        .fac-label { font-weight: 500; color: var(--text); }
+        .facility-item.checked .fac-icon-wrap { background: var(--green-main); }
 
-        /* ── Footer buttons ── */
-        .footer-actions {
-            display: flex; justify-content: flex-end; align-items: center;
-            gap: 12px; margin-top: 6px;
-        }
-        .btn-cancel {
-            padding: 10px 24px; border-radius: 8px;
-            border: 1.5px solid var(--border);
-            background: #fff; color: var(--text);
-            font-family: inherit; font-size: .92rem; cursor: pointer;
-            transition: border-color .2s;
-        }
-        .btn-cancel:hover { border-color: #aaa; }
-        .btn-save {
-            padding: 10px 26px; border-radius: 8px;
-            border: none; background: var(--orange);
-            color: #fff; font-family: inherit; font-size: .92rem;
-            font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; gap: 7px;
-            transition: background .2s, transform .1s;
-        }
-        .btn-save:hover { background: var(--orange-dark); }
-        .btn-save:active { transform: scale(.98); }
-        .btn-save:disabled { background: #ccc; cursor: not-allowed; }
+        /* ── Conditions ── */
+        .condition-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .condition-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 13.5px; line-height: 1.65; }
+        .condition-list li::before { content: "*"; color: var(--green-main); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
 
-        /* ── Toast ── */
+        /* ── Toast (error only) ── */
         #toast {
             position: fixed; bottom: 28px; right: 28px; z-index: 9999;
             padding: 12px 20px; border-radius: 8px;
             font-size: .9rem; font-weight: 500;
-            background: var(--green-dark); color: #fff;
+            background: var(--red); color: #fff;
             box-shadow: 0 4px 16px rgba(0,0,0,.18);
             opacity: 0; transform: translateY(12px);
             transition: opacity .3s, transform .3s;
             pointer-events: none;
         }
         #toast.show { opacity: 1; transform: translateY(0); }
-        #toast.error { background: var(--red); }
+
+        /* ── Success Modal ── */
+        #successOverlay {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,.45);
+            align-items: center; justify-content: center;
+        }
+        #successOverlay.show { display: flex; }
+        .success-modal {
+            background: #fff;
+            border-radius: 14px;
+            padding: 36px 40px 32px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0,0,0,.22);
+            max-width: 340px; width: 90%;
+            animation: modalPop .25s ease;
+        }
+        @keyframes modalPop {
+            from { transform: scale(.88); opacity: 0; }
+            to   { transform: scale(1);  opacity: 1; }
+        }
+        .success-icon {
+            width: 62px; height: 62px; border-radius: 50%;
+            background: #e8f5e9;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .success-icon svg { width: 32px; height: 32px; }
+        .success-modal h3 { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+        .success-modal p  { font-size: .9rem; color: var(--text-muted); line-height: 1.6; }
 
         /* loading overlay */
         #loadingOverlay {
@@ -260,34 +402,48 @@
         .spinner {
             width: 40px; height: 40px; border-radius: 50%;
             border: 4px solid var(--border);
-            border-top-color: var(--green-mid);
+            border-top-color: var(--green-main);
             animation: spin .7s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Footer actions ── */
+        .footer-actions {
+            display: flex; justify-content: flex-end; align-items: center;
+            gap: 12px; margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 700px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+            .page-header { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
-<!-- Navbar -->
 <!-- ─── NAVBAR ─── -->
-<nav class="navbar">
-    <a class="navbar-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+<nav class="hs-navbar">
+    <a class="hs-navbar-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun"></i>
+        ระบบท่องเที่ยวชุมชนชนเผ่า
     </a>
-    
-    <div class="nav-right">
-        <div class="profile-dropdown">
-            <div class="profile-trigger">
-                <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
-                <span class="owner-name" th:text="${ownername}">สมชาย ใจดี</span>
-                <i class="fas fa-chevron-down" style="font-size:.8rem; margin-left:5px; color:#fff;"></i>
+    <div class="hs-nav-right">
+        <div class="hs-profile-dropdown">
+            <div class="hs-profile-trigger">
+                <div class="hs-avatar" th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
+                <div>
+                    <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
+                    <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+                </div>
+                <i class="fas fa-chevron-down hs-chevron"></i>
             </div>
-            <div class="dropdown-content">
+            <div class="hs-dropdown-content">
                 <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
                 <hr>
-                <a th:href="@{/owner/logout}" class="logout-item">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
+                <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
             </div>
         </div>
     </div>
@@ -295,193 +451,210 @@
 
 <!-- Loading -->
 <div id="loadingOverlay"><div class="spinner"></div></div>
-
-<!-- Toast -->
+<!-- Toast (error) -->
 <div id="toast"></div>
+<!-- Success Modal -->
+<div id="successOverlay">
+    <div class="success-modal">
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" stroke="#4caf50" stroke-width="2" fill="none"/>
+                <polyline points="7 12.5 10.5 16 17 9" stroke="#2d5a16" stroke-width="2.5" fill="none"/>
+            </svg>
+        </div>
+        <h3>บันทึกสำเร็จ!</h3>
+        <p>ข้อมูลห้องพักได้รับการอัปเดตเรียบร้อยแล้ว<br>กำลังกลับหน้ารายการ...</p>
+    </div>
+</div>
 
-<div class="page">
-    <!-- Back -->
-    <a class="back-btn"
-       th:href="@{/owner/rooms(homestayid=${homestayid})}">
-        ← ย้อนกลับ
-    </a>
+<div class="container">
 
-    <div class="page-title">แก้ไขข้อมูลห้องพัก</div>
-    <div class="page-subtitle" th:text="'roomTypeId: ' + ${room.roomtypeid}">roomTypeId: RT-1002</div>
+    <a th:href="@{/owner/rooms(homestayid=${homestayid})}" class="btn-back">← ย้อนกลับ</a>
 
-    <div class="layout">
+    <div class="page-header">
+        <div class="page-title">
+            <h1>แก้ไขข้อมูลห้องพัก</h1>
+            <div class="room-id" th:text="'roomTypeId: ' + ${room.roomtypeid}"></div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+
         <!-- ── LEFT COLUMN ── -->
-        <div>
-            <!-- รายละเอียดห้องพัก -->
-            <div class="card">
-                <div class="card-title">รายละเอียดข้อมูล (Roomtype Attributes)</div>
+        <div class="left-col">
 
-                <div class="form-row">
-                    <!-- ประเภทที่พัก -->
-                    <div class="form-group">
-                        <label>ประเภทที่พัก <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <select id="typename">
-                                <option value="" disabled>-- เลือกประเภทที่พัก --</option>
+            <!-- Gallery + Image Manager -->
+            <div class="gallery-wrap">
+                <div class="gallery-main">
+                    <img id="mainImg"
+                         th:src="${imageList != null and !#lists.isEmpty(imageList)} ? ${imageList[0]} : ''"
+                         th:style="${imageList == null or #lists.isEmpty(imageList)} ? 'display:none' : ''"
+                         alt="room"/>
+                    <div class="no-image" id="noImagePlaceholder"
+                         th:style="${imageList != null and !#lists.isEmpty(imageList)} ? 'display:none' : ''">
+                        ไม่มีรูปภาพ
+                    </div>
+                    <button class="gallery-arrow prev" id="prevBtn" onclick="prevImg()"
+                            th:style="${imageList == null or #lists.size(imageList) <= 1} ? 'display:none' : ''">&#8249;</button>
+                    <button class="gallery-arrow next" id="nextBtn" onclick="nextImg()"
+                            th:style="${imageList == null or #lists.size(imageList) <= 1} ? 'display:none' : ''">&#8250;</button>
+                    <div class="gallery-counter" id="imgCounter"
+                         th:style="${imageList == null or #lists.size(imageList) <= 1} ? 'display:none' : ''">
+                        1 / <span id="imgTotal" th:text="${imageList != null ? #lists.size(imageList) : 0}"></span>
+                    </div>
+                </div>
+
+                <!-- Thumbnails strip -->
+                <div class="gallery-thumbs" id="thumbStrip">
+                    <th:block th:each="img,stat : ${imageList}">
+                        <div class="thumb-wrap existing-thumb" th:data-src="${img}">
+                            <img th:src="${img}" alt="thumb"
+                                 th:class="${stat.index == 0} ? 'active' : ''"
+                                 th:onclick="'goToImg(' + ${stat.index} + ')'" />
+                            <button type="button" class="thumb-remove" onclick="removeThumb(this)">✕</button>
+                        </div>
+                    </th:block>
+                </div>
+
+                <!-- Upload strip -->
+                <div class="upload-strip">
+                    <label class="upload-label" for="fileInput">
+                        <i class="fas fa-plus" style="font-size:.8rem;"></i> เพิ่มรูปภาพ
+                    </label>
+                    <span class="upload-hint">JPG, PNG ไม่เกิน 5 MB/รูป</span>
+                    <input type="file" id="fileInput" accept="image/*" multiple/>
+                </div>
+            </div>
+
+            <!-- Price Card (editable) -->
+            <div class="price-card">
+                <div class="price-label">ราคาต่อคืน</div>
+                <div class="price-input-wrap">
+                    <input type="number" id="pricepernight" min="0" step="0.01"
+                           th:value="${room.pricepernight}"
+                           placeholder="0.00"/>
+                    <span class="currency">฿</span>
+                </div>
+                <div class="price-unit">ราคาสุทธิ / คืน</div>
+            </div>
+        </div>
+
+        <!-- ── RIGHT COLUMN ── -->
+        <div class="right-col">
+
+            <!-- ข้อมูลประเภทห้องพัก -->
+            <div class="card">
+                <div class="card-header">🏠 ข้อมูลประเภทห้องพัก</div>
+                <div class="card-body">
+                    <div class="info-grid">
+
+                        <!-- ประเภทห้อง -->
+                        <div class="info-item">
+                            <label>ประเภทห้อง <span class="req">*</span></label>
+                            <select id="typename" class="field-input">
+                                <option value="" disabled>-- เลือก --</option>
                                 <option value="โดม"    th:selected="${room.typename == 'โดม'}">🔵 โดม</option>
                                 <option value="เต็นท์" th:selected="${room.typename == 'เต็นท์'}">⛺ เต็นท์</option>
                                 <option value="บ้านพัก" th:selected="${room.typename == 'บ้านพัก'}">🏡 บ้านพัก</option>
                             </select>
                         </div>
-                    </div>
-                    <!-- สถานะ -->
-                    <div class="form-group">
-                        <label>สถานะ <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <select id="statusSelect">
-                                <option value="เปิดจอง"     th:selected="${room.status == 'เปิดจอง'}">✅ เปิดจอง</option>
-                                <option value="ปิดปรับปรุง" th:selected="${room.status == 'ปิดปรับปรุง'}">🔧 ปิดปรับปรุง</option>
-                                <option value="เต็ม"        th:selected="${room.status == 'เต็ม'}">🔴 เต็ม</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="form-row">
-                    <!-- ประเภทเตียง -->
-                    <div class="form-group">
-                        <label>ประเภทเตียง <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <select id="bedtype">
-                                <option value="" disabled>-- เลือกประเภทเตียง --</option>
+                        <!-- ประเภทเตียง -->
+                        <div class="info-item">
+                            <label>ประเภทเตียง <span class="req">*</span></label>
+                            <select id="bedtype" class="field-input">
+                                <option value="" disabled>-- เลือก --</option>
                                 <option value="เดี่ยว"      th:selected="${room.bedtype == 'เดี่ยว'}">เตียงเดี่ยว</option>
-                                <option value="คู่"   th:selected="${room.bedtype == 'คู่'}">เตียงคู่</option>
-                                <option value="ฟูกนอนพื้น"         th:selected="${room.bedtype == 'ฟูกนอนพื้น'}">ฟูกนอนพื้น</option>
-                                
+                                <option value="คู่"          th:selected="${room.bedtype == 'คู่'}">เตียงคู่</option>
+                                <option value="ฟูกนอนพื้น"  th:selected="${room.bedtype == 'ฟูกนอนพื้น'}">ฟูกนอนพื้น</option>
                             </select>
                         </div>
-                    </div>
-                    <!-- ราคาต่อคืน -->
-                    <div class="form-group">
-                        <label>ราคาต่อคืน <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <input type="number" id="pricepernight" class="has-unit" min="0"
-                                   th:value="${room.pricepernight}"/>
-                            <span class="unit">฿</span>
+
+                        <!-- สถานะ -->
+                        <div class="info-item">
+                            <label>สถานะ <span class="req">*</span></label>
+                            <select id="statusSelect" class="field-input" onchange="updateStatusBadge()">
+                                <option value="เปิดจอง"     th:selected="${room.status == 'เปิดจอง'}">เปิดจอง</option>
+                                <option value="ปิดปรับปรุง" th:selected="${room.status == 'ปิดปรับปรุง'}">ปิดปรับปรุง</option>
+                                <option value="เต็ม"        th:selected="${room.status == 'เต็ม'}">เต็ม</option>
+                            </select>
+                            <div id="statusBadge" class="status-preview"></div>
+                        </div>
+
+                        <!-- รองรับสูงสุด -->
+                        <div class="info-item">
+                            <label>จำนวนผู้เข้าพักสูงสุด <span class="req">*</span></label>
+                            <div class="input-with-unit">
+                                <input type="number" id="maxguest" class="field-input" min="1"
+                                       th:value="${room.maxguest}"/>
+                                <span class="input-unit">ท่าน</span>
+                            </div>
+                        </div>
+
+                        <!-- จำนวนห้องทั้งหมด -->
+                        <div class="info-item">
+                            <label>จำนวนห้องทั้งหมด <span class="req">*</span></label>
+                            <div class="input-with-unit">
+                                <input type="number" id="totalrooms" class="field-input" min="1"
+                                       th:value="${room.totalrooms}"/>
+                                <span class="input-unit">หลัง</span>
+                            </div>
+                        </div>
+
+                        <!-- คำอธิบาย -->
+                        <div class="info-item full">
+                            <label>คำอธิบาย</label>
+                            <textarea id="description" class="field-input"
+                                      placeholder="บรรยายลักษณะห้องพัก..."
+                                      th:text="${room.description}"></textarea>
                         </div>
                     </div>
                 </div>
-
-                <div class="form-row">
-                    <!-- รองรับสูงสุด -->
-                    <div class="form-group">
-                        <label>รองรับสูงสุด <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <input type="number" id="maxguest" class="has-unit" min="1"
-                                   th:value="${room.maxguest}"/>
-                            <span class="unit">คน</span>
-                        </div>
-                    </div>
-                    <!-- จำนวนห้องทั้งหมด -->
-                    <div class="form-group">
-                        <label>จำนวนห้องทั้งหมด <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <input type="number" id="totalrooms" class="has-unit" min="1"
-                                   th:value="${room.totalrooms}"/>
-                            <span class="unit">ห้อง</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row single">
-                    <!-- คำอธิบาย -->
-                    <div class="form-group">
-                        <label>คำอธิบายที่พัก</label>
-                        <div class="input-wrap">
-                            <textarea id="description"
-                                      th:text="${room.description}"
-                                      placeholder="บรรยายลักษณะห้องพัก..."></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row single">
-                    <!-- เงื่อนไข -->
-                    <div class="form-group">
-                        <label>เงื่อนไขการเข้าพัก</label>
-                        <div class="input-wrap">
-                            <textarea id="roomcondition"
-                                      th:text="${room.roomcondition}"
-                                      placeholder="เช่น ห้ามสูบบุหรี่, Check-in 14:00..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ── RIGHT COLUMN ── -->
-        <div>
-            <!-- รูปภาพ -->
-            <div class="card">
-                <div class="card-title">รูปภาพที่พัก</div>
-
-                <div class="img-preview-grid" id="imgGrid">
-                    <!-- รูปเดิมจาก server (Thymeleaf inject) -->
-                    <th:block th:each="img : ${imageList}">
-                        <div class="img-thumb existing-thumb">
-                            <img th:src="${img}" alt="room image"/>
-                            <button type="button" class="remove-img" onclick="removeThumb(this)">✕</button>
-                        </div>
-                    </th:block>
-                </div>
-
-                <label class="upload-btn" for="fileInput">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                    เปลี่ยนรูปภาพ / เพิ่มรูปภาพ
-                </label>
-                <input type="file" id="fileInput" accept="image/*" multiple/>
-                <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
-                    รองรับ JPG, PNG ขนาดไม่เกิน 5 MB/รูป
-                </p>
             </div>
 
             <!-- สิ่งอำนวยความสะดวก -->
             <div class="card">
-                <div class="card-title">สิ่งอำนวยความสะดวก (Facilities)</div>
-                <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:12px;">
-                    เลือกสิ่งอำนวยความสะดวกที่มีให้บริการ
-                </p>
-
-                <div class="facilities-grid" id="facilitiesGrid">
-                    <!-- Thymeleaf render pill checkbox แต่ละรายการ -->
-                    <th:block th:each="fac : ${allFacilities}">
-                        <label class="facility-item"
-                               th:classappend="${checkedIds.contains(fac.facilitiesid)} ? ' checked' : ''"
-                               th:data-name="${fac.facilitiesname}">
-                            <input type="checkbox"
-                                   th:value="${fac.facilitiesid}"
-                                   th:checked="${checkedIds.contains(fac.facilitiesid)}"
-                                   onchange="toggleFacilityStyle(this)"/>
-                            <span class="fac-icon-wrap"
-                                  th:attr="data-name=${fac.facilitiesname}">
-                                <!-- icon จะถูกใส่โดย JS -->
-                            </span>
-                            <span class="fac-label" th:text="${fac.facilitiesname}">WiFi</span>
-                        </label>
-                    </th:block>
+                <div class="card-header">🏕️ สิ่งอำนวยความสะดวก</div>
+                <div class="card-body">
+                    <div class="facility-list" id="facilitiesGrid">
+                        <th:block th:each="fac : ${allFacilities}">
+                            <label class="facility-item"
+                                   th:classappend="${checkedIds.contains(fac.facilitiesid)} ? ' checked' : ''">
+                                <input type="checkbox"
+                                       th:value="${fac.facilitiesid}"
+                                       th:checked="${checkedIds.contains(fac.facilitiesid)}"
+                                       onchange="toggleFacility(this)"/>
+                                <span class="fac-icon-wrap" th:attr="data-name=${fac.facilitiesname}"></span>
+                                <span th:text="${fac.facilitiesname}">WiFi</span>
+                            </label>
+                        </th:block>
+                    </div>
                 </div>
             </div>
+
+            <!-- เงื่อนไขการเข้าพัก -->
+            <div class="card">
+                <div class="card-header">📋 เงื่อนไขการเข้าพัก</div>
+                <div class="card-body">
+                    <textarea id="roomcondition" class="field-input"
+                              style="min-height:110px;"
+                              placeholder="เช่น ห้ามสูบบุหรี่&#10;Check-in 14:00&#10;Check-out 12:00"
+                              th:text="${room.roomcondition}"></textarea>
+                    <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">แต่ละเงื่อนไขให้กด Enter แบ่งบรรทัด</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Footer buttons -->
+    <!-- Footer actions -->
     <div class="footer-actions">
         <button class="btn-cancel" type="button"
                 th:onclick="|window.location.href='@{/owner/rooms(homestayid=${homestayid})}'|">
             ยกเลิก
         </button>
         <button class="btn-save" type="button" id="btnSave" onclick="submitEdit()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2.2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
                 <polyline points="17 21 17 13 7 13 7 21"/>
                 <polyline points="7 3 7 8 15 8"/>
@@ -494,20 +667,124 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
 
-    // ─── ข้อมูลจาก server ────────────────────────────────────────────────────
     const ROOM_ID     = /*[[${room.roomtypeid}]]*/ '';
     const HOMESTAY_ID = /*[[${homestayid}]]*/ '';
 
-    // ─── ไฟล์ใหม่ที่เลือกไว้ (File objects) ─────────────────────────────────
-    let newFileList = [];
+    // ── Gallery ──────────────────────────────────────────────────────────
+    // Build initial image array from existing thumbs
+    let images = Array.from(document.querySelectorAll('#thumbStrip .existing-thumb'))
+                      .map(el => el.dataset.src);
+    let newFileList = [];   // { file, objectUrl }
+    let current = 0;
 
-    // ─── Facility icon ────────────────────────────────────────────────────────
+    const mainImg   = document.getElementById('mainImg');
+    const noImgEl   = document.getElementById('noImagePlaceholder');
+    const counter   = document.getElementById('imgCounter');
+    const imgTotal  = document.getElementById('imgTotal');
+    const prevBtn   = document.getElementById('prevBtn');
+    const nextBtn   = document.getElementById('nextBtn');
+    const thumbStrip = document.getElementById('thumbStrip');
+
+    function refreshUI() {
+        const total = images.length;
+        if (total === 0) {
+            mainImg.style.display = 'none';
+            noImgEl.style.display = '';
+            counter.style.display = 'none';
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        } else {
+            mainImg.style.display = '';
+            noImgEl.style.display = 'none';
+            if (current >= total) current = total - 1;
+            mainImg.src = images[current];
+            const showNav = total > 1;
+            counter.style.display = showNav ? '' : 'none';
+            prevBtn.style.display = showNav ? '' : 'none';
+            nextBtn.style.display = showNav ? '' : 'none';
+            if (imgTotal) imgTotal.textContent = total;
+            counter.childNodes[0].textContent = (current + 1) + ' / ';
+        }
+        // update active thumb
+        thumbStrip.querySelectorAll('img').forEach((t, i) => t.classList.toggle('active', i === current));
+    }
+
+    function goToImg(index) {
+        if (images.length === 0) return;
+        current = (index + images.length) % images.length;
+        refreshUI();
+    }
+    function nextImg() { goToImg(current + 1); }
+    function prevImg() { goToImg(current - 1); }
+
+    // Remove existing thumb
+    function removeThumb(btn) {
+        const wrap = btn.closest('.thumb-wrap');
+        const idx  = Array.from(thumbStrip.children).indexOf(wrap);
+        images.splice(idx, 1);
+        wrap.remove();
+        if (current >= images.length) current = Math.max(0, images.length - 1);
+        refreshUI();
+    }
+
+    // Add new images
+    const fileInput = document.getElementById('fileInput');
+    fileInput.addEventListener('change', function () {
+        Array.from(this.files).forEach(file => {
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('ไฟล์ ' + file.name + ' ใหญ่เกิน 5 MB', true);
+                return;
+            }
+            const objectUrl = URL.createObjectURL(file);
+            const fileIdx   = newFileList.length;
+            newFileList.push({ file, objectUrl });
+            images.push(objectUrl);
+
+            // create thumb
+            const wrap = document.createElement('div');
+            wrap.className = 'thumb-wrap new-thumb';
+            wrap.dataset.newIdx = fileIdx;
+            const img = document.createElement('img');
+            img.src = objectUrl; img.alt = 'thumb';
+            img.onclick = () => goToImg(images.indexOf(objectUrl));
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'thumb-remove';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = () => removeNewThumb(removeBtn, fileIdx, objectUrl);
+            wrap.appendChild(img); wrap.appendChild(removeBtn);
+            thumbStrip.appendChild(wrap);
+        });
+        this.value = '';
+        refreshUI();
+    });
+
+    function removeNewThumb(btn, fileIdx, objectUrl) {
+        newFileList[fileIdx] = null;
+        const imgIdx = images.indexOf(objectUrl);
+        if (imgIdx > -1) images.splice(imgIdx, 1);
+        btn.closest('.thumb-wrap').remove();
+        if (current >= images.length) current = Math.max(0, images.length - 1);
+        refreshUI();
+    }
+
+    // Collect existing image paths (that remain in DOM)
+    function collectExistingPaths() {
+        return Array.from(thumbStrip.querySelectorAll('.existing-thumb'))
+            .map(el => el.dataset.src)
+            .filter(Boolean)
+            .join(',');
+    }
+
+    // ── Facility icons ────────────────────────────────────────────────────
     const FAC_ICONS = {
         'wifi': '📶', 'wi-fi': '📶',
         'แอร์': '❄️', 'เครื่องปรับอากาศ': '❄️',
         'น้ำอุ่น': '🚿', 'ฝักบัวน้ำอุ่น': '🚿',
         'พัดลม': '🌀',
         'ที่จอดรถ': '🚗', 'จอดรถ': '🚗',
+        'ทีวี': '📺', 'tv': '📺',
+        'อาหารเช้า': '🍳',
     };
     function getFacIcon(name) {
         const key = name.toLowerCase().trim();
@@ -520,62 +797,28 @@
         el.textContent = getFacIcon(el.dataset.name);
     });
 
-    function toggleFacilityStyle(cb) {
+    function toggleFacility(cb) {
         cb.closest('.facility-item').classList.toggle('checked', cb.checked);
     }
 
-    // ─── ลบรูปเดิม (เอา DOM ออก → ไม่ส่ง path นั้นกลับไป) ─────────────────
-    function removeThumb(btn) {
-        btn.closest('.img-thumb').remove();
+    // ── Status badge preview ──────────────────────────────────────────────
+    function updateStatusBadge() {
+        const sel   = document.getElementById('statusSelect');
+        const badge = document.getElementById('statusBadge');
+        const val   = sel.value;
+        badge.className = 'status-preview ' + (val === 'เปิดจอง' ? 'open' : 'close');
+        const icons = { 'เปิดจอง': '🟢', 'ปิดปรับปรุง': '🔧', 'เต็ม': '🔴' };
+        badge.innerHTML = `<span class="dot"></span> ${val}`;
     }
+    updateStatusBadge();
 
-    // ─── อัปโหลดรูปใหม่: แสดง preview (ไม่แปลง Base64 จริง ใช้ ObjectURL) ──
-    const fileInput = document.getElementById('fileInput');
-    const imgGrid   = document.getElementById('imgGrid');
-
-    fileInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(file => {
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('ไฟล์ ' + file.name + ' ใหญ่เกิน 5 MB', true);
-                return;
-            }
-            const idx = newFileList.length;
-            newFileList.push(file);
-
-            const thumb = document.createElement('div');
-            thumb.className = 'img-thumb new-thumb';
-            thumb.dataset.newIndex = idx;
-            thumb.innerHTML =
-                `<img src="${URL.createObjectURL(file)}" alt="new"/>
-                 <button type="button" class="remove-img" onclick="removeNewThumb(this,${idx})">✕</button>`;
-            imgGrid.appendChild(thumb);
-        });
-        this.value = '';
-    });
-
-    function removeNewThumb(btn, idx) {
-        newFileList[idx] = null;
-        btn.closest('.img-thumb').remove();
-    }
-
-    // ─── Collect URL path ของรูปเดิมที่ยังคงอยู่ใน DOM ──────────────────────
-    function collectExistingPaths() {
-        return Array.from(imgGrid.querySelectorAll('.existing-thumb img'))
-            .map(img => {
-                // img.src เป็น absolute URL → เอาแค่ path (/uploads/rooms/xxx.jpg)
-                try { return new URL(img.src).pathname; } catch { return img.src; }
-            })
-            .filter(Boolean)
-            .join(',');
-    }
-
-    // ─── Validate ─────────────────────────────────────────────────────────────
+    // ── Validate ──────────────────────────────────────────────────────────
     function validate() {
         const required = [
-            { id: 'typename',      label: 'ประเภทที่พัก' },
-            { id: 'bedtype',       label: 'ประเภทเตียง'  },
-            { id: 'pricepernight', label: 'ราคาต่อคืน'   },
-            { id: 'maxguest',      label: 'รองรับสูงสุด' },
+            { id: 'typename',      label: 'ประเภทห้อง' },
+            { id: 'bedtype',       label: 'ประเภทเตียง' },
+            { id: 'pricepernight', label: 'ราคาต่อคืน' },
+            { id: 'maxguest',      label: 'จำนวนผู้เข้าพักสูงสุด' },
             { id: 'totalrooms',    label: 'จำนวนห้องทั้งหมด' },
         ];
         for (const f of required) {
@@ -589,7 +832,7 @@
         return true;
     }
 
-    // ─── Submit → multipart/form-data ─────────────────────────────────────────
+    // ── Submit ────────────────────────────────────────────────────────────
     async function submitEdit() {
         if (!validate()) return;
 
@@ -609,22 +852,20 @@
         fd.append('status',         document.getElementById('statusSelect').value);
         fd.append('existingImages', collectExistingPaths());
 
-        // Facilities
         document.querySelectorAll('#facilitiesGrid input[type=checkbox]:checked')
             .forEach(cb => fd.append('facilitiesIds', cb.value));
 
-        // รูปใหม่ (File objects)
-        newFileList.filter(f => f !== null).forEach(file => fd.append('newImages', file));
+        newFileList.filter(f => f !== null).forEach(f => fd.append('newImages', f.file));
 
         try {
             const res  = await fetch('/owner/room/edit', { method: 'POST', body: fd });
             const data = await res.json();
 
             if (data.success) {
-                showToast('บันทึกสำเร็จ ✓');
+                showSuccessModal();
                 setTimeout(() => {
                     window.location.href = '/owner/rooms?homestayid=' + HOMESTAY_ID;
-                }, 1200);
+                }, 2000);
             } else {
                 showToast('เกิดข้อผิดพลาด: ' + (data.message || ''), true);
                 btn.disabled = false;
@@ -637,16 +878,27 @@
         }
     }
 
-    // ─── Toast ────────────────────────────────────────────────────────────────
+    // ── Success Modal ──────────────────────────────────────────────────────
+    function showSuccessModal() {
+        document.getElementById('successOverlay').classList.add('show');
+    }
+
+    // ── Toast (error only) ────────────────────────────────────────────────
     let toastTimer;
     function showToast(msg, isError = false) {
         const t = document.getElementById('toast');
         t.textContent = msg;
-        t.className   = 'show' + (isError ? ' error' : '');
+        t.className   = 'show';
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+        toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+    }
+
+    // Init gallery counter text
+    if (images.length > 0) {
+        counter.childNodes[0].textContent = '1 / ';
     }
     /*]]>*/
 </script>
+
 </body>
 </html>

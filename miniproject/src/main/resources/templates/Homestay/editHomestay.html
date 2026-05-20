@@ -91,6 +91,11 @@
     background: var(--orange); color: #fff;
     font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px;
   }
+  .img-thumb .new-badge {
+    position: absolute; bottom: 4px; right: 4px;
+    background: var(--green-main); color: #fff;
+    font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px;
+  }
 
   /* Upload zone */
   .upload-zone {
@@ -118,43 +123,32 @@
   .btn-save:hover { box-shadow: 0 6px 20px rgba(45,90,39,.38); }
   .btn-save:disabled { opacity: .6; cursor: not-allowed; }
 
-  /* ── Overlay ── */
-.toast-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.35);
-  backdrop-filter: blur(3px);
-  opacity: 0; transition: opacity .3s;
-  pointer-events: none; z-index: 9998;
-}
-.toast-overlay.show { opacity: 1; }
+  /* Toast overlay */
+  .toast-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.35); backdrop-filter: blur(3px);
+    opacity: 0; transition: opacity .3s;
+    pointer-events: none; z-index: 9998;
+  }
+  .toast-overlay.show { opacity: 1; pointer-events: all; }
 
-/* ── Toast modal ── */
-.toast {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%) scale(0.85);
-  width: 360px;
-  background: linear-gradient(145deg, #2d5a27, #3a7a30);
-  color: #fff;
-  padding: 36px 40px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,.3);
-  border: 1px solid rgba(255,255,255,.15);
-  opacity: 0;
-  transition: opacity .3s, transform .3s;
-  pointer-events: none; z-index: 9999;
-}
-.toast.show {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-.toast.error {
-  background: linear-gradient(145deg, #c0392b, #e53e3e);
-}
-.toast-icon { font-size: 48px; margin-bottom: 12px; }
-.toast-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-.toast-msg { font-size: 14px; opacity: .85; }
+  /* Toast modal */
+  .toast {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.85);
+    width: 360px;
+    background: linear-gradient(145deg, #2d5a27, #3a7a30);
+    color: #fff; padding: 36px 40px; border-radius: 20px;
+    text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    border: 1px solid rgba(255,255,255,.15);
+    opacity: 0; transition: opacity .3s, transform .3s;
+    pointer-events: none; z-index: 9999;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .toast.error { background: linear-gradient(145deg, #c0392b, #e53e3e); }
+  .toast-icon  { font-size: 48px; margin-bottom: 12px; }
+  .toast-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .toast-msg   { font-size: 14px; opacity: .85; }
 
   @media(max-width:600px) {
     .wrapper { padding: 16px 12px 50px; }
@@ -173,7 +167,9 @@
     ระบบท่องเที่ยวชุมชนชนเผ่า
   </a>
   <div class="nav-user">
-    <div class="nav-avatar" th:text="${#strings.substring(ownername, 0, 2)}">UN</div>
+    <div class="nav-avatar"
+         th:text="${ownername != null and #strings.length(ownername) >= 2}
+                  ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
     <span class="nav-name" th:text="${ownername}">คุณนิคม สุขใจ</span>
     <span style="color:rgba(255,255,255,.7);font-size:11px">▾</span>
   </div>
@@ -244,29 +240,42 @@
 
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Toast overlay + modal -->
+<div class="toast-overlay" id="toastOverlay"></div>
+<div class="toast" id="toast">
+  <div class="toast-icon"  id="toastIcon"></div>
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-msg"   id="toastMsg"></div>
+</div>
 
 <!-- ฝัง data จาก Thymeleaf → JavaScript -->
 <script th:inline="javascript">
   /*<![CDATA[*/
   const HOMESTAY_ID = /*[[${detail.homestay.homestayid}]]*/ 0;
-  // detail.allImages คือ List<String> จาก HomestayDetailDto ที่ split ให้แล้ว → ได้ JS array เลย
+  // allImages คือ List<String> ของ paths เช่น ["/uploads/homestays/1/abc.jpg", ...]
   const DB_IMAGES   = /*[[${detail.allImages}]]*/ [];
   /*]]>*/
 </script>
 
 <script>
-// ── Image state ──
-let images = []; // [{src, isNew}]
+/*
+  โครงสร้าง images array:
+  {
+    src:      string  — URL สำหรับแสดงผล (path จาก server หรือ blob URL)
+    keepPath: string|null — path เก่าที่จะส่งกลับไปให้ server คง (null = รูปใหม่)
+    file:     File|null   — File object ของรูปใหม่ที่ยังไม่ได้ upload (null = รูปเก่า)
+  }
+*/
+let images = [];
 
-// โหลดรูปจาก DB — DB_IMAGES คือ array ที่ HomestayDetailDto split มาให้แล้ว
-DB_IMAGES.forEach(src => {
-  if (src && src.trim()) {
-    // รูปตัวที่ 2+ จาก split("(?=,data:)") จะขึ้นต้นด้วย ",data:" → ตัด comma หน้าออก
-    images.push({ src: src.replace(/^,/, ''), isNew: false });
+// โหลดรูปเก่าจาก DB — DB_IMAGES เป็น array ของ path string แล้ว
+DB_IMAGES.forEach(path => {
+  if (path && path.trim()) {
+    images.push({ src: path.trim(), keepPath: path.trim(), file: null });
   }
 });
 
+// ── Render ──
 function renderImages() {
   const grid = document.getElementById('imgGrid');
   grid.innerHTML = '';
@@ -274,45 +283,57 @@ function renderImages() {
     const div = document.createElement('div');
     div.className = 'img-thumb';
     div.innerHTML = `
-      <img src="${img.src}" alt="รูป ${i + 1}">
+      <img src="${escapeHtml(img.src)}" alt="รูป ${i + 1}">
       ${i === 0 ? '<span class="primary-badge">หลัก</span>' : ''}
+      ${img.file ? '<span class="new-badge">ใหม่</span>' : ''}
       <button class="del" type="button" onclick="removeImg(${i})" title="ลบ">✕</button>
     `;
     grid.appendChild(div);
   });
 }
 
+function escapeHtml(str) {
+  return str.replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
 function removeImg(idx) {
+  // ถ้าเป็นรูปใหม่ (blob URL) ให้ revoke เพื่อคืน memory
+  if (images[idx].file) URL.revokeObjectURL(images[idx].src);
   images.splice(idx, 1);
   renderImages();
 }
 
-// Upload ใหม่
+// ── Upload ใหม่ ──
 document.getElementById('fileInput').addEventListener('change', e => {
   Array.from(e.target.files).forEach(file => {
-    if (file.size > 5 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 5MB: ' + file.name, true); return; }
-    const r = new FileReader();
-    r.onload = ev => { images.push({ src: ev.target.result, isNew: true }); renderImages(); };
-    r.readAsDataURL(file);
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('ไฟล์ใหญ่เกิน 5MB: ' + file.name, true);
+      return;
+    }
+    images.push({
+      src:      URL.createObjectURL(file), // blob URL ใช้แค่ preview
+      keepPath: null,
+      file:     file
+    });
+    renderImages();
   });
-  e.target.value = '';
+  e.target.value = ''; // reset เพื่อให้เลือกไฟล์เดิมซ้ำได้
 });
 
-// Drag & drop
+// ── Drag & drop ──
 const zone = document.querySelector('.upload-zone');
-zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = 'var(--green-main)'; });
+zone.addEventListener('dragover',  e => { e.preventDefault(); zone.style.borderColor = 'var(--green-main)'; });
 zone.addEventListener('dragleave', () => zone.style.borderColor = '');
 zone.addEventListener('drop', e => {
   e.preventDefault(); zone.style.borderColor = '';
   Array.from(e.dataTransfer.files).forEach(file => {
     if (!file.type.match(/image\/(png|jpeg|webp)/)) return;
-    const r = new FileReader();
-    r.onload = ev => { images.push({ src: ev.target.result, isNew: true }); renderImages(); };
-    r.readAsDataURL(file);
+    images.push({ src: URL.createObjectURL(file), keepPath: null, file: file });
+    renderImages();
   });
 });
 
-// ── Save → PUT /owner/homestays/{id} ──
+// ── Save → PUT /owner/homestays/{id} (multipart/form-data) ──
 async function handleSave() {
   const name = document.getElementById('homestayname').value.trim();
   const addr = document.getElementById('address').value.trim();
@@ -321,29 +342,36 @@ async function handleSave() {
   if (!name) { showToast('กรุณากรอกชื่อโฮมสเตย์', true); return; }
   if (!addr) { showToast('กรุณากรอกที่อยู่', true); return; }
 
-  // รวมรูปกลับเป็น string แบบที่ DB เก็บ:
-  // รูปแรก: "data:image/..." / รูปถัดไป: ",data:image/..."
-  let imagesStr = null;
-  if (images.length > 0) {
-    imagesStr = images
-      .map((img, i) => i === 0 ? img.src : ',' + img.src)
-      .join('');
-  }
-
   const btn = document.getElementById('saveBtn');
   btn.disabled = true;
   btn.textContent = '⏳ กำลังบันทึก...';
 
-  try {
-    const res = await fetch(`/owner/homestays/${HOMESTAY_ID}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ homestayname: name, address: addr, description: desc, images: imagesStr })
-    });
+  const fd = new FormData();
+  fd.append('homestayname', name);
+  fd.append('address',      addr);
+  fd.append('description',  desc);
 
+  // รูปเก่าที่คงไว้ → ส่งเป็น CSV ของ path
+  const keepPaths = images
+    .filter(img => img.keepPath)
+    .map(img => img.keepPath)
+    .join(',');
+  fd.append('keepImages', keepPaths);
+
+  // รูปใหม่ → แนบ File จริง (ไม่แปลงเป็น base64)
+  images
+    .filter(img => img.file)
+    .forEach(img => fd.append('newImages', img.file));
+
+  try {
+    const res  = await fetch(`/owner/homestays/${HOMESTAY_ID}`, {
+      method: 'PUT',
+      body:   fd  // ห้ามใส่ Content-Type header — browser จัดการ boundary เอง
+    });
     const data = await res.json();
+
     if (res.ok && data.success) {
-      showToast('✅ บันทึกข้อมูลสำเร็จ');
+      showToast('บันทึกข้อมูลสำเร็จ');
       setTimeout(() => window.location.href = `/owner/homestays/${HOMESTAY_ID}`, 1500);
     } else {
       showToast(data.message || 'เกิดข้อผิดพลาด', true);
@@ -356,15 +384,16 @@ async function handleSave() {
   }
 }
 
+// ── Toast ──
 function showToast(msg, isError = false) {
-  const overlay = document.getElementById('toastOverlay');
-  const toast   = document.getElementById('toast');
   document.getElementById('toastIcon').textContent  = isError ? '❌' : '✅';
   document.getElementById('toastTitle').textContent = isError ? 'เกิดข้อผิดพลาด' : 'บันทึกสำเร็จ';
   document.getElementById('toastMsg').textContent   = msg;
 
+  const toast   = document.getElementById('toast');
+  const overlay = document.getElementById('toastOverlay');
   toast.className   = 'toast'         + (isError ? ' error' : '') + ' show';
-  overlay.className = 'toast-overlay' + ' show';
+  overlay.className = 'toast-overlay show';
 
   setTimeout(() => {
     toast.className   = 'toast'         + (isError ? ' error' : '');

@@ -1,5 +1,6 @@
 package com.example.miniproject.dto.Homestay;
 
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public class RegisterOwnerRequest {
@@ -9,8 +10,8 @@ public class RegisterOwnerRequest {
     private String email;
     private String phone;
     private String password;
-    private List<HomestayDto> homestays;
-
+    private List<HomestayItem> homestays;
+    // private List<HomestayDto> homestay; 
     // Getters & Setters
     public String getFirstname() { return firstname; }
     public void setFirstname(String firstname) { this.firstname = firstname; }
@@ -27,25 +28,30 @@ public class RegisterOwnerRequest {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public List<HomestayDto> getHomestays() { return homestays; }
-    public void setHomestays(List<HomestayDto> homestays) { this.homestays = homestays; }
+    public List<HomestayItem> getHomestays() { return homestays; }
+    public void setHomestays(List<HomestayItem> homestays) { this.homestays = homestays; }
+    
 
-    public static class HomestayDto {
-    private String homestayname;
-    private String description;
-    private String address;
-    private List<String> images; // ✅ Base64
+    // ── Inner class สำหรับข้อมูลแต่ละ homestay ──
+    public static class HomestayItem {
+        private String homestayname;
+        private String description;
+        private String address;
+        private List<MultipartFile> images;
 
-    public String getHomestayname() { return homestayname; }
-    public void setHomestayname(String homestayname) { this.homestayname = homestayname; }
+        public String getHomestayname() { return homestayname; }
+        public void setHomestayname(String homestayname) { this.homestayname = homestayname; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+        public String getAddress() { return address; }
+        public void setAddress(String address) { this.address = address; }
 
-    public List<String> getImages() { return images; }
-    public void setImages(List<String> images) { this.images = images; }
-}
+        public List<MultipartFile> getImages() { return images; }
+        public void setImages(List<MultipartFile> images) { this.images = images; }
+    }
+
+
+    
 }

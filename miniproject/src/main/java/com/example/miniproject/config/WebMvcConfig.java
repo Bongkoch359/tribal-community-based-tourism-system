@@ -20,5 +20,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         System.out.println("📁 Rooms resource path: " + roomPath);
         registry.addResourceHandler("/uploads/rooms/**")
                 .addResourceLocations("file:" + roomPath);
+
+         // ── Homestay images ──────────────────────────────────────────────
+        String homestayPath = System.getProperty("user.dir") + "/uploads/homestays/";
+        System.out.println("📁 Homestay resource path: " + homestayPath);
+         registry.addResourceHandler("/uploads/homestays/**")
+            .addResourceLocations("file:" + homestayPath);
     }
 }

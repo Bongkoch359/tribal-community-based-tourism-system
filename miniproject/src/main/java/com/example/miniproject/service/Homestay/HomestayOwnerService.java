@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,42 +27,46 @@ public class HomestayOwnerService {
 
     // ───── Register ─────
 
-    @Transactional
-    public void register(RegisterOwnerRequest req) {
+   @Transactional
+public List<Integer> register(RegisterOwnerRequest req) {
 
-        if (ownerRepository.existsByEmail(req.getEmail())) {
-            throw new IllegalArgumentException("อีเมลนี้ถูกใช้งานแล้ว");
-        }
-
-        Homestayowner owner = new Homestayowner();
-        owner.setFirstname(req.getFirstname());
-        owner.setLastname(req.getLastname());
-        owner.setEmail(req.getEmail());
-        owner.setPhone(req.getPhone());
-        owner.setPassword(req.getPassword());
-        owner.setVerificationstatus(false);
-        owner.setAccountstatus("pending");
-
-        Homestayowner saved = ownerRepository.save(owner);
-
-        if (req.getHomestays() != null) {
-    for (RegisterOwnerRequest.HomestayDto dto : req.getHomestays()) {
-        Homestay h = new Homestay();
-        h.setOwner(saved);
-        h.setHomestayname(dto.getHomestayname());
-        h.setDescription(dto.getDescription());
-        h.setAddress(dto.getAddress());
-        h.setStatus("pending");
-
-        // ✅ เพิ่มบรรทัดนี้
-        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
-            h.setImages(String.join(",", dto.getImages()));
-        }
-
-        homestayRepository.save(h);
+    if (ownerRepository.existsByEmail(req.getEmail())) {
+        throw new IllegalArgumentException("อีเมลนี้ถูกใช้งานแล้ว");
     }
+
+    Homestayowner owner = new Homestayowner();
+    owner.setFirstname(req.getFirstname());
+    owner.setLastname(req.getLastname());
+    owner.setEmail(req.getEmail());
+    owner.setPhone(req.getPhone());
+    owner.setPassword(req.getPassword());
+    owner.setVerificationstatus(false);
+    owner.setAccountstatus("pending");
+
+    Homestayowner saved = ownerRepository.save(owner);
+
+    // เพิ่มตรงนี้
+    List<Integer> homestayIds = new ArrayList<>();
+
+    if (req.getHomestays() != null) {
+        for (RegisterOwnerRequest.HomestayItem dto : req.getHomestays()) {
+
+            Homestay h = new Homestay();
+            h.setOwner(saved);
+            h.setHomestayname(dto.getHomestayname());
+            h.setDescription(dto.getDescription());
+            h.setAddress(dto.getAddress());
+            h.setStatus("pending");
+
+            Homestay savedHomestay = homestayRepository.save(h);
+
+            // เก็บ id
+            homestayIds.add(savedHomestay.getHomestayid());
+        }
+    }
+
+    return homestayIds;
 }
-    }
 
     // ───── Login ─────
 
@@ -138,4 +145,12 @@ public class HomestayOwnerService {
         owner.setPassword(newPassword);
         ownerRepository.save(owner);
     }
+
+    // HomestayService.java — เพิ่ม method นี้
+public void updateImages(Integer homestayid, Map<String, String> req) {
+    Homestay h = homestayRepository.findById(homestayid)
+            .orElseThrow(() -> new RuntimeException("ไม่พบโฮมสเตย์"));
+    h.setImages(req.get("images"));
+    homestayRepository.save(h);
+}
 }

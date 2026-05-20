@@ -10,12 +10,17 @@ import com.example.miniproject.service.Homestay.HomestayService;
 import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @Controller
 public class HomestayownerController {
@@ -43,17 +48,58 @@ public class HomestayownerController {
         return "Homestay/editprofile";
     }
 
-    // ───── Register ─────
-
-    @PostMapping("/owner/register")
+    // ───── Register (multipart/form-data) ─────
+    /*
+     *  JS ส่งมาในรูป FormData:
+     *    firstname, lastname, email, phone, password
+     *    homestays[0].homestayname, homestays[0].address,
+     *    homestays[0].description, homestays[0].images  (File)
+     *    homestays[1].homestayname, ...
+     */
+    @PostMapping(value = "/owner/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<?> register(@RequestBody RegisterOwnerRequest req) {
+    public ResponseEntity<?> register(RegisterOwnerRequest req) {
         try {
-            ownerService.register(req);
+            // 1) บันทึก owner + homestay (ยังไม่มีรูป) → ได้ List<Integer> homestayIds
+            List<Integer> homestayIds = ownerService.register(req);
+
+            // 2) บันทึกรูปภาพของแต่ละ homestay
+            List<RegisterOwnerRequest.HomestayItem> items = req.getHomestays();
+            if (items != null) {
+                for (int i = 0; i < items.size(); i++) {
+                    RegisterOwnerRequest.HomestayItem item = items.get(i);
+                    if (item.getImages() == null || item.getImages().isEmpty()) continue;
+
+                    Integer hsId      = homestayIds.get(i);
+                    String  uploadDir = System.getProperty("user.dir") + "/uploads/homestays/" + hsId + "/";
+                    Files.createDirectories(Paths.get(uploadDir));
+
+                    List<String> savedPaths = new ArrayList<>();
+                    for (MultipartFile file : item.getImages()) {
+                        if (file == null || file.isEmpty()) continue;
+                        String ext      = getExtension(file.getOriginalFilename());
+                        String filename = UUID.randomUUID().toString() + ext;
+                        Path   dest     = Paths.get(uploadDir + filename);
+                        file.transferTo(dest);
+                        savedPaths.add("/uploads/homestays/" + hsId + "/" + filename);
+                    }
+
+                    if (!savedPaths.isEmpty()) {
+                        Map<String, String> imgUpdate = new HashMap<>();
+                        imgUpdate.put("images", String.join(",", savedPaths));
+                        homestayService.updateImages(hsId, imgUpdate);
+                    }
+                }
+            }
+
             return ResponseEntity.ok(Map.of("success", true));
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                 .body(Map.of("success", false, "message", e.getMessage()));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                .body(Map.of("success", false, "message", "บันทึกรูปภาพไม่สำเร็จ: " + e.getMessage()));
         }
     }
 
@@ -68,7 +114,6 @@ public class HomestayownerController {
                     body.get("email"),
                     body.get("password")
             );
-
             session.setAttribute("ownerLogin",   owner);
             session.setAttribute("ownerid",      owner.getOwnerid());
             session.setAttribute("ownername",    owner.getFirstname() + " " + owner.getLastname());
@@ -189,7 +234,6 @@ public class HomestayownerController {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
         if (ownerid == null) return "redirect:/owner/login";
 
-        // ตรวจสอบว่า homestay นี้เป็นของ owner คนนี้
         if (!homestayService.isOwnedBy(id, ownerid)) return "redirect:/owner/homestays";
 
         HomestayDetailDto detail = homestayService.getHomestayDetail(id);
@@ -200,13 +244,19 @@ public class HomestayownerController {
         return "Homestay/editHomestay";
     }
 
-    // ───── Update Homestay (Save) ─────
+    // ───── Update Homestay (multipart) ─────
 
-    @PutMapping("/owner/homestays/{id}")
+    @PutMapping(value = "/owner/homestays/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<?> updateHomestay(@PathVariable Integer id,
-                                            @RequestBody Map<String, String> req,
-                                            HttpSession session) {
+    public ResponseEntity<?> updateHomestay(
+            @PathVariable Integer id,
+            @RequestParam("homestayname")                          String homestayname,
+            @RequestParam("address")                               String address,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "keepImages",  required = false) String keepImages,
+            @RequestParam(value = "newImages",   required = false) List<MultipartFile> newImages,
+            HttpSession session) {
+
         Integer ownerid = (Integer) session.getAttribute("ownerid");
         if (ownerid == null)
             return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
@@ -215,8 +265,43 @@ public class HomestayownerController {
             return ResponseEntity.status(403).body(Map.of("message", "ไม่มีสิทธิ์แก้ไขโฮมสเตย์นี้"));
 
         try {
+            String uploadDir = System.getProperty("user.dir") + "/uploads/homestays/" + id + "/";
+            Files.createDirectories(Paths.get(uploadDir));
+
+            List<String> allPaths = new ArrayList<>();
+
+            if (keepImages != null && !keepImages.isBlank()) {
+                for (String p : keepImages.split(",")) {
+                    String trimmed = p.trim();
+                    if (!trimmed.isBlank()) allPaths.add(trimmed);
+                }
+            }
+
+            if (newImages != null) {
+                for (MultipartFile file : newImages) {
+                    if (file == null || file.isEmpty()) continue;
+                    String ext      = getExtension(file.getOriginalFilename());
+                    String filename = UUID.randomUUID().toString() + ext;
+                    Path   dest     = Paths.get(uploadDir + filename);
+                    file.transferTo(dest);
+                    allPaths.add("/uploads/homestays/" + id + "/" + filename);
+                }
+            }
+
+            String imagesValue = allPaths.isEmpty() ? null : String.join(",", allPaths);
+
+            Map<String, String> req = new HashMap<>();
+            req.put("homestayname", homestayname);
+            req.put("address",      address);
+            req.put("description",  description);
+            req.put("images",       imagesValue);
             homestayService.updateHomestay(id, req);
+
             return ResponseEntity.ok(Map.of("success", true, "message", "บันทึกข้อมูลสำเร็จ"));
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("success", false, "message", "บันทึกรูปภาพไม่สำเร็จ: " + e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", e.getMessage()));
@@ -224,6 +309,11 @@ public class HomestayownerController {
     }
 
     // ───── Helpers ─────
+
+    private String getExtension(String filename) {
+        if (filename == null || !filename.contains(".")) return ".jpg";
+        return filename.substring(filename.lastIndexOf('.')).toLowerCase();
+    }
 
     private Map<String, Object> toSafeMap(Homestayowner o) {
         Map<String, Object> map = new HashMap<>();

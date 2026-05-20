@@ -1,14 +1,14 @@
 // ============================================================
-//  register-owner.js  (เพิ่มส่วน image upload)
+//  register-owner.js  (เปลี่ยนจาก base64 → multipart/form-data)
 // ============================================================
 
 'use strict';
 
-// ─── เก็บรูปของแต่ละ homestay block ───
+// ─── เก็บ File objects ของแต่ละ homestay block ───
 const homestayImages = {};
 
 // ============================================================
-//  HELPER (เหมือนเดิม)
+//  HELPER
 // ============================================================
 function showError(input, spanId, msg) {
     input.classList.add('is-invalid');
@@ -115,7 +115,7 @@ let homestayCount = 0;
 function addHomestay() {
     homestayCount++;
     const idx = homestayCount;
-    homestayImages[idx] = []; // ✅ init array รูปของ block นี้
+    homestayImages[idx] = []; // init array เก็บ File objects
 
     const list  = document.getElementById('homestay-list');
     const block = document.createElement('div');
@@ -149,7 +149,7 @@ function addHomestay() {
             <span class="field-error" id="hs_descError_${idx}"></span>
         </div>
 
-        <!-- ✅ Upload รูปภาพ -->
+        <!-- Upload รูปภาพ -->
         <div class="mb-2">
             <label class="form-label">รูปภาพโฮมสเตย์ <span class="text-muted">(ไม่บังคับ)</span></label>
             <div class="hs-upload-zone" id="hs_zone_${idx}"
@@ -162,7 +162,7 @@ function addHomestay() {
                        onchange="handleHsImages(${idx}, this.files); this.value=''">
                 <i class="fas fa-cloud-arrow-up" style="font-size:1.8rem; color:#ccc; display:block; margin-bottom:6px;"></i>
                 <p style="color:#aaa; font-size:0.85rem; margin:0;">คลิกหรือลากรูปมาวางที่นี่</p>
-                <small style="color:#bbb; font-size:0.78rem;">JPG, PNG — หลายรูปพร้อมกัน ขนาดสูงสุด 5MB/รูป</small>
+                <small style="color:#bbb; font-size:0.78rem;">JPG, PNG, WEBP — หลายรูปพร้อมกัน ขนาดสูงสุด 5MB/รูป</small>
             </div>
             <div id="hs_preview_${idx}"
                  style="display:none; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:8px;"></div>
@@ -211,7 +211,7 @@ function removeHomestay(idx) {
     delete homestayImages[idx];
 }
 
-// ─── จัดการรูป ───
+// ─── จัดการรูป — เก็บเป็น File object (ไม่แปลง base64) ───
 function handleHsImages(idx, fileList) {
     const MAX = 5 * 1024 * 1024;
     Array.from(fileList).forEach(file => {
@@ -231,6 +231,7 @@ function handleHsDrop(e, idx) {
     handleHsImages(idx, e.dataTransfer.files);
 }
 
+// ─── Preview ใช้ blob URL แทน base64 (เบากว่ามาก) ───
 function renderHsPreviews(idx) {
     const grid = document.getElementById(`hs_preview_${idx}`);
     grid.innerHTML = '';
@@ -242,21 +243,18 @@ function renderHsPreviews(idx) {
 
     grid.style.display = 'grid';
     homestayImages[idx].forEach((file, i) => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const card = document.createElement('div');
-            card.className = 'hs-preview-card';
-            card.innerHTML = `
-                <img src="${e.target.result}" alt="">
-                <button type="button" class="hs-remove-btn"
-                        onclick="removeHsImage(${idx}, ${i})">
-                    <i class="fas fa-xmark"></i>
-                </button>
-                <span class="hs-img-num">${i + 1}</span>
-            `;
-            grid.appendChild(card);
-        };
-        reader.readAsDataURL(file);
+        const blobUrl = URL.createObjectURL(file); // ✅ blob URL แทน FileReader
+        const card = document.createElement('div');
+        card.className = 'hs-preview-card';
+        card.innerHTML = `
+            <img src="${blobUrl}" alt="">
+            <button type="button" class="hs-remove-btn"
+                    onclick="removeHsImage(${idx}, ${i})">
+                <i class="fas fa-xmark"></i>
+            </button>
+            <span class="hs-img-num">${i + 1}</span>
+        `;
+        grid.appendChild(card);
     });
 }
 
@@ -265,14 +263,61 @@ function removeHsImage(idx, imgIdx) {
     renderHsPreviews(idx);
 }
 
-// ─── แปลง File → Base64 ───
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload  = e => resolve(e.target.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+// ============================================================
+//  STEP 2 — SUBMIT ALL ✅ ส่งเป็น multipart/form-data
+// ============================================================
+async function submitAll() {
+    if (!validateAllHomestays()) return;
+
+    const btn = document.querySelector('.btn-submit');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>กำลังส่ง...'; }
+
+    // ── สร้าง FormData ──
+    const fd = new FormData();
+
+    // ข้อมูล owner
+    fd.append('firstname', document.getElementById('firstname').value.trim());
+    fd.append('lastname',  document.getElementById('lastname').value.trim());
+    fd.append('email',     document.getElementById('email').value.trim());
+    fd.append('phone',     document.getElementById('phone').value.trim());
+    fd.append('password',  document.getElementById('password').value.trim());
+
+    // ข้อมูล homestay แต่ละ block
+    const blocks = document.querySelectorAll('.homestay-block');
+    let hsIndex  = 0; // index 0-based สำหรับ server
+
+    blocks.forEach(block => {
+        const idx = block.id.split('-').pop(); // block index (1-based จาก DOM)
+
+        fd.append(`homestays[${hsIndex}].homestayname`, document.getElementById(`hs_name_${idx}`).value.trim());
+        fd.append(`homestays[${hsIndex}].address`,      document.getElementById(`hs_address_${idx}`).value.trim());
+        fd.append(`homestays[${hsIndex}].description`,  document.getElementById(`hs_desc_${idx}`).value.trim());
+
+        // รูปภาพ — แนบ File จริง ไม่แปลง base64
+        (homestayImages[idx] || []).forEach(file => {
+            fd.append(`homestays[${hsIndex}].images`, file);
+        });
+
+        hsIndex++;
     });
+
+    try {
+        const res  = await fetch('/owner/register', {
+            method: 'POST',
+            body:   fd  // ห้ามใส่ Content-Type header — browser จัดการ boundary เอง
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            goToPage(3);
+        } else {
+            alert('เกิดข้อผิดพลาด: ' + data.message);
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>ส่งคำขอสมัคร'; }
+        }
+    } catch {
+        alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>ส่งคำขอสมัคร'; }
+    }
 }
 
 // ============================================================
@@ -325,60 +370,6 @@ function validateAllHomestays() {
         if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); first.focus(); }
     }
     return allOk;
-}
-
-// ============================================================
-//  STEP 2 — SUBMIT ALL ✅ พร้อม Base64 images
-// ============================================================
-async function submitAll() {
-    if (!validateAllHomestays()) return;
-
-    const ownerData = {
-        firstname: document.getElementById('firstname').value.trim(),
-        lastname:  document.getElementById('lastname').value.trim(),
-        email:     document.getElementById('email').value.trim(),
-        phone:     document.getElementById('phone').value.trim(),
-        password:  document.getElementById('password').value.trim()
-    };
-
-    const blocks   = document.querySelectorAll('.homestay-block');
-    const homestays = [];
-
-    for (const block of blocks) {
-        const idx    = block.id.split('-').pop();
-        const images = await Promise.all(
-            (homestayImages[idx] || []).map(f => fileToBase64(f))
-        );
-        homestays.push({
-            homestayname: document.getElementById(`hs_name_${idx}`).value.trim(),
-            address:      document.getElementById(`hs_address_${idx}`).value.trim(),
-            description:  document.getElementById(`hs_desc_${idx}`).value.trim(),
-            images:       images  // ✅ Base64 array
-        });
-    }
-
-    // disable ปุ่ม
-    const btn = document.querySelector('.btn-submit');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>กำลังส่ง...'; }
-
-    fetch('/owner/register', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ ...ownerData, homestays })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            goToPage(3);
-        } else {
-            alert('เกิดข้อผิดพลาด: ' + data.message);
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>ส่งคำขอสมัคร'; }
-        }
-    })
-    .catch(() => {
-        alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
-        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>ส่งคำขอสมัคร'; }
-    });
 }
 
 // ============================================================
