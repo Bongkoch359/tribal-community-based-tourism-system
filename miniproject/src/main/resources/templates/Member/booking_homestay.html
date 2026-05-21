@@ -618,16 +618,18 @@ body {
     <!-- ROOM BAR -->
     <div class="room-bar">
         <div class="room-bar-left">
+            <!-- แก้ไขตรงนี้: ตัดคำด้วยเครื่องหมายจุลภาค (,) เพื่อดึงเฉพาะรูปแรกสุดมาแสดง -->
             <img class="room-thumb"
-                 th:src="${room.images}"
-                 src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200"
+                 th:with="roomImgs=${room.images != null ? #strings.arraySplit(room.images, ',') : null}"
+                 th:src="${roomImgs != null and roomImgs.length > 0} ? @{{path}(path=${roomImgs[0]})} : @{/images/default-room.jpg}"
                  alt="room">
+            
             <div>
-                <div class="room-bar-name" th:text="${room.typename}">กระต๊อบไม้ไผ่</div>
+                <div class="room-bar-name" th:text="${room.typename}"></div>
                 <div class="room-bar-meta">
-                    <span class="tag-pill" th:text="${room.homestay.homestayname}">บ้านสัญโฮมสเตย์</span>
-                    &nbsp;<span th:text="${room.bedtype}">King</span> •
-                    รองรับ <span th:text="${room.maxguest}">4</span> ท่าน
+                    <span class="tag-pill" th:text="${room.homestay.homestayname}"></span>
+                    &nbsp;<span th:text="${room.bedtype}"></span> •
+                    รองรับ <span th:text="${room.maxguest}"></span> ท่าน
                 </div>
             </div>
         </div>
@@ -791,15 +793,18 @@ body {
 </div><!-- /LEFT -->
 
 <!-- RIGHT -->
+<!-- RIGHT -->
 <div class="summary-card">
+    <!-- แก้ไขตรงนี้: ตัดคำด้วยเครื่องหมายจุลภาค (,) เพื่อดึงเฉพาะรูปแรกสุดของโฮมสเตย์มาแสดง -->
     <img class="summary-img"
-         th:src="${room.homestay.images}"
-         src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+         th:with="hsImgs=${room.homestay.images != null ? #strings.arraySplit(room.homestay.images, ',') : null}"
+         th:src="${hsImgs != null and hsImgs.length > 0} ? @{{path}(path=${hsImgs[0]})} : @{/images/default-homestay.jpg}"
          alt="homestay">
+         
     <div class="summary-body">
-        <div class="homestay-name" th:text="${room.homestay.homestayname}">บ้านสัญโฮมสเตย์</div>
+        <div class="homestay-name" th:text="${room.homestay.homestayname}"></div>
         <div class="homestay-loc">
-            📍 <span th:text="${room.homestay.address}">เชียงใหม่</span>
+            📍 <span th:text="${room.homestay.address}"></span>
         </div>
 
         <div class="divider"></div>

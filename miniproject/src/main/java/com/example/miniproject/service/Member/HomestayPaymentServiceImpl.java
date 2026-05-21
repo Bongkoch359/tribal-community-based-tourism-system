@@ -8,11 +8,11 @@ import com.example.miniproject.entity.enums.PaymentStatus;
 import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.miniproject.entity.enums.BookingStatus;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -77,6 +77,16 @@ public class HomestayPaymentServiceImpl implements PaymentService {
                 if (detail.getRoomtype().getHomestay() != null) {
                     dto.setHomestayName(detail.getRoomtype().getHomestay().getHomestayname());
                     dto.setHomestayAddress(detail.getRoomtype().getHomestay().getAddress());
+                 // ✅ ข้อมูลบัญชีธนาคาร
+            if (detail.getRoomtype().getHomestay().getOwner() != null) {
+
+            dto.setBankName(
+            detail.getRoomtype().getHomestay().getOwner().getBankName());
+
+        dto.setBankAccount(
+            detail.getRoomtype().getHomestay().getOwner().getAccountNumber()
+        );
+    }
                 }
             }
         }

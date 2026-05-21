@@ -594,24 +594,31 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
         </div>
         <!-- /LEFT -->
 
-        <!-- ─── RIGHT (SIDEBAR) ─── -->
-        <div class="summary-card">
-            <img class="summary-img"
-                 th:if="${detail != null and detail.roomtype != null
-                          and detail.roomtype.images != null
-                          and !detail.roomtype.images.isEmpty()}"
-                 th:src="${detail.roomtype.images}" alt="room">
+       
+       <!-- ─── RIGHT (SIDEBAR) ─── -->
+<div class="summary-card">
+    
+    <!-- แก้ไขตรงนี้: ประกาศตัวแปรสปลิตรูปภาพด้วยคอมม่า (,) และเช็คเงื่อนไขดึงรูปแรกสุด -->
+    <th:block th:with="hasImages=${detail != null and detail.roomtype != null and detail.roomtype.images != null and !detail.roomtype.images.isEmpty()},
+                       roomImgs=${hasImages ? #strings.arraySplit(detail.roomtype.images, ',') : null}">
+                       
+        <!-- แสดงรูปแรกสุดถ้ามีข้อมูลภาพอยู่จริง -->
+        <img class="summary-img"
+             th:if="${roomImgs != null and roomImgs.length > 0}"
+             th:src="@{{path}(path=${roomImgs[0]})}" 
+             alt="room">
 
-            <div class="summary-img-placeholder"
-                 th:if="${detail == null or detail.roomtype == null
-                          or detail.roomtype.images == null
-                          or detail.roomtype.images.isEmpty()}">🏠</div>
+        <!-- แสดงภาพ Placeholder สัญลักษณ์บ้าน 🏠 ถ้าไม่มีข้อมูลรูปภาพเลย -->
+        <div class="summary-img-placeholder"
+             th:if="${roomImgs == null or roomImgs.length == 0}">🏠</div>
+             
+    </th:block>
 
-            <div class="summary-body">
-                <div class="homestay-name"
-                     th:text="${detail != null and detail.roomtype != null
-                                and detail.roomtype.homestay != null
-                                ? detail.roomtype.homestay.homestayname : '-'}"></div>
+    <div class="summary-body">
+        <div class="homestay-name"
+             th:text="${detail != null and detail.roomtype != null
+                        and detail.roomtype.homestay != null
+                        ? detail.roomtype.homestay.homestayname : '-'}"></div>
 
                 <div class="homestay-loc">
                     📍

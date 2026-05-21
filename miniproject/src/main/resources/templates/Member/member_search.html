@@ -556,7 +556,7 @@
          th:src="@{{path}(path=${imgs[0]})}"
          alt="ภาพโฮมสเตย์"
          loading="lazy"/>
-         
+
             <span class="fcard-badge badge-homestay">โฮมสเตย์</span>
             <button class="fcard-fav" onclick="toggleFav(this);event.preventDefault();">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -701,15 +701,11 @@
     <div class="grid">
       <th:block th:each="t : ${tours}">
         <div class="card">
-          <div class="fcard-img">
-            
-        
-        <!-- แก้ตรงนี้: ตัดคำด้วย || เหมือนหน้ารายละเอียด เพื่อเอาเฉพาะรูปแรกมาโชว์ -->
-        <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
+           <div class="fcard-img">
+             <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
              th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
              alt="ภาพทัวร์"
              loading="lazy"/>
-          </div>
             <span class="card-badge badge-tour">ทัวร์ชุมชน</span>
             <button class="card-fav" onclick="toggleFav(this); event.preventDefault();">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
@@ -756,13 +752,15 @@
     <div class="grid">
       <th:block th:each="h : ${homestays}">
         <div class="card">
-         <div class="fcard-img"
-     th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, '||') : null}">
+          <div class="fcard-img"
+     th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
 
+    <!-- แสดงรูปแรกสุด (index 0) ที่ตัดได้จากเครื่องหมายจุลภาค -->
     <img th:if="${imgs != null and imgs.length > 0}"
-         th:src="${imgs[0]}"
-         alt=""
+         th:src="@{{path}(path=${imgs[0]})}"
+         alt="ภาพโฮมสเตย์"
          loading="lazy"/>
+
             <span class="card-badge badge-homestay">โฮมสเตย์</span>
             <button class="card-fav" onclick="toggleFav(this); event.preventDefault();">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
