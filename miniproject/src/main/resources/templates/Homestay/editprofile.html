@@ -76,6 +76,32 @@
                 </div>
             </section>
 
+            <!-- Bank Info Section -->
+            <section class="form-section">
+                <div class="section-header">
+                    <span class="section-icon">&#127981;</span>
+                    <h2 class="section-title">ข้อมูลบัญชีธนาคาร</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="bankName">ชื่อธนาคาร <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <input type="text" id="bankName" name="bankName" class="form-input" placeholder="เช่น ธนาคารกสิกรไทย, ธนาคารไทยพาณิชย์">
+                        <span class="input-icon">&#127981;</span>
+                    </div>
+                    <span class="error-msg" id="bankNameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="accountNumber">เลขบัญชีธนาคาร <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <input type="text" id="accountNumber" name="accountNumber" class="form-input" placeholder="เช่น 1234567890" maxlength="30">
+                        <span class="input-icon">&#128179;</span>
+                    </div>
+                    <span class="error-msg" id="accountNumberError"></span>
+                </div>
+            </section>
+
             <!-- Change Password Section -->
             <section class="form-section">
                 <div class="section-header">

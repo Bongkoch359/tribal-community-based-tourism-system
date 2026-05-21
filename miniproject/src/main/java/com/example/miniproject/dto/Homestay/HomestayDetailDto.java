@@ -21,12 +21,16 @@ public class HomestayDetailDto {
     this.roomTypeCount = roomTypeCount != null ? roomTypeCount : 0L;
     this.bookingCount  = bookingCount  != null ? bookingCount  : 0L;
 
-    // ✅ null-safe
+    // images field เก็บเป็น CSV ของ file path เช่น
+    // "/uploads/homestays/1/abc.jpg,/uploads/homestays/1/def.jpg"
     String raw = homestay.getImages();
     if (raw != null && !raw.isBlank()) {
-        String[] parts = raw.split("(?=,data:)");
-        this.firstImage = parts[0];
-        this.allImages  = java.util.Arrays.asList(parts);
+        List<String> paths = java.util.Arrays.stream(raw.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(java.util.stream.Collectors.toList());
+        this.firstImage = paths.isEmpty() ? null : paths.get(0);
+        this.allImages  = paths;
     } else {
         this.firstImage = null;
         this.allImages  = new java.util.ArrayList<>();

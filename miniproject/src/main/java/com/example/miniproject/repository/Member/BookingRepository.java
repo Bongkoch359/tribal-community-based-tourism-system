@@ -30,7 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     /** ดึงตาม status */
     List<Booking> findByBookingStatus(BookingStatus bookingStatus);
 
-    // BookingRepository.java
+
 @Query("""
     SELECT b FROM Booking b
     LEFT JOIN FETCH b.member
@@ -41,7 +41,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     WHERE b.bookingid = :id
 """)
 Optional<Booking> findByIdWithDetails(@Param("id") String id);
-
+    /** นับการจองรอตรวจสอบของ homestay */
 @Query("SELECT COUNT(b) FROM Booking b " +
        "JOIN b.roomDetails rd " +
        "JOIN rd.roomtype rt " +
@@ -57,4 +57,25 @@ long countByRoomHomestayIdAndStatus(
     // // ดึงการจอง 5 รายการล่าสุดเฉพาะของ manager
     // @Query("SELECT b FROM Booking b WHERE b.communitymanager.managerid = :managerId ORDER BY b.bookingdate DESC")
     // List<Booking> findTopByManager(@Param("managerId") String managerId, Pageable pageable);
+ 
+ 
+    /** รายได้รวมของ homestay (เฉพาะ CONFIRMED) */
+    @Query("SELECT COALESCE(SUM(b.totalamount), 0) FROM Booking b " +
+           "JOIN b.roomDetails rd " +
+           "JOIN rd.roomtype rt " +
+           "WHERE rt.homestay.homestayid = :homestayId " +
+           "AND b.bookingStatus = :status")
+    double sumRevenueByHomestayId(
+        @Param("homestayId") Integer homestayId,
+        @Param("status") BookingStatus status);
+ 
+    /** การจองล่าสุด 5 รายการของ homestay */
+    @Query("SELECT b FROM Booking b " +
+           "JOIN b.roomDetails rd " +
+           "JOIN rd.roomtype rt " +
+           "WHERE rt.homestay.homestayid = :homestayId " +
+           "ORDER BY b.bookingdate DESC " +
+           "LIMIT 5")
+    List<Booking> findTop5ByHomestayId(@Param("homestayId") Integer homestayId);
+
 }

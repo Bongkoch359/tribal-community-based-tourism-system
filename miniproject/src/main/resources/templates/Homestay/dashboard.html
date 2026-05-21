@@ -7,6 +7,93 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
+    <style>
+        /* ─── BOOKING TABLE ─── */
+        .booking-table-wrap {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2ddd4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+        .booking-table-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2ddd4;
+        }
+        .booking-table-head h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a3d1f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+        .booking-table-head a {
+            font-size: 12px;
+            color: #2d6a35;
+            text-decoration: none;
+        }
+        .booking-table-head a:hover { text-decoration: underline; }
+
+        table.b-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        table.b-table thead tr {
+            background: #f5f0e8;
+        }
+        table.b-table th {
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #6b6b68;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        table.b-table td {
+            padding: 12px 16px;
+            border-top: 1px solid #f0ece3;
+            color: #1c1c1a;
+            vertical-align: middle;
+        }
+        table.b-table tbody tr:hover { background: #faf8f4; }
+
+        .b-id { font-family: monospace; font-size: 12px; color: #6b6b68; }
+        .b-name { font-weight: 500; }
+        .b-amount { font-weight: 600; color: #1a3d1f; }
+
+        /* status badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-pending        { background: #fff3cd; color: #856404; }
+        .badge-waiting        { background: #cfe2ff; color: #084298; }
+        .badge-confirmed      { background: #d1e7dd; color: #0a3622; }
+        .badge-cancel         { background: #f8d7da; color: #842029; }
+        .badge-other          { background: #e2e3e5; color: #41464b; }
+
+        .empty-row td {
+            text-align: center;
+            color: #9a9a96;
+            padding: 28px;
+        }
+
+        /* revenue stat override */
+        .stat-card.teal {
+            background: linear-gradient(135deg, #0d6e6e 0%, #0a5252 100%);
+        }
+    </style>
 </head>
 <body>
 
@@ -76,16 +163,16 @@
 
         <div class="stat-card green-dark">
             <div class="stat-info">
-                <span class="stat-label">ห้องพักทั้งหมด</span>
-                <span class="stat-value" th:text="${totalRooms}">10</span>
+                <span class="stat-label">ประเภทห้องพักทั้งหมด</span>
+                <span class="stat-value" th:text="${totalRoomTypes}">0</span>
             </div>
-            <div class="stat-icon"><i class="fas fa-door-closed"></i></div>
+            <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
         </div>
 
         <div class="stat-card green-mid">
             <div class="stat-info">
-                <span class="stat-label">ห้องว่าง</span>
-                <span class="stat-value" th:text="${availableRooms}">5</span>
+                <span class="stat-label">ห้องที่ว่าง</span>
+                <span class="stat-value" th:text="${availableRooms}">0</span>
             </div>
             <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
         </div>
@@ -93,19 +180,82 @@
         <div class="stat-card orange">
             <div class="stat-info">
                 <span class="stat-label">รอตรวจสอบการจอง</span>
-                <span class="stat-value" th:text="${pendingBookings}">3</span>
+                <span class="stat-value" th:text="${pendingBookings}">0</span>
             </div>
             <div class="stat-icon"><i class="fas fa-clock"></i></div>
         </div>
 
-        <div class="stat-card green-light">
+        <div class="stat-card teal">
             <div class="stat-info">
-                <span class="stat-label">ห้องที่ถูกล็อค</span>
-                <span class="stat-value" th:text="${lockedRooms}">2</span>
+                <span class="stat-label">รายได้รวม (ยืนยันแล้ว)</span>
+                <span class="stat-value"
+                      th:text="${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 0, 'POINT')} + ' ฿'">0 ฿</span>
             </div>
-            <div class="stat-icon"><i class="fas fa-lock"></i></div>
+            <div class="stat-icon"><i class="fas fa-thai-baht-sign"></i></div>
         </div>
 
+    </div>
+
+    <!-- ─── RECENT BOOKINGS TABLE ─── -->
+    <div class="booking-table-wrap">
+        <div class="booking-table-head">
+            <h3><i class="fas fa-clock-rotate-left"></i> การจองล่าสุด</h3>
+            <a th:href="@{/owner/bookings}">ดูทั้งหมด →</a>
+        </div>
+        <table class="b-table">
+            <thead>
+                <tr>
+                    <th>รหัสการจอง</th>
+                    <th>ชื่อผู้จอง</th>
+                    <th>ห้องพัก</th>
+                    <th>วันที่จอง</th>
+                    <th>ยอดรวม</th>
+                    <th>สถานะ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- มีข้อมูล -->
+                <tr th:each="b : ${recentBookings}"
+                    th:if="${recentBookings != null and !recentBookings.isEmpty()}">
+                    <td class="b-id" th:text="${b.bookingid}">BK000001</td>
+                    <td class="b-name"
+                        th:text="${b.member != null} ? ${b.member.firstname + ' ' + b.member.lastname} : '-'">
+                        สมชาย ใจดี
+                    </td>
+                    <td th:text="${b.roomDetails != null and !b.roomDetails.isEmpty()}
+                                  ? ${b.roomDetails[0].roomtype.typename}
+                                  : '-'">
+                        ห้องดีลักซ์
+                    </td>
+                    <td th:text="${b.bookingdate != null}
+                                  ? ${#dates.format(b.bookingdate,'dd/MM/yyyy')}
+                                  : '-'">
+                        01/01/2568
+                    </td>
+                    <td class="b-amount"
+                        th:text="${#numbers.formatDecimal(b.totalamount, 1, 'COMMA', 0, 'POINT')} + ' ฿'">
+                        1,200 ฿
+                    </td>
+                    <td>
+                        <span th:switch="${b.bookingStatus?.name()}">
+                            <span th:case="'PENDING'"          class="badge badge-pending">รอดำเนินการ</span>
+                            <span th:case="'WAITING_APPROVAL'" class="badge badge-waiting">รอตรวจสอบ</span>
+                            <span th:case="'CONFIRMED'"        class="badge badge-confirmed">ยืนยันแล้ว</span>
+                            <span th:case="'CANCEL'"           class="badge badge-cancel">ยกเลิก</span>
+                            <span th:case="*"                  class="badge badge-other"
+                                  th:text="${b.bookingStatus}">-</span>
+                        </span>
+                    </td>
+                </tr>
+                <!-- ไม่มีข้อมูล -->
+                <tr class="empty-row" th:if="${recentBookings == null or recentBookings.isEmpty()}">
+                    <td colspan="6">
+                        <i class="fas fa-inbox" style="font-size:1.4rem;margin-bottom:6px;display:block;"></i>
+                        ยังไม่มีการจอง
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- ─── QUICK ACTIONS ─── -->

@@ -14,10 +14,14 @@ public class HomestayDto {
         this.avgRating   = avgRating  != null ? avgRating  : 0.0;
         this.reviewCount = reviewCount != null ? reviewCount : 0L;
 
-        // ✅ ดึงรูปแรกจาก Base64 string
-        if (homestay.getImages() != null && !homestay.getImages().isEmpty()) {
-            String[] parts = homestay.getImages().split(",data:");
-            this.firstImage = parts[0]; // รูปแรก
+        // images field เก็บเป็น CSV ของ file path เช่น
+        // "/uploads/homestays/1/abc.jpg,/uploads/homestays/1/def.jpg"
+        String raw = homestay.getImages();
+        if (raw != null && !raw.isBlank()) {
+            String first = raw.split(",")[0].trim();
+            this.firstImage = first.isEmpty() ? null : first;
+        } else {
+            this.firstImage = null;
         }
     }
 

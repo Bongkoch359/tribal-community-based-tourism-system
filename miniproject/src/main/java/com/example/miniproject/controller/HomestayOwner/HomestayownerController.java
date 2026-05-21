@@ -322,6 +322,8 @@ public class HomestayownerController {
         map.put("lastname",           o.getLastname());
         map.put("email",              o.getEmail());
         map.put("phone",              o.getPhone());
+        map.put("bankName",           o.getBankName());
+        map.put("accountNumber",      o.getAccountNumber());
         map.put("verificationstatus", o.getVerificationstatus());
         map.put("accountstatus",      o.getAccountstatus());
         return map;

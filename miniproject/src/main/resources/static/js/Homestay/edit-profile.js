@@ -10,6 +10,8 @@ const firstnameInput  = document.getElementById('firstname');
 const lastnameInput   = document.getElementById('lastname');
 const emailInput      = document.getElementById('email');
 const phoneInput      = document.getElementById('phone');
+const bankNameInput   = document.getElementById('bankName');
+const accountNumInput = document.getElementById('accountNumber');
 const currentPwInput  = document.getElementById('currentPassword');
 const newPwInput      = document.getElementById('newPassword');
 const confirmPwInput  = document.getElementById('confirmPassword');
@@ -45,10 +47,12 @@ async function loadProfile() {
 }
 
 function fillForm(data) {
-    firstnameInput.value = data.firstname || '';
-    lastnameInput.value  = data.lastname  || '';
-    emailInput.value     = data.email     || '';
-    phoneInput.value     = data.phone     || '';
+    firstnameInput.value = data.firstname     || '';
+    lastnameInput.value  = data.lastname      || '';
+    emailInput.value     = data.email         || '';
+    phoneInput.value     = data.phone         || '';
+    bankNameInput.value  = data.bankName      || '';
+    accountNumInput.value = data.accountNumber || '';
 
     // Profile card
     const fullName = `${data.firstname || ''} ${data.lastname || ''}`.trim();
@@ -78,6 +82,8 @@ function bindEvents() {
     lastnameInput.addEventListener('input',  () => validateField(lastnameInput,  'lastnameError',  'กรุณากรอกนามสกุล'));
     emailInput.addEventListener('input',     validateEmail);
     phoneInput.addEventListener('input',     validatePhone);
+    bankNameInput.addEventListener('input',  validateBankName);
+    accountNumInput.addEventListener('input', validateAccountNumber);
     newPwInput.addEventListener('input',     validateNewPassword);
     confirmPwInput.addEventListener('input', validateConfirmPassword);
 
@@ -93,7 +99,9 @@ async function handleSubmit(e) {
     const profileValid = validateField(firstnameInput, 'firstnameError', 'กรุณากรอกชื่อ')
                       && validateField(lastnameInput,  'lastnameError',  'กรุณากรอกนามสกุล')
                       && validateEmail()
-                      && validatePhone();
+                      && validatePhone()
+                      && validateBankName()
+                      && validateAccountNumber();
 
     if (!profileValid) return;
 
@@ -126,10 +134,12 @@ async function saveProfile() {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            firstname: firstnameInput.value.trim(),
-            lastname:  lastnameInput.value.trim(),
-            email:     emailInput.value.trim(),
-            phone:     phoneInput.value.trim(),
+            firstname:     firstnameInput.value.trim(),
+            lastname:      lastnameInput.value.trim(),
+            email:         emailInput.value.trim(),
+            phone:         phoneInput.value.trim(),
+            bankName:      bankNameInput.value.trim(),
+            accountNumber: accountNumInput.value.trim(),
         }),
     });
 
@@ -182,6 +192,26 @@ function validatePhone() {
     const ok = /^[0-9]{9,10}$/.test(val);
     showError(phoneInput, 'phoneError', ok ? '' : 'เบอร์โทรต้องเป็นตัวเลข 9-10 หลัก');
     return ok;
+}
+
+function validateBankName() {
+    const val = bankNameInput.value.trim();
+    const msg = !val ? 'กรุณากรอกชื่อธนาคาร'
+              : val.length < 2 || val.length > 100 ? 'ชื่อธนาคารต้องมีความยาว 2–100 ตัวอักษร'
+              : '';
+    showError(bankNameInput, 'bankNameError', msg);
+    return !msg;
+}
+
+function validateAccountNumber() {
+    const val = accountNumInput.value.trim();
+    const msg = !val ? 'กรุณากรอกเลขบัญชีธนาคาร'
+              : /\s/.test(val) ? 'เลขบัญชีต้องไม่มีช่องว่าง'
+              : !/^\d+$/.test(val) ? 'เลขบัญชีต้องเป็นตัวเลขเท่านั้น'
+              : val.length < 10 || val.length > 30 ? 'เลขบัญชีต้องมีความยาว 10–30 หลัก'
+              : '';
+    showError(accountNumInput, 'accountNumberError', msg);
+    return !msg;
 }
 
 function validateNewPassword() {

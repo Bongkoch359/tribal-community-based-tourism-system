@@ -89,10 +89,37 @@ public class ActivityPostService {
             post.setStatus(ActivityStatus.DRAFT);
         }
 
+        // อัปเดตรูปเฉพาะเมื่อมีรูปใหม่ส่งมา
+        // ถ้า images เป็น null หรือว่าง → คงรูปเดิมไว้ (ไม่ overwrite)
         if (images != null && !images.isBlank()) {
             post.setImages(images);
         }
 
         return activityPostRepository.save(post);
+    }
+
+    // ─── ดึงโพสต์ตามสถานะ ───
+    public List<Activitypost> getPostsByStatus(ActivityStatus status) {
+        return activityPostRepository.findByStatusOrderByCreateddateDesc(status);
+    }
+
+    // ─── ดึงโพสต์ของ manager คนนั้น ───
+    public List<Activitypost> getPostsByManager(String managerId) {
+        return activityPostRepository.findByCommunitymanagerManageridOrderByCreateddateDesc(managerId);
+    }
+
+    // ─── ค้นหาตามหัวข้อ ───
+    public List<Activitypost> searchByTitle(String keyword) {
+        return activityPostRepository.findByTitleContainingIgnoreCase(keyword);
+    }
+
+    // ─── ค้นหาตามสถานที่ ───
+    public List<Activitypost> searchByLocation(String keyword) {
+        return activityPostRepository.findByLocationContainingIgnoreCase(keyword);
+    }
+
+    // ─── ดึง 3 โพสต์ล่าสุด ───
+    public List<Activitypost> getLatestPosts() {
+        return activityPostRepository.findTop3ByOrderByCreateddateDesc();
     }
 }

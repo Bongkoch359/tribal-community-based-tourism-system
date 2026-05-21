@@ -74,6 +74,22 @@ function validatePhone() {
     if (!/^0[689]/.test(val)) { showError(input, 'phoneError', 'หมายเลขโทรศัพท์ต้องขึ้นต้นด้วย 06, 08 หรือ 09 เท่านั้น'); return false; }
     showValid(input, 'phoneError'); return true;
 }
+function validateBankName() {
+    const input = document.getElementById('bankName');
+    const val = input.value.trim();
+    if (val === '') { showError(input, 'bankNameError', 'กรุณากรอกชื่อธนาคาร'); return false; }
+    if (val.length < 2 || val.length > 100) { showError(input, 'bankNameError', 'ชื่อธนาคารต้องมีความยาว 2–100 ตัวอักษร'); return false; }
+    showValid(input, 'bankNameError'); return true;
+}
+function validateAccountNumber() {
+    const input = document.getElementById('accountNumber');
+    const val = input.value.trim();
+    if (val === '') { showError(input, 'accountNumberError', 'กรุณากรอกเลขบัญชีธนาคาร'); return false; }
+    if (/\s/.test(val)) { showError(input, 'accountNumberError', 'เลขบัญชีต้องไม่มีช่องว่าง'); return false; }
+    if (!/^\d+$/.test(val)) { showError(input, 'accountNumberError', 'เลขบัญชีต้องเป็นตัวเลขเท่านั้น'); return false; }
+    if (val.length < 10 || val.length > 30) { showError(input, 'accountNumberError', 'เลขบัญชีต้องมีความยาว 10–30 หลัก'); return false; }
+    showValid(input, 'accountNumberError'); return true;
+}
 function validatePassword() {
     const input = document.getElementById('password');
     const val = input.value;
@@ -98,7 +114,8 @@ function validateAgree() {
 }
 function validateStep1() {
     const ok = [validateFirstname(), validateLastname(), validateEmail(),
-        validatePhone(), validatePassword(), validateConfirmPassword(), validateAgree()
+        validatePhone(), validateBankName(), validateAccountNumber(),
+        validatePassword(), validateConfirmPassword(), validateAgree()
     ].every(Boolean);
     if (ok) { goToPage(2); }
     else {
@@ -276,11 +293,13 @@ async function submitAll() {
     const fd = new FormData();
 
     // ข้อมูล owner
-    fd.append('firstname', document.getElementById('firstname').value.trim());
-    fd.append('lastname',  document.getElementById('lastname').value.trim());
-    fd.append('email',     document.getElementById('email').value.trim());
-    fd.append('phone',     document.getElementById('phone').value.trim());
-    fd.append('password',  document.getElementById('password').value.trim());
+    fd.append('firstname',     document.getElementById('firstname').value.trim());
+    fd.append('lastname',      document.getElementById('lastname').value.trim());
+    fd.append('email',         document.getElementById('email').value.trim());
+    fd.append('phone',         document.getElementById('phone').value.trim());
+    fd.append('bankName',      document.getElementById('bankName').value.trim());
+    fd.append('accountNumber', document.getElementById('accountNumber').value.trim());
+    fd.append('password',      document.getElementById('password').value.trim());
 
     // ข้อมูล homestay แต่ละ block
     const blocks = document.querySelectorAll('.homestay-block');
@@ -410,6 +429,8 @@ const step1Fields = [
     { id: 'lastname',        fn: validateLastname        },
     { id: 'email',           fn: validateEmail           },
     { id: 'phone',           fn: validatePhone           },
+    { id: 'bankName',        fn: validateBankName        },
+    { id: 'accountNumber',   fn: validateAccountNumber   },
     { id: 'password',        fn: validatePassword        },
     { id: 'confirmPassword', fn: validateConfirmPassword },
 ];
