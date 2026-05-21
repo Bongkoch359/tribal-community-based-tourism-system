@@ -10,6 +10,8 @@ public class RegisterOwnerRequest {
     private String email;
     private String phone;
     private String password;
+    private String bankName;
+    private String accountNumber;
     private List<HomestayItem> homestays;
     // private List<HomestayDto> homestay; 
     // Getters & Setters
@@ -27,6 +29,12 @@ public class RegisterOwnerRequest {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getBankName() { return bankName; }
+    public void setBankName(String bankName) { this.bankName = bankName; }
+
+    public String getAccountNumber() { return accountNumber; }
+    public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
 
     public List<HomestayItem> getHomestays() { return homestays; }
     public void setHomestays(List<HomestayItem> homestays) { this.homestays = homestays; }

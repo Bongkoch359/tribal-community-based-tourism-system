@@ -123,4 +123,31 @@ public class TourManagerController {
  
         return "redirect:/manager/profile";
     }
+
+    // ─── บันทึกข้อมูลธนาคาร ───
+    @PostMapping("/manager/profile/update-bank")
+    public String updateBankInfo(
+            @RequestParam(required = false, defaultValue = "") String bankName,
+            @RequestParam(required = false, defaultValue = "") String accountNumber,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+        if (manager == null) {
+            return "redirect:/manager/login";
+        }
+
+        try {
+            managerService.updateBankInfo(manager.getManagerid(), bankName, accountNumber);
+
+            Communitymanager updated = managerService.getById(manager.getManagerid());
+            session.setAttribute("loggedInManager", updated);
+
+            redirectAttributes.addFlashAttribute("successMessage", "บันทึกข้อมูลธนาคารเรียบร้อยแล้ว");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
+        return "redirect:/manager/profile";
+    }
 }

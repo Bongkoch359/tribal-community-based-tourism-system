@@ -35,6 +35,15 @@ public class CommunityManagerService {
         managerRepository.save(manager);
     }
  
+    // ─── อัปเดตข้อมูลธนาคาร ───
+    @Transactional
+    public void updateBankInfo(String managerId, String bankName, String accountNumber) {
+        Communitymanager manager = getById(managerId);
+        manager.setBankName(bankName);
+        manager.setAccountNumber(accountNumber);
+        managerRepository.save(manager);
+    }
+
     // ─── อัปเดตข้อมูลส่วนตัว พร้อมเปลี่ยนรหัสผ่าน ───
     @Transactional
     public void updateProfileWithPassword(String managerId, String firstname, String lastname,
@@ -55,4 +64,3 @@ public class CommunityManagerService {
         managerRepository.save(manager);
     }
 }
- 

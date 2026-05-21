@@ -1,12 +1,13 @@
 package com.example.miniproject.dto.Homestay;
 
-
 public class UpdateProfileRequest {
 
     private String firstname;
     private String lastname;
     private String email;
     private String phone;
+    private String bankName;
+    private String accountNumber;
 
     public String getFirstname() { return firstname; }
     public void setFirstname(String firstname) { this.firstname = firstname; }
@@ -19,4 +20,10 @@ public class UpdateProfileRequest {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+
+    public String getBankName() { return bankName; }
+    public void setBankName(String bankName) { this.bankName = bankName; }
+
+    public String getAccountNumber() { return accountNumber; }
+    public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
 }

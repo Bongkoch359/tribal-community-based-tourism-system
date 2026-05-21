@@ -343,6 +343,22 @@
             .form-row { grid-template-columns: 1fr; }
             .page { padding: 16px 16px 40px; }
         }
+
+        /* ─── BANK BADGE ─── */
+        .bank-filled {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #e8f5e9; color: var(--green-mid);
+            font-size: 11px; font-weight: 600;
+            padding: 3px 10px; border-radius: 20px;
+            margin-top: 4px;
+        }
+        .bank-empty {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #fff8e1; color: #f57f17;
+            font-size: 11px; font-weight: 600;
+            padding: 3px 10px; border-radius: 20px;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -424,6 +440,60 @@
     </div>
 
     <!-- FORM -->
+
+        <!-- ข้อมูลธนาคาร -->
+    <form th:action="@{/manager/profile/update-bank}" method="post" id="bankForm">
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-building-columns"></i> ข้อมูลธนาคารสำหรับรับเงิน
+            </div>
+
+            <div class="lock-notice" style="margin-bottom:14px;">
+                <i class="fas fa-circle-info" style="color:#f0a500;"></i>
+                <span>ข้อมูลธนาคารใช้สำหรับรับชำระเงินจากนักท่องเที่ยว — กรอกให้ครบก่อนเปิดรับจอง</span>
+            </div>
+
+            <div th:if="${loggedInManager?.bankName != null and loggedInManager?.accountNumber != null}">
+                <span class="bank-filled"><i class="fas fa-circle-check" style="font-size:10px;"></i> มีข้อมูลธนาคารแล้ว</span>
+            </div>
+            <div th:unless="${loggedInManager?.bankName != null and loggedInManager?.accountNumber != null}" style="margin-bottom:8px;">
+                <span class="bank-empty"><i class="fas fa-triangle-exclamation" style="font-size:10px;"></i> ยังไม่ได้กรอกข้อมูลธนาคาร</span>
+            </div>
+
+            <div class="form-row" style="margin-top:14px;">
+                <div class="form-group">
+                    <label class="form-label">ธนาคาร <span class="req">*</span></label>
+                    <select class="form-control" name="bankName" id="bankNameSelect">
+                        <option value="">-- เลือกธนาคาร --</option>
+                        <option value="ธนาคารกสิกรไทย"      th:selected="${loggedInManager?.bankName == 'ธนาคารกสิกรไทย'}">ธนาคารกสิกรไทย (KBank)</option>
+                        <option value="ธนาคารไทยพาณิชย์"    th:selected="${loggedInManager?.bankName == 'ธนาคารไทยพาณิชย์'}">ธนาคารไทยพาณิชย์ (SCB)</option>
+                        <option value="ธนาคารกรุงเทพ"        th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงเทพ'}">ธนาคารกรุงเทพ (BBL)</option>
+                        <option value="ธนาคารกรุงไทย"        th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงไทย'}">ธนาคารกรุงไทย (KTB)</option>
+                        <option value="ธนาคารกรุงศรีอยุธยา"  th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงศรีอยุธยา'}">ธนาคารกรุงศรีอยุธยา (BAY)</option>
+                        <option value="ธนาคารทหารไทยธนชาต"   th:selected="${loggedInManager?.bankName == 'ธนาคารทหารไทยธนชาต'}">ธนาคารทหารไทยธนชาต (TTB)</option>
+                        <option value="ธนาคารออมสิน"         th:selected="${loggedInManager?.bankName == 'ธนาคารออมสิน'}">ธนาคารออมสิน (GSB)</option>
+                        <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร" th:selected="${loggedInManager?.bankName == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร'}">ธ.ก.ส. (BAAC)</option>
+                    </select>
+                    <div class="form-hint" id="bankNameHint"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">เลขบัญชีธนาคาร <span class="req">*</span></label>
+                    <input class="form-control" type="text" name="accountNumber" id="accountNumberInput"
+                           th:value="${loggedInManager?.accountNumber}"
+                           placeholder="000-0-00000-0" maxlength="20" inputmode="numeric"/>
+                    <div class="form-hint" id="accountHint"></div>
+                </div>
+            </div>
+
+            <div class="action-bar" style="margin-top:4px;">
+                <button type="submit" class="btn-save" id="bankSaveBtn">
+                    <i class="fas fa-floppy-disk"></i>
+                    บันทึกข้อมูลธนาคาร
+                </button>
+            </div>
+        </div>
+        </form>
+
     <form th:action="@{/manager/profile/update}" method="post" id="profileForm">
 
         <!-- ข้อมูลส่วนตัว -->
@@ -477,6 +547,9 @@
             </div>
         </div>
 
+
+
+
         <!-- ความปลอดภัย -->
         <div class="card">
             <div class="card-title">
@@ -527,6 +600,7 @@
         </div>
 
         <!-- Action Bar -->
+
         <div class="action-bar">
             <a class="btn-cancel" th:href="@{/manager/dashboard}">
                 <i class="fas fa-rotate-left"></i> รีเซ็ต
@@ -537,7 +611,9 @@
             </button>
         </div>
 
-    </form>
+
+    </form><!-- /profileForm -->
+
 </div>
 
 <!-- FOOTER -->
@@ -549,6 +625,52 @@
 </footer>
 
 <script>
+
+    // ─── Real-time: เลขบัญชีธนาคาร ───
+    const accountInput = document.getElementById('accountNumberInput');
+    const accountHint  = document.getElementById('accountHint');
+    const bankSelect   = document.getElementById('bankNameSelect');
+    const bankHint     = document.getElementById('bankNameHint');
+
+    const accountRegex = /^[0-9\-]{10,20}$/;
+
+    if (accountInput) {
+        accountInput.addEventListener('input', () => {
+            const v = accountInput.value.trim();
+            if (!v) {
+                accountHint.textContent = 'กรุณากรอกเลขบัญชีธนาคาร';
+                accountHint.style.color = '#b71c1c';
+            } else if (!accountRegex.test(v)) {
+                accountHint.textContent = 'เลขบัญชีต้องเป็นตัวเลข 10-20 หลัก (ใส่ขีด - ได้)';
+                accountHint.style.color = '#b71c1c';
+            } else {
+                accountHint.textContent = '✓ รูปแบบถูกต้อง';
+                accountHint.style.color = '#2e7d32';
+            }
+        });
+    }
+
+    // ─── Validate bank form ก่อน submit ───
+    document.getElementById('bankForm').addEventListener('submit', function(e) {
+        const bank = bankSelect.value;
+        const acc  = accountInput.value.trim();
+
+        if (!bank) {
+            e.preventDefault();
+            bankHint.textContent = 'กรุณาเลือกธนาคาร';
+            bankHint.style.color = '#b71c1c';
+            bankSelect.focus();
+            return;
+        }
+        if (!acc || !accountRegex.test(acc)) {
+            e.preventDefault();
+            accountHint.textContent = 'กรุณากรอกเลขบัญชีให้ถูกต้อง';
+            accountHint.style.color = '#b71c1c';
+            accountInput.focus();
+            return;
+        }
+    });
+
     // ─── Toggle show/hide password ───
     function togglePw(inputId, btn) {
         const input = document.getElementById(inputId);
