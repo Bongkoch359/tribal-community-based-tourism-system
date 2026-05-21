@@ -5,6 +5,7 @@ import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Review;
 import com.example.miniproject.service.Homestay.HomestayService;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,15 +27,12 @@ public String homestayDetail(@PathVariable Integer id, Model model) {
     Homestay homestay = homestayService.getHomestayDetailForMember(id);
     if (homestay == null) return "redirect:/search";
 
-    // images เป็น Base64 ให้ใส่ prefix data:image/jpeg;base64,
-    String firstImage = null;
+    // แตก images string → List<String> paths (คั่นด้วย ,)
+    List<String> homestayImages = new ArrayList<>();
     if (homestay.getImages() != null && !homestay.getImages().isBlank()) {
-        String raw = homestay.getImages().trim();
-        // ถ้ายังไม่มี prefix ให้ใส่เอง
-        if (raw.startsWith("data:")) {
-            firstImage = raw;
-        } else {
-            firstImage = "data:image/jpeg;base64," + raw;
+        for (String img : homestay.getImages().split(",")) {
+            String trimmed = img.trim();
+            if (!trimmed.isEmpty()) homestayImages.add(trimmed);
         }
     }
 
@@ -43,7 +41,7 @@ public String homestayDetail(@PathVariable Integer id, Model model) {
     Long reviewCount     = homestayService.getReviewCount(id);
 
     model.addAttribute("homestay", homestay);
-    model.addAttribute("firstImage", firstImage);
+    model.addAttribute("homestayImages", homestayImages); // ← List<String> แทน firstImage
     model.addAttribute("rooms", homestay.getRoomtypes());
     model.addAttribute("reviews", reviews);
     model.addAttribute("avgRating", avgRating);
