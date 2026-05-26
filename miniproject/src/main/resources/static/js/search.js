@@ -16,10 +16,7 @@ const tabCfg = {
     label: 'ค้นหาโฮมสเตย์',
     placeholder: 'ชื่อโฮมสเตย์ หรือที่อยู่',
   },
-  package: {
-    label: 'ค้นหาแพ็กเกจ',
-    placeholder: 'ชื่อแพ็กเกจ',
-  },
+ 
 };
 
 function switchTab(type) {
@@ -90,8 +87,25 @@ document.addEventListener('click', function (e) {
 });
 
 /* ── Restore state from URL on page load ──────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+/* ── Restore state from URL on page load (แก้ไขเพื่อรองรับ managerId) ── */
+ddocument.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
-  const type   = params.get('type') || 'activity';
+  
+  let type = params.get('type');
+  
+  if (params.has('managerId') && !type) {
+    type = 'tour';
+    
+    // 🌟 เติมบรรทัดนี้เพิ่มเข้าไป: สั่งสั่งซ่อนกล่องแนะนำเมื่อมี managerId
+    const recommendBox = document.querySelector('.recommend-section'); // เปลี่ยนเป็นชื่อ Class หรือ ID กล่องแนะนำของพี่นะ
+    if (recommendBox) {
+        recommendBox.style.display = 'none';
+    }
+  }
+  
+  if (!type) {
+    type = 'activity';
+  }
+  
   switchTab(type);
 });

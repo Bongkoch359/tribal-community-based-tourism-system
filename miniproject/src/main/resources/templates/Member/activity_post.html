@@ -348,10 +348,10 @@ img { display: block; }
 .breadcrumb a:hover { text-decoration: underline; }
 
 /* ============================================================
-   PAGE
+   PAGE LAYOUT & NEW DESIGN
 ============================================================ */
 .page-wrap {
-    max-width: 920px;
+    max-width: 1200px; /* ขยายความกว้างรวมเพื่อให้รองรับสไตล์แกลเลอรีแบบ 2 คอลัมน์ */
     margin: auto;
     padding: 2rem 1.2rem 4rem;
 }
@@ -373,46 +373,82 @@ img { display: block; }
 }
 .btn-back:hover { background: var(--green-50); }
 
-/* ── Hero image ── */
-.hero-image-wrap {
-    width: 100%;
-    overflow: hidden;
+/* โครงสร้างแยกฝั่ง ซ้าย-ขวา แบบ Flexbox */
+.layout-container {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.left-gallery-section {
+    flex: 1.7; /* ฝั่งรูปแกลเลอรีเนื้อที่กว้างกว่า */
+    min-width: 0;
+}
+
+.right-sidebar-section {
+    flex: 1.1; /* ฝั่งการ์ดรายละเอียด */
+    position: sticky;
+    top: calc(var(--navbar-h) + 20px); /* สไลด์ค้างไว้ตามจอเมื่อเลื่อน */
+}
+
+/* ── ระบบโครงข่ายรูปภาพแบบใหม่ (Gallery Grid Layout) ── */
+.gallery-grid-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* แบ่งคอลัมน์รูปใหญ่ 2 ส่วน รูปเล็กย่อย 1 ส่วน */
+    gap: 12px;
+}
+
+.main-hero-box {
+    height: 420px;
     border-radius: var(--radius);
+    overflow: hidden;
     box-shadow: var(--shadow);
-    margin-bottom: 1rem;
-    background: #d9ead3;
+    background: #fff;
 }
-.hero-image {
+
+.main-hero-box .hero-image {
     width: 100%;
-    max-height: 440px;
+    height: 100%;
     object-fit: cover;
-    display: block;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
+
+.main-hero-box .hero-image:hover {
+    transform: scale(1.02);
+}
+
+.sub-gallery-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 420px;
+}
+
+.sub-gallery-box img {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.sub-gallery-box img:hover {
+    transform: scale(1.03);
+}
+
 .hero-placeholder {
-    height: 320px;
+    height: 420px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 4rem;
+    border-radius: var(--radius);
     background: linear-gradient(135deg, #d9f1d4, #b8deb0);
 }
-
-/* ── Gallery ── */
-.gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 10px;
-    margin-bottom: 1.4rem;
-}
-.gallery img {
-    width: 100%;
-    height: 130px;
-    object-fit: cover;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: .2s;
-}
-.gallery img:hover { transform: scale(1.03); }
 
 /* ── Main card ── */
 .main-card {
@@ -420,14 +456,15 @@ img { display: block; }
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     overflow: hidden;
+    padding-bottom: 1.5rem;
 }
-.title-section { padding: 1.6rem 1.6rem .9rem; }
+.title-section { padding: 1.6rem 1.6rem .6rem; }
 .post-title {
     font-family: 'Mitr', sans-serif;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 1rem;
+    line-height: 1.3;
+    margin-bottom: 0.8rem;
     color: var(--gray-800);
 }
 .location-row {
@@ -436,17 +473,28 @@ img { display: block; }
     gap: .45rem;
     background: var(--green-50);
     color: var(--green-800);
-    padding: .5rem .95rem;
+    padding: .4rem .8rem;
     border-radius: 10px;
-    font-size: .92rem;
+    font-size: .88rem;
     font-weight: 600;
 }
+
+/* วันที่เผยแพร่ */
+.publish-date-row {
+    padding: 0 1.6rem 0.8rem;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .card-divider {
     height: 1px;
     background: var(--gray-100);
     margin: 0 1.6rem;
 }
-.desc-section { padding: 1.3rem 1.6rem 1.7rem; }
+.desc-section { padding: 1.3rem 1.6rem 1.5rem; }
 .desc-label {
     font-size: 1rem;
     font-weight: 700;
@@ -455,9 +503,34 @@ img { display: block; }
 }
 .desc-text {
     font-size: .97rem;
-    line-height: 1.95;
+    line-height: 1.8;
     color: #374151;
     white-space: pre-line;
+}
+
+/* ปุ่มลิงก์สำหรับเข้าสู่ทัวร์ */
+.action-section {
+    padding: 1rem 1.6rem 0.5rem;
+}
+.btn-primary-tour {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background-color: var(--green-700);
+    color: #ffffff !important;
+    padding: 13px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 12px rgba(33, 92, 53, 0.25);
+    transition: all 0.2s ease;
+}
+.btn-primary-tour:hover {
+    background-color: var(--green-600);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(33, 92, 53, 0.35);
 }
 
 /* ── Lightbox ── */
@@ -466,7 +539,7 @@ img { display: block; }
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,.88);
-    z-index: 500;
+    z-index: 5000;
     align-items: center;
     justify-content: center;
 }
@@ -486,6 +559,19 @@ img { display: block; }
 /* ============================================================
    RESPONSIVE
 ============================================================ */
+@media (max-width: 992px) {
+    .layout-container {
+        flex-direction: column;
+    }
+    .right-sidebar-section {
+        width: 100%;
+        position: static;
+    }
+    .main-hero-box, .sub-gallery-box {
+        height: 340px;
+    }
+}
+
 @media (max-width: 768px) {
     :root { --navbar-h: auto; }
     .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 10px; }
@@ -493,15 +579,15 @@ img { display: block; }
     .post-title { font-size: 1.5rem; }
     .title-section, .desc-section { padding-left: 1.2rem; padding-right: 1.2rem; }
     .card-divider { margin: 0 1.2rem; }
+    .publish-date-row { padding-left: 1.2rem; }
+    .action-section { padding: 1rem 1.2rem 0.5rem; }
+    .main-hero-box, .sub-gallery-box { height: 260px; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- ══════════════════════════════════════════
-     TOP BAR
-══════════════════════════════════════════ -->
 <div class="top-bar">
   <a href="#">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -525,12 +611,8 @@ img { display: block; }
   </a>
 </div>
 
-<!-- ══════════════════════════════════════════
-     NAVBAR
-══════════════════════════════════════════ -->
 <nav class="navbar">
 
-  <!-- Brand -->
   <a href="/search" class="navbar-brand">
     <div class="brand-icon">
       <svg viewBox="0 0 24 24" fill="white">
@@ -543,7 +625,6 @@ img { display: block; }
     </div>
   </a>
 
-  <!-- Nav links -->
   <div class="nav-links">
     <a href="/search" class="nav-link">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -568,10 +649,8 @@ img { display: block; }
 
   <div class="nav-divider"></div>
 
-  <!-- Auth group -->
   <div class="auth-group">
 
-    <!-- ยังไม่ได้ล็อกอิน -->
     <th:block th:if="${session.loggedInMember == null
                     and session.loggedInManager == null
                     and session.loggedInOwner   == null
@@ -640,7 +719,6 @@ img { display: block; }
 
     </th:block>
 
-    <!-- ล็อกอินแล้ว -->
     <th:block th:if="${session.loggedInMember != null
                     or session.loggedInManager != null
                     or session.loggedInOwner   != null
@@ -770,9 +848,6 @@ img { display: block; }
   </div>
 </nav>
 
-<!-- ══════════════════════════════════════════
-     BREADCRUMB
-══════════════════════════════════════════ -->
 <div class="breadcrumb">
     <a href="/search">หน้าแรก</a>
     <span>›</span>
@@ -781,76 +856,87 @@ img { display: block; }
     <span th:text="${post.title}">รายละเอียดกิจกรรม</span>
 </div>
 
-<!-- ══════════════════════════════════════════
-     PAGE CONTENT
-══════════════════════════════════════════ -->
 <div class="page-wrap">
 
-    <!-- ปุ่มกลับ -->
     <a href="/member/search" class="btn-back">← กลับหน้าหลัก</a>
 
-    <!-- มีรูป -->
-    <div th:if="${post.images != null and !post.images.isEmpty()}">
-        <div th:with="imgs=${#strings.arraySplit(post.images, '||')}">
+    <div class="layout-container">
 
-            <!-- HERO -->
-            <div class="hero-image-wrap">
-                <img class="hero-image"
-                     th:src="${imgs[0]}"
-                     alt="กิจกรรม">
+        <div class="left-gallery-section">
+            
+            <div th:if="${post.images != null and !post.images.isEmpty()}">
+                <div th:with="imgs=${#strings.arraySplit(post.images, '||')}" class="gallery-grid-layout">
+
+                    <div class="main-hero-box">
+                        <img class="hero-image"
+                             th:src="${imgs[0]}"
+                             alt="กิจกรรมหลัก"
+                             th:onclick="'openLightbox(this.src)'">
+                    </div>
+
+                    <div class="sub-gallery-box" th:if="${imgs.length > 1}">
+                        <img th:each="img,iter : ${imgs}"
+                             th:if="${iter.index > 0}"
+                             th:src="${img}"
+                             alt="รูปกิจกรรมย่อย"
+                             th:onclick="'openLightbox(this.src)'">
+                    </div>
+
+                </div>
             </div>
 
-            <!-- GALLERY -->
-            <div class="gallery" th:if="${imgs.length > 1}">
-                <img th:each="img,iter : ${imgs}"
-                     th:if="${iter.index > 0}"
-                     th:src="${img}"
-                     alt="รูปกิจกรรม"
-                     th:onclick="'openLightbox(this.src)'">
+            <div th:if="${post.images == null or post.images.isEmpty()}">
+                <div class="hero-placeholder">🌿</div>
             </div>
 
         </div>
-    </div>
 
-    <!-- ไม่มีรูป -->
-    <div class="hero-image-wrap"
-         th:if="${post.images == null or post.images.isEmpty()}">
-        <div class="hero-placeholder">🌿</div>
-    </div>
+        <div class="right-sidebar-section">
+            <div class="main-card">
 
-    <!-- CARD -->
-    <div class="main-card">
+                <div class="title-section">
+                    <h1 class="post-title" th:text="${post.title}">ชื่อกิจกรรม</h1>
+                    <div class="location-row" th:if="${post.location != null}">
+                        📍 <span th:text="${post.location}">สถานที่</span>
+                    </div>
+                </div>
 
-        <div class="title-section">
-            <h1 class="post-title" th:text="${post.title}">ชื่อกิจกรรม</h1>
-            <div class="location-row" th:if="${post.location != null}">
-                📍
-                <span th:text="${post.location}">สถานที่</span>
-            </div>
-        </div>
-
-        <div class="card-divider"></div>
-
-        <div class="desc-section">
-            <div class="desc-label">รายละเอียดกิจกรรม</div>
-            <p class="desc-text"
-               th:if="${post.description != null and !post.description.isEmpty()}"
-               th:text="${post.description}">
-            </p>
-            <p class="desc-text"
-               style="color:#9ca3af;font-style:italic;"
-               th:if="${post.description == null or post.description.isEmpty()}">
-                ไม่มีรายละเอียดเพิ่มเติม
-            </p>
-        </div>
-
-    </div>
-
+                
+                <div class="publish-date-row" th:if="${post.createddate != null}">
+    📅 เผยแพร่เมื่อ: <span th:text="${#dates.format(post.createddate, 'dd MMM yyyy')}"></span>
 </div>
 
-<!-- ══════════════════════════════════════════
-     LIGHTBOX
-══════════════════════════════════════════ -->
+                <div class="card-divider"></div>
+
+                <div class="desc-section">
+                    <div class="desc-label">รายละเอียดกิจกรรม</div>
+                    <p class="desc-text"
+                       th:if="${post.description != null and !post.description.isEmpty()}"
+                       th:text="${post.description}">
+                    </p>
+                    <p class="desc-text"
+                       style="color:#9ca3af;font-style:italic;"
+                       th:if="${post.description == null or post.description.isEmpty()}">
+                        ไม่มีรายละเอียดเพิ่มเติม
+                    </p>
+                </div>
+
+                <div class="card-divider"></div>
+
+                <div class="action-section">
+    <a th:href="${post.communitymanager != null} ? @{/search(managerId=${post.communitymanager.managerid})} : '/search'" class="btn-primary-tour">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        ดูโปรแกรมทัวร์ทั้งหมดของชุมชนนี้
+    </a>
+</div>
+
+            </div>
+        </div>
+
+    </div> </div>
+
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <img id="lightbox-img" src="" alt="รูปขยาย">

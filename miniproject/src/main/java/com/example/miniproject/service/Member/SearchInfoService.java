@@ -25,6 +25,13 @@ public class SearchInfoService {
     @Autowired
     private HomestayRepository homestayRepository;
 
+    public List<Tour> getToursByManagerId(String managerId) {
+    // สมมติว่าใน TourRepository ของพี่มีฟังก์ชันสำหรับหาด้วยไอดีผู้จัดการ
+    // (ลองเช็คชื่อฟังก์ชันใน TourRepository อีกทีนะครับ ว่าเขียนไว้แบบไหน)
+    return tourRepository.findByCommunitymanagerManagerid(managerId);
+}
+
+
     // step 5.1-5.2: searchActivity()
     public List<Activitypost> searchActivity(String keyword) {
         try {

@@ -22,7 +22,6 @@ public class SearchInfoController {
     @Autowired
     private SearchInfoService searchInfoService;
 
-    // ── เพิ่มใหม่ ──────────────────────────────────────────
     @Autowired
     private ReviewRepository reviewRepository;
 
@@ -30,8 +29,9 @@ public class SearchInfoController {
     public String searchPage(
             @RequestParam(defaultValue = "")         String  keyword,
             @RequestParam(defaultValue = "")         String  date,
-            @RequestParam(defaultValue = "1")        Integer numGuest,
+            @RequestParam(defaultValue = "1")         Integer numGuest,
             @RequestParam(defaultValue = "activity") String  type,
+            @RequestParam(required = false)          String  managerId, 
             Model model) {
 
         if (numGuest < 1) {
@@ -39,10 +39,24 @@ public class SearchInfoController {
             numGuest = 1;
         }
 
-        List<Activitypost> activities = searchInfoService.searchActivity(keyword);
-        List<Tour>         tours      = searchInfoService.searchTour(keyword, numGuest);
-        List<Homestay>     homestays  = searchInfoService.searchHomestay(keyword);
+        // ถ้ามีการส่ง managerId มา ให้เปลี่ยนแท็บเริ่มต้นเป็นหน้าทัวร์อัตโนมัติ
+        if (managerId != null && !managerId.isEmpty()) {
+            type = "tour";
+        }
 
+        // ดึงข้อมูลกิจกรรมและโฮมสเตย์ปกติ
+        List<Activitypost> activities = searchInfoService.searchActivity(keyword);
+        List<Homestay>     homestays  = searchInfoService.searchHomestay(keyword);
+        
+        // ดึงข้อมูลทัวร์ตามเงื่อนไข (ดึงแยกตาม managerId หรือดึงตาม keyword ปกติ)
+        List<Tour> tours;
+        if (managerId != null && !managerId.isEmpty()) {
+            tours = searchInfoService.getToursByManagerId(managerId); 
+        } else {
+            tours = searchInfoService.searchTour(keyword, numGuest);
+        }
+
+        // ส่งข้อมูลเข้าสู่ Model เพื่อแสดงผลบนหน้าเว็บ
         model.addAttribute("activities",    activities);
         model.addAttribute("tours",         tours);
         model.addAttribute("homestays",     homestays);
@@ -55,7 +69,7 @@ public class SearchInfoController {
         model.addAttribute("homestayCount", homestays.size());
         model.addAttribute("totalCount",    activities.size() + tours.size() + homestays.size());
 
-        // ── เพิ่มใหม่: คำนวณ rating map ─────────────────────────────────
+        // ── คำนวณ rating map ─────────────────────────────────
 
         // Tour rating
         Map<String, String> tourRating      = new HashMap<>();
@@ -71,9 +85,6 @@ public class SearchInfoController {
 
         Map<String, String> actRating      = new HashMap<>();
         Map<String, Long>   actReviewCount = new HashMap<>();
-
-        model.addAttribute("actRating",       actRating);
-        model.addAttribute("actReviewCount",  actReviewCount);
 
         // Homestay rating
         Map<Integer, String> hsRating      = new HashMap<>();

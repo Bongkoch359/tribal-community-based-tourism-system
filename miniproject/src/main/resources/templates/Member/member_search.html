@@ -280,19 +280,21 @@
      TAB NAVIGATION
 ══════════════════════════════════════════ -->
 <div class="tab-nav">
-  <button class="tab-btn active" data-tab="activity" onclick="switchTab('activity')">
+  <button class="tab-btn" th:classappend="${currentType == 'activity'} ? 'active'" data-tab="activity" onclick="switchTab('activity')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
     </svg>
     กิจกรรม
   </button>
-  <button class="tab-btn" data-tab="tour" onclick="switchTab('tour')">
+  
+  <button class="tab-btn" th:classappend="${currentType == 'tour'} ? 'active'" data-tab="tour" onclick="switchTab('tour')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
     </svg>
     จองทัวร์ชุมชน
   </button>
-  <button class="tab-btn" data-tab="homestay" onclick="switchTab('homestay')">
+  
+  <button class="tab-btn" th:classappend="${currentType == 'homestay'} ? 'active'" data-tab="homestay" onclick="switchTab('homestay')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
     </svg>
@@ -439,7 +441,7 @@
        FEATURED — รายการแนะนำรวม
        ✅ แก้ไข: จำกัด 4 รายการต่อประเภท + รูปโฮมสเตย์ + rating จริง
   ══════════════════════════════════════════ -->
-  <div class="featured-all" id="featuredAll">
+  <div class="featured-all" id="featuredAll" th:if="${param.managerId == null}">
 
     <div class="featured-all-header">
       <div>
@@ -474,7 +476,7 @@
           <div class="fcard-body">
             <!-- ✅ rating จริงจาก map -->
             <div class="fcard-rating">
-              <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#f59e0b;flex-shrink:0;">
+             
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
               <span th:text="${actRating[a.activityid]}">-</span>
@@ -613,7 +615,9 @@
   ════════════════════════════════════════ -->
 
   <!-- ACTIVITY -->
-  <div class="section-block" data-type="activity" id="block-activity">
+  <div class="section-block" data-type="activity" id="block-activity" 
+       th:style="${currentType == 'activity'} ? 'display: block;' : 'display: none;'">
+
     <div class="section-header">
       <div class="section-header-left">
         <div class="section-accent"></div>
@@ -686,7 +690,9 @@
   </div>
 
   <!-- TOUR -->
-  <div class="section-block" data-type="tour" id="block-tour">
+  <div class="section-block" data-type="tour" id="block-tour" 
+     th:style="${currentType == 'tour'} ? 'display: block;' : 'display: none;'">
+
     <div class="section-header">
       <div class="section-header-left">
         <div class="section-accent"></div>
@@ -737,7 +743,9 @@
   </div>
 
   <!-- HOMESTAY -->
-  <div class="section-block" data-type="homestay" id="block-homestay">
+  <div class="section-block" data-type="homestay" id="block-homestay" 
+     th:style="${currentType == 'homestay'} ? 'display: block;' : 'display: none;'">
+
     <div class="section-header">
       <div class="section-header-left">
         <div class="section-accent" style="background:linear-gradient(180deg,#0369a1,#52b788);"></div>
@@ -785,57 +793,6 @@
       <div th:if="${#lists.isEmpty(homestays)}" class="empty">
         <div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
         <h3>ไม่พบข้อมูลโฮมสเตย์</h3><p>ลองค้นหาด้วยคำอื่น</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- PACKAGE -->
-  <div class="section-block" data-type="package" id="block-package">
-    <div class="section-header">
-      <div class="section-header-left">
-        <div class="section-accent" style="background:linear-gradient(180deg,#7c3aed,#3d9e68);"></div>
-        <span class="section-title">แพ็กเกจทัวร์</span>
-        <span class="section-count" style="background:#ede9fe;color:#7c3aed;" th:text="${packageCount} + ' รายการ'">0 รายการ</span>
-      </div>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-img">
-          <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&h=380&fit=crop" alt="" loading="lazy"/>
-          <span class="card-badge badge-package">ทัวร์ + ที่พัก</span>
-          <button class="card-fav" onclick="toggleFav(this); event.preventDefault();">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-          </button>
-        </div>
-        <div class="card-body">
-          <div class="card-rating">
-            <div class="stars">
-              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            </div>
-            <span class="rating-num">4.9</span><span class="rating-count">(54)</span>
-          </div>
-          <p class="card-name">แพ็กเกจ 2 วัน 1 คืน: นอนดูดาว บ้านจ่าโบ่</p>
-          <p class="card-loc">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-4-4-7-7.5-7-10.5a7 7 0 1114 0c0 3-3 6.5-7 10.5z"/><circle cx="12" cy="10" r="2"/></svg>
-            ปางมะผ้า, แม่ฮ่องสอน
-          </p>
-          <div class="card-tags">
-            <span class="card-tag">2 วัน 1 คืน</span><span class="card-tag">อาหาร 3 มื้อ</span>
-          </div>
-          <div class="card-footer">
-            <div>
-              <div class="card-price-label">เริ่มต้น/คน</div>
-              <div class="card-price" style="color:#7c3aed;"><sup>฿</sup>2,490</div>
-            </div>
-            <a href="/package/1" class="btn-book" style="background:#7c3aed;">จองเลย
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg>
-            </a>
-          </div>
-        </div>
       </div>
     </div>
   </div>

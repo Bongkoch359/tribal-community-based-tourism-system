@@ -12,6 +12,9 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     // ค้นหาชื่อทัวร์
     List<Tour> findByTourmnameContainingIgnoreCase(String tourmname);
 
+    List<Tour> findByCommunitymanagerManagerid(String managerId);
+    
+
     // ดึงทัวร์ active
     List<Tour> findByStatus(String status);
 
