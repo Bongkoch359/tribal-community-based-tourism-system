@@ -101,4 +101,19 @@ public class ReviewService {
         return reviews.stream()
                 .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
     }
+
+
+public List<Review> getReviewsByHomestayId(Integer homestayId) {
+    return reviewRepository.findByHomestayId(homestayId);
+}
+
+public double getAvgRatingByHomestayId(Integer homestayId) {
+    Double avg = reviewRepository.avgRatingByHomestayId(homestayId);
+    return avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
+}
+
+public long getReviewCountByHomestayId(Integer homestayId) {
+    Long count = reviewRepository.countByHomestayId(homestayId);
+    return count != null ? count : 0L;
+}
 }
