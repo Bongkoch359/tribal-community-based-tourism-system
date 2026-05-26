@@ -906,11 +906,12 @@ img { display: block; }
               1. ข้อมูลการจองทัวร์
             </div>
 
-            <div class="form-grid-2">
-              <div class="form-group">
-                <label class="form-label">วันที่ออกเดินทาง <span class="req">*</span></label>
-                <input type="date" name="tourdate" required class="form-input">
-              </div>
+           <div class="form-grid-2">
+      <div class="form-group">
+    <label class="form-label">วันที่ออกเดินทาง <span class="req">*</span></label>
+    <input type="date" name="tourdate" id="tourdate-input" required class="form-input">
+  </div> 
+
               <div class="form-group">
                 <label class="form-label">ประเภทจุดรับ</label>
                 <select name="pickuptype" x-model="pickupType" class="form-select">
@@ -1125,6 +1126,21 @@ document.addEventListener('click', function(e) {
   const wrapper = document.getElementById('userMenuWrapper');
   if (wrapper && !wrapper.contains(e.target)) {
     wrapper.classList.remove('open');
+  }
+});
+
+/* ─── 2. เพิ่มโค้ดดึงค่าวันที่จากหน้ารายละเอียดมาแสดงตรงนี้ ─── */
+window.addEventListener('DOMContentLoaded', (event) => {
+  // ดึง Parameter จาก URL (.location.search)
+  const urlParams = new URLSearchParams(window.location.search);
+  const dateFromUrl = urlParams.get('tourdate'); // อ่านค่าตัวแปร 'tourdate' ที่ส่งมา
+  
+  // นำค่าไปเซ็ตในกล่องอินพุตวันที่
+  if (dateFromUrl) {
+    const bookingInput = document.getElementById('tourdate-input');
+    if (bookingInput) {
+      bookingInput.value = dateFromUrl;
+    }
   }
 });
 </script>

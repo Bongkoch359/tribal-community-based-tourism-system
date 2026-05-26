@@ -50,46 +50,67 @@ public class HomestayPaymentServiceImpl implements PaymentService {
         dto.setNumOfGuests(booking.getNumofguest());
 
         // ดึงข้อมูลจาก roomDetails (Bookingroomdetail)
-        List<Bookingroomdetail> roomDetails = booking.getRoomDetails();
-        if (roomDetails != null && !roomDetails.isEmpty()) {
-            Bookingroomdetail detail = roomDetails.get(0);
+List<Bookingroomdetail> roomDetails = booking.getRoomDetails();
 
-            // วันเช็คอิน / เช็คเอาท์  →  checkindate / checkoutdate
-            dto.setCheckIn(detail.getCheckindate());
-            dto.setCheckOut(detail.getCheckoutdate());
+if (roomDetails != null && !roomDetails.isEmpty()) {
 
-            // จำนวนห้อง / ผู้ใหญ่ / เด็ก
-            dto.setNumOfRooms(detail.getNumofrooms());
-            dto.setNumOfAdults(detail.getNumofadults());
-            dto.setNumOfChildren(detail.getNumofChcldren());   // สังเกต typo ใน entity: numofChcldren
+    Bookingroomdetail detail = roomDetails.get(0);
 
-            // ข้อมูล Roomtype  →  getRoomtype()
-            if (detail.getRoomtype() != null) {
-                dto.setRoomTypeName(detail.getRoomtype().getTypename());  // typename
+    // วันเช็คอิน / เช็คเอาท์
+    dto.setCheckIn(detail.getCheckindate());
+    dto.setCheckOut(detail.getCheckoutdate());
 
-                // รูปห้องพัก  →  images (LONGTEXT เก็บ path หรือ base64)
-                if (detail.getRoomtype().getImages() != null
-                        && !detail.getRoomtype().getImages().isEmpty()) {
-                    dto.setRoomImageUrl("/uploads/rooms/" + detail.getRoomtype().getImages());
-                }
+    // จำนวนห้อง / ผู้ใหญ่ / เด็ก
+    dto.setNumOfRooms(detail.getNumofrooms());
+    dto.setNumOfAdults(detail.getNumofadults());
+    dto.setNumOfChildren(detail.getNumofChcldren());
 
-                // ข้อมูลโฮมสเตย์  →  roomtype.getHomestay()
-                if (detail.getRoomtype().getHomestay() != null) {
-                    dto.setHomestayName(detail.getRoomtype().getHomestay().getHomestayname());
-                    dto.setHomestayAddress(detail.getRoomtype().getHomestay().getAddress());
-                 // ✅ ข้อมูลบัญชีธนาคาร
+    // ข้อมูล Roomtype
+    if (detail.getRoomtype() != null) {
+
+        dto.setRoomTypeName(
+            detail.getRoomtype().getTypename()
+        );
+
+        // รูปห้อง
+        String images = detail.getRoomtype().getImages();
+
+        if (images != null && !images.isEmpty()) {
+
+            String[] imageArray = images.split(",");
+
+            // เอารูปแรก
+            String firstImage = imageArray[0].trim();
+
+            dto.setRoomImageUrl(firstImage);
+        
+        }
+
+        // ข้อมูล Homestay
+        if (detail.getRoomtype().getHomestay() != null) {
+
+            dto.setHomestayName(
+                detail.getRoomtype().getHomestay().getHomestayname()
+            );
+
+            dto.setHomestayAddress(
+                detail.getRoomtype().getHomestay().getAddress()
+            );
+
+            // ข้อมูลบัญชีธนาคาร
             if (detail.getRoomtype().getHomestay().getOwner() != null) {
 
-            dto.setBankName(
-            detail.getRoomtype().getHomestay().getOwner().getBankName());
+                dto.setBankName(
+                    detail.getRoomtype().getHomestay().getOwner().getBankName()
+                );
 
-        dto.setBankAccount(
-            detail.getRoomtype().getHomestay().getOwner().getAccountNumber()
-        );
-    }
-                }
+                dto.setBankAccount(
+                    detail.getRoomtype().getHomestay().getOwner().getAccountNumber()
+                );
             }
         }
+    }
+}
 
         // สถานะ payment ปัจจุบัน  →  findByBooking_Bookingid return Payment (ไม่ใช่ Optional)
         Payment existing = paymentRepository.findByBooking_Bookingid(bookingId);

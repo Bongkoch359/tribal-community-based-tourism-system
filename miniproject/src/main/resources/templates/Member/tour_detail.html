@@ -1109,7 +1109,11 @@
     const date = document.getElementById('tourDate').value;
     if (!date) { alert('กรุณาเลือกวันที่เดินทางก่อน'); return; }
     const tourId = document.querySelector('[data-tour-id]')?.dataset.tourId || '1';
-    const params = new URLSearchParams({ date, numAdult: adults, numChild: children });
+   const params = new URLSearchParams({ 
+      tourdate: date,     // <-- เปลี่ยนตัวแปรฝั่งซ้ายเป็น tourdate
+      numAdult: adults, 
+      numChild: children 
+    });
     window.location.href = `/booking/tour/${tourId}?${params}`;
   }
 

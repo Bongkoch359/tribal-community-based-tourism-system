@@ -10,7 +10,6 @@ import com.example.miniproject.entity.enums.PaymentStatus;
 import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,10 +70,18 @@ public class TourPaymentServiceImpl implements PaymentService {
                 dto.setRoomTypeName(detail.getTour().getTourmname()); // ใช้ field เดิมเก็บชื่อทัวร์
 
                 // รูปทัวร์
-                if (detail.getTour().getImages() != null
-                        && !detail.getTour().getImages().isEmpty()) {
-                    dto.setRoomImageUrl("/uploads/tours/" + detail.getTour().getImages());
-                }
+            if (detail.getTour().getImages() != null&& !detail.getTour().getImages().isEmpty()) {
+
+            String images = detail.getTour().getImages();
+
+    // แยกรูปด้วย ||
+            String[] imageArray = images.split("\\|\\|");
+
+    // เอารูปแรก
+            String firstImage = imageArray[0].trim();
+
+            dto.setRoomImageUrl("/uploads/tours/" + firstImage);
+}
 
                
         // ✅ แก้ใหม่ให้ตรงกับ Communitymanager entity

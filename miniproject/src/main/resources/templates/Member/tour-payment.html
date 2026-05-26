@@ -371,12 +371,19 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
         <!-- /LEFT -->
 
         <!-- ─── RIGHT SIDEBAR ─── -->
-        <div class="summary-card">
-            <img class="summary-img"
-                 th:if="${payment.roomImageUrl != null}"
-                 th:src="${payment.roomImageUrl}" alt="ทัวร์">
-            <div class="summary-img-placeholder"
-                 th:if="${payment.roomImageUrl == null}">🎒</div>
+<div class="summary-card">
+
+    <img class="summary-img"
+         th:if="${payment.roomImageUrl != null}"
+         th:src="@{${payment.roomImageUrl}}"
+         alt="ทัวร์">
+
+    <div class="summary-img-placeholder"
+         th:if="${payment.roomImageUrl == null}">
+        🎒
+    </div>
+
+
 
             <div class="summary-body">
                 <div class="tour-name"

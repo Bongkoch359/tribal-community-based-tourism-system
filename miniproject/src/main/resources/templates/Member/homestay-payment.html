@@ -674,18 +674,21 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
             </div>
         </div>
 
-       <!-- SIDEBAR -->
+      <!-- SIDEBAR -->
 <div class="summary-card">
-    <!-- แก้ไขตรงนี้: สปลิต URL รูปภาพห้องพักด้วยเครื่องหมายจุลภาค (,) เพื่อดึงเฉพาะรูปแรกสุดมาแสดง -->
-    <th:block th:with="roomImgs=${payment.roomImageUrl != null && payment.roomImageUrl != '' ? #strings.arraySplit(payment.roomImageUrl, ',') : null}">
-        
-        <!-- 1. แสดงรูปแรกสุดของห้องพักเมื่อมีข้อมูลอยู่จริง -->
-        <img class="summary-img"
-             th:if="${roomImgs != null and roomImgs.length > 0}"
-             th:src="@{{path}(path=${roomImgs[0]})}" 
-             alt="ห้องพัก">
-             
-    </th:block>
+
+    <img class="summary-img"
+         th:if="${payment.roomImageUrl != null}"
+         th:src="@{${payment.roomImageUrl}}"
+         alt="room">
+
+    <!-- ถ้าไม่มีรูป -->
+    <div class="summary-img-placeholder"
+         th:if="${payment.roomImageUrl == null}">
+        🏠
+    </div>
+  
+
 
     <div class="summary-body">
         <div class="homestay-name"
