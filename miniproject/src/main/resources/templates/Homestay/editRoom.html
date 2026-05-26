@@ -867,7 +867,7 @@
                     window.location.href = '/owner/rooms?homestayid=' + HOMESTAY_ID;
                 }, 2000);
             } else {
-                showToast('เกิดข้อผิดพลาด: ' + (data.message || ''), true);
+                showToast('ไม่สามารถแก้ไขข้อมูลห้องพักได้ กรุณาลองใหม่อีกครั้ง', true);
                 btn.disabled = false;
             }
         } catch (err) {

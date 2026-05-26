@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface HomestayRepository extends JpaRepository<Homestay, Integer> {
 
+   List<Homestay> findByOwner_Ownerid(Integer ownerid);
+
     List<Homestay> findByHomestaynameContainingIgnoreCase(String homestayname);
     List<Homestay> findByAddressContainingIgnoreCase(String address);
 

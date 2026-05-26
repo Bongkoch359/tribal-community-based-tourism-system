@@ -33,58 +33,65 @@ public class RoomTypeController {
             System.getProperty("user.dir") + "/uploads/rooms/";
 
     // ─── GET: รายการห้องพักทั้งหมด ───────────────────────────────────────────
-    @GetMapping("/owner/rooms")
-    public String listRooms(
-            @RequestParam(value = "homestayid", required = false) Integer homestayid,
-            HttpSession session,
-            Model model) {
+   @GetMapping("/owner/rooms")
+public String listRooms(
+        @RequestParam(value = "homestayid", required = false) Integer homestayid,
+        HttpSession session,
+        Model model) {
 
-        if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
+    if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
 
-        String ownername = (String) session.getAttribute("ownername");
+    String ownername = (String) session.getAttribute("ownername");
+    Integer ownerid  = (Integer) session.getAttribute("ownerid");
 
-        if (homestayid == null) {
-            homestayid = (Integer) session.getAttribute("homestayid");
+    // ดึงโฮมสเตย์ทั้งหมดของเจ้าของคนนี้
+    List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
+
+    // ถ้าไม่ได้ส่ง homestayid มา → ใช้อันแรกของรายการ
+    if (homestayid == null) {
+        if (!myHomestays.isEmpty()) {
+            homestayid = myHomestays.get(0).getHomestayid();
         }
-
-        String homestayname = "";
-        if (homestayid != null) {
-            Homestay hs = homestayService.getHomestayById(homestayid);
-            if (hs != null) homestayname = hs.getHomestayname();
-        }
-
-        List<Roomtype> rooms = (homestayid != null)
-                ? roomTypeService.getRoomTypesByHomestayId(homestayid)
-                : Collections.emptyList();
-
-        List<Map<String, Object>> roomViews = rooms.stream().map(room -> {
-            Map<String, Object> m = new HashMap<>();
-            m.put("roomtypeid",    room.getRoomtypeid());
-            m.put("typename",      room.getTypename());
-            m.put("pricepernight", room.getPricepernight());
-            m.put("maxguest",      room.getMaxguest());
-            m.put("totalrooms",    room.getTotalrooms());
-            m.put("status",        room.getStatus());
-
-            // รูปแรก: เป็น URL path (/uploads/rooms/xxx.jpg)
-            String firstImg = null;
-            String imgs = room.getImages();
-            if (imgs != null && !imgs.isBlank()) {
-                String[] parts = imgs.split(",");
-                if (parts.length > 0 && !parts[0].isBlank()) {
-                    firstImg = parts[0].trim();
-                }
-            }
-            m.put("firstImageUrl", firstImg);
-            return m;
-        }).collect(Collectors.toList());
-
-        model.addAttribute("ownername",    ownername != null ? ownername : "Owner");
-        model.addAttribute("homestayid",   homestayid);
-        model.addAttribute("homestayname", homestayname);
-        model.addAttribute("rooms",        roomViews);
-        return "Homestay/listRoom";
     }
+
+    String homestayname = "";
+    if (homestayid != null) {
+        Homestay hs = homestayService.getHomestayById(homestayid);
+        if (hs != null) homestayname = hs.getHomestayname();
+    }
+
+    List<Roomtype> rooms = (homestayid != null)
+            ? roomTypeService.getRoomTypesByHomestayId(homestayid)
+            : Collections.emptyList();
+
+    List<Map<String, Object>> roomViews = rooms.stream().map(room -> {
+        Map<String, Object> m = new HashMap<>();
+        m.put("roomtypeid",    room.getRoomtypeid());
+        m.put("typename",      room.getTypename());
+        m.put("pricepernight", room.getPricepernight());
+        m.put("maxguest",      room.getMaxguest());
+        m.put("totalrooms",    room.getTotalrooms());
+        m.put("status",        room.getStatus());
+
+        String firstImg = null;
+        String imgs = room.getImages();
+        if (imgs != null && !imgs.isBlank()) {
+            String[] parts = imgs.split(",");
+            if (parts.length > 0 && !parts[0].isBlank()) {
+                firstImg = parts[0].trim();
+            }
+        }
+        m.put("firstImageUrl", firstImg);
+        return m;
+    }).collect(Collectors.toList());
+
+    model.addAttribute("ownername",    ownername != null ? ownername : "Owner");
+    model.addAttribute("homestayid",   homestayid);
+    model.addAttribute("homestayname", homestayname);
+    model.addAttribute("myHomestays",  myHomestays);   // ← เพิ่ม
+    model.addAttribute("rooms",        roomViews);
+    return "Homestay/listRoom";
+}
 
     // ─── GET: ฟอร์มเพิ่มห้องพัก ──────────────────────────────────────────────
     @GetMapping("/addroom")

@@ -7,9 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-        /* ═══════════════════════════════════════════════
-           NAVBAR — self-contained, no dashboard.css needed
-           ═══════════════════════════════════════════════ */
         .hs-navbar {
             background: #1a3d1f;
             display: flex;
@@ -132,7 +129,6 @@
             .hs-navbar { padding: 0 1rem; }
         }
 
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { height: 100%; }
         body {
@@ -157,15 +153,12 @@
         .footer a { color: #95d5b2; text-decoration: none; margin-left: 8px; }
         .footer a:hover { text-decoration: underline; }
 
-        /* ── Page ── */
-        .page { 
-    max-width: 100%;
-    margin: 0;
-    padding: 32px 40px;
-    flex: 1;
-}
-
-        /* ── Header row ── */
+        .page {
+            max-width: 100%;
+            margin: 0;
+            padding: 32px 40px;
+            flex: 1;
+        }
         .page-header {
             display: flex; align-items: center;
             justify-content: space-between; margin-bottom: 28px;
@@ -186,7 +179,44 @@
         }
         .btn-add:hover { background: #c96e00; color: #fff; }
 
-        /* ── Filter tabs ── */
+        /* ── Homestay selector ── */
+        .homestay-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 1px 6px rgba(0,0,0,.07);
+            width: fit-content;
+        }
+        .homestay-selector label {
+            font-weight: 600;
+            color: #1a3a1a;
+            font-size: .95rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .homestay-selector label i { color: #2d6a2d; }
+        .homestay-selector select {
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1.5px solid #c5d6c5;
+            background: #f5f9f5;
+            font-family: 'Sarabun', sans-serif;
+            font-size: .95rem;
+            color: #1a3a1a;
+            cursor: pointer;
+            outline: none;
+            transition: border-color .2s;
+            min-width: 200px;
+        }
+        .homestay-selector select:hover,
+        .homestay-selector select:focus { border-color: #2d6a2d; }
+
         .filter-bar {
             display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
         }
@@ -202,76 +232,40 @@
         }
         .filter-btn:hover:not(.active) { border-color: #aaa; }
 
-        /* ── Table card ── */
         .table-card {
             background: #fff; border-radius: 14px;
             box-shadow: 0 2px 16px rgba(0,0,0,.07); overflow: hidden;
         }
-
         table { width: 100%; border-collapse: collapse; }
+        .table-card table thead tr { background: #d4edda !important; }
+        .table-card table thead th {
+            background: #d4edda !important;
+            color: #1a3d1f !important;
+            border-bottom: 2px solid #c3dec9 !important;
+            padding: 18px 16px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        tbody td {
+            padding: 18px 16px;
+            vertical-align: middle;
+            text-align: center;
+        }
+        th:first-child, td:first-child { width: 180px; text-align: center; }
+        th:last-child,  td:last-child  { width: 220px; text-align: center; }
 
-        .table-card table thead tr {
-    background: #d4edda !important;
-}
-
-/* หัวตาราง */
-.table-card table thead th {
-    background: #d4edda !important;
-    color: #1a3d1f !important;
-    border-bottom: 2px solid #c3dec9 !important;
-    padding: 18px 16px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-/* ข้อมูลในตาราง */
-tbody td {
-    padding: 18px 16px;
-    vertical-align: middle;
-    text-align: center;   /* ทำให้ตรงกับหัว */
-}
-
-/* คอลัมน์รูปภาพ */
-th:first-child,
-td:first-child {
-    width: 180px;
-    text-align: center;
-}
-
-/* คอลัมน์ปุ่มรายละเอียด */
-th:last-child,
-td:last-child {
-    width: 220px;
-    text-align: center;
-}
-
-        /* ── Room image ── */
         .room-img {
-    width: 72px;
-    height: 52px;
-    border-radius: 8px;
-    object-fit: cover;
-    background: #eee;
+            width: 72px; height: 52px;
+            border-radius: 8px; object-fit: cover;
+            display: block; margin: 0 auto;
+        }
+        .room-img-placeholder {
+            width: 72px; height: 52px;
+            border-radius: 8px; background: #e8ede8;
+            display: flex; align-items: center; justify-content: center;
+            color: #aaa; font-size: 1.4rem; margin: 0 auto;
+        }
 
-    display: block;
-    margin: 0 auto;   /* ทำให้รูปอยู่กึ่งกลาง */
-}
-
-.room-img-placeholder {
-    width: 72px;
-    height: 52px;
-    border-radius: 8px;
-    background: #e8ede8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #aaa;
-    font-size: 1.4rem;
-
-    margin: 0 auto;   /* placeholder อยู่กลางด้วย */
-}
-
-        /* ── Type badge ── */
         .type-badge {
             display: inline-flex; align-items: center; gap: 5px;
             padding: 4px 12px; border-radius: 20px;
@@ -282,7 +276,6 @@ td:last-child {
         .badge-tent    { background: #e8f5e9; color: #2d6a2d; }
         .badge-default { background: #f0f0f0; color: #666; }
 
-        /* ── Status badge ── */
         .status-badge {
             display: inline-flex; align-items: center; gap: 5px;
             padding: 4px 14px; border-radius: 20px;
@@ -294,26 +287,19 @@ td:last-child {
         .status-unavailable { background: #fdecea; color: #c62828; }
         .status-unavailable .status-dot { background: #e53935; }
 
-        /* ── Price ── */
         .price-text { font-weight: 700; color: #1a3a1a; }
-        .price-unit { font-size: .8rem; color: #888; font-weight: 400; }
 
-        /* ── Action button ── */
         .btn-detail {
             background: #1a3a1a; color: #fff;
             border: none; border-radius: 7px;
             padding: 7px 16px; font-family: 'Sarabun', sans-serif;
             font-size: .88rem; font-weight: 600;
             cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-            text-decoration: none; transition: background .2s;
-            white-space: nowrap;
+            text-decoration: none; transition: background .2s; white-space: nowrap;
         }
         .btn-detail:hover { background: #2d6a2d; color: #fff; }
 
-        /* ── Empty state ── */
-        .empty-state {
-            text-align: center; padding: 64px 20px; color: #aaa;
-        }
+        .empty-state { text-align: center; padding: 64px 20px; color: #aaa; }
         .empty-state i { font-size: 3rem; margin-bottom: 16px; display: block; }
         .empty-state p { font-size: 1rem; }
 
@@ -321,12 +307,12 @@ td:last-child {
         .count-chip {
             background: #e8f5e8; color: #2d6a2d;
             font-size: .78rem; font-weight: 700;
-            padding: 2px 8px; border-radius: 20px;
-            margin-left: 6px;
+            padding: 2px 8px; border-radius: 20px; margin-left: 6px;
         }
     </style>
 </head>
 <body>
+
 <!-- ─── NAVBAR ─── -->
 <nav class="hs-navbar">
     <a class="hs-navbar-brand" th:href="@{/}">
@@ -342,7 +328,9 @@ td:last-child {
     <div class="hs-nav-right">
         <div class="hs-profile-dropdown">
             <div class="hs-profile-trigger">
-                <div class="hs-avatar" th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
+                <div class="hs-avatar"
+                     th:text="${ownername != null and #strings.length(ownername) >= 2}
+                               ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
                 <div>
                     <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
                     <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
@@ -352,7 +340,9 @@ td:last-child {
             <div class="hs-dropdown-content">
                 <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
                 <hr>
-                <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
+                <a th:href="@{/owner/logout}" class="hs-logout">
+                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                </a>
             </div>
         </div>
     </div>
@@ -372,6 +362,19 @@ td:last-child {
            th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}">
             <i class="fas fa-plus"></i> เพิ่มห้องพัก
         </a>
+    </div>
+
+    <!-- ── Homestay Selector (แสดงเมื่อมี > 1 โฮมสเตย์) ── -->
+    <div class="homestay-selector"
+         th:if="${myHomestays != null and myHomestays.size() > 1}">
+        <label><i class="fas fa-house"></i> โฮมสเตย์ :</label>
+        <select onchange="location.href='/owner/rooms?homestayid='+this.value">
+            <option th:each="hs : ${myHomestays}"
+                    th:value="${hs.homestayid}"
+                    th:text="${hs.homestayname}"
+                    th:selected="${hs.homestayid == homestayid}">
+            </option>
+        </select>
     </div>
 
     <!-- Filter tabs -->
@@ -406,20 +409,17 @@ td:last-child {
             </thead>
             <tbody id="roomBody">
 
-                <!-- กรณีไม่มีห้อง -->
                 <tr th:if="${#lists.isEmpty(rooms)}">
                     <td colspan="7">
                         <div class="empty-state">
                             <i class="fas fa-door-open"></i>
-                            <p>ยังไม่มีห้องพัก — กดปุ่ม "+ เพิ่มห้องพัก" เพื่อเริ่มต้น</p>
+                            <p>ยังไม่มีห้องพักในระบบ</p>
                         </div>
                     </td>
                 </tr>
 
-                <!-- วน loop ห้อง (rooms = List<Map<String,Object>>) -->
                 <tr th:each="room : ${rooms}" th:data-type="${room['typename']}">
 
-                    <!-- รูปภาพ -->
                     <td>
                         <img th:if="${room['firstImageUrl'] != null}"
                              th:src="${room['firstImageUrl']}"
@@ -431,7 +431,6 @@ td:last-child {
                         </div>
                     </td>
 
-                    <!-- ประเภท -->
                     <td>
                         <span th:switch="${room['typename']}">
                             <span th:case="'บ้านพัก'" class="type-badge badge-house">
@@ -451,39 +450,32 @@ td:last-child {
                         </span>
                     </td>
 
-                    <!-- ราคา -->
                     <td>
                         <span class="price-text"
                               th:text="${#numbers.formatDecimal(room['pricepernight'],1,'COMMA',0,'POINT')} + ' ฿'">
                         </span>
                     </td>
 
-                    <!-- รองรับ -->
                     <td th:text="${room['maxguest']} + ' คน'"></td>
-
-                    <!-- จำนวนห้อง -->
                     <td th:text="${room['totalrooms']} + ' ห้อง'"></td>
 
-                    <!-- สถานะ -->
-                    <!-- ✅ แก้เป็น -->
-<td>
-    <span th:switch="${room['status']}">
-        <span th:case="'เปิดจอง'" class="status-badge status-available">
-            <span class="status-dot"></span> เปิดจอง
-        </span>
-        <span th:case="'ปิดปรับปรุง'" class="status-badge status-unavailable">
-            <span class="status-dot"></span> ปิดปรับปรุง
-        </span>
-        <span th:case="'เต็ม'" class="status-badge status-unavailable">
-            <span class="status-dot"></span> เต็ม
-        </span>
-        <span th:case="*" class="status-badge status-unavailable">
-            <span class="status-dot"></span> ไม่ว่าง
-        </span>
-    </span>
-</td>
+                    <td>
+                        <span th:switch="${room['status']}">
+                            <span th:case="'เปิดจอง'" class="status-badge status-available">
+                                <span class="status-dot"></span> เปิดจอง
+                            </span>
+                            <span th:case="'ปิดปรับปรุง'" class="status-badge status-unavailable">
+                                <span class="status-dot"></span> ปิดปรับปรุง
+                            </span>
+                            <span th:case="'เต็ม'" class="status-badge status-unavailable">
+                                <span class="status-dot"></span> เต็ม
+                            </span>
+                            <span th:case="*" class="status-badge status-unavailable">
+                                <span class="status-dot"></span> ไม่ว่าง
+                            </span>
+                        </span>
+                    </td>
 
-                    <!-- Action -->
                     <td>
                         <a class="btn-detail"
                            th:href="@{/owner/room/view(roomtypeid=${room['roomtypeid']})}">
@@ -498,15 +490,13 @@ td:last-child {
 
 </div>
 
-     <!-- ─── FOOTER ─── -->
+<!-- ─── FOOTER ─── -->
 <footer class="footer">
     <div class="footer-content">
         <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-
         <span class="footer-right">
             Version 1.0 |
             <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
-
             <a href="#" onclick="openContactModal()">
                 <i class="fas fa-headset"></i> ติดต่อแอดมิน
             </a>
@@ -515,12 +505,9 @@ td:last-child {
 </footer>
 
 <script>
-// ── Filter tabs ──────────────────────────────────────────────
 function filterRooms(type, btn) {
-    // สลับ active
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
     const rows = document.querySelectorAll('#roomBody tr[data-type]');
     rows.forEach(row => {
         const rowType = row.getAttribute('data-type');

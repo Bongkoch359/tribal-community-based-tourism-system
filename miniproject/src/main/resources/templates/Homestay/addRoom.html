@@ -412,27 +412,27 @@ function updateUI() {
 // ─── Validate ────────────────────────────────────────────────────────────
 function validate() {
     const fields = [
-        { id: 'typename',     label: 'ประเภทที่พัก' },
-        { id: 'bedtype',      label: 'ประเภทเตียง'  },
-        { id: 'pricepernight',label: 'ราคาต่อคืน'   },
-        { id: 'maxguest',     label: 'จำนวนผู้เข้าพัก' },
-        { id: 'totalrooms',   label: 'จำนวนห้อง'    },
-        { id: 'status',       label: 'สถานะ'        },
+        { id: 'typename',      errId: 'typenameError',      label: 'ประเภทที่พัก' },
+        { id: 'bedtype',       errId: 'bedtypeError',       label: 'ประเภทเตียง'  },
+        { id: 'pricepernight', errId: 'priceError',         label: 'ราคาต่อคืน'   },
+        { id: 'maxguest',      errId: 'maxguestError',      label: 'จำนวนผู้เข้าพัก' },
+        { id: 'totalrooms',    errId: 'totalroomsError',    label: 'จำนวนห้อง'    },
+        { id: 'description',   errId: 'descriptionError',   label: 'คำอธิบาย'     },
+        { id: 'roomcondition', errId: 'roomconditionError', label: 'เงื่อนไขการเข้าพัก' },
+        { id: 'status',        errId: 'statusError',        label: 'สถานะ'        },
     ];
+    let isValid = true;
     for (const f of fields) {
-        const el = document.getElementById(f.id);
+        const el    = document.getElementById(f.id);
+        const errEl = document.getElementById(f.errId);
         if (!el || !el.value || el.value.trim() === '' || el.value === '0') {
-            const errId = f.id === 'pricepernight' ? 'priceError' : f.id + 'Error';
-            const errEl = document.getElementById(errId);
-            if (errEl) errEl.textContent = 'กรุณากรอก ' + f.label;
-            el && el.focus();
-            return false;
+            if (errEl) errEl.textContent = 'กรุณากรอก' + f.label;
+            if (isValid) { el && el.focus(); isValid = false; }
+        } else {
+            if (errEl) errEl.textContent = '';
         }
-        const errId = f.id === 'pricepernight' ? 'priceError' : f.id + 'Error';
-        const errEl = document.getElementById(errId);
-        if (errEl) errEl.textContent = '';
     }
-    return true;
+    return isValid;
 }
 
 // ─── Submit → multipart/form-data ────────────────────────────────────────

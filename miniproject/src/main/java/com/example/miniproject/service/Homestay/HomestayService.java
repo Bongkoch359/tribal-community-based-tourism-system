@@ -22,7 +22,10 @@ public class HomestayService {
 
     @Autowired
     private ReviewRepository reviewRepository;
-    
+
+    public List<Homestay> getHomestaysByOwnerId(Integer ownerid) {
+    return homestayRepository.findByOwner_Ownerid(ownerid);
+}
 
     public boolean isOwnedBy(Integer homestayid, Integer ownerid) {  
         return homestayRepository.existsByHomestayidAndOwnerOwnerid(homestayid, ownerid);
