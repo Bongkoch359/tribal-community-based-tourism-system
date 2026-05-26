@@ -296,31 +296,61 @@
       </thead>
 
       <tbody>
-        <tr th:each="h : ${homestays}">
-          <td class="owner-name" th:text="${h.ownerName}">สมชาย รักดี</td>
-          <td>
-            <div style="font-size: 14px;" th:text="${h.email}">somchai@email.com</div>
-            <div style="font-size: 13px; color: #777;" th:text="${h.phone}">081-xxx-xxxx</div>
-          </td>
-          <td class="homestay-name" th:text="${h.homestayName}">บ้านสวนดอยสวย</td>
-          <td>
-            <span class="badge pending">รอการตรวจสอบ</span>
-          </td>
-          <td>
-            <div class="action-group" style="justify-content: center;">
-              <button class="btn-action btn-approve">✅ อนุมัติ</button>
-              <button class="btn-action btn-reject">❌ ปฏิเสธ</button>
-            </div>
-          </td>
-        </tr>
+  <tr th:each="h : ${homestays}">
+    <td>
+      <div class="owner-name" 
+           th:text="${h.firstname + ' ' + h.lastname}">ชื่อ-นามสกุล</div>
+      <div style="font-size:13px; color:#999;">
+        ID: #<span th:text="${h.ownerid}">001</span>
+      </div>
+    </td>
+    <td>
+      <div style="font-size: 14px;" th:text="${h.email}">email</div>
+      <div style="font-size: 13px; color: #777;" th:text="${h.phone}">phone</div>
+    </td>
+    <td class="homestay-name">
+      <!-- ดึงชื่อ homestay แรกจาก list (ถ้ามี) -->
+      <span th:if="${h.homestays != null and !h.homestays.isEmpty()}"
+            th:text="${h.homestays[0].homestayname}">ชื่อโฮมสเตย์</span>
+      <span th:if="${h.homestays == null or h.homestays.isEmpty()}"
+            style="color:#aaa;">-</span>
+    </td>
+    <td>
+      <span th:if="${h.verificationstatus == null or !h.verificationstatus}"
+            class="badge pending">⏳ รอการตรวจสอบ</span>
+      <span th:if="${'REJECTED'.equals(h.accountstatus)}"
+            class="badge" style="background:#fdecea;color:#c0392b;">❌ ปฏิเสธแล้ว</span>
+      <span th:if="${h.verificationstatus and 'ACTIVE'.equals(h.accountstatus)}"
+            class="badge" style="background:#eafaf1;color:#2d6a4f;">✅ อนุมัติแล้ว</span>
+    </td>
+    <td>
+      <div class="action-group" style="justify-content: center;">
 
-        <tr th:if="${#lists.isEmpty(homestays)}">
-          <td colspan="5" class="empty">
-            <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
-            ยังไม่มีคำขอสมัครโฮมสเตย์ใหม่ในขณะนี้
-          </td>
-        </tr>
-      </tbody>
+        <!-- ปุ่มอนุมัติ (แสดงเฉพาะยังไม่อนุมัติ) -->
+        <form th:if="${h.verificationstatus == null or !h.verificationstatus}"
+              th:action="@{/admin/homestay/approve/{id}(id=${h.ownerid})}" 
+              method="post">
+          <button type="submit" class="btn-action btn-approve">✅ อนุมัติ</button>
+        </form>
+
+        <!-- ปุ่มปฏิเสธ (แสดงเฉพาะยังไม่ตัดสิน) -->
+        <form th:if="${h.verificationstatus == null or !h.verificationstatus}"
+              th:action="@{/admin/homestay/reject/{id}(id=${h.ownerid})}" 
+              method="post">
+          <button type="submit" class="btn-action btn-reject">❌ ปฏิเสธ</button>
+        </form>
+
+      </div>
+    </td>
+  </tr>
+
+  <tr th:if="${#lists.isEmpty(homestays)}">
+    <td colspan="5" class="empty">
+      <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
+      ยังไม่มีคำขอสมัครโฮมสเตย์ใหม่ในขณะนี้
+    </td>
+  </tr>
+</tbody>
     </table>
   </div>
 

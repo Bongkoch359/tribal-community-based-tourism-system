@@ -84,9 +84,9 @@ public List<Integer> register(RegisterOwnerRequest req) {
             throw new IllegalArgumentException("รหัสผ่านไม่ถูกต้อง");
         }
 
-        // if (owner.getVerificationstatus() == null || !owner.getVerificationstatus()) {
-        //     throw new IllegalArgumentException("บัญชียังไม่ได้รับการอนุมัติจาก Admin");
-        // }
+        if (owner.getVerificationstatus() == null || !owner.getVerificationstatus()) {
+            throw new IllegalArgumentException("บัญชียังไม่ได้รับการอนุมัติจาก Admin");
+        }
 
         return owner;
     }

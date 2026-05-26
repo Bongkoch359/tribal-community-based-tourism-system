@@ -6,11 +6,15 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, Integer> {
 
+     List<Homestayowner> findByAccountstatus(String accountstatus);
+    List<Homestayowner> findByVerificationstatus(Boolean verificationstatus);
       // ค้นหาด้วย email
     @Query("SELECT o FROM Homestayowner o WHERE o.email = :email")
     Optional<Homestayowner> findByEmail(@Param("email") String email);
