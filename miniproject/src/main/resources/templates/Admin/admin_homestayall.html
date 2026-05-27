@@ -7,253 +7,132 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Sarabun', sans-serif; background: #ffffff; color: #333; line-height: 1.6; }
 
-  body { 
-    font-family: 'Sarabun', sans-serif; 
-    background: #ffffff; 
-    color: #333;
-    line-height: 1.6;
-  }
-
-  /* --- NAVBAR (สูง 100px ตามธีมหลัก) --- */
   .navbar {
-    background: #1e4d2b;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    padding: 0 5%;
-    gap: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    background: #1e4d2b; height: 100px; display: flex; align-items: center;
+    padding: 0 5%; gap: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: sticky; top: 0; z-index: 1000;
   }
+  .navbar-brand { color: #fff; font-weight: 700; font-size: 24px; text-decoration: none; margin-right: auto; }
+  .nav-group { display: flex; align-items: center; gap: 10px; }
+  .nav-link { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 17px; font-weight: 500; padding: 10px 18px; border-radius: 10px; transition: all 0.2s; }
+  .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.15); color: #fff; }
+  .admin-section { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid rgba(255,255,255,0.2); }
+  .admin-badge { background: #f4a261; color: #fff; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
 
-  .navbar-brand {
-    color: #fff;
-    font-weight: 700;
-    font-size: 24px;
-    text-decoration: none;
-    margin-right: auto;
-  }
+  .content { max-width: 1250px; margin: 0 auto; padding: 50px 24px; }
+  .page-header { margin-bottom: 35px; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; }
+  .page-header h1 { font-size: 32px; font-weight: 700; color: #1e4d2b; margin-bottom: 5px; }
+  .page-header p { font-size: 18px; color: #666; }
 
-  .nav-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .top-menu { display: flex; gap: 10px; margin-bottom: 30px; }
+  .top-menu a { text-decoration: none; font-size: 16px; padding: 12px 24px; color: #666; background: #f8f9fa; border-radius: 12px; border: 1px solid #eee; transition: all 0.2s; font-weight: 600; }
+  .top-menu a.active { background: #1e4d2b; color: #fff; border-color: #1e4d2b; box-shadow: 0 4px 10px rgba(30,77,43,0.15); }
 
-  .nav-link {
-    color: rgba(255,255,255,0.85);
-    text-decoration: none;
-    font-size: 17px;
-    font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 10px;
-    transition: all 0.2s;
-  }
+  .filter-group { display: flex; gap: 10px; margin-bottom: 25px; }
+  .filter-pill { padding: 8px 18px; border-radius: 20px; background: #fff; border: 1px solid #ddd; font-size: 14px; color: #555; cursor: pointer; text-decoration: none; transition: 0.2s; font-family: 'Sarabun', sans-serif; }
+  .filter-pill.active { background: #1e4d2b; color: #fff; border-color: #1e4d2b; }
 
-  .nav-link:hover, .nav-link.active {
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-  }
-
-  .admin-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-left: 20px;
-    border-left: 1px solid rgba(255,255,255,0.2);
-  }
-
-  .admin-badge {
-    background: #f4a261;
-    color: #fff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-  }
-
-  /* --- CONTENT --- */
-  .content { 
-    max-width: 1250px; 
-    margin: 0 auto; 
-    padding: 50px 24px; 
-  }
-
-  .page-header {
-    margin-bottom: 35px;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 20px;
-  }
-
-  .page-header h1 { 
-    font-size: 32px; 
-    font-weight: 700; 
-    color: #1e4d2b; 
-    margin-bottom: 5px;
-  }
-
-  .page-header p { 
-    font-size: 18px; 
-    color: #666; 
-  }
-
-  /* TOP MENU TABS */
-  .top-menu {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-  }
-
-  .top-menu a {
-    text-decoration: none;
-    font-size: 16px;
-    padding: 12px 24px;
-    color: #666;
-    background: #f8f9fa;
-    border-radius: 12px;
-    border: 1px solid #eee;
-    transition: all 0.2s;
-    font-weight: 600;
-  }
-
-  .top-menu a.active {
-    background: #1e4d2b;
-    color: #fff;
-    border-color: #1e4d2b;
-    box-shadow: 0 4px 10px rgba(30, 77, 43, 0.15);
-  }
-
-  /* --- [เพิ่มส่วนนี้] FILTER PILLS STYLE --- */
-  .filter-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-  }
-
-  .filter-pill {
-    padding: 8px 18px;
-    border-radius: 20px;
-    background: #fff;
-    border: 1px solid #ddd;
-    font-size: 14px;
-    color: #555;
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.2s;
-  }
-
-  .filter-pill.active {
-    background: #1e4d2b;
-    color: #fff;
-    border-color: #1e4d2b;
-  }
-
-  /* TABLE UI */
-  .table-wrap {
-    background: #fff;
-    border-radius: 16px;
-    border: 1px solid #eee;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  thead th {
-    padding: 20px 18px;
-    background: #fcfcfc;
-    text-align: left;
-    border-bottom: 2px solid #f0f0f0;
-    color: #1e4d2b;
-    font-weight: 700;
-    font-size: 16px;
-  }
-
-  tbody td {
-    padding: 20px 18px;
-    border-bottom: 1px solid #f9f9f9;
-    font-size: 15px;
-    vertical-align: middle;
-  }
-
+  .table-wrap { background: #fff; border-radius: 16px; border: 1px solid #eee; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 20px 18px; background: #fcfcfc; text-align: left; border-bottom: 2px solid #f0f0f0; color: #1e4d2b; font-weight: 700; font-size: 16px; }
+  tbody td { padding: 20px 18px; border-bottom: 1px solid #f9f9f9; font-size: 15px; vertical-align: middle; }
   tbody tr:hover { background: #fcfdfc; }
 
-  /* BADGE & ACTIONS */
-  .badge-status {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-  }
+  .badge-status { display: inline-block; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+  .active-status { background: #eafaf1; color: #2d6a4f; }
+  .suspended-status { background: #fdecea; color: #c0392b; }
 
-  .active-status {
-    background: #eafaf1;
-    color: #2d6a4f;
-  }
+  .btn-suspend { border: 1.5px solid #e74c3c; color: #e74c3c; background: transparent; padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Sarabun', sans-serif; transition: all 0.2s; }
+  .btn-suspend:hover { background: #e74c3c; color: #fff; }
+  .btn-activate { border: 1.5px solid #2d6a4f; color: #2d6a4f; background: transparent; padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Sarabun', sans-serif; transition: all 0.2s; }
+  .btn-activate:hover { background: #2d6a4f; color: #fff; }
 
-  .btn-suspend {
-    border: 1.5px solid #e74c3c;
-    color: #e74c3c;
-    background: transparent;
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.2s;
-  }
-
-  .btn-suspend:hover {
-    background: #e74c3c;
-    color: #fff;
-  }
-
-  .empty {
-    text-align: center;
-    padding: 80px;
-    color: #aaa;
-    font-size: 18px;
-  }
-
+  .empty { text-align: center; padding: 80px; color: #aaa; font-size: 18px; }
   .name-bold { font-weight: 700; color: #1a1a1a; font-size: 16px; }
   .text-muted { color: #888; font-size: 14px; }
 
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 2000;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #fff; border-radius: 20px; padding: 40px 36px 32px;
+    width: 420px; max-width: 90vw; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    animation: popIn 0.2s ease;
+  }
+  @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal-icon { font-size: 52px; margin-bottom: 16px; }
+  .modal-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
+  .modal-desc { font-size: 16px; color: #666; line-height: 1.7; margin-bottom: 28px; }
+  .modal-desc strong { color: #1e4d2b; }
+  .modal-actions { display: flex; gap: 12px; justify-content: center; }
+  .btn-modal-cancel { padding: 12px 28px; border-radius: 12px; border: 1.5px solid #ddd; background: #fff; color: #555; font-size: 16px; font-weight: 600; cursor: pointer; font-family: 'Sarabun', sans-serif; transition: 0.2s; }
+  .btn-modal-cancel:hover { background: #f5f5f5; }
+  .btn-modal-confirm { padding: 12px 28px; border-radius: 12px; border: none; background: #e74c3c; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Sarabun', sans-serif; transition: 0.2s; }
+  .btn-modal-confirm:hover { background: #c0392b; }
+  
+  /* เพิ่มเติมสไตล์สำหรับปุ่มยืนยันเปิดใช้งาน */
+  .btn-modal-confirm-activate { padding: 12px 28px; border-radius: 12px; border: none; background: #2d6a4f; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Sarabun', sans-serif; transition: 0.2s; }
+  .btn-modal-confirm-activate:hover { background: #1b4332; }
 </style>
 </head>
-
 <body>
 
+<div class="modal-overlay" id="suspendModal">
+  <div class="modal-box">
+    <div class="modal-icon">🚫</div>
+    <div class="modal-title">ระงับบัญชีเจ้าของโฮมสเตย์</div>
+    <div class="modal-desc">
+      คุณแน่ใจหรือไม่ว่าต้องการระงับบัญชีของ<br>
+      <strong id="suspendOwnerName"></strong>?<br>
+      เจ้าของโฮมสเตย์จะไม่สามารถเข้าใช้งานระบบได้
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal('suspendModal')">ยกเลิก</button>
+      <button class="btn-modal-confirm" id="suspendConfirmBtn">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="activateModal">
+  <div class="modal-box">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">เปิดใช้งานบัญชีเจ้าของโฮมสเตย์</div>
+    <div class="modal-desc">
+      คุณแน่ใจหรือไม่ว่าต้องการเปิดใช้งานบัญชีของ<br>
+      <strong id="activateOwnerName"></strong>?<br>
+      เจ้าของโฮมสเตย์จะสามารถกลับเข้าใช้งานระบบได้ตามปกติ
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal('activateModal')">ยกเลิก</button>
+      <button class="btn-modal-confirm-activate" id="activateConfirmBtn">ยืนยันเปิดใช้งาน</button>
+    </div>
+  </div>
+</div>
+
 <nav class="navbar">
-  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนเผ่า</a>
-  
+  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนชนเผ่า</a>
   <div class="nav-group">
     <a href="/admin/dashboard" class="nav-link">📊 Dashboard</a>
     <a href="/admin/manager" class="nav-link">👥 จัดการผู้จัดการ</a>
     <a href="/admin/homestay" class="nav-link active">🏠 จัดการโฮมสเตย์</a>
   </div>
-
   <div class="admin-section">
     <div style="text-align: right; margin-right: 12px;">
-      <p style="color: #fff; font-size: 14px; font-weight: 600;">Admin User</p>
-      <a href="/admin/logout" style="color: rgba(255,255,255,0.6); font-size: 12px; text-decoration: none;">ออกจากระบบ</a>
+      <p style="color:#fff; font-size:14px; font-weight:600;">Admin User</p>
+      <a href="/admin/logout" style="color:rgba(255,255,255,0.6); font-size:12px; text-decoration:none;">ออกจากระบบ</a>
     </div>
     <div class="admin-badge">A</div>
   </div>
 </nav>
 
 <div class="content">
-
   <div class="page-header">
     <h1>🏠 บัญชีโฮมสเตย์ทั้งหมด</h1>
     <p>ตรวจสอบและจัดการสถานะบัญชีเจ้าของโฮมสเตย์ที่ได้รับอนุมัติแล้ว</p>
@@ -265,9 +144,9 @@
   </div>
 
   <div class="filter-group">
-    <a href="#" class="filter-pill active">ทั้งหมด (0)</a>
-    <a href="#" class="filter-pill">เปิดใช้งานอยู่ (0)</a>
-    <a href="#" class="filter-pill">ถูกระงับ (0)</a>
+    <a href="#" class="filter-pill active" data-filter="all">ทั้งหมด (<span th:text="${allCount}">0</span>)</a>
+    <a href="#" class="filter-pill" data-filter="active">เปิดใช้งานอยู่ (<span th:text="${activeCount}">0</span>)</a>
+    <a href="#" class="filter-pill" data-filter="suspended">ถูกระงับ (<span th:text="${suspendCount}">0</span>)</a>
   </div>
 
   <div class="table-wrap">
@@ -278,44 +157,122 @@
           <th>ข้อมูลติดต่อ</th>
           <th>ชื่อโฮมสเตย์</th>
           <th>สถานะ</th>
-          <th style="text-align: center;">จัดการ</th>
+          <th style="text-align:center;">จัดการ</th>
         </tr>
       </thead>
-
       <tbody>
-        <tr th:each="h : ${homestays}">
+        <tr th:each="h : ${homestays}"
+            th:attr="data-status=${h.accountstatus == 'SUSPENDED' ? 'suspended' : 'active'}">
           <td>
             <div class="name-bold" th:text="${h.firstname + ' ' + h.lastname}">ชื่อ-นามสกุล</div>
-            <div class="text-muted">ID: #<span th:text="${h.homestayid}">001</span></div>
+            <div class="text-muted">ID: #<span th:text="${h.ownerid}">001</span></div>
           </td>
           <td>
             <div th:text="${h.email}">email@example.com</div>
             <div class="text-muted" th:text="${h.phone}">081-xxx-xxxx</div>
           </td>
           <td>
-            <div style="font-weight: 600; color: #1e4d2b;" th:text="${h.homestayname}">ชื่อโฮมสเตย์</div>
+            <div style="font-weight:600; color:#1e4d2b;"
+                 th:text="${h.homestays != null and !h.homestays.isEmpty() ? h.homestays[0].homestayname : '-'}">
+              ชื่อโฮมสเตย์
+            </div>
           </td>
           <td>
-            <span class="badge-status active-status">✅ เปิดใช้งานอยู่</span>
+            <span th:if="${h.accountstatus != 'SUSPENDED'}" class="badge-status active-status">✅ เปิดใช้งานอยู่</span>
+            <span th:if="${h.accountstatus == 'SUSPENDED'}" class="badge-status suspended-status">🚫 ถูกระงับ</span>
           </td>
-          <td style="text-align: center;">
-            <form th:action="@{/admin/homestay/suspend/{id}(id=${h.homestayid})}" method="post">
-              <button type="submit" class="btn-suspend">🚫 ระงับบัญชี</button>
-            </form>
+          <td style="text-align:center;">
+            <button th:if="${h.accountstatus != 'SUSPENDED'}"
+                    class="btn-suspend"
+                    th:attr="data-id=${h.ownerid}, data-name=${h.firstname + ' ' + h.lastname}"
+                    onclick="openSuspendModal(this)">
+              🚫 ระงับบัญชี
+            </button>
+
+            <button th:if="${h.accountstatus == 'SUSPENDED'}"
+                    type="button"
+                    class="btn-activate"
+                    th:attr="data-id=${h.ownerid}, data-name=${h.firstname + ' ' + h.lastname}"
+                    onclick="openActivateModal(this)">
+              ✅ เปิดใช้งาน
+            </button>
           </td>
         </tr>
 
         <tr th:if="${#lists.isEmpty(homestays)}">
           <td colspan="5" class="empty">
-            <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">🗂️</div>
+            <div style="font-size:48px; margin-bottom:15px; opacity:0.5;">🗂️</div>
             ยังไม่มีบัญชีโฮมสเตย์ในระบบ
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-
 </div>
+
+<form id="suspendForm" method="post" style="display:none;"></form>
+<form id="activateForm" method="post" style="display:none;"></form>
+
+<script>
+  // ── Filter Pills ──
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      const filter = this.dataset.filter;
+      document.querySelectorAll('tbody tr[data-status]').forEach(row => {
+        if (filter === 'all') {
+          row.style.display = '';
+        } else {
+          row.style.display = row.dataset.status === filter ? '' : 'none';
+        }
+      });
+    });
+  });
+
+  // ── 🔴 ฟังก์ชันคุม Suspend Modal ──
+  function openSuspendModal(btn) {
+    const id   = btn.dataset.id;
+    const name = btn.dataset.name;
+    document.getElementById('suspendOwnerName').textContent = name;
+    document.getElementById('suspendForm').action = '/admin/homestay/suspend/' + id;
+    document.getElementById('suspendModal').classList.add('show');
+  }
+
+  document.getElementById('suspendConfirmBtn').addEventListener('click', function() {
+    document.getElementById('suspendForm').submit();
+  });
+
+
+  // ── 🌟 🟢 ฟังก์ชันคุม Activate Modal (เพิ่มใหม่) ──
+  function openActivateModal(btn) {
+    const id   = btn.dataset.id;
+    const name = btn.dataset.name;
+    document.getElementById('activateOwnerName').textContent = name;
+    document.getElementById('activateForm').action = '/admin/homestay/activate/' + id;
+    document.getElementById('activateModal').classList.add('show');
+  }
+
+  document.getElementById('activateConfirmBtn').addEventListener('click', function() {
+    document.getElementById('activateForm').submit();
+  });
+
+
+  // ── ฟังก์ชันปิด Modal ทั่วไป ──
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('show');
+  }
+
+  // ปิด modal เมื่อคลิกนอกกล่อง box ขาว (รองรับทั้งคู่)
+  document.getElementById('suspendModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal('suspendModal');
+  });
+  
+  document.getElementById('activateModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal('activateModal');
+  });
+</script>
 
 </body>
 </html>

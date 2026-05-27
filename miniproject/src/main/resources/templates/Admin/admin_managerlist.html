@@ -219,7 +219,7 @@
 <body>
 
 <nav class="navbar">
-  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนเผ่า</a>
+  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนชนเผ่า</a>
   <div class="nav-group">
     <a href="/admin/dashboard" class="nav-link">📊 Dashboard</a>
     <a href="/admin/manager" class="nav-link active">👥 จัดการผู้จัดการ</a>
@@ -288,18 +288,21 @@
             <span th:if="${m.accountstatus.name() == 'ACTIVE'}" class="badge badge-active">ใช้งานปกติ</span>
             <span th:if="${m.accountstatus.name() == 'INACTIVE'}" class="badge badge-inactive">ถูกระงับการใช้งาน</span>
           </td>
-          <td style="text-align: center;">
-            <form th:if="${m.accountstatus.name() == 'ACTIVE'}"
-                  th:action="@{/admin/manager/suspend/{id}(id=${m.managerid})}"
-                  method="post">
-              <button type="submit" class="btn-action btn-suspend">🚫 ระงับการใช้งาน</button>
-            </form>
-            <form th:if="${m.accountstatus.name() == 'INACTIVE'}"
-                  th:action="@{/admin/manager/activate/{id}(id=${m.managerid})}"
-                  method="post">
-              <button type="submit" class="btn-action btn-activate">✅ เปิดใช้งานอีกครั้ง</button>
-            </form>
-          </td>
+         <td style="text-align: center;">
+  <div th:if="${m.accountstatus.name() == 'ACTIVE'}">
+    <button type="button" class="btn-action btn-suspend" 
+            th:onclick="showSuspendModal([[${m.managerid}]], [[${m.firstname + ' ' + m.lastname}]])">
+      🚫 ระงับการใช้งาน
+    </button>
+  </div>
+  
+  <div th:if="${m.accountstatus.name() == 'INACTIVE'}">
+    <button type="button" class="btn-action btn-activate"
+            th:onclick="showActivateModal([[${m.managerid}]], [[${m.firstname + ' ' + m.lastname}]])">
+      ✅ เปิดใช้งานอีกครั้ง
+    </button>
+  </div>
+</td>
         </tr>
 
         <tr th:if="${#lists.isEmpty(managers)}">
@@ -307,6 +310,51 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+<div id="suspendModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+  <div style="background: #fff; padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+    <div style="width: 70px; height: 70px; background: #fff5f5; border: 3px solid #e74c3c; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+      <span style="font-size: 35px; color: #e74c3c; line-height: 1;">🛑</span>
+    </div>
+    
+    <h3 style="font-size: 22px; font-weight: 700; color: #333; margin-bottom: 10px;">ระงับบัญชีผู้จัดการ</h3>
+    <p style="color: #666; font-size: 15px; line-height: 1.5; margin-bottom: 30px;">
+      คุณแน่ใจหรือไม่ว่าต้องการระงับบัญชีของ <br>
+      <strong id="modalManagerName" style="color: #1e4d2b; font-size: 17px;">-</strong> ? <br>
+      <span style="font-size: 13px; color: #999; display: block; margin-top: 8px;">ผู้จัดการจะไม่สามารถเข้าสู่ระบบได้จนกว่าจะเปิดใช้งานอีกครั้ง</span>
+    </p>
+    
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <button type="button" onclick="closeSuspendModal()" style="padding: 12px 24px; border-radius: 10px; background: #f5f5f5; border: 1px solid #ddd; color: #555; font-size: 15px; font-weight: 600; cursor: pointer; flex: 1;">ยกเลิก</button>
+      
+      <form id="modalSuspendForm" method="post" style="flex: 1; margin: 0;">
+        <button type="submit" style="width: 100%; padding: 12px 24px; border-radius: 10px; background: #e74c3c; border: none; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;">ยืนยันการระงับ</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="activateModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+  <div style="background: #fff; padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+    <div style="width: 70px; height: 70px; background: #eafaf1; border: 3px solid #2d6a4f; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+      <span style="font-size: 35px; color: #2d6a4f; line-height: 1;">✅</span>
+    </div>
+    
+    <h3 style="font-size: 22px; font-weight: 700; color: #333; margin-bottom: 10px;">เปิดใช้งานบัญชีผู้จัดการ</h3>
+    <p style="color: #666; font-size: 15px; line-height: 1.5; margin-bottom: 30px;">
+      คุณแน่ใจหรือไม่ว่าต้องการเปิดใช้งานบัญชีของ <br>
+      <strong id="modalActivateManagerName" style="color: #1e4d2b; font-size: 17px;">-</strong> ? <br>
+      <span style="font-size: 13px; color: #999; display: block; margin-top: 8px;">ผู้จัดการจะสามารถกลับเข้าสู่ระบบและทำงานได้ตามปกติ</span>
+    </p>
+    
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <button type="button" onclick="closeActivateModal()" style="padding: 12px 24px; border-radius: 10px; background: #f5f5f5; border: 1px solid #ddd; color: #555; font-size: 15px; font-weight: 600; cursor: pointer; flex: 1;">ยกเลิก</button>
+      
+      <form id="modalActivateForm" method="post" style="flex: 1; margin: 0;">
+        <button type="submit" style="width: 100%; padding: 12px 24px; border-radius: 10px; background: #2d6a4f; border: none; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;">ยืนยันเปิดใช้งาน</button>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -322,6 +370,59 @@
       }
     });
   }
+// --- ฟังก์ชันของ Modal ระงับใช้งาน (สีแดงเดิมของคุณ) ---
+function showSuspendModal(id, name) {
+  const modal = document.getElementById('suspendModal');
+  const nameSpan = document.getElementById('modalManagerName');
+  const form = document.getElementById('modalSuspendForm');
+  
+  if (modal && nameSpan && form) {
+    nameSpan.innerText = name;
+    form.action = '/admin/manager/suspend/' + id;
+    modal.style.display = 'flex';
+  }
+}
+
+function closeSuspendModal() {
+  const modal = document.getElementById('suspendModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// --- ฟังก์ชันของ Modal เปิดใช้งาน (สีเขียวที่เพิ่มใหม่) ---
+function showActivateModal(id, name) {
+  const modal = document.getElementById('activateModal');
+  const nameSpan = document.getElementById('modalActivateManagerName');
+  const form = document.getElementById('modalActivateForm');
+  
+  if (modal && nameSpan && form) {
+    nameSpan.innerText = name;
+    form.action = '/admin/manager/activate/' + id; // ยิงไปที่เมธอด activate ของคอนโทรลเลอร์
+    modal.style.display = 'flex';
+  }
+}
+
+function closeActivateModal() {
+  const modal = document.getElementById('activateModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// คลิกนอกกล่องขาว (พื้นหลังดำ) ให้ปิดทั้งสองอัน
+window.onclick = function(event) {
+  const suspendModal = document.getElementById('suspendModal');
+  const activateModal = document.getElementById('activateModal');
+  
+  if (event.target == suspendModal) {
+    suspendModal.style.display = 'none';
+  }
+  if (event.target == activateModal) {
+    activateModal.style.display = 'none';
+  }
+}
+
 </script>
 </body>
 </html>

@@ -35,6 +35,12 @@ public class TourManagerController {
 
         // login สำเร็จ
         if (manager != null) {
+            if (manager.getAccountstatus() != null && 
+           ("INACTIVE".equals(manager.getAccountstatus().toString()) || "SUSPENDED".equals(manager.getAccountstatus().toString()))) {
+            
+            model.addAttribute("errorMessage", "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ");
+            return "Tour/manager_login";
+        }
 
             session.setAttribute("loggedInManager", manager);
 

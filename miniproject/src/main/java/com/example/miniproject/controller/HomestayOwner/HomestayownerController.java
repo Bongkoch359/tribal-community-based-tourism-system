@@ -114,6 +114,13 @@ public class HomestayownerController {
                     body.get("email"),
                     body.get("password")
             );
+
+            //เช็คก่อน set session
+        if ("SUSPENDED".equals(owner.getAccountstatus())) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, 
+                                 "message", "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ"));
+        }
             session.setAttribute("ownerLogin",   owner);
             session.setAttribute("ownerid",      owner.getOwnerid());
             session.setAttribute("ownername",    owner.getFirstname() + " " + owner.getLastname());

@@ -425,22 +425,6 @@
 ══════════════════════════════════════════ -->
 <div class="content">
 
-  <!-- Promo banner -->
-  <div class="promo-banner">
-    <div class="promo-left">
-      <p class="promo-eyebrow">🎉 โปรโมชั่นพิเศษ</p>
-      <h3>จองล่วงหน้า 7 วัน ลด 15%</h3>
-      <p>สำหรับกิจกรรมและทัวร์ชุมชนทุกประเภท ถึง 30 เม.ย. นี้เท่านั้น</p>
-    </div>
-    <div class="promo-right">
-      <button class="btn-promo">รับสิทธิ์เลย</button>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       FEATURED — รายการแนะนำรวม
-       ✅ แก้ไข: จำกัด 4 รายการต่อประเภท + รูปโฮมสเตย์ + rating จริง
-  ══════════════════════════════════════════ -->
   <div class="featured-all" id="featuredAll" th:if="${param.managerId == null}">
 
     <div class="featured-all-header">
@@ -458,7 +442,6 @@
 
     <div class="featured-grid" id="featuredGrid">
 
-      <!-- ── กิจกรรม (จำกัด 4 รายการ + rating จริง) ── -->
       <th:block th:each="a,iterStat : ${activities}" th:if="${iterStat.index < 4}">
         <a th:href="@{/member/activity/{id}(id=${a.activityid})}" class="fcard" data-type="activity">
           <div class="fcard-img">
@@ -474,7 +457,7 @@
             </button>
           </div>
           <div class="fcard-body">
-            <!-- ✅ rating จริงจาก map -->
+       
             <div class="fcard-rating">
              
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -498,7 +481,6 @@
         </a>
       </th:block>
 
-      <!-- ── ทัวร์ชุมชน (จำกัด 4 รายการ + rating จริง) ── -->
       <th:block th:each="t,iterStat : ${tours}" th:if="${iterStat.index < 4}">
         <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
           <div class="fcard-img">
@@ -597,7 +579,6 @@
         </a>
       </th:block>
 
-      <!-- Empty state -->
       <div th:if="${#lists.isEmpty(activities) and #lists.isEmpty(tours) and #lists.isEmpty(homestays)}"
            class="fcard-empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -610,13 +591,10 @@
     </div><!-- /featured-grid -->
   </div><!-- /featured-all -->
 
-  <!-- ════════════════════════════════════════
-       SECTION BLOCKS (แสดงครบทุกรายการ ไม่จำกัด)
-  ════════════════════════════════════════ -->
 
   <!-- ACTIVITY -->
   <div class="section-block" data-type="activity" id="block-activity" 
-       th:style="${currentType == 'activity'} ? 'display: block;' : 'display: none;'">
+     th:classappend="${currentType == 'activity' || currentType == null} ? 'show' : ''">
 
     <div class="section-header">
       <div class="section-header-left">
@@ -690,8 +668,8 @@
   </div>
 
   <!-- TOUR -->
-  <div class="section-block" data-type="tour" id="block-tour" 
-     th:style="${currentType == 'tour'} ? 'display: block;' : 'display: none;'">
+ <div class="section-block" data-type="tour" id="block-tour" 
+     th:classappend="${currentType == 'tour'} ? 'show' : ''">
 
     <div class="section-header">
       <div class="section-header-left">
@@ -744,7 +722,7 @@
 
   <!-- HOMESTAY -->
   <div class="section-block" data-type="homestay" id="block-homestay" 
-     th:style="${currentType == 'homestay'} ? 'display: block;' : 'display: none;'">
+     th:classappend="${currentType == 'homestay'} ? 'show' : ''">
 
     <div class="section-header">
       <div class="section-header-left">

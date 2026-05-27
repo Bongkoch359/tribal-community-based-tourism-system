@@ -23,11 +23,10 @@ public class ListHomestayAccountController {
     @Autowired
     private EmailService emailService;
 
-    // ============================================================
-    // GET /admin/homestay → รายการคำขอสมัคร (verificationstatus = null/false)
-    // ============================================================
+
+    // GET /admin/homestay → รายการคำขอสมัคร 
    @GetMapping
-public String listHomestay(Model model, HttpSession session) {
+    public String listHomestay(Model model, HttpSession session) {
 
     if (session.getAttribute("loggedInAdmin") == null) {
         return "redirect:/admin/login";
@@ -35,26 +34,30 @@ public String listHomestay(Model model, HttpSession session) {
 
     List<Homestayowner> all = ownerrepository.findAll();
 
+    // 1. ดึงรายการที่ รออนุมัติ (Pending)
     List<Homestayowner> pending = all.stream()
         .filter(o -> o.getVerificationstatus() == null || !o.getVerificationstatus())
         .filter(o -> !"REJECTED".equals(o.getAccountstatus()))
         .toList();
 
-    List<Homestayowner> approved = all.stream()
-        .filter(o -> Boolean.TRUE.equals(o.getVerificationstatus())
-                  && "ACTIVE".equals(o.getAccountstatus()))
-        .toList();
-
+    // 2. ดึงรายการที่ ปฏิเสธแล้ว (Rejected)
     List<Homestayowner> rejected = all.stream()
         .filter(o -> "REJECTED".equals(o.getAccountstatus()))
         .toList();
 
-    // แสดงเฉพาะคำขอที่ยังไม่ตัดสินใจ (pending เท่านั้น)
-    model.addAttribute("homestays",     pending);
-    model.addAttribute("allCount",      pending.size() + approved.size() + rejected.size());
-    model.addAttribute("pendingCount",  pending.size());
-    model.addAttribute("approvedCount", approved.size());
-    model.addAttribute("rejectedCount", rejected.size());
+    // 3. รวมเฉพาะข้อมูลที่จะแสดงในหน้านี้ (คำขอใหม่ + ปฏิเสธ) ไม่เอาพวกที่อนุมัติแล้วมารวม
+    List<Homestayowner> homestaysForThisPage = new java.util.ArrayList<>();
+    homestaysForThisPage.addAll(pending);
+    homestaysForThisPage.addAll(rejected);
+
+    // 🌟 แก้ตรงนี้: ส่งเฉพาะรายการคำขอสมัคร (ไม่เอาอนุมัติแล้ว) ไปแสดงในตาราง
+    model.addAttribute("homestays",     homestaysForThisPage);
+    
+    // 🌟 แก้ไขตัวนับจำนวนให้ถูกต้องสัมพันธ์กับข้อมูลที่ส่งไป
+    model.addAttribute("allCount",      homestaysForThisPage.size()); // จำนวนคำขอทั้งหมดในหน้านี้ (Pending + Rejected)
+    model.addAttribute("pendingCount",  pending.size());              // จำนวนรออนุมัติ
+    model.addAttribute("approvedCount", 0);                           // บังคับเป็น 0 เพราะคนที่อนุมัติแล้วถูกย้ายไปหน้า /all แล้ว
+    model.addAttribute("rejectedCount", rejected.size());             // จำนวนที่ปฏิเสธแล้ว
 
     return "Admin/admin_homestaylist";
 }
@@ -103,7 +106,7 @@ public String approveHomestay(@PathVariable Integer id, HttpSession session) {
         o.setAccountstatus("ACTIVE");
         ownerrepository.save(o);
 
-        // ✅ ส่งอีเมลแจ้งเตือน
+        // ส่งอีเมลแจ้งเตือน
         try {
             emailService.sendApprovalEmail(
                 o.getEmail(),
@@ -127,7 +130,7 @@ public String rejectHomestay(@PathVariable Integer id, HttpSession session) {
         o.setAccountstatus("REJECTED");
         ownerrepository.save(o);
 
-        // ✅ ส่งอีเมลแจ้งเตือน
+        //  ส่งอีเมลแจ้งเตือน
         try {
             emailService.sendRejectionEmail(
                 o.getEmail(),
@@ -141,9 +144,7 @@ public String rejectHomestay(@PathVariable Integer id, HttpSession session) {
     return "redirect:/admin/homestay";
 }
 
-    // ============================================================
     // POST /admin/homestay/suspend/{id}
-    // ============================================================
     @PostMapping("/suspend/{id}")
     public String suspendHomestay(@PathVariable Integer id, HttpSession session) {
 
@@ -159,9 +160,7 @@ public String rejectHomestay(@PathVariable Integer id, HttpSession session) {
         return "redirect:/admin/homestay/all";
     }
 
-    // ============================================================
     // POST /admin/homestay/activate/{id}
-    // ============================================================
     @PostMapping("/activate/{id}")
     public String activateHomestay(@PathVariable Integer id, HttpSession session) {
 

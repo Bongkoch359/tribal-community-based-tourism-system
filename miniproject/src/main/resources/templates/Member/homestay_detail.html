@@ -276,19 +276,121 @@
     }
 
     /* ============================================================
-       BOOKING-STYLE GALLERY
+       GALLERY WITH TITLE OVERLAY — Agoda / Airbnb style
     ============================================================ */
+
+    /* wrapper ครอบทั้ง gallery + overlay ต้องเป็น position:relative */
+    .gallery-wrapper {
+      position: relative;          /* anchor สำหรับ absolute overlay */
+      border-radius: var(--r-lg);
+      overflow: hidden;            /* clip overlay ให้ไม่ล้น */
+      margin-bottom: 20px;
+    }
+
+    /* overlay ซ้อนบนรูปโดยตรง */
+    .gallery-title-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      /* gradient ล่างสุดเข้ม → บนใส */
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.82) 0%,
+        rgba(0,0,0,0.55) 35%,
+        rgba(0,0,0,0.15) 65%,
+        transparent 100%
+      );
+      padding: 80px 24px 22px;
+      pointer-events: none;
+      z-index: 10;                 /* เหนือ .booking-gallery ที่ overflow:hidden */
+    }
+
+    .overlay-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+      letter-spacing: -0.3px;
+    }
+
+    .overlay-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .overlay-location {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: rgba(255,255,255,0.9);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .overlay-location svg { width: 13px; height: 13px; color: #fca5a5; flex-shrink: 0; }
+
+    /* ─── rating pill ─── */
+    .overlay-rating {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rating-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.28);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 100px;
+      padding: 4px 12px 4px 6px;
+    }
+
+    .rating-score {
+      background: var(--amber-500);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 100px;
+      line-height: 1.4;
+    }
+
+    .rating-stars {
+      color: var(--amber-400);
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    .rating-count {
+      color: rgba(255,255,255,0.75);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* meta divider dot */
+    .meta-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+
     .booking-gallery {
       position: relative;
       width: 100%;
-      border-radius: var(--r-lg);
+      /* ไม่ border-radius ที่นี่ — จัดการที่ .gallery-wrapper แทน */
+      border-radius: 0;
       overflow: hidden;
       display: grid;
       grid-template-columns: 1.6fr 1fr;
       grid-template-rows: 300px 160px;
       gap: 4px;
       background: var(--neutral-200);
-      margin-bottom: 20px;
       cursor: pointer;
     }
 
@@ -366,6 +468,8 @@
       box-shadow: 0 2px 12px rgba(0,0,0,.22);
       transition: background .15s, box-shadow .15s;
       font-family: 'Sarabun', sans-serif;
+      z-index: 20;           /* เหนือ overlay */
+      pointer-events: all;
     }
 
     .btn-view-all:hover {
@@ -385,29 +489,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 20px;
     }
 
     .gallery-placeholder svg { width: 52px; height: 52px; color: var(--green-300); }
 
     /* ============================================================
-       HERO INFO (ชื่อ / ที่อยู่ / คำอธิบาย)
+       HERO INFO CARD — description below gallery
     ============================================================ */
-    .hero-info-card { padding: 24px 28px; margin-bottom: 20px; }
+    .hero-info-card { padding: 20px 24px; margin-bottom: 20px; }
 
-    .hero-title {
-      font-size: 28px; font-weight: 800;
-      color: var(--green-800); margin-bottom: 8px; line-height: 1.3;
-    }
-
-    .hero-location {
-      display: flex; align-items: center; gap: 6px;
-      color: var(--neutral-500); font-size: 14px; margin-bottom: 14px;
-    }
-
-    .hero-location svg { width: 15px; height: 15px; color: #ef4444; flex-shrink: 0; }
-
-    .hero-desc { color: var(--neutral-600); line-height: 1.8; font-size: 15px; }
+    .hero-desc { color: var(--neutral-600); line-height: 1.85; font-size: 15px; }
 
     /* ============================================================
        SECTION TITLE
@@ -424,7 +515,7 @@
     }
 
     /* ============================================================
-       ROOM LIST
+       ROOM LIST — with image carousel
     ============================================================ */
     .room-list { display: flex; flex-direction: column; gap: 16px; }
     .room-card {
@@ -437,18 +528,83 @@
 
     .room-top { display: flex; gap: 20px; align-items: flex-start; }
 
-    .room-thumb {
-      width: 180px; height: 130px; border-radius: var(--r-md);
-      overflow: hidden; flex-shrink: 0; background: var(--neutral-100);
+    /* ── Room carousel ── */
+    .room-carousel {
+      width: 200px;
+      height: 145px;
+      border-radius: var(--r-md);
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--neutral-100);
+      position: relative;
     }
-    .room-thumb img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: transform .35s ease;
+
+    .room-carousel-track {
+      display: flex;
+      height: 100%;
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
     }
-    .room-card:hover .room-thumb img { transform: scale(1.06); }
+
+    .room-carousel-slide {
+      min-width: 100%;
+      height: 100%;
+      flex-shrink: 0;
+    }
+
+    .room-carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.45);
+      border: none;
+      border-radius: 50%;
+      width: 30px; height: 30px;
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background .15s;
+      z-index: 2;
+      font-family: 'Sarabun', sans-serif;
+      opacity: 0;
+      transition: opacity .2s, background .15s;
+    }
+
+    .room-carousel:hover .carousel-btn { opacity: 1; }
+    .carousel-btn:hover { background: rgba(0,0,0,0.70); }
+    .carousel-btn.prev { left: 6px; }
+    .carousel-btn.next { right: 6px; }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4px;
+      z-index: 2;
+    }
+
+    .carousel-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
+      transition: background .2s, transform .2s;
+    }
+    .carousel-dot.active {
+      background: #fff;
+      transform: scale(1.2);
+    }
 
     .room-thumb-placeholder {
-      width: 180px; height: 130px; border-radius: var(--r-md);
+      width: 200px; height: 145px; border-radius: var(--r-md);
       flex-shrink: 0; display: flex; align-items: center; justify-content: center;
       background: var(--green-50); border: 2px dashed var(--green-200);
     }
@@ -471,14 +627,6 @@
     .room-features { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 0; }
     .room-feature { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--neutral-500); }
     .room-feature svg { width: 14px; height: 14px; color: var(--green-600); flex-shrink: 0; }
-
-    .room-condition {
-      display: flex; align-items: flex-start; gap: 8px;
-      margin-top: 12px; padding: 10px 14px;
-      background: var(--amber-100); border-radius: var(--r-sm);
-      font-size: 13px; color: var(--amber-700); line-height: 1.6;
-    }
-    .room-condition svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px; color: var(--amber-600); }
 
     .room-price-block { width: 160px; text-align: right; flex-shrink: 0; }
     .price-num { font-size: 32px; font-weight: 800; color: var(--green-800); line-height: 1; }
@@ -549,7 +697,9 @@
     .contact-row svg { width: 16px; height: 16px; color: var(--green-600); margin-top: 3px; flex-shrink: 0; }
     .contact-label { font-size: 12px; font-weight: 700; color: var(--neutral-500); margin-bottom: 2px; }
     .contact-val { font-size: 14px; color: var(--neutral-700); font-weight: 600; }
-    .map-box { width: 100%; height: 170px; border-radius: var(--r-md); overflow: hidden; background: var(--green-100); margin-bottom: 10px; }
+
+    /* Map box — dynamic src via JS */
+    .map-box { width: 100%; height: 180px; border-radius: var(--r-md); overflow: hidden; background: var(--green-50); margin-bottom: 10px; }
     .map-box iframe { width: 100%; height: 100%; border: 0; }
 
     /* ============================================================
@@ -634,7 +784,7 @@
       .g-main { grid-column: 1 / 3; grid-row: 1; }
       .booking-gallery .g-side:nth-child(4) { display: none; }
       .room-top { flex-direction: column; }
-      .room-thumb, .room-thumb-placeholder { width: 100%; height: 200px; }
+      .room-carousel, .room-thumb-placeholder { width: 100%; height: 200px; }
       .room-price-block { width: 100%; text-align: left; }
       .review-summary { flex-direction: column; }
       .nav-links { display: none; }
@@ -880,76 +1030,98 @@
     <div>
 
       <!-- ============================================================
-           GALLERY (Booking.com style)
-           inject image array ให้ JS ผ่าน th:inline="javascript"
+           GALLERY WITH TITLE OVERLAY
       ============================================================ -->
       <div th:with="imgs=${homestay.images != null ? #strings.arraySplit(homestay.images, ',') : null}">
 
-        <!-- มีรูป -->
-        <div class="booking-gallery"
-             th:if="${imgs != null and imgs.length > 0}"
-             onclick="openLightbox(0)">
+        <!-- มีรูป → gallery wrapper with title overlay -->
+        <div class="gallery-wrapper"
+             th:if="${imgs != null and imgs.length > 0}">
 
-          <!-- รูปหลัก ซ้าย (ใหญ่) -->
-          <div class="g-main">
-            <img th:src="${imgs[0]}" alt="รูปหลัก"/>
+          <div class="booking-gallery" onclick="openLightbox(0)">
+            <!-- รูปหลัก ซ้าย (ใหญ่) -->
+            <div class="g-main">
+              <img th:src="${imgs[0]}" alt="รูปหลัก"/>
+            </div>
+            <div class="g-side" th:if="${imgs.length > 1}">
+              <img th:src="${imgs[1]}" alt=""/>
+            </div>
+            <div class="g-side" th:if="${imgs.length > 2}">
+              <img th:src="${imgs[2]}" alt=""/>
+            </div>
+            <div class="g-side" th:if="${imgs.length > 3}">
+              <img th:src="${imgs[3]}" alt=""/>
+            </div>
+            <div class="g-side" th:if="${imgs.length > 4}">
+              <img th:src="${imgs[4]}" alt=""/>
+              <div class="g-more-overlay">
+                <span class="more-num" th:text="'+' + ${imgs.length - 4}">+8</span>
+                <span class="more-lbl">รูปทั้งหมด</span>
+              </div>
+            </div>
+
+            <!-- ปุ่ม "ดูรูปทั้งหมด" -->
+            <button class="btn-view-all"
+                    onclick="event.stopPropagation(); openLightbox(0)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              ดูรูปทั้งหมด
+            </button>
           </div>
 
-          <!-- รูปที่ 2 -->
-          <div class="g-side" th:if="${imgs.length > 1}">
-            <img th:src="${imgs[1]}" alt=""/>
-          </div>
-
-          <!-- รูปที่ 3 -->
-          <div class="g-side" th:if="${imgs.length > 2}">
-            <img th:src="${imgs[2]}" alt=""/>
-          </div>
-
-          <!-- รูปที่ 4 -->
-          <div class="g-side" th:if="${imgs.length > 3}">
-            <img th:src="${imgs[3]}" alt=""/>
-          </div>
-
-          <!-- รูปที่ 5 + overlay จำนวนที่เหลือ -->
-          <div class="g-side" th:if="${imgs.length > 4}">
-            <img th:src="${imgs[4]}" alt=""/>
-            <div class="g-more-overlay">
-              <span class="more-num" th:text="'+' + ${imgs.length - 4}">+8</span>
-              <span class="more-lbl">รูปทั้งหมด</span>
+          <!-- ✅ overlay อยู่ใน .gallery-wrapper ซึ่ง overflow:hidden -->
+          <!-- position:absolute จะอ้างอิง .gallery-wrapper ถูกต้อง -->
+          <div class="gallery-title-overlay">
+            <div class="overlay-title" th:text="${homestay.homestayname}">บ้านสุขโฮมสเตย์</div>
+            <div class="overlay-meta">
+              <div class="overlay-location">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                </svg>
+                <span th:text="${homestay.address}">ที่อยู่</span>
+              </div>
+              <!-- dot separator -->
+              <span class="meta-dot" th:if="${reviewCount != null and reviewCount > 0}"></span>
+              <!-- rating pill -->
+              <div class="overlay-rating" th:if="${reviewCount != null and reviewCount > 0}">
+                <div class="rating-pill">
+                  <span class="rating-score" th:text="${#numbers.formatDecimal(avgRating, 1, 1)}">4.8</span>
+                  <span class="rating-stars">★★★★★</span>
+                  <span class="rating-count" th:text="${reviewCount} + ' รีวิว'">24 รีวิว</span>
+                </div>
+              </div>
             </div>
           </div>
-
-          <!-- ปุ่ม "ดูรูปทั้งหมด" -->
-          <button class="btn-view-all"
-                  onclick="event.stopPropagation(); openLightbox(0)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-            </svg>
-            ดูรูปทั้งหมด
-          </button>
         </div>
 
-        <!-- ไม่มีรูป -->
-        <div class="gallery-placeholder"
-             th:unless="${imgs != null and imgs.length > 0}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <path d="M3 9l4-4 4 4 4-5 4 5"/>
-            <circle cx="8.5" cy="6.5" r="1"/>
-          </svg>
+        <!-- ไม่มีรูป → placeholder + title below -->
+        <div th:unless="${imgs != null and imgs.length > 0}">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9l4-4 4 4 4-5 4 5"/>
+              <circle cx="8.5" cy="6.5" r="1"/>
+            </svg>
+          </div>
         </div>
 
       </div>
 
-      <!-- HERO INFO -->
+      <!-- HERO INFO (description only — title moved to gallery overlay) -->
       <div class="card hero-info-card">
-        <h1 class="hero-title" th:text="${homestay.homestayname}">บ้านสุขโฮมสเตย์</h1>
-        <div class="hero-location">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-          </svg>
-          <span th:text="${homestay.address}">อ.เชียงดาว จ.เชียงใหม่</span>
+        <!-- Title row fallback (shown when no images so gallery overlay doesn't appear) -->
+        <div th:with="imgs=${homestay.images != null ? #strings.arraySplit(homestay.images, ',') : null}"
+             th:if="${imgs == null or imgs.length == 0}">
+          <h1 style="font-size:26px;font-weight:800;color:var(--green-800);margin-bottom:8px;"
+              th:text="${homestay.homestayname}">บ้านสุขโฮมสเตย์</h1>
+          <div style="display:flex;align-items:center;gap:6px;color:var(--neutral-500);font-size:14px;margin-bottom:14px;">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;color:#ef4444;flex-shrink:0;">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            </svg>
+            <span th:text="${homestay.address}">ที่อยู่</span>
+          </div>
         </div>
         <p class="hero-desc" th:text="${homestay.description}">รายละเอียดโฮมสเตย์</p>
       </div>
@@ -971,11 +1143,27 @@
 
             <div class="room-top">
 
-              <!-- รูปห้อง -->
-              <div class="room-thumb"
-                   th:if="${room.images != null and !room.images.isEmpty()}"
-                   th:with="roomImgs=${#strings.arraySplit(room.images, ',')}">
-                <img th:src="${roomImgs[0]}" alt="room image"/>
+              <!-- Carousel รูปห้อง (มีรูป) -->
+              <div th:if="${room.images != null and !room.images.isEmpty()}"
+                   th:with="roomImgs=${#strings.arraySplit(room.images, ',')}"
+                   class="room-carousel"
+                   th:attr="data-imgs=${room.images}">
+
+                <div class="room-carousel-track">
+                  <div class="room-carousel-slide" th:each="ri : ${roomImgs}">
+                    <img th:src="${ri.trim()}" alt="room image" loading="lazy"/>
+                  </div>
+                </div>
+
+                <!-- ปุ่มซ้าย/ขวา (แสดงเฉพาะ > 1 รูป) -->
+                <th:block th:if="${roomImgs.length > 1}">
+                  <button class="carousel-btn prev" onclick="carouselPrev(this)">‹</button>
+                  <button class="carousel-btn next" onclick="carouselNext(this)">›</button>
+                  <div class="carousel-dots">
+                    <div th:each="dot,stat : ${roomImgs}"
+                         th:class="${stat.index == 0} ? 'carousel-dot active' : 'carousel-dot'"></div>
+                  </div>
+                </th:block>
               </div>
 
               <!-- ไม่มีรูปห้อง -->
@@ -1126,7 +1314,7 @@
         </div>
       </div>
 
-      <!-- แผนที่ -->
+      <!-- แผนที่ — dynamic embed via address -->
       <div class="side-card">
         <div class="side-title">
           <svg viewBox="0 0 24 24" fill="currentColor">
@@ -1135,10 +1323,19 @@
           ที่ตั้ง
         </div>
         <div class="map-box">
-          <iframe src="https://maps.google.com/maps?q=เชียงดาว+เชียงใหม่&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+          <!--
+            ใช้ Google Maps Embed API แบบ search mode
+            address จะถูก encode ผ่าน JS แล้วใส่ใน iframe src
+            เพื่อให้ปักหมุดตามที่อยู่จริงของแต่ละโฮมสเตย์
+          -->
+          <iframe id="map-iframe"
+                  src=""
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
         <p style="font-size:13px;color:var(--neutral-500);margin-top:8px;"
-           th:text="${homestay.address}">อ.เชียงดาว จ.เชียงใหม่ 50170</p>
+           th:text="${homestay.address}">ที่อยู่</p>
       </div>
 
     </div><!-- /sidebar -->
@@ -1201,10 +1398,21 @@
 <!-- inject image array จาก Thymeleaf -->
 <script th:inline="javascript">
   var GALLERY_IMGS = /*[[${homestay.images != null ? #strings.arraySplit(homestay.images, ',') : {}}]]*/ [];
+  var HOMESTAY_ADDRESS = /*[[${homestay.address}]]*/ '';
 </script>
 
 <script>
-  /* ── User Menu ── */
+  /* ── Dynamic Map ─────────────────────────────────────────── */
+  (function() {
+    var iframe = document.getElementById('map-iframe');
+    if (iframe && HOMESTAY_ADDRESS) {
+      var encoded = encodeURIComponent(HOMESTAY_ADDRESS);
+      iframe.src = 'https://maps.google.com/maps?q=' + encoded
+                 + '&t=&z=14&ie=UTF8&iwloc=&output=embed';
+    }
+  })();
+
+  /* ── User Menu ────────────────────────────────────────────── */
   function toggleUserMenu() {
     var w = document.getElementById('userMenuWrapper');
     if (w) w.classList.toggle('open');
@@ -1214,7 +1422,36 @@
     if (w && !w.contains(e.target)) w.classList.remove('open');
   });
 
-  /* ── Lightbox ── */
+  /* ── Room Carousel ────────────────────────────────────────── */
+  function getCarouselState(btn) {
+    var carousel = btn.closest('.room-carousel');
+    var track    = carousel.querySelector('.room-carousel-track');
+    var slides   = carousel.querySelectorAll('.room-carousel-slide');
+    var dots     = carousel.querySelectorAll('.carousel-dot');
+    var idx      = parseInt(carousel.dataset.idx || '0');
+    return { carousel, track, slides, dots, idx };
+  }
+
+  function setCarouselIdx(carousel, track, slides, dots, newIdx) {
+    newIdx = (newIdx + slides.length) % slides.length;
+    carousel.dataset.idx = newIdx;
+    track.style.transform = 'translateX(-' + (newIdx * 100) + '%)';
+    dots.forEach(function(d, i) {
+      d.classList.toggle('active', i === newIdx);
+    });
+  }
+
+  function carouselPrev(btn) {
+    var s = getCarouselState(btn);
+    setCarouselIdx(s.carousel, s.track, s.slides, s.dots, s.idx - 1);
+  }
+
+  function carouselNext(btn) {
+    var s = getCarouselState(btn);
+    setCarouselIdx(s.carousel, s.track, s.slides, s.dots, s.idx + 1);
+  }
+
+  /* ── Lightbox ─────────────────────────────────────────────── */
   var lbIdx = 0;
 
   function openLightbox(i) {
@@ -1247,7 +1484,6 @@
     updateLb();
   }
 
-  /* keyboard navigation */
   document.addEventListener('keydown', function(e) {
     var lb = document.getElementById('lightbox');
     if (!lb.classList.contains('open')) return;
@@ -1256,7 +1492,6 @@
     if (e.key === 'ArrowRight')  nextImg();
   });
 
-  /* click outside image → close */
   document.getElementById('lightbox').addEventListener('click', function(e) {
     if (e.target === this) closeLightbox();
   });

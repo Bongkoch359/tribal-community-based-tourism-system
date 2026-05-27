@@ -15,7 +15,7 @@
     line-height: 1.6;
   }
 
-  /* --- NAVBAR (คงเดิม) --- */
+  /* --- NAVBAR --- */
   .navbar {
     background: #1e4d2b;
     height: 100px;
@@ -103,7 +103,7 @@
     color: #666; 
   }
 
-  /* TOP MENU TABS (คงเดิม) */
+  /* TOP MENU TABS */
   .top-menu {
     display: flex;
     gap: 10px;
@@ -130,7 +130,7 @@
     box-shadow: 0 4px 10px rgba(30, 77, 43, 0.15);
   }
 
-  /* --- [ส่วนที่เพิ่ม] FILTER PILLS STYLE --- */
+  /* FILTER PILLS */
   .filter-group {
     display: flex;
     gap: 10px;
@@ -147,6 +147,7 @@
     cursor: pointer;
     text-decoration: none;
     transition: 0.2s;
+    font-family: 'Sarabun', sans-serif;
   }
 
   .filter-pill.active {
@@ -155,7 +156,7 @@
     border-color: #1e4d2b;
   }
 
-  /* TABLE UI (คงเดิม) */
+  /* TABLE UI */
   .table-wrap {
     background: #fff;
     border-radius: 16px;
@@ -188,7 +189,7 @@
 
   tbody tr:hover { background: #fcfdfc; }
 
-  /* BADGE & BUTTONS (คงเดิม) */
+  /* BADGES */
   .badge {
     padding: 6px 14px;
     border-radius: 8px;
@@ -202,9 +203,11 @@
     border: 1px solid #ffeaa7;
   }
 
+  /* ACTION BUTTONS */
   .action-group {
     display: flex;
     gap: 8px;
+    justify-content: center;
   }
 
   .btn-action {
@@ -215,7 +218,7 @@
     cursor: pointer;
     border: none;
     transition: all 0.2s;
-    font-family: inherit;
+    font-family: 'Sarabun', sans-serif;
   }
 
   .btn-approve {
@@ -240,14 +243,13 @@
 
   .owner-name { font-weight: 700; color: #1a1a1a; }
   .homestay-name { font-weight: 600; color: #1e4d2b; }
-
 </style>
 </head>
 
 <body>
 
 <nav class="navbar">
-  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนเผ่า</a>
+  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนชนเผ่า</a>
   
   <div class="nav-group">
     <a href="/admin/dashboard" class="nav-link">📊 Dashboard</a>
@@ -276,11 +278,20 @@
     <a href="/admin/homestay/all">📋 บัญชีโฮมสเตย์ทั้งหมด</a>
   </div>
 
+  <!-- Filter Pills แสดงจำนวนจริงจาก Model -->
   <div class="filter-group">
-    <a href="#" class="filter-pill active">ทั้งหมด (0)</a>
-    <a href="#" class="filter-pill">รออนุมัติ (0)</a>
-    <a href="#" class="filter-pill">อนุมัติแล้ว (0)</a>
-    <a href="#" class="filter-pill">ปฏิเสธแล้ว (0)</a>
+    <a href="#" class="filter-pill active" data-filter="all">
+      ทั้งหมด (<span th:text="${allCount}">0</span>)
+    </a>
+    <a href="#" class="filter-pill" data-filter="pending">
+      รออนุมัติ (<span th:text="${pendingCount}">0</span>)
+    </a>
+    <a href="#" class="filter-pill" data-filter="approved">
+      อนุมัติแล้ว (<span th:text="${approvedCount}">0</span>)
+    </a>
+    <a href="#" class="filter-pill" data-filter="rejected">
+      ปฏิเสธแล้ว (<span th:text="${rejectedCount}">0</span>)
+    </a>
   </div>
 
   <div class="table-wrap">
@@ -296,65 +307,118 @@
       </thead>
 
       <tbody>
-  <tr th:each="h : ${homestays}">
-    <td>
-      <div class="owner-name" 
-           th:text="${h.firstname + ' ' + h.lastname}">ชื่อ-นามสกุล</div>
-      <div style="font-size:13px; color:#999;">
-        ID: #<span th:text="${h.ownerid}">001</span>
-      </div>
-    </td>
-    <td>
-      <div style="font-size: 14px;" th:text="${h.email}">email</div>
-      <div style="font-size: 13px; color: #777;" th:text="${h.phone}">phone</div>
-    </td>
-    <td class="homestay-name">
-      <!-- ดึงชื่อ homestay แรกจาก list (ถ้ามี) -->
-      <span th:if="${h.homestays != null and !h.homestays.isEmpty()}"
-            th:text="${h.homestays[0].homestayname}">ชื่อโฮมสเตย์</span>
-      <span th:if="${h.homestays == null or h.homestays.isEmpty()}"
-            style="color:#aaa;">-</span>
-    </td>
-    <td>
-      <span th:if="${h.verificationstatus == null or !h.verificationstatus}"
-            class="badge pending">⏳ รอการตรวจสอบ</span>
-      <span th:if="${'REJECTED'.equals(h.accountstatus)}"
-            class="badge" style="background:#fdecea;color:#c0392b;">❌ ปฏิเสธแล้ว</span>
-      <span th:if="${h.verificationstatus and 'ACTIVE'.equals(h.accountstatus)}"
-            class="badge" style="background:#eafaf1;color:#2d6a4f;">✅ อนุมัติแล้ว</span>
-    </td>
-    <td>
-      <div class="action-group" style="justify-content: center;">
+        <tr th:each="h : ${homestays}"
+            th:with="isPending=${h.verificationstatus == null or !h.verificationstatus},
+                     isApproved=${h.verificationstatus and 'ACTIVE'.equals(h.accountstatus)},
+                     isRejected=${'REJECTED'.equals(h.accountstatus)}"
+            th:attr="data-status=${isRejected ? 'rejected' : (isApproved ? 'approved' : 'pending')}">
 
-        <!-- ปุ่มอนุมัติ (แสดงเฉพาะยังไม่อนุมัติ) -->
-        <form th:if="${h.verificationstatus == null or !h.verificationstatus}"
-              th:action="@{/admin/homestay/approve/{id}(id=${h.ownerid})}" 
-              method="post">
-          <button type="submit" class="btn-action btn-approve">✅ อนุมัติ</button>
-        </form>
+          <td>
+            <div class="owner-name" th:text="${h.firstname + ' ' + h.lastname}">ชื่อ-นามสกุล</div>
+            <div style="font-size:13px; color:#999;">
+              ID: #<span th:text="${h.ownerid}">001</span>
+            </div>
+          </td>
 
-        <!-- ปุ่มปฏิเสธ (แสดงเฉพาะยังไม่ตัดสิน) -->
-        <form th:if="${h.verificationstatus == null or !h.verificationstatus}"
-              th:action="@{/admin/homestay/reject/{id}(id=${h.ownerid})}" 
-              method="post">
-          <button type="submit" class="btn-action btn-reject">❌ ปฏิเสธ</button>
-        </form>
+          <td>
+            <div style="font-size: 14px;" th:text="${h.email}">email</div>
+            <div style="font-size: 13px; color: #777;" th:text="${h.phone}">phone</div>
+          </td>
 
-      </div>
-    </td>
-  </tr>
+          <td class="homestay-name">
+            <span th:if="${h.homestays != null and !h.homestays.isEmpty()}"
+                  th:text="${h.homestays[0].homestayname}">ชื่อโฮมสเตย์</span>
+            <span th:if="${h.homestays == null or h.homestays.isEmpty()}"
+                  style="color:#aaa;">-</span>
+          </td>
 
-  <tr th:if="${#lists.isEmpty(homestays)}">
-    <td colspan="5" class="empty">
-      <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
-      ยังไม่มีคำขอสมัครโฮมสเตย์ใหม่ในขณะนี้
-    </td>
-  </tr>
-</tbody>
+          <td>
+            <!-- รออนุมัติ -->
+            <span th:if="${isPending and !isRejected}"
+                  class="badge pending">⏳ รอการตรวจสอบ</span>
+            <!-- อนุมัติแล้ว -->
+            <span th:if="${isApproved}"
+                  class="badge" style="background:#eafaf1; color:#2d6a4f;">✅ อนุมัติแล้ว</span>
+            <!-- ปฏิเสธแล้ว -->
+            <span th:if="${isRejected}"
+                  class="badge" style="background:#fdecea; color:#c0392b;">❌ ปฏิเสธแล้ว</span>
+          </td>
+
+          <td>
+            <div class="action-group">
+              <!-- ปุ่มอนุมัติ (แสดงเฉพาะ pending) -->
+              <form th:if="${isPending and !isRejected}"
+                    th:action="@{/admin/homestay/approve/{id}(id=${h.ownerid})}"
+                    method="post">
+                <button type="submit" class="btn-action btn-approve">✅ อนุมัติ</button>
+              </form>
+
+              <!-- ปุ่มปฏิเสธ (แสดงเฉพาะ pending) -->
+              <form th:if="${isPending and !isRejected}"
+                    th:action="@{/admin/homestay/reject/{id}(id=${h.ownerid})}"
+                    method="post">
+                <button type="submit" class="btn-action btn-reject">❌ ปฏิเสธ</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+
+       <tr id="empty-row" style="display: none;">
+  <td colspan="5" class="empty">
+    <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
+    ยังไม่มีคำขอสมัครโฮมสเตย์ใหม่ในขณะนี้
+  </td>
+</tr>
+      </tbody>
     </table>
   </div>
 
 </div>
+
+<script>
+  // Filter Pills — กรองแถวตาม data-status
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+
+      const filter = this.dataset.filter;
+      
+      // ตัวแปรสำหรับนับจำนวนแถวที่แสดงผลอยู่ ณ ขณะนั้น
+      let visibleRows = 0;
+
+      // วนลูปจัดการแถวข้อมูลโฮมสเตย์ทั้งหมด
+      document.querySelectorAll('tbody tr[data-status]').forEach(row => {
+        if (filter === 'all' || row.dataset.status === filter) {
+          row.style.display = '';
+          visibleRows++; // หากแถวตรงตามเงื่อนไขฟิลเตอร์ ให้นับเพิ่ม
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // จัดการการแสดงผลของแถว "ยังไม่มีคำขอ" (กล่องพัสดุ 📦)
+      const emptyRow = document.getElementById('empty-row');
+      if (emptyRow) {
+        if (visibleRows === 0) {
+          emptyRow.style.display = ''; // แสดงกล่องพัสดุเมื่อไม่มีข้อมูลในแท็บนั้นเลย
+        } else {
+          emptyRow.style.display = 'none'; // ซ่อนกล่องพัสดุเมื่อมีข้อมูลแสดงอยู่
+        }
+      }
+    });
+  });
+
+  // สั่งให้ระบบทำการคลิกเลือกแท็บ "รออนุมัติ" โดยอัตโนมัติทันทีเมื่อเปิดหน้าเว็บขึ้นมาครั้งแรก
+  window.addEventListener('DOMContentLoaded', () => {
+    const pendingPill = document.querySelector('[data-filter="pending"]');
+    if (pendingPill) {
+      pendingPill.click(); 
+    }
+  });
+</script>
 
 </body>
 </html>
