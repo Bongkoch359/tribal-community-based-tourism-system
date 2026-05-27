@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการจองโฮมสเตย์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* ─── NAVBAR ─── */
+    .hs-navbar {
+        background: #1a3d1f; display: flex; align-items: center;
+        padding: 0 2rem; height: 84px; position: sticky; top: 0;
+        z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.25); gap: .5rem;
+    }
+    .hs-navbar-brand {
+        display: flex; align-items: center; gap: .6rem; color: #fff;
+        font-weight: 700; font-size: 1.05rem; text-decoration: none;
+        white-space: nowrap; margin-right: auto;
+    }
+    .hs-nav-links { display: flex; align-items: center; gap: .15rem; margin-right: 1.25rem; }
+    .hs-nav-link {
+        color: rgba(255,255,255,.7); text-decoration: none; font-size: .92rem;
+        font-weight: 500; padding: .45rem 1rem; border-radius: 6px;
+        transition: all .2s; display: flex; align-items: center; gap: .45rem; white-space: nowrap;
+    }
+    .hs-nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+    .hs-nav-link.active {
+        color: #fff; border-bottom: 3px solid #7ecf88;
+        border-radius: 0; padding-bottom: calc(.45rem - 3px);
+    }
+    .hs-nav-right { display: flex; align-items: center; }
+    .hs-profile-dropdown { position: relative; display: inline-block; cursor: pointer; }
+    .hs-profile-trigger {
+        display: flex; align-items: center; gap: 10px; padding: .45rem .75rem;
+        border-radius: 10px; border: 1px solid rgba(255,255,255,.12);
+        transition: background .2s, border-color .2s;
+    }
+    .hs-profile-trigger:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.22); }
+    .hs-avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: linear-gradient(135deg, #e08a00, #f5a623);
+        color: #fff; font-weight: 700; font-size: .82rem;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 0 2px rgba(255,255,255,.2); flex-shrink: 0;
+    }
+    .hs-owner-name { color: #fff; font-size: .9rem; font-weight: 600; display: block; line-height: 1.2; }
+    .hs-owner-role { color: rgba(255,255,255,.55); font-size: .72rem; display: block; }
+    .hs-chevron { font-size: .7rem; color: rgba(255,255,255,.5); margin-left: 2px; transition: transform .2s; }
+    .hs-profile-dropdown:hover .hs-chevron { transform: rotate(180deg); }
+    .hs-dropdown-content {
+        display: none; position: absolute; right: 0; top: 100%;
+        background: #fff; min-width: 210px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.18); z-index: 1000;
+        border-radius: 12px; margin-top: 10px; padding: 6px 0; border: 1px solid #e8e8e8;
+    }
+    .hs-dropdown-content::before {
+        content: ""; position: absolute; top: -10px; left: 0; width: 100%; height: 10px;
+    }
+    .hs-profile-dropdown:hover .hs-dropdown-content { display: block; }
+    .hs-dropdown-content a {
+        color: #333; padding: .6rem 1rem; text-decoration: none;
+        display: flex; align-items: center; gap: .65rem; font-size: .88rem; transition: background .15s;
+    }
+    .hs-dropdown-content a i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
+    .hs-dropdown-content a:hover { background: #f5f8f5; color: #1a3d1f; }
+    .hs-dropdown-content hr { margin: 4px 0; border: 0; border-top: 1px solid #f0f0f0; }
+    .hs-dropdown-content a.hs-logout { color: #c0392b; }
+    .hs-dropdown-content a.hs-logout i { color: #c0392b; }
+    .hs-dropdown-content a.hs-logout:hover { background: #fff5f5; }
+
+    /* ─── BASE ─── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sarabun', sans-serif; background: #f5f0e8; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ─── PAGE ─── */
+    .page { max-width: 100%; padding: 32px 40px; flex: 1; }
+
+    /* ─── PAGE HEADER ─── */
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .page-title { font-size: 1.5rem; font-weight: 700; color: #1a3a1a; display: flex; align-items: center; gap: 10px; }
+    .page-title i { color: #2d6a2d; }
+    .count-chip {
+        background: #e8f5e8; color: #2d6a2d;
+        font-size: .78rem; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+    }
+
+    /* ─── HOMESTAY SELECTOR ─── */
+    .homestay-selector {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+        background: #fff; padding: 12px 18px; border-radius: 10px;
+        box-shadow: 0 1px 6px rgba(0,0,0,.07); width: fit-content;
+    }
+    .homestay-selector label {
+        font-weight: 600; color: #1a3a1a; font-size: .95rem;
+        display: flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .homestay-selector label i { color: #2d6a2d; }
+    .homestay-selector select {
+        padding: 7px 14px; border-radius: 8px; border: 1.5px solid #c5d6c5;
+        background: #f5f9f5; font-family: 'Sarabun', sans-serif;
+        font-size: .95rem; color: #1a3a1a; cursor: pointer; outline: none;
+        transition: border-color .2s; min-width: 200px;
+    }
+    .homestay-selector select:hover,
+    .homestay-selector select:focus { border-color: #2d6a2d; }
+
+    /* ─── STAT STRIP ─── */
+    .stat-strip {
+        display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .stat-pill {
+        display: flex; align-items: center; gap: 8px;
+        background: #fff; border-radius: 10px; padding: 10px 16px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.07); cursor: pointer;
+        border: 2px solid transparent; transition: all .2s; text-decoration: none;
+        color: #444;
+    }
+    .stat-pill:hover { border-color: #c5d6c5; }
+    .stat-pill.active { border-color: #2d6a2d; background: #f0faf0; }
+    .stat-pill .pill-label { font-size: .85rem; font-weight: 500; }
+    .stat-pill .pill-count { font-size: 1.1rem; font-weight: 700; color: #1a3a1a; }
+    .stat-pill.pill-waiting  .pill-count { color: #e07b00; }
+    .stat-pill.pill-confirmed .pill-count { color: #1a7a2a; }
+    .stat-pill.pill-cancel   .pill-count { color: #c0392b; }
+
+    /* ─── TABLE CARD ─── */
+    .table-card {
+        background: #fff; border-radius: 14px;
+        box-shadow: 0 2px 16px rgba(0,0,0,.07); overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #d4edda; }
+    thead th {
+        padding: 16px; text-align: left; font-size: .88rem;
+        font-weight: 600; color: #1a3d1f; border-bottom: 2px solid #c3dec9;
+        white-space: nowrap;
+    }
+    thead th:last-child { text-align: center; }
+    tbody td {
+        padding: 16px; vertical-align: middle;
+        border-top: 1px solid #f0ede5; font-size: .9rem; color: #1c1c1a;
+    }
+    tbody tr:hover { background: #faf8f4; }
+
+    /* ─── MEMBER CELL ─── */
+    .member-name  { font-weight: 600; color: #1a3a1a; }
+    .member-phone { font-size: .8rem; color: #888; margin-top: 2px; }
+
+    /* ─── ROOM TYPE BADGE ─── */
+    .type-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 10px; border-radius: 20px; font-size: .82rem; font-weight: 600;
+    }
+    .badge-house   { background: #fff3e0; color: #e07b00; }
+    .badge-dome    { background: #e3f0ff; color: #2266cc; }
+    .badge-tent    { background: #e8f5e9; color: #2d6a2d; }
+    .badge-default { background: #f0f0f0; color: #666; }
+
+    /* ─── DATE CELL ─── */
+    .date-range { font-size: .88rem; color: #444; }
+    .date-nights { font-size: .78rem; color: #888; margin-top: 2px; }
+
+    /* ─── AMOUNT ─── */
+    .amount-text { font-weight: 700; color: #1a3a1a; }
+
+    /* ─── STATUS BADGE ─── */
+    .status-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 12px; border-radius: 20px; font-size: .82rem; font-weight: 600;
+        white-space: nowrap;
+    }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .s-pending         { background: #fff3cd; color: #856404; }
+    .s-pending         .status-dot { background: #f0a500; }
+    .s-waiting         { background: #fff3e0; color: #c05a00; }
+    .s-waiting         .status-dot { background: #e07b00; }
+    .s-confirmed       { background: #d1e7dd; color: #0a5c2a; }
+    .s-confirmed       .status-dot { background: #1a8a3a; }
+    .s-cancel          { background: #f8d7da; color: #842029; }
+    .s-cancel          .status-dot { background: #e53935; }
+
+    /* ─── ACTION BUTTONS ─── */
+    .btn-actions { display: flex; align-items: center; gap: 6px; justify-content: center; }
+    .btn-view {
+        background: #1a3a1a; color: #fff; border: none; border-radius: 7px;
+        padding: 6px 14px; font-family: 'Sarabun', sans-serif; font-size: .85rem;
+        font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;
+        gap: 5px; text-decoration: none; transition: background .2s; white-space: nowrap;
+    }
+    .btn-view:hover { background: #2d6a2d; color: #fff; }
+    .btn-confirm {
+        background: #1a7a2a; color: #fff; border: none; border-radius: 7px;
+        padding: 6px 14px; font-family: 'Sarabun', sans-serif; font-size: .85rem;
+        font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;
+        gap: 5px; transition: background .2s; white-space: nowrap;
+    }
+    .btn-confirm:hover { background: #155f20; }
+    .btn-cancel-booking {
+        background: #fff0f0; color: #c0392b; border: 1.5px solid #f5c6cb;
+        border-radius: 7px; padding: 6px 12px; font-family: 'Sarabun', sans-serif;
+        font-size: .85rem; font-weight: 600; cursor: pointer; display: inline-flex;
+        align-items: center; gap: 5px; transition: all .2s; white-space: nowrap;
+    }
+    .btn-cancel-booking:hover { background: #fde8e8; border-color: #e07070; }
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state { text-align: center; padding: 60px 20px; color: #aaa; }
+    .empty-state i { font-size: 2.8rem; margin-bottom: 12px; display: block; }
+    .empty-state p { font-size: 1rem; }
+
+    /* ─── TOAST ─── */
+    .toast {
+        position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+        background: #1a3d1f; color: #fff; padding: 14px 22px;
+        border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,.2);
+        font-size: .95rem; font-weight: 500; display: flex; align-items: center; gap: 10px;
+        transform: translateY(80px); opacity: 0; transition: all .35s ease;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { background: #a93226; }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,.45); z-index: 2000;
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+        background: #fff; border-radius: 16px; padding: 32px;
+        max-width: 420px; width: 90%; box-shadow: 0 8px 40px rgba(0,0,0,.2);
+    }
+    .modal-box h3 { font-size: 1.15rem; font-weight: 700; color: #1a3a1a; margin-bottom: 12px; }
+    .modal-box p  { font-size: .95rem; color: #555; margin-bottom: 24px; line-height: 1.6; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-modal-cancel {
+        background: #f0f0f0; color: #444; border: none; border-radius: 8px;
+        padding: 9px 20px; font-family: 'Sarabun', sans-serif;
+        font-size: .9rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-modal-cancel:hover { background: #e0e0e0; }
+    .btn-modal-confirm-green {
+        background: #1a7a2a; color: #fff; border: none; border-radius: 8px;
+        padding: 9px 20px; font-family: 'Sarabun', sans-serif;
+        font-size: .9rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-modal-confirm-green:hover { background: #155f20; }
+    .btn-modal-confirm-red {
+        background: #c0392b; color: #fff; border: none; border-radius: 8px;
+        padding: 9px 20px; font-family: 'Sarabun', sans-serif;
+        font-size: .9rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-modal-confirm-red:hover { background: #a93226; }
+
+    /* ─── FOOTER ─── */
+    .footer { margin-top: auto; padding: 1rem 2rem; background: #1a3d1f; color: #d8f3dc; font-size: .9rem; }
+    .footer-content { display: flex; justify-content: space-between; align-items: center; }
+    .footer a { color: #95d5b2; text-decoration: none; margin-left: 8px; }
+    .footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav class="hs-navbar">
+    <a class="hs-navbar-brand" th:href="@{/}">
+        <i class="fas fa-mountain-sun"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+    </a>
+    <div class="hs-nav-links">
+        <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
+        <a class="hs-nav-link" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
+        <a class="hs-nav-link active" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
+        <a class="hs-nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
+    </div>
+    <div class="hs-nav-right">
+        <div class="hs-profile-dropdown">
+            <div class="hs-profile-trigger">
+                <div class="hs-avatar"
+                     th:text="${ownername != null and #strings.length(ownername) >= 2}
+                               ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
+                <div>
+                    <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
+                    <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+                </div>
+                <i class="fas fa-chevron-down hs-chevron"></i>
+            </div>
+            <div class="hs-dropdown-content">
+                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                <hr>
+                <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ─── CONTENT ─── -->
+<div class="page">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-title">
+            <i class="fas fa-calendar-check"></i>
+            รายการจองโฮมสเตย์
+            <span class="count-chip" th:text="${bookings.size()} + ' รายการ'">0 รายการ</span>
+        </div>
+    </div>
+
+    <!-- Homestay Selector -->
+    <div class="homestay-selector"
+         th:if="${myHomestays != null and myHomestays.size() > 1}">
+        <label><i class="fas fa-house"></i> โฮมสเตย์ :</label>
+        <select onchange="location.href='/owner/bookings?homestayid='+this.value">
+            <option th:each="hs : ${myHomestays}"
+                    th:value="${hs.homestayid}"
+                    th:text="${hs.homestayname}"
+                    th:selected="${hs.homestayid == homestayid}">
+            </option>
+        </select>
+    </div>
+
+    <!-- Stat Strip / Filter Tabs -->
+    <div class="stat-strip">
+        <a class="stat-pill"
+           th:classappend="${activeStatus == ''} ? ' active' : ''"
+           th:href="@{/owner/bookings(homestayid=${homestayid})}">
+            <div>
+                <div class="pill-label">ทั้งหมด</div>
+                <div class="pill-count" th:text="${countAll}">0</div>
+            </div>
+        </a>
+        <a class="stat-pill pill-waiting"
+           th:classappend="${activeStatus == 'WAITING_APPROVAL'} ? ' active' : ''"
+           th:href="@{/owner/bookings(homestayid=${homestayid}, status='WAITING_APPROVAL')}">
+            <i class="fas fa-clock" style="color:#e07b00;font-size:1.1rem;"></i>
+            <div>
+                <div class="pill-label">รอตรวจสอบ</div>
+                <div class="pill-count" th:text="${countWaiting}">0</div>
+            </div>
+        </a>
+        <a class="stat-pill pill-confirmed"
+           th:classappend="${activeStatus == 'CONFIRMED'} ? ' active' : ''"
+           th:href="@{/owner/bookings(homestayid=${homestayid}, status='CONFIRMED')}">
+            <i class="fas fa-circle-check" style="color:#1a7a2a;font-size:1.1rem;"></i>
+            <div>
+                <div class="pill-label">ยืนยันแล้ว</div>
+                <div class="pill-count" th:text="${countConfirmed}">0</div>
+            </div>
+        </a>
+        <a class="stat-pill pill-cancel"
+           th:classappend="${activeStatus == 'CANCEL'} ? ' active' : ''"
+           th:href="@{/owner/bookings(homestayid=${homestayid}, status='CANCEL')}">
+            <i class="fas fa-circle-xmark" style="color:#c0392b;font-size:1.1rem;"></i>
+            <div>
+                <div class="pill-label">ยกเลิก</div>
+                <div class="pill-count" th:text="${countCancel}">0</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>ผู้จอง</th>
+                    <th>ประเภทห้อง</th>
+                    <th>วันที่เข้าพัก</th>
+                    <th>ยอดเงิน</th>
+                    <th>สถานะ</th>
+                    <th style="text-align:center;">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <!-- Empty -->
+                <tr th:if="${#lists.isEmpty(bookings)}">
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-xmark"></i>
+                            <p>ยังไม่มีรายการจอง</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Rows -->
+                <tr th:each="b : ${bookings}">
+                    <!-- Booking ID -->
+                    <td style="font-family:monospace;font-size:.85rem;color:#666;"
+                        th:text="${b['bookingid']}">BK001</td>
+
+                    <!-- ผู้จอง -->
+                    <td>
+                        <div class="member-name"  th:text="${b['membername']}">-</div>
+                        <div class="member-phone" th:text="${b['memberphone']}"></div>
+                    </td>
+
+                    <!-- ประเภทห้อง -->
+                    <td>
+                        <span th:switch="${b['roomtypename']}">
+                            <span th:case="'บ้านพัก'" class="type-badge badge-house"><i class="fas fa-house"></i> <span th:text="${b['roomtypename']}"></span></span>
+                            <span th:case="'โดม'"    class="type-badge badge-dome"><i class="fas fa-circle-dot"></i> <span th:text="${b['roomtypename']}"></span></span>
+                            <span th:case="'เต็นท์'" class="type-badge badge-tent"><i class="fas fa-campground"></i> <span th:text="${b['roomtypename']}"></span></span>
+                            <span th:case="*"        class="type-badge badge-default" th:text="${b['roomtypename']}"></span>
+                        </span>
+                    </td>
+
+                    <!-- วันที่เข้าพัก -->
+                    <td>
+                        <div class="date-range">
+                            <span th:text="${b['checkindate'] != null} ? ${#dates.format(b['checkindate'],'dd/MM/yy')} : '-'"></span>
+                            <span th:if="${b['checkoutdate'] != null}"> – </span>
+                            <span th:text="${b['checkoutdate'] != null} ? ${#dates.format(b['checkoutdate'],'dd/MM/yy')} : ''"></span>
+                        </div>
+                        <div class="date-nights" th:text="${b['nights']} + ' คืน · ' + ${b['numofrooms']} + ' ห้อง'"></div>
+                    </td>
+
+                    <!-- ยอดเงิน -->
+                    <td>
+                        <span class="amount-text"
+                              th:text="${#numbers.formatDecimal(b['totalamount'],1,'COMMA',0,'POINT')} + ' ฿'">0 ฿</span>
+                    </td>
+
+                    <!-- สถานะ -->
+                    <td>
+                        <span th:switch="${b['bookingStatus']}">
+                            <span th:case="'PENDING'"          class="status-badge s-pending"><span class="status-dot"></span> รอดำเนินการ</span>
+                            <span th:case="'WAITING_APPROVAL'" class="status-badge s-waiting"><span class="status-dot"></span> รอตรวจสอบ</span>
+                            <span th:case="'CONFIRMED'"        class="status-badge s-confirmed"><span class="status-dot"></span> ยืนยันแล้ว</span>
+                            <span th:case="'CANCEL'"           class="status-badge s-cancel"><span class="status-dot"></span> ยกเลิก</span>
+                            <span th:case="*"                  class="status-badge" th:text="${b['bookingStatus']}">-</span>
+                        </span>
+                    </td>
+
+                    <!-- จัดการ -->
+                    <td>
+                        <div class="btn-actions">
+                            <!-- ดูรายละเอียด -->
+                            <a class="btn-view"
+                               th:href="@{/owner/bookings/detail(bookingid=${b['bookingid']})}">
+                                <i class="fas fa-eye"></i> ดูรายละเอียด
+                            </a>
+                            <!-- ยืนยัน (แสดงเฉพาะ WAITING_APPROVAL) -->
+                            <button th:if="${b['bookingStatus'] == 'WAITING_APPROVAL'}"
+                                    class="btn-confirm"
+                                    th:onclick="'openConfirmModal(\'' + ${b['bookingid']} + '\')'">
+                                <i class="fas fa-check"></i> ยืนยัน
+                            </button>
+                            <!-- ยกเลิก (แสดงเฉพาะ PENDING หรือ WAITING_APPROVAL) -->
+                            <button th:if="${b['bookingStatus'] == 'PENDING' or b['bookingStatus'] == 'WAITING_APPROVAL'}"
+                                    class="btn-cancel-booking"
+                                    th:onclick="'openCancelModal(\'' + ${b['bookingid']} + '\')'">
+                                <i class="fas fa-xmark"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- ─── MODAL: ยืนยันการจอง ─── -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+        <h3><i class="fas fa-circle-check" style="color:#1a7a2a;"></i> ยืนยันการจอง</h3>
+        <p>คุณต้องการ <strong>ยืนยัน</strong> การจองนี้ใช่หรือไม่?<br>
+           เมื่อยืนยันแล้วสถานะจะเปลี่ยนเป็น <strong>"ยืนยันแล้ว"</strong></p>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel"         onclick="closeModal('confirmModal')">ยกเลิก</button>
+            <button class="btn-modal-confirm-green"  onclick="doConfirm()"><i class="fas fa-check"></i> ยืนยัน</button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── MODAL: ยกเลิกการจอง ─── -->
+<div class="modal-overlay" id="cancelModal">
+    <div class="modal-box">
+        <h3><i class="fas fa-circle-xmark" style="color:#c0392b;"></i> ยกเลิกการจอง</h3>
+        <p>คุณต้องการ <strong>ยกเลิก</strong> การจองนี้ใช่หรือไม่?<br>
+           การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel"        onclick="closeModal('cancelModal')">ปิด</button>
+            <button class="btn-modal-confirm-red"   onclick="doCancel()"><i class="fas fa-xmark"></i> ยืนยันการยกเลิก</button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<!-- ─── FOOTER ─── -->
+<footer class="footer">
+    <div class="footer-content">
+        <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+        <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a></span>
+    </div>
+</footer>
+
+<script th:inline="javascript">
+    const HOMESTAY_ID = /*[[${homestayid}]]*/ 0;
+
+    let pendingBookingId = null;
+
+    // ── Modal helpers ──────────────────────────────────────
+    function openConfirmModal(bookingId) {
+        pendingBookingId = bookingId;
+        document.getElementById('confirmModal').classList.add('open');
+    }
+    function openCancelModal(bookingId) {
+        pendingBookingId = bookingId;
+        document.getElementById('cancelModal').classList.add('open');
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+        pendingBookingId = null;
+    }
+
+    // ── Actions ────────────────────────────────────────────
+    async function doConfirm() {
+        closeModal('confirmModal');
+        await postAction('/owner/bookings/confirm', pendingBookingId, 'ยืนยันการจองสำเร็จ');
+    }
+    async function doCancel() {
+        closeModal('cancelModal');
+        await postAction('/owner/bookings/cancel', pendingBookingId, 'ยกเลิกการจองแล้ว');
+    }
+
+    async function postAction(url, bookingId, successMsg) {
+        const params = new URLSearchParams({ bookingid: bookingId, homestayid: HOMESTAY_ID });
+        try {
+            const res  = await fetch(url, { method: 'POST', body: params });
+            const data = await res.json();
+            if (data.success) {
+                showToast(successMsg, false);
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                showToast(data.message || 'เกิดข้อผิดพลาด', true);
+            }
+        } catch (e) {
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', true);
+        }
+    }
+
+    // ── Toast ──────────────────────────────────────────────
+    function showToast(msg, isError = false) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className   = 'toast' + (isError ? ' error' : '');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── Close modal on backdrop click ──────────────────────
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', e => {
+            if (e.target === el) el.classList.remove('open');
+        });
+    });
+</script>
+
+</body>
+</html>

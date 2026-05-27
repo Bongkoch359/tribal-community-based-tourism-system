@@ -42,20 +42,24 @@
         .upload-placeholder small { color: #888; font-size: .82rem; }
 
         /* ── Preview Grid ── */
-        #previewGrid {
-            margin-top: 14px;
-            display: none;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-        }
-        .preview-card {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-            aspect-ratio: 1;
-            background: #eee;
-            box-shadow: 0 2px 8px rgba(0,0,0,.1);
-        }
+       /* ── Preview Grid ── */
+#previewGrid {
+    margin-top: 14px;
+    display: none;
+    flex-wrap: wrap;        /* เปลี่ยนจาก grid เป็น flex */
+    gap: 10px;
+    /* ไม่ต้องใส่ width เพิ่ม จะอยู่แค่ขนาดรูปที่มี */
+}
+.preview-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 120px;           /* กำหนด fixed width */
+    height: 120px;          /* กำหนด fixed height */
+    flex-shrink: 0;         /* ไม่ให้หด */
+    background: #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
         .preview-card img {
             width: 100%; height: 100%;
             object-fit: cover; display: block;
@@ -402,7 +406,7 @@ function updateUI() {
     if (count > 0) {
         badge.style.display = 'inline';
         badge.textContent   = count + ' รูป';
-        grid.style.display  = 'grid';
+        grid.style.display  = 'flex';
     } else {
         badge.style.display = 'none';
         grid.style.display  = 'none';

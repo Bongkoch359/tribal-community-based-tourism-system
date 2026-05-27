@@ -76,5 +76,27 @@ long countByRoomHomestayIdAndStatus(
            "ORDER BY b.bookingdate DESC " +
            "LIMIT 5")
     List<Booking> findTop5ByHomestayId(@Param("homestayId") Integer homestayId);
+    
+    // ───  ดึงการจองทั้งหมดของ homestay  ───────────
+    /** ดึงการจองทั้งหมดของ homestay เรียงวันที่ล่าสุดก่อน */
+    @Query("SELECT DISTINCT b FROM Booking b " +
+           "LEFT JOIN FETCH b.member " +
+           "LEFT JOIN FETCH b.roomDetails rd " +
+           "LEFT JOIN FETCH rd.roomtype rt " +
+           "WHERE rt.homestay.homestayid = :homestayId " +
+           "ORDER BY b.bookingdate DESC")
+    List<Booking> findAllByHomestayId(@Param("homestayId") Integer homestayId);
+ 
+    /** ดึงการจองของ homestay กรอง status */
+    @Query("SELECT DISTINCT b FROM Booking b " +
+           "LEFT JOIN FETCH b.member " +
+           "LEFT JOIN FETCH b.roomDetails rd " +
+           "LEFT JOIN FETCH rd.roomtype rt " +
+           "WHERE rt.homestay.homestayid = :homestayId " +
+           "AND b.bookingStatus = :status " +
+           "ORDER BY b.bookingdate DESC")
+    List<Booking> findAllByHomestayIdAndStatus(
+        @Param("homestayId") Integer homestayId,
+        @Param("status") BookingStatus status);
 
 }
