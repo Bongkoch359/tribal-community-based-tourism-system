@@ -315,13 +315,12 @@ public class HomestayownerController {
         }
     }
 
-    // ───── Helpers ─────
-
+    // ───── Helpers ดึงนามสกุลไฟล์ ─────
     private String getExtension(String filename) {
         if (filename == null || !filename.contains(".")) return ".jpg";
         return filename.substring(filename.lastIndexOf('.')).toLowerCase();
     }
-
+    //แปลง Object เป็นข้อมูลปลอดภัยสำหรับส่งออก
     private Map<String, Object> toSafeMap(Homestayowner o) {
         Map<String, Object> map = new HashMap<>();
         map.put("ownerid",            o.getOwnerid());

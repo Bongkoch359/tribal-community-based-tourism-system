@@ -358,7 +358,7 @@ async function handleSave() {
     .join(',');
   fd.append('keepImages', keepPaths);
 
-  // รูปใหม่ → แนบ File จริง (ไม่แปลงเป็น base64)
+  // รูปใหม่ → แนบ File 
   images
     .filter(img => img.file)
     .forEach(img => fd.append('newImages', img.file));
@@ -366,7 +366,7 @@ async function handleSave() {
   try {
     const res  = await fetch(`/owner/homestays/${HOMESTAY_ID}`, {
       method: 'PUT',
-      body:   fd  // ห้ามใส่ Content-Type header — browser จัดการ boundary เอง
+      body:   fd  
     });
     const data = await res.json();
 

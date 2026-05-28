@@ -150,7 +150,6 @@
         .footer a:hover { text-decoration: underline; }
 </style>
 </head>
-<!-- body เป็น flex column เพื่อให้ footer ติดล่างเสมอ -->
 <body style="display:flex; flex-direction:column; min-height:100vh; margin:0; background:#f0ede8;">
 
 <!-- ─── NAVBAR ─── -->
@@ -250,7 +249,7 @@
         </div>
     </div>
 
-    <!-- ✅ ไม่มีข้อมูล -->
+    <!--  ไม่มีข้อมูล -->
     <div th:if="${#lists.isEmpty(homestays)}" class="empty-state">
         <i class="fas fa-house-circle-xmark"></i>
         <p>ยังไม่มีโฮมสเตย์ในระบบ</p>

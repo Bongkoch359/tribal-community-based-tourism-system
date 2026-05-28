@@ -117,7 +117,7 @@
             transition: background .15s, border-color .15s, color .15s;
         }
         .facility-chip input[type="checkbox"] {
-            display: none; /* ซ่อน checkbox จริง */
+            display: none; 
         }
         .facility-chip:has(input:checked) {
             background: #2d6a2d !important;
@@ -238,7 +238,7 @@
                     <label class="form-label">คำอธิบาย</label>
                     <textarea id="description" name="description" class="form-control"
                      placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
-                    <span class="field-error" id="descriptionError"></span>  <!-- ✅ เพิ่ม -->
+                    <span class="field-error" id="descriptionError"></span>  
                 </div>
 
                 <!-- เงื่อนไขการเข้าพัก -->
@@ -246,13 +246,13 @@
                     <label class="form-label">เงื่อนไขการเข้าพัก</label>
                     <textarea id="roomcondition" name="roomcondition" class="form-control"
                     placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
-                    <span class="field-error" id="roomconditionError"></span>  <!-- ✅ เพิ่ม -->
+                    <span class="field-error" id="roomconditionError"></span>  
                 </div>
 
             </div>
         </div>
 
-        <!-- ─── ส่วนที่ 2: สถานะที่พัก (Dropdown) ─── -->
+        <!-- ─── ส่วนที่ 2: สถานะที่พัก  ─── -->
         <div class="section-card">
             <div class="section-head">
                 <i class="fas fa-toggle-on" style="color:#2d6a2d;"></i>
@@ -393,7 +393,7 @@ function addPreviewCard(file, index) {
 }
 
 function removePreview(index) {
-    selectedFiles[index] = null; // mark as removed
+    selectedFiles[index] = null; 
     const card = document.querySelector(`.preview-card[data-index="${index}"]`);
     if (card) card.remove();
     updateUI();
