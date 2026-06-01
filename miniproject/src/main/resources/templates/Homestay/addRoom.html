@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/Homestay/add-room.css}" rel="stylesheet">
-    <!-- <link th:href="@{/css/Homestay/navbar.css}" rel="stylesheet"> -->
+    
 
     <style>
         .nav-right {
@@ -40,23 +40,20 @@
         .upload-placeholder i  { font-size: 2.4rem; color: #2d6a2d; }
         .upload-placeholder p  { margin: 0; font-weight: 600; }
         .upload-placeholder small { color: #888; font-size: .82rem; }
-
-        /* ── Preview Grid ── */
        /* ── Preview Grid ── */
-#previewGrid {
+    #previewGrid {
     margin-top: 14px;
     display: none;
-    flex-wrap: wrap;        /* เปลี่ยนจาก grid เป็น flex */
+    flex-wrap: wrap;       
     gap: 10px;
-    /* ไม่ต้องใส่ width เพิ่ม จะอยู่แค่ขนาดรูปที่มี */
 }
 .preview-card {
     position: relative;
     border-radius: 10px;
     overflow: hidden;
-    width: 120px;           /* กำหนด fixed width */
-    height: 120px;          /* กำหนด fixed height */
-    flex-shrink: 0;         /* ไม่ให้หด */
+    width: 120px;           
+    height: 120px;          
+    flex-shrink: 0;         
     background: #eee;
     box-shadow: 0 2px 8px rgba(0,0,0,.1);
 }

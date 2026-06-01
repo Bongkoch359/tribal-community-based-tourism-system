@@ -11,7 +11,7 @@
            NAVBAR
            ═══════════════════════════════════════════════ */
         .hs-navbar {
-            background: #1a3d1f;
+            background: #0d3d30;
             display: flex;
             align-items: center;
             padding: 0 2rem;
@@ -86,7 +86,7 @@
             border-bottom: 1px solid #f0f0f0;
             margin-bottom: 4px;
         }
-        .hs-dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
+        .hs-dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #0d2e24; }
         .hs-dropdown-header .d-email { font-size: .75rem; color: #6b7c6e; margin-top: 2px; }
         .hs-dropdown-content a {
             color: #333; padding: .6rem 1rem;
@@ -95,8 +95,8 @@
             font-size: .88rem; transition: background .15s;
         }
         .hs-dropdown-content a i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
-        .hs-dropdown-content a:hover { background: #f5f8f5; color: #1a3d1f; }
-        .hs-dropdown-content a:hover i { color: #1a3d1f; }
+        .hs-dropdown-content a:hover { background: #f0faf7; color: #0d3d30; }
+        .hs-dropdown-content a:hover i { color: #0d3d30; }
         .hs-dropdown-content hr { margin: 4px 0; border: 0; border-top: 1px solid #f0f0f0; }
         .hs-dropdown-content a.hs-logout { color: #c0392b; }
         .hs-dropdown-content a.hs-logout i { color: #c0392b; }
@@ -108,16 +108,16 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --green-dark:   #1e3a0f;
-            --green-main:   #2d5a16;
-            --green-accent: #3a7020;
-            --green-light:  #e8f0df;
+            --green-dark:   #0d3d30;
+            --green-main:   #1a6b52;
+            --green-accent: #2a9068;
+            --green-light:  #d8f5ec;
             --bg:           #f0ede6;
             --card:         #ffffff;
             --text:         #2c2c2c;
             --text-muted:   #888;
             --border:       #dde5d4;
-            --price-bg:     #f0f7e8;
+            --price-bg:     #e8f7f2;
             --orange:       #e07b39;
             --orange-dark:  #c5672a;
             --red:          #c0392b;
@@ -222,7 +222,7 @@
         .upload-strip {
             display: flex; align-items: center; gap: 8px;
             padding: 8px 10px;
-            background: #f7fbf2;
+            background: #f0faf7;
             border-top: 1px solid var(--border);
         }
         .upload-label {
@@ -233,7 +233,7 @@
             cursor: pointer; transition: border-color .2s, background .2s;
             white-space: nowrap;
         }
-        .upload-label:hover { border-color: var(--green-main); background: #edf4ec; color: var(--green-main); }
+        .upload-label:hover { border-color: var(--green-main); background: #e0f5ef; color: var(--green-main); }
         #fileInput { display: none; }
         .upload-hint { font-size: 11px; color: var(--text-muted); }
 
@@ -268,7 +268,7 @@
             display: flex; align-items: center; gap: 8px;
             padding: 11px 18px; border-bottom: 1px solid var(--border);
             font-size: 14px; font-weight: 600; color: var(--green-dark);
-            background: #f7fbf2;
+            background: #f0faf7;
         }
         .card-body { padding: 16px 18px; }
 
@@ -309,7 +309,7 @@
             padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
             margin-top: 4px;
         }
-        .status-preview.open  { background: #d4f0c8; color: #1e7a10; }
+        .status-preview.open  { background: #c8f0e4; color: #1e7a10; }
         .status-preview.close { background: #fde8e8; color: #b32020; }
         .status-preview .dot  { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
@@ -331,7 +331,7 @@
         .facility-item input[type=checkbox] { display: none; }
         .facility-item.checked {
             border-color: var(--green-main);
-            background: #e8f0df;
+            background: #d8f5ec;
             box-shadow: 0 0 0 1px var(--green-main);
             color: var(--green-dark);
         }
@@ -384,7 +384,7 @@
         }
         .success-icon {
             width: 62px; height: 62px; border-radius: 50%;
-            background: #e8f5e9;
+            background: #d8f5ec;
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 16px;
         }
@@ -459,7 +459,7 @@
         <div class="success-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10" stroke="#4caf50" stroke-width="2" fill="none"/>
-                <polyline points="7 12.5 10.5 16 17 9" stroke="#2d5a16" stroke-width="2.5" fill="none"/>
+                <polyline points="7 12.5 10.5 16 17 9" stroke="#1a6b52" stroke-width="2.5" fill="none"/>
             </svg>
         </div>
         <h3>บันทึกสำเร็จ!</h3>

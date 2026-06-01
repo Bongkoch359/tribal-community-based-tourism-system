@@ -1,17 +1,17 @@
-    .page { max-width: 1500px; margin: 0 auto; padding: 2rem; }
+.page { max-width: 1500px; margin: 0 auto; padding: 2rem; }
 
         .back-btn {
             display: inline-flex; align-items: center; gap: 6px;
-            background: #e8f5e9; color: #2d6a2d; border: none;
+            background: #d8f5ec; color: #1a6b52; border: none;
             padding: 6px 14px; border-radius: 20px; font-family: 'Sarabun', sans-serif;
             font-size: 0.88rem; font-weight: 600; text-decoration: none; margin-bottom: 1.2rem;
         }
-        .back-btn:hover { background: #c8e6c9; color: #1e4620; }
+        .back-btn:hover { background: #b0e8d8; color: #0d3d30; }
 
-        .page-title { font-size: 1.5rem; font-weight: 800; color: #1e4620; }
+        .page-title { font-size: 1.5rem; font-weight: 800; color: #0d3d30; }
         .page-subtitle { color: #888; font-size: 0.9rem; margin-bottom: 1.5rem; }
         .homestay-tag {
-            color: #2d6a2d; font-weight: 600; font-size: 0.9rem;
+            color: #1a6b52; font-weight: 600; font-size: 0.9rem;
         }
 
         /* Section Card */
@@ -26,10 +26,10 @@
             border-bottom: 1px solid #f0f0f0;
         }
         .section-head .label {
-            font-size: 0.88rem; font-weight: 700; color: #2d6a2d;
+            font-size: 0.88rem; font-weight: 700; color: #1a6b52;
         }
         .badge-tag {
-            background: #e8f5e9; color: #2d6a2d;
+            background: #d8f5ec; color: #1a6b52;
             font-size: 0.72rem; font-weight: 700;
             padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;
         }
@@ -50,7 +50,7 @@
             font-family: 'Sarabun', sans-serif; font-size: 0.93rem;
             outline: none; transition: border 0.2s; width: 100%; box-sizing: border-box;
         }
-        .form-control:focus { border-color: #2d6a2d; }
+        .form-control:focus { border-color: #1a6b52; }
         .form-control.is-invalid { border-color: #e53935; }
         .form-control.is-valid { border-color: #43a047; }
         textarea.form-control { resize: vertical; min-height: 90px; }
@@ -75,7 +75,7 @@
             cursor: pointer; transition: all 0.2s;
         }
         .status-option input[type="radio"] { display: none; }
-        .status-option.selected { border-color: #2d6a2d; background: #f1f8f2; }
+        .status-option.selected { border-color: #1a6b52; background: #f0faf7; }
         .status-dot {
             width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
         }
@@ -96,9 +96,9 @@
             background: #fafafa; transition: all 0.2s; user-select: none;
         }
         .facility-chip input { display: none; }
-        .facility-chip:hover { border-color: #2d6a2d; color: #2d6a2d; }
+        .facility-chip:hover { border-color: #1a6b52; color: #1a6b52; }
         .facility-chip.checked {
-            border-color: #2d6a2d; background: #e8f5e9; color: #2d6a2d; font-weight: 600;
+            border-color: #1a6b52; background: #d8f5ec; color: #1a6b52; font-weight: 600;
         }
         .facility-chip i { font-size: 0.85rem; }
 
@@ -109,7 +109,7 @@
             justify-content: center; cursor: pointer; transition: border 0.2s;
             position: relative; overflow: hidden; background: #fafafa;
         }
-        .upload-box:hover { border-color: #2d6a2d; }
+        .upload-box:hover { border-color: #1a6b52; }
         .upload-box input { display: none; }
         .upload-placeholder {
             text-align: center; padding: 2rem;

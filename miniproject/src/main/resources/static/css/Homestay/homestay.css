@@ -23,7 +23,7 @@ html, body {
         }
         .page-header h2 {
             font-size: 1.4rem; font-weight: 700;
-            color: #1e4620; display: flex; align-items: center; gap: 10px;
+            color: #0d3d30; display: flex; align-items: center; gap: 10px;
         }
         .btn-add {
             background: #e07b00; color: #fff; border: none;
@@ -49,7 +49,7 @@ html, body {
             transition: box-shadow 0.2s;
         }
         .homestay-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.11); }
-        .homestay-card.active  { border-left-color: #2d6a2d; }
+        .homestay-card.active  { border-left-color: #1a6b52; }
         .homestay-card.pending { border-left-color: #e07b00; }
 
         .hs-img {
@@ -58,7 +58,7 @@ html, body {
             border-radius: 8px;
             overflow: hidden;
             flex-shrink: 0;
-            background: #e8f5e9;
+            background: #d8f5ec;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -68,14 +68,14 @@ html, body {
         .hs-info { flex: 1; min-width: 0; }
         .hs-name {
             font-size: 1.05rem; font-weight: 700;
-            color: #1e4620; margin-bottom: 4px;
+            color: #0d3d30; margin-bottom: 4px;
             display: flex; align-items: center; gap: 8px;
         }
         .badge-status {
             font-size: 0.75rem; font-weight: 600;
             padding: 2px 10px; border-radius: 20px;
         }
-        .badge-active  { background: #e8f5e9; color: #2d6a2d; }
+        .badge-active  { background: #d8f5ec; color: #1a6b52; }
         .badge-pending { background: #fff3e0; color: #e07b00; }
 
         .hs-meta {
@@ -97,14 +97,14 @@ html, body {
             gap: 8px; flex-shrink: 0;
         }
         .btn-detail {
-            background: #2d6a2d; color: #fff; border: none;
+            background: #1a6b52; color: #fff; border: none;
             padding: 8px 18px; border-radius: 8px;
             font-family: 'Sarabun', sans-serif; font-size: 0.88rem;
             font-weight: 600; cursor: pointer; white-space: nowrap;
             display: flex; align-items: center; gap: 6px;
             text-decoration: none;
         }
-        .btn-detail:hover { background: #1e4620; color: #fff; }
+        .btn-detail:hover { background: #0d3d30; color: #fff; }
         .btn-review {
             background: #fff; color: #555;
             border: 1.5px solid #ddd; padding: 8px 18px;

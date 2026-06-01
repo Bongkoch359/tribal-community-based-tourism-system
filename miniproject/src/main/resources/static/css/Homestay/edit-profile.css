@@ -9,24 +9,24 @@
 }
 
 :root {
-    --green-dark:   #2d5016;
-    --green-main:   #4a7c26;
-    --green-light:  #6aaa34;
-    --green-pale:   #eef5e8;
-    --green-border: #c5dea8;
+    --green-dark:   #0d3d30;
+    --green-main:   #1a6b52;
+    --green-light:  #2a9068;
+    --green-pale:   #d8f5ec;
+    --green-border: #9dd4c4;
     --orange:       #e07b2a;
     --orange-light: #f4a35a;
     --bg:           #f5f0e8;
     --surface:      #ffffff;
-    --text-primary: #1e2a14;
-    --text-secondary:#5a6a44;
-    --text-muted:   #8a9a74;
+    --text-primary: #0d2e24;
+    --text-secondary:#3d7060;
+    --text-muted:   #5a8878;
     --error:        #c0392b;
     --radius-sm:    8px;
     --radius-md:    14px;
     --radius-lg:    20px;
-    --shadow-card:  0 2px 16px rgba(74,124,38,.12);
-    --shadow-hover: 0 6px 28px rgba(74,124,38,.20);
+    --shadow-card:  0 2px 16px rgba(26,107,82,.12);
+    --shadow-hover: 0 6px 28px rgba(26,107,82,.20);
     --font:         'Sarabun', sans-serif;
     --transition:   0.22s ease;
 }
@@ -217,7 +217,7 @@ body {
 
 .form-input:focus {
     border-color: var(--green-main);
-    box-shadow: 0 0 0 3px rgba(74,124,38,.12);
+    box-shadow: 0 0 0 3px rgba(26,107,82,.12);
     background: #fff;
 }
 
@@ -311,12 +311,12 @@ body {
 .btn-save {
     background: linear-gradient(135deg, var(--green-main), var(--green-light));
     color: #fff;
-    box-shadow: 0 4px 14px rgba(74,124,38,.30);
+    box-shadow: 0 4px 14px rgba(26,107,82,.30);
 }
 
 .btn-save:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(74,124,38,.40);
+    box-shadow: 0 6px 20px rgba(26,107,82,.40);
 }
 
 .btn-save:active { transform: translateY(0); }

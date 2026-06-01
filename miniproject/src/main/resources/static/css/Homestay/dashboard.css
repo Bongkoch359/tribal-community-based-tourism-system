@@ -1,13 +1,13 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --green-dark:   #1a3d1f;
-    --green-mid:    #2d6a35;
-    --green-light:  #3d8b47;
-    --orange:       #e08a00;
-    --orange-light: #f5a623;
+    --green-dark:   #0d3d30;   /* เดิม #1a3d1f */
+    --green-mid:    #1a6b52;   /* เดิม #2d6a35 */
+    --green-light:  #2a9068;   /* เดิม #3d8b47 */
+    --orange:       #e08a00;   /* คงเดิม */
+    --orange-light: #f5a623;   /* คงเดิม */
     --bg:           #f0ece3;
-    --text-dark:    #1a2e1c;
+    --text-dark:    #0d2e24;   /* เดิม #1a2e1c */
     --text-muted:   #6b7c6e;
     --white:        #ffffff;
     --card-shadow:  0 4px 24px rgba(0,0,0,.13);
@@ -321,13 +321,9 @@ body {
 }
 
 /* ─── FOOTER ─── */
-.footer {
-    padding: 1rem 2rem;
-    background: #1a3d1f;
-    color: #d8f3dc;
-    font-size: .9rem;
-    flex-shrink: 0;
-}
+.badge-available { background: #c8f0e4; color: #0d3d30; }  /* เดิม #d4f0d8 / #1a5c23 */
+
+.footer { background: #0d3d30; }  /* เดิม #1a3d1f */
 .footer-content { display: flex; justify-content: space-between; align-items: center; }
 .footer a { color: #95d5b2; text-decoration: none; margin-left: 8px; }
 .footer a:hover { text-decoration: underline; }
