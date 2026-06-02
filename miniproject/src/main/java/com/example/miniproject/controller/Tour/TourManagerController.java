@@ -64,17 +64,20 @@ public class TourManagerController {
     }
 
      // ─── แสดงหน้าแก้ไขโปรไฟล์ ───
-    @GetMapping("manager/profile")
-    public String profilePage(HttpSession session, Model model) {
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) {
-            return "redirect:/manager/login";
-        }
-        // ดึงข้อมูลล่าสุดจาก DB
-        Communitymanager fresh = managerService.getById(manager.getManagerid());
-        model.addAttribute("loggedInManager", fresh);
-        return "Tour/managerProfile";
+    @GetMapping("/manager/profile")
+public String profilePage(HttpSession session, Model model) {
+
+    Communitymanager manager =
+        (Communitymanager) session.getAttribute("loggedInManager");
+
+    if (manager == null) {
+        return "redirect:/manager/login";
     }
+
+    model.addAttribute("loggedInManager", manager);
+
+    return "Tour/managerProfile";
+}
  
     // ─── บันทึกการแก้ไขโปรไฟล์ ───
     @PostMapping("/manager/profile/update")

@@ -10,11 +10,11 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --green-dark:   #1a3d1f;
-            --green-mid:    #2d6a35;
+            --green-dark:   #3a7d1e;
+            --green-mid:    #65a30d;
             --green-light:  #d4edda;
             --amber:        #f0a500;
-            --amber-hover:  #c47700;
+            --amber-hover:  #4d7c0a;
             --amber-light:  #fff3cd;
             --amber-text:   #856404;
             --red-light:    #fde8e8;
@@ -23,7 +23,7 @@
             --yellow-text:  #7d6608;
             --gray-light:   #e9ecef;
             --gray-text:    #555;
-            --bg-page:      #f5f0e8;
+            --bg-page:      #f3fae8;
             --bg-card:      #ffffff;
             --border:       #e2ddd4;
             --text-main:    #1c1c1a;
@@ -87,7 +87,7 @@
         .nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
         .nav-link.active {
             color: #fff;
-            border-bottom: 3px solid #7ecf88;
+            border-bottom: 3px solid #65a30d;
             border-radius: 0;
             padding-bottom: calc(.45rem - 3px);
         }
@@ -196,7 +196,7 @@
         /* ─── ALERT SUCCESS ─── */
         .alert-success {
             background: var(--green-light);
-            border: 1px solid #a3d4af;
+            border: 1px solid #a3e635;
             color: var(--green-dark);
             border-radius: 8px;
             padding: 11px 14px;
@@ -259,12 +259,12 @@
         }
 
         .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .tbl thead tr { background: var(--green-light); }
+        .tbl thead tr { background: #f0ebd9; }
         .tbl th {
             text-align: left;
             font-size: 12px;
             font-weight: 600;
-            color: var(--green-dark);
+            color: #495057;
             letter-spacing: 0.03em;
             text-transform: uppercase;
             padding: 12px 16px;
@@ -277,7 +277,7 @@
             color: var(--text-main);
         }
         .tbl tr:last-child td { border-bottom: none; }
-        .tbl tbody tr:hover td { background: #faf8f4; }
+        .tbl tbody tr:hover td { background: #f3fae8; }
 
         /* ─── THUMBNAIL ─── */
         .tour-thumb {
@@ -646,6 +646,24 @@ function updateCounts() {
 }
 
 updateCounts();
+
+/* ═══════════════════════════════════════════
+   AUTO-HIDE SUCCESS BANNER หลัง 3 วินาที
+═══════════════════════════════════════════ */
+(function() {
+    const banners = document.querySelectorAll('.alert-success');
+    if (banners.length === 0) return;
+    banners.forEach(function(el) {
+        el.style.transition = 'opacity 0.5s ease, max-height 0.5s ease, margin 0.5s ease, padding 0.5s ease';
+        setTimeout(function() {
+            el.style.opacity = '0';
+            el.style.maxHeight = '0';
+            el.style.marginBottom = '0';
+            el.style.padding = '0';
+            el.style.overflow = 'hidden';
+        }, 3000);
+    });
+})();
 </script>
 
 </body>

@@ -19,18 +19,25 @@ public class ActivityPostController {
     // ─── แสดงรายการโพสต์ ───
     @GetMapping
     public String listPosts(Model model, HttpSession session) {
-        if (session.getAttribute("loggedInManager") == null)
-            return "redirect:/manager/login";
+    Communitymanager manager =
+            (Communitymanager) session.getAttribute("loggedInManager");
 
-        model.addAttribute("posts", activityPostService.getAllPosts());
-        return "Tour/listPost";
+    if (manager == null) {
+        return "redirect:/manager/login";
     }
+
+    model.addAttribute("loggedInManager", manager);
+    model.addAttribute("posts", activityPostService.getAllPosts());
+
+    return "Tour/listPost";
+}
 
     // ─── แสดงรายละเอียดโพสต์ ───
     @GetMapping("/{id}")
     public String viewPost(@PathVariable("id") String activityId,
                            Model model,
                            HttpSession session) {
+        Communitymanager manager =  (Communitymanager) session.getAttribute("loggedInManager");
         if (session.getAttribute("loggedInManager") == null)
             return "redirect:/manager/login";
 
@@ -40,16 +47,22 @@ public class ActivityPostController {
         }
 
         model.addAttribute("post", post);
+        model.addAttribute("loggedInManager", manager);
         return "Tour/activityPostDetails";
     }
 
     // ─── แสดงฟอร์มสร้างโพสต์ ───
     @GetMapping("/create")
-    public String showCreateForm(HttpSession session) {
-        if (session.getAttribute("loggedInManager") == null)
-            return "redirect:/manager/login";
-        return "Tour/createPost";
+    public String showCreateForm(HttpSession session, Model model) {
+    Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+
+    if (manager == null) {
+        return "redirect:/manager/login";
     }
+
+    model.addAttribute("loggedInManager", manager);
+    return "Tour/createPost";
+}
 
     // ─── บันทึกโพสต์ใหม่ ───
     @PostMapping("/create")
@@ -79,6 +92,7 @@ public class ActivityPostController {
     public String showEditForm(@PathVariable("id") String activityId,
                                Model model,
                                HttpSession session) {
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
         if (session.getAttribute("loggedInManager") == null)
             return "redirect:/manager/login";
 
@@ -86,6 +100,7 @@ public class ActivityPostController {
         if (post == null) return "redirect:/manager/posts";
 
         model.addAttribute("post", post);
+        model.addAttribute("loggedInManager", manager);
         return "Tour/editPost";
     }
 

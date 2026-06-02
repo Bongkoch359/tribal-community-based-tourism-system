@@ -10,9 +10,9 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --green-dark:  #1a3d1f;
-            --green-mid:   #2d6a35;
-            --green-light: #d4edda;
+            --green-dark:  #3a7d1e;
+            --green-mid:   #65a30d;
+            --green-light: #d9f99d;
             --amber:       #f0a500;
             --amber-light: #fff3cd;
             --amber-text:  #856404;
@@ -20,7 +20,7 @@
             --red-text:    #a32d2d;
             --gray-light:  #e9ecef;
             --gray-text:   #555;
-            --bg-page:     #f5f0e8;
+            --bg-page:     #f3fae8;
             --bg-card:     #ffffff;
             --border:      #e2ddd4;
             --text-main:   #1c1c1a;
@@ -82,7 +82,7 @@
         .nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
         .nav-link.active {
             color: #fff;
-            border-bottom: 3px solid #7ecf88;
+            border-bottom: 3px solid #65a30d;
             border-radius: 0;
             padding-bottom: calc(.45rem - 3px);
         }
@@ -113,7 +113,7 @@
             text-decoration: none; transition: background .15s;
         }
         .dropdown-item i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
-        .dropdown-item:hover { background: #f5f8f5; color: var(--green-dark); }
+        .dropdown-item:hover { background: #eefcda; color: var(--green-dark); }
         .dropdown-item:hover i { color: var(--green-dark); }
         .dropdown-divider { border: none; border-top: 1px solid #f0f0f0; margin: 4px 0; }
         .dropdown-item.logout { color: #c0392b; }
@@ -161,7 +161,7 @@
             text-decoration: none; transition: all 0.15s;
         }
         .btn-amber  { background: var(--amber); color: #fff; }
-        .btn-amber:hover { background: #c47700; color: #fff; }
+        .btn-amber:hover { background: #d98200; color: #fff; }
         .btn-danger { background: var(--red-light); color: var(--red-text); border: 1px solid #f5c6c6; }
         .btn-danger:hover { background: #fbd0d0; }
 
@@ -332,7 +332,7 @@
         /* ─── CARD FOOTER ─── */
         .card-footer {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 14px 30px; background: #faf8f4;
+            padding: 14px 30px; background: #f3fae8;
             border-top: 1px solid var(--border);
             gap: 16px; flex-wrap: wrap;
         }
@@ -367,7 +367,7 @@
 
         /* ─── ALERTS ─── */
         .alert-success {
-            background: var(--green-light); border: 1px solid #a3d4af;
+            background: var(--green-light); border: 1px solid #a3e635;
             color: var(--green-dark); border-radius: 8px;
             padding: 11px 14px; font-size: 13px; margin-bottom: 16px;
         }
@@ -379,7 +379,7 @@
 
         /* ─── SITE FOOTER ─── */
         .footer {
-            padding: 1rem 2rem; background: #1a3d1f;
+            padding: 1rem 2rem; background: #3a7d1e;
             color: #d8f3dc; font-size: 0.9rem; margin-top: auto;
         }
         .footer-content { display: flex; justify-content: space-between; align-items: center; }
@@ -396,7 +396,7 @@
         ระบบท่องเที่ยวชุมชนชนเผ่า
     </a>
     <div style="flex:1;"></div>
-    <a th:href="@{/manager/dashboard}" class="nav-link">
+    <!-- <a th:href="@{/manager/dashboard}" class="nav-link">
         <i class="fas fa-globe"></i> ภาพรวม
     </a>
     <a th:href="@{/manager/posts}" class="nav-link active">
@@ -407,7 +407,7 @@
     </a>
     <a th:href="@{/manager/bookings}" class="nav-link">
         <i class="fas fa-calendar-days"></i> ตรวจสอบการจอง
-    </a>
+    </a> -->
     <div class="nav-dropdown" style="margin-left:1rem;">
         <div class="nav-dropdown-trigger">
             <div class="nav-avatar"

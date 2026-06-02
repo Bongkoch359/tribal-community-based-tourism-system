@@ -1,7 +1,12 @@
 package com.example.miniproject.controller.Tour;
 
 import com.example.miniproject.service.Tour.DashboardService;
+
+import jakarta.servlet.http.HttpSession;
+
 import com.example.miniproject.dto.Tour.DashboardStatsDTO;
+import com.example.miniproject.entity.Communitymanager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,14 +21,25 @@ public class DashboardTourController {
     private DashboardService dashboardService;
  
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        DashboardStatsDTO stats = dashboardService.getDashboardStats();
-        model.addAttribute("stats", stats);
-        model.addAttribute("recentBookings", dashboardService.getRecentBookings(5));
-        model.addAttribute("popularTours", dashboardService.getPopularTours(3));
-        model.addAttribute("recentPosts", dashboardService.getRecentPosts(3));
-        model.addAttribute("recentActivities", dashboardService.getRecentActivityLog(5));
-        return "Tour/dashboardTour";
+    public String dashboard(Model model, HttpSession session) {
+
+    Communitymanager manager =
+            (Communitymanager) session.getAttribute("loggedInManager");
+
+    if (manager == null) {
+        return "redirect:/manager/login";
     }
+
+    model.addAttribute("loggedInManager", manager);
+
+    DashboardStatsDTO stats = dashboardService.getDashboardStats();
+    model.addAttribute("stats", stats);
+    model.addAttribute("recentBookings", dashboardService.getRecentBookings(5));
+    model.addAttribute("popularTours", dashboardService.getPopularTours(3));
+    model.addAttribute("recentPosts", dashboardService.getRecentPosts(3));
+    model.addAttribute("recentActivities", dashboardService.getRecentActivityLog(5));
+
+    return "Tour/dashboardTour";
+}
 }
  
