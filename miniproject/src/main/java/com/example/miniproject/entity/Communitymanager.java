@@ -36,8 +36,14 @@ public class Communitymanager {
     @Column(name = "bank_name", length = 100)
     private String bankName;
 
+    @Column(name = "account_name", length = 200)
+    private String accountName;
+
     @Column(name = "account_number", length = 30)
     private String accountNumber;
+
+    @Column(name = "bank_branch", length = 100)
+    private String bankBranch;
 
     // วันที่สร้างบัญชี
     @Column(name = "created_date")
@@ -126,12 +132,28 @@ public class Communitymanager {
         this.bankName = bankName;
     }
 
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
     public String getAccountNumber() {
         return accountNumber;
     }
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public String getBankBranch() {
+    return bankBranch;
+    }
+
+    public void setBankBranch(String bankBranch) {
+        this.bankBranch = bankBranch;
     }
 
     public LocalDateTime getCreatedDate() {

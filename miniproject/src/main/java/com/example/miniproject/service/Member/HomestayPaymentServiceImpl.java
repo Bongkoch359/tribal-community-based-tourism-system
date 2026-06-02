@@ -58,6 +58,12 @@ if (roomDetails != null && !roomDetails.isEmpty()) {
 
     // วันเช็คอิน / เช็คเอาท์
     dto.setCheckIn(detail.getCheckindate());
+    if (detail.getCheckindate() != null) {
+    Date deadline = Date.valueOf(
+        detail.getCheckindate().toLocalDate().minusDays(1)
+    );
+    dto.setPaymentDeadline(deadline);
+}
     dto.setCheckOut(detail.getCheckoutdate());
 
     // จำนวนห้อง / ผู้ใหญ่ / เด็ก
@@ -107,6 +113,7 @@ if (roomDetails != null && !roomDetails.isEmpty()) {
                 dto.setBankAccount(
                     detail.getRoomtype().getHomestay().getOwner().getAccountNumber()
                 );
+                dto.setAccountName(detail.getRoomtype().getHomestay().getOwner().getAccountName()); 
             }
         }
     }

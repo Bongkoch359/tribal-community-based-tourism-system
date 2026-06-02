@@ -538,8 +538,7 @@
     </div>
 </nav>
 
-<!-- HERO BANNER -->
-<div class="tribe-hero">
+<!-- HERO BANNER --><div class="tribe-hero">
     <img class="tribe-hero-img"
          th:src="@{'/images/tribes/' + ${tribe.image}}"
          th:alt="${tribe.name}"
@@ -563,9 +562,7 @@
     </div>
 </div>
 
-<!-- DETAIL CONTENT -->
 <div class="detail-wrap">
-    <!-- Main sections -->
     <div class="detail-main">
 
         <div class="section-block">
@@ -616,13 +613,54 @@
             <p class="content-text" th:text="${tribe.lifestyle}">ข้อมูลวิถีชีวิต...</p>
         </div>
 
+        <div class="section-block" th:if="${tribe.vocabularies != null and !tribe.vocabularies.isEmpty()}">
+            <div class="section-header-bar">
+                <div class="section-icon" style="background:#f3e8ff;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <path d="M10 11h.01M14 11h.01M6 11h.01"></path>
+                    </svg>
+                </div>
+                <h3>ห้องเรียนภาษาเบื้องต้น</h3>
+            </div>
+            
+            <p class="content-text" style="color: #6b7280; margin-bottom: 1.5rem;">
+                ฝึกออกเสียงภาษาท้องถิ่นง่าย ๆ เพื่อสร้างความประทับใจและมิตรภาพอันดีกับชุมชนเมื่อไปเยือน
+            </p>
+
+            <div style="overflow-x: auto; border: 1px solid #e5e7eb; border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                    <thead>
+                        <tr style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                            <th style="padding: 12px 16px; font-weight: 600; color: #374151; width: 20%;">หมวดหมู่</th>
+                            <th style="padding: 12px 16px; font-weight: 600; color: #374151; width: 30%;">คำศัพท์ประจำเผ่า</th>
+                            <th style="padding: 12px 16px; font-weight: 600; color: #374151; width: 25%;">คำอ่านออกเสียง</th>
+                            <th style="padding: 12px 16px; font-weight: 600; color: #374151; width: 25%;">ความหมาย</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${tribe.vocabularies}" style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px 16px;">
+                                <span th:text="${v.category}" 
+                                      style="background-color: #f3f4f6; color: #4b5563; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                    ทักทาย
+                                </span>
+                            </td>
+                            <td th:text="${v.word}" style="padding: 12px 16px; font-weight: 600; color: #1f2937;">-</td>
+                            <td th:text="${'[' + v.karaoke + ']'}" style="padding: 12px 16px; color: #6b7280; font-family: monospace;">-</td>
+                            <td th:text="${v.meaning}" style="padding: 12px 16px; font-weight: 500; color: #059669;">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <a th:href="@{/tribe-info}" href="/tribe-info" class="btn-back-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
             ย้อนกลับไปหน้ารายชื่อชนเผ่า
         </a>
     </div>
 
-    <!-- Sidebar -->
     <div class="detail-sidebar">
         <div class="sidebar-card">
             <div class="sidebar-card-top">
@@ -669,7 +707,6 @@
     </div>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
     <div class="footer-inner">
         <div class="footer-top">

@@ -1,5 +1,6 @@
 package com.example.miniproject.controller.Member;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ public class SearchInfoController {
     public String searchPage(
             @RequestParam(defaultValue = "")         String  keyword,
             @RequestParam(defaultValue = "")         String  date,
+            @RequestParam(required = false)          String  startDate,  
+            @RequestParam(required = false)          String  endDate,
             @RequestParam(defaultValue = "1")         Integer numGuest,
             @RequestParam(defaultValue = "activity") String  type,
             @RequestParam(required = false)          String  managerId, 
@@ -44,32 +47,38 @@ public class SearchInfoController {
             type = "tour";
         }
 
-        // ดึงข้อมูลกิจกรรมและโฮมสเตย์ปกติ
+       
+        // 1. สั่งดึงข้อมูลของทุกแท็บมารอไว้พร้อมกันเลย (ไม่ต้องใช้ if-else บีบแล้ว)
         List<Activitypost> activities = searchInfoService.searchActivity(keyword);
-        List<Homestay>     homestays  = searchInfoService.searchHomestay(keyword);
-        
-        // ดึงข้อมูลทัวร์ตามเงื่อนไข (ดึงแยกตาม managerId หรือดึงตาม keyword ปกติ)
-        List<Tour> tours;
+        List<Tour>         tours;
+        List<Homestay>     homestays  = searchInfoService.searchHomestay(keyword, numGuest, startDate, endDate);
+
+        // 2. แยกเฉพาะตรรกะของ Tour ที่มีเงื่อนไข managerId เพิ่มเติมเท่านั้น
         if (managerId != null && !managerId.isEmpty()) {
             tours = searchInfoService.getToursByManagerId(managerId); 
         } else {
-            tours = searchInfoService.searchTour(keyword, numGuest);
+            tours = searchInfoService.searchTour(keyword, numGuest, startDate, endDate);
         }
 
-        // ส่งข้อมูลเข้าสู่ Model เพื่อแสดงผลบนหน้าเว็บ
+
+        // 3. ส่งข้อมูลและสเตททั้งหมดเข้าสู่ Model เพื่อแสดงผลและคงค่าไว้บนฟอร์มหน้าเว็บ
         model.addAttribute("activities",    activities);
         model.addAttribute("tours",         tours);
         model.addAttribute("homestays",     homestays);
         model.addAttribute("keyword",       keyword);
         model.addAttribute("date",          date);
+        model.addAttribute("startDate",     startDate); 
+        model.addAttribute("endDate",       endDate);
         model.addAttribute("numGuest",      numGuest);
         model.addAttribute("currentType",   type);
+        
+        // นับจำนวนนับตามกลุ่มข้อมูลที่ดึงได้จริงของแท็บนั้นๆ
         model.addAttribute("activityCount", activities.size());
         model.addAttribute("tourCount",     tours.size());
         model.addAttribute("homestayCount", homestays.size());
         model.addAttribute("totalCount",    activities.size() + tours.size() + homestays.size());
 
-        // ── คำนวณ rating map ─────────────────────────────────
+        // ── คำนวณ rating map (ระบบจะวนลูปทำงานเฉพาะแท็บที่มีข้อมูลส่งกลับไปเท่านั้น) ──
 
         // Tour rating
         Map<String, String> tourRating      = new HashMap<>();
@@ -77,10 +86,8 @@ public class SearchInfoController {
         for (Tour t : tours) {
             Double avg   = reviewRepository.avgRatingByTourId(t.getTourid());
             Long   count = reviewRepository.countByTourId(t.getTourid());
-            tourRating.put(t.getTourid(),
-                    avg != null ? String.format("%.1f", avg) : "-");
-            tourReviewCount.put(t.getTourid(),
-                    count != null ? count : 0L);
+            tourRating.put(t.getTourid(), avg != null ? String.format("%.1f", avg) : "-");
+            tourReviewCount.put(t.getTourid(), count != null ? count : 0L);
         }
 
         Map<String, String> actRating      = new HashMap<>();
@@ -92,10 +99,8 @@ public class SearchInfoController {
         for (Homestay h : homestays) {
             Double avg   = reviewRepository.avgRatingByHomestayId(h.getHomestayid());
             Long   count = reviewRepository.countByHomestayId(h.getHomestayid());
-            hsRating.put(h.getHomestayid(),
-                    avg != null ? String.format("%.1f", avg) : "-");
-            hsReviewCount.put(h.getHomestayid(),
-                    count != null ? count : 0L);
+            hsRating.put(h.getHomestayid(), avg != null ? String.format("%.1f", avg) : "-");
+            hsReviewCount.put(h.getHomestayid(), count != null ? count : 0L);
         }
 
         model.addAttribute("tourRating",      tourRating);

@@ -1,5 +1,7 @@
 package com.example.miniproject.model;
 
+import java.util.List;
+
 public class Tribe {
     private int id;
     private String name;
@@ -9,6 +11,8 @@ public class Tribe {
     private String culture;
     private String lifestyle;
     private String image;
+
+    private List<Vocabulary> vocabularies;
 
     // ต้องมีพารามิเตอร์ 8 ตัวตามลำดับนี้เท่านั้น
     public Tribe(int id, String name, String description, String history, 
@@ -32,4 +36,6 @@ public class Tribe {
     public String getCulture() { return culture; }
     public String getLifestyle() { return lifestyle; }
     public String getImage() { return image; }
+    public List<Vocabulary> getVocabularies() { return vocabularies; }
+    public void setVocabularies(List<Vocabulary> vocabularies) { this.vocabularies = vocabularies; }
 }

@@ -407,18 +407,19 @@ img { display: block; }
 
 /* ============================================================
    SEARCH BOX
-============================================================ */
-.search-wrapper {
+============================================================ */.search-wrapper {
   background: var(--white);
   border-bottom: 1px solid var(--neutral-200);
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
   padding: 0 5%;
 }
+
 .search-box {
   max-width: 1200px; margin: 0 auto;
   display: flex; align-items: stretch;
   padding: 20px 0; gap: 0;
 }
+
 .sf {
   flex: 1 1 220px; padding: 14px 24px;
   display: flex; flex-direction: column; justify-content: center;
@@ -429,6 +430,7 @@ img { display: block; }
 .sf:last-of-type { border-right: none; }
 .sf:hover { background: var(--neutral-50); }
 .sf:focus-within { background: var(--green-50); border-right-color: var(--green-200); }
+
 .sf-label {
   font-size: 12px; font-weight: 700; color: var(--neutral-600);
   letter-spacing: .5px; text-transform: uppercase;
@@ -436,6 +438,7 @@ img { display: block; }
   display: flex; align-items: center; gap: 5px;
 }
 .sf-label svg { width: 13px; height: 13px; color: var(--green-600); flex-shrink: 0; }
+
 .sf input, .sf select {
   border: none; outline: none;
   font-family: 'Sarabun', sans-serif;
@@ -443,8 +446,37 @@ img { display: block; }
   background: transparent; font-weight: 600; width: 100%;
 }
 .sf input::placeholder { color: var(--neutral-400); font-weight: 400; font-size: 16px; }
-.sf-date { flex: 0 1 200px; }
-.sf-guest { flex: 0 1 180px; }
+
+/* 🌟 ปรับปรุง: ขยายพื้นที่กล่องวันที่คู่เป็น 320px เพื่อไม่ให้โดนบีบจนพัง */
+.sf-date { 
+  flex: 0 1 320px; 
+}
+
+/* 🌟 เพิ่มใหม่: จัดการช่องไฟโครงสร้างวันที่ เริ่มต้น - สิ้นสุด */
+.date-range-group {
+  display: flex; 
+  gap: 6px; 
+  align-items: center; 
+  width: 100%;
+}
+
+.date-range-group input[type="date"] {
+  width: 135px !important;    /* บังคับความกว้างกล่องอินพุตแต่ละข้าง */
+  font-size: 15px !important;   /* ปรับขนาดตัวอักษรลงนิดหน่อยให้พอดีกล่อง */
+  padding: 2px 0;
+}
+
+.date-separator {
+  color: #94a3b8;
+  font-weight: 700;
+  padding: 0 2px;
+}
+
+/* 🌟 ปรับปรุง: ปรับสัดส่วนกล่องจำนวนคนให้สมดุลพอดีกัน */
+.sf-guest { 
+  flex: 0 1 160px; 
+}
+
 .guest-counter { display: flex; align-items: center; gap: 10px; }
 .guest-btn {
   width: 28px; height: 28px; border-radius: 50%;
@@ -459,6 +491,7 @@ img { display: block; }
   text-align: center; width: 36px !important; flex: none;
   font-size: 18px !important; font-weight: 700 !important; color: var(--neutral-800) !important;
 }
+
 .btn-search {
   background: linear-gradient(135deg, var(--amber-500), var(--amber-600));
   color: #fff; border: none; border-radius: var(--r-lg);
@@ -476,7 +509,6 @@ img { display: block; }
 }
 .btn-search:active { transform: scale(0.98); }
 .btn-search svg { width: 20px; height: 20px; }
-
 /* ============================================================
    CONTENT
 ============================================================ */

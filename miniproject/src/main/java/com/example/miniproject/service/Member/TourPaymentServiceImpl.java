@@ -57,7 +57,13 @@ public class TourPaymentServiceImpl implements PaymentService {
             Bookingtourdetail detail = tourDetails.get(0);
 
             // วันเริ่มทัวร์  →  startdate (ทัวร์ไม่มี checkout ใช้ checkIn อย่างเดียว)
-            dto.setCheckIn(detail.getStartdate());
+        dto.setCheckIn(detail.getStartdate());
+        if (detail.getStartdate() != null) {
+        Date deadline = Date.valueOf(
+        detail.getStartdate().toLocalDate().minusDays(1)
+    );
+    dto.setPaymentDeadline(deadline);
+}
             dto.setCheckOut(null);
 
             // จำนวนผู้ใหญ่ / เด็ก
@@ -97,6 +103,7 @@ public class TourPaymentServiceImpl implements PaymentService {
 
          dto.setBankName(mgr.getBankName());
         dto.setBankAccount(mgr.getAccountNumber());
+       dto.setAccountName(mgr.getAccountName());
         }
             }
         }

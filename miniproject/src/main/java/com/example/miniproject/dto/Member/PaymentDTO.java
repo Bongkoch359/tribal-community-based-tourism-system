@@ -8,10 +8,12 @@ public class PaymentDTO {
     private Date bookingDate;
     private Double totalAmount;
     private String paymentStatus;
+    private Date paymentDeadline;
 
     // จาก Booking
     private Integer numOfGuests;
 
+    private String accountName; // ชื่อบัญชี
     private String bankName;
     private String bankAccount;
 
@@ -46,6 +48,12 @@ public class PaymentDTO {
     public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
 
 
+    public Date getPaymentDeadline() { return paymentDeadline; }
+    public void setPaymentDeadline(Date paymentDeadline) { this.paymentDeadline = paymentDeadline; }
+
+
+    public String getAccountName() { return accountName; }
+    public void setAccountName(String accountName) { this.accountName = accountName; }
     public String getBankName() { return bankName; }
     public void setBankName(String bankName) { this.bankName = bankName; }
 

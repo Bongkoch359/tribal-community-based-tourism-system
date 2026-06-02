@@ -39,17 +39,18 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     // ค้นหาแบบรวม
     @Query("""
         SELECT t FROM Tour t
-        WHERE t.status = 'active'
+        WHERE (t.status IS NULL OR LOWER(t.status) = 'active')
         AND (:keyword IS NULL
              OR LOWER(t.tourmname)
              LIKE LOWER(CONCAT('%', :keyword, '%')))
-        AND (:guests IS NULL
-             OR (t.minSeatstour <= :guests
-             AND t.maxSeatstour >= :guests))
+        AND (:guests IS NULL 
+             OR :guests <= 1 
+             OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
         ORDER BY t.tourmname ASC
     """)
     List<Tour> search(@Param("keyword") String keyword,
                       @Param("guests") Integer guests);
+
     //นับตามสถานะ
     long countByStatus(String status);
     // ดึงทัวร์ยอดนิยม (เรียงตามจำนวนการจอง)
@@ -60,5 +61,6 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerid ORDER BY t.tourmname ASC")
     List<Tour> findByManagerId(@Param("managerid") String managerid);
 
+    
 
 }
