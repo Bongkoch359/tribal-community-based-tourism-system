@@ -13,7 +13,8 @@ public class Activitypost {
     private String activityid;
     @Column(length = 100)
     private String title;
-    @Column(length = 255)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
     @Column(length = 255)
     private String location;

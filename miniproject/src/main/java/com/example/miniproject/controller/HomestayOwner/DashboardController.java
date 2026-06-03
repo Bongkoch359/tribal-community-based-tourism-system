@@ -2,6 +2,7 @@ package com.example.miniproject.controller.HomestayOwner;
 
 import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Homestay;
+import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.entity.Roomtype;
 import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.service.Homestay.HomestayService;
@@ -25,8 +26,12 @@ public class DashboardController {
 
     @Autowired
     private BookingRepository bookingRepository;
+
     @Autowired
-private HomestayService homestayService;
+    private HomestayService homestayService;
+
+    @Autowired
+    private com.example.miniproject.service.Homestay.HomestayOwnerService ownerService;
 
     @GetMapping("/owner/dashboard")
 public String dashboard(
@@ -94,6 +99,18 @@ public String dashboard(
     model.addAttribute("pendingBookings", pendingBookings);
     model.addAttribute("totalRevenue",    totalRevenue);
     model.addAttribute("recentBookings",  recentBookings);
+
+    // ── ตรวจสอบข้อมูลธนาคาร ──
+    try {
+        Homestayowner owner = ownerService.getProfile(ownerid);
+        boolean bankInfoMissing = owner.getBankName()      == null || owner.getBankName().isBlank()
+                               || owner.getAccountNumber() == null || owner.getAccountNumber().isBlank()
+                               || owner.getAccountName()   == null || owner.getAccountName().isBlank();
+        model.addAttribute("bankInfoMissing", bankInfoMissing);
+        model.addAttribute("ownerEmail", owner.getEmail());
+    } catch (Exception e) {
+        model.addAttribute("bankInfoMissing", false);
+    }
 
     return "Homestay/dashboard";
 }

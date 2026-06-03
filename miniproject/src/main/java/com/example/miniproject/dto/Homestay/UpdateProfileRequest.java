@@ -7,7 +7,9 @@ public class UpdateProfileRequest {
     private String email;
     private String phone;
     private String bankName;
+    private String accountName;
     private String accountNumber;
+    private String bankBranch;
 
     public String getFirstname() { return firstname; }
     public void setFirstname(String firstname) { this.firstname = firstname; }
@@ -24,6 +26,12 @@ public class UpdateProfileRequest {
     public String getBankName() { return bankName; }
     public void setBankName(String bankName) { this.bankName = bankName; }
 
+    public String getAccountName() { return accountName; }
+    public void setAccountName(String accountName) { this.accountName = accountName; }
+
     public String getAccountNumber() { return accountNumber; }
     public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
+
+    public String getBankBranch() { return bankBranch; }
+    public void setBankBranch(String bankBranch) { this.bankBranch = bankBranch; }
 }

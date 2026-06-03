@@ -6,17 +6,19 @@
 // ============================================
 
 // ─── DOM Refs ─────────────────────────────────
-const firstnameInput  = document.getElementById('firstname');
-const lastnameInput   = document.getElementById('lastname');
-const emailInput      = document.getElementById('email');
-const phoneInput      = document.getElementById('phone');
-const bankNameInput   = document.getElementById('bankName');
-const accountNumInput = document.getElementById('accountNumber');
-const currentPwInput  = document.getElementById('currentPassword');
-const newPwInput      = document.getElementById('newPassword');
-const confirmPwInput  = document.getElementById('confirmPassword');
-const resetBtn        = document.getElementById('resetBtn');
-const toast           = document.getElementById('toast');
+const firstnameInput   = document.getElementById('firstname');
+const lastnameInput    = document.getElementById('lastname');
+const emailInput       = document.getElementById('email');
+const phoneInput       = document.getElementById('phone');
+const bankNameInput    = document.getElementById('bankName');
+const bankBranchInput  = document.getElementById('bankBranch');
+const accountNameInput = document.getElementById('accountName');
+const accountNumInput  = document.getElementById('accountNumber');
+const currentPwInput   = document.getElementById('currentPassword');
+const newPwInput       = document.getElementById('newPassword');
+const confirmPwInput   = document.getElementById('confirmPassword');
+const resetBtn         = document.getElementById('resetBtn');
+const toast            = document.getElementById('toast');
 
 let originalData = {};
 
@@ -41,18 +43,23 @@ async function loadProfile() {
         fillForm(data);
         originalData = { ...data };
 
+        // แจ้ง HTML ว่าโหลดเสร็จแล้ว (สำหรับ bankAlert)
+        document.dispatchEvent(new CustomEvent('profileLoaded', { detail: data }));
+
     } catch (err) {
         showToast('ไม่สามารถโหลดข้อมูลได้: ' + err.message, true);
     }
 }
 
 function fillForm(data) {
-    firstnameInput.value = data.firstname     || '';
-    lastnameInput.value  = data.lastname      || '';
-    emailInput.value     = data.email         || '';
-    phoneInput.value     = data.phone         || '';
-    bankNameInput.value  = data.bankName      || '';
-    accountNumInput.value = data.accountNumber || '';
+    firstnameInput.value   = data.firstname     || '';
+    lastnameInput.value    = data.lastname      || '';
+    emailInput.value       = data.email         || '';
+    phoneInput.value       = data.phone         || '';
+    bankNameInput.value    = data.bankName      || '';
+    bankBranchInput.value  = data.bankBranch    || '';
+    accountNameInput.value = data.accountName   || '';
+    accountNumInput.value  = data.accountNumber || '';
 
     // Profile card
     const fullName = `${data.firstname || ''} ${data.lastname || ''}`.trim();
@@ -78,14 +85,15 @@ function bindEvents() {
     });
 
     // Live validation
-    firstnameInput.addEventListener('input', () => validateField(firstnameInput, 'firstnameError', 'กรุณากรอกชื่อ'));
-    lastnameInput.addEventListener('input',  () => validateField(lastnameInput,  'lastnameError',  'กรุณากรอกนามสกุล'));
-    emailInput.addEventListener('input',     validateEmail);
-    phoneInput.addEventListener('input',     validatePhone);
-    bankNameInput.addEventListener('input',  validateBankName);
-    accountNumInput.addEventListener('input', validateAccountNumber);
-    newPwInput.addEventListener('input',     validateNewPassword);
-    confirmPwInput.addEventListener('input', validateConfirmPassword);
+    firstnameInput.addEventListener('input',   () => validateField(firstnameInput, 'firstnameError', 'กรุณากรอกชื่อ'));
+    lastnameInput.addEventListener('input',    () => validateField(lastnameInput,  'lastnameError',  'กรุณากรอกนามสกุล'));
+    emailInput.addEventListener('input',       validateEmail);
+    phoneInput.addEventListener('input',       validatePhone);
+    bankNameInput.addEventListener('input',    validateBankName);
+    accountNameInput.addEventListener('input', validateAccountName);
+    accountNumInput.addEventListener('input',  validateAccountNumber);
+    newPwInput.addEventListener('input',       validateNewPassword);
+    confirmPwInput.addEventListener('input',   validateConfirmPassword);
 
     resetBtn.addEventListener('click', resetForm);
 
@@ -101,6 +109,7 @@ async function handleSubmit(e) {
                       && validateEmail()
                       && validatePhone()
                       && validateBankName()
+                      && validateAccountName()
                       && validateAccountNumber();
 
     if (!profileValid) return;
@@ -121,6 +130,10 @@ async function handleSubmit(e) {
         showToast('✓ บันทึกข้อมูลสำเร็จ');
         clearPasswordFields();
 
+        // ซ่อน bankAlert ถ้ากรอกข้อมูลธนาคารครบแล้ว
+        const bankAlert = document.getElementById('bankAlert');
+        if (bankAlert) bankAlert.style.display = 'none';
+
     } catch (err) {
         showToast(err.message, true);
     } finally {
@@ -139,6 +152,8 @@ async function saveProfile() {
             email:         emailInput.value.trim(),
             phone:         phoneInput.value.trim(),
             bankName:      bankNameInput.value.trim(),
+            bankBranch:    bankBranchInput.value.trim(),
+            accountName:   accountNameInput.value.trim(),
             accountNumber: accountNumInput.value.trim(),
         }),
     });
@@ -146,7 +161,6 @@ async function saveProfile() {
     const result = await res.json();
     if (!res.ok) throw new Error(result.message || 'บันทึกข้อมูลล้มเหลว');
 
-    // อัปเดต card
     fillForm(result);
     originalData = { ...result };
 }
@@ -200,6 +214,15 @@ function validateBankName() {
               : val.length < 2 || val.length > 100 ? 'ชื่อธนาคารต้องมีความยาว 2–100 ตัวอักษร'
               : '';
     showError(bankNameInput, 'bankNameError', msg);
+    return !msg;
+}
+
+function validateAccountName() {
+    const val = accountNameInput.value.trim();
+    const msg = !val ? 'กรุณากรอกชื่อบัญชี'
+              : val.length < 2 || val.length > 200 ? 'ชื่อบัญชีต้องมีความยาว 2–200 ตัวอักษร'
+              : '';
+    showError(accountNameInput, 'accountNameError', msg);
     return !msg;
 }
 

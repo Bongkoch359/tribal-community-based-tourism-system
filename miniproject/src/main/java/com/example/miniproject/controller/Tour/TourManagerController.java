@@ -30,55 +30,41 @@ public class TourManagerController {
                                HttpSession session,
                                Model model) {
 
-        Communitymanager manager =
-                managerService.login(email, password);
+        Communitymanager manager = managerService.login(email, password);
 
-        // login สำเร็จ
         if (manager != null) {
-            if (manager.getAccountstatus() != null && 
-           ("INACTIVE".equals(manager.getAccountstatus().toString()) || "SUSPENDED".equals(manager.getAccountstatus().toString()))) {
-            
-            model.addAttribute("errorMessage", "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ");
-            return "Tour/manager_login";
-        }
-
+            if (manager.getAccountstatus() != null &&
+               ("INACTIVE".equals(manager.getAccountstatus().toString()) ||
+                "SUSPENDED".equals(manager.getAccountstatus().toString()))) {
+                model.addAttribute("errorMessage", "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ");
+                return "Tour/manager_login";
+            }
             session.setAttribute("loggedInManager", manager);
-
-           return "redirect:/manager/dashboard";
+            return "redirect:/manager/dashboard";
         }
 
-        // login ไม่สำเร็จ
-        model.addAttribute("errorMessage",
-                "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
-
+        model.addAttribute("errorMessage", "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
         return "Tour/manager_login";
     }
 
     // logout
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-
         session.invalidate();
-
         return "redirect:/manager/login";
     }
 
-     // ─── แสดงหน้าแก้ไขโปรไฟล์ ───
+    // ─── แสดงหน้าแก้ไขโปรไฟล์ ───
     @GetMapping("/manager/profile")
-public String profilePage(HttpSession session, Model model) {
-
-    Communitymanager manager =
-        (Communitymanager) session.getAttribute("loggedInManager");
-
-    if (manager == null) {
-        return "redirect:/manager/login";
+    public String profilePage(HttpSession session, Model model) {
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+        if (manager == null) {
+            return "redirect:/manager/login";
+        }
+        model.addAttribute("loggedInManager", manager);
+        return "Tour/managerProfile";
     }
 
-    model.addAttribute("loggedInManager", manager);
-
-    return "Tour/managerProfile";
-}
- 
     // ─── บันทึกการแก้ไขโปรไฟล์ ───
     @PostMapping("/manager/profile/update")
     public String updateProfile(
@@ -91,19 +77,18 @@ public String profilePage(HttpSession session, Model model) {
             @RequestParam(required = false, defaultValue = "") String confirmPassword,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
- 
+
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
         if (manager == null) {
             return "redirect:/manager/login";
         }
- 
+
         try {
             boolean wantsChangePassword = !newPassword.isBlank()
                                        || !currentPassword.isBlank()
                                        || !confirmPassword.isBlank();
- 
+
             if (wantsChangePassword) {
-                // ตรวจ confirm ฝั่ง server อีกครั้ง
                 if (!newPassword.equals(confirmPassword)) {
                     redirectAttributes.addFlashAttribute("errorMessage", "รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน");
                     return "redirect:/manager/profile";
@@ -119,17 +104,15 @@ public String profilePage(HttpSession session, Model model) {
                 managerService.updateProfile(
                         manager.getManagerid(), firstname, lastname, email, phone);
             }
- 
-            // อัปเดต session ให้แสดงชื่อล่าสุดใน navbar
+
             Communitymanager updated = managerService.getById(manager.getManagerid());
             session.setAttribute("loggedInManager", updated);
- 
             redirectAttributes.addFlashAttribute("successMessage", "บันทึกข้อมูลเรียบร้อยแล้ว");
- 
+
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
- 
+
         return "redirect:/manager/profile";
     }
 
@@ -137,7 +120,9 @@ public String profilePage(HttpSession session, Model model) {
     @PostMapping("/manager/profile/update-bank")
     public String updateBankInfo(
             @RequestParam(required = false, defaultValue = "") String bankName,
+            @RequestParam(required = false, defaultValue = "") String accountName,
             @RequestParam(required = false, defaultValue = "") String accountNumber,
+            @RequestParam(required = false, defaultValue = "") String bankBranch,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -147,12 +132,13 @@ public String profilePage(HttpSession session, Model model) {
         }
 
         try {
-            managerService.updateBankInfo(manager.getManagerid(), bankName, accountNumber);
+            managerService.updateBankInfo(
+                    manager.getManagerid(), bankName, accountName, accountNumber, bankBranch);
 
             Communitymanager updated = managerService.getById(manager.getManagerid());
             session.setAttribute("loggedInManager", updated);
-
             redirectAttributes.addFlashAttribute("successMessage", "บันทึกข้อมูลธนาคารเรียบร้อยแล้ว");
+
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }

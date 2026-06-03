@@ -34,7 +34,7 @@
             line-height: 1.6;
         }
 
-        /* ─── NAVBAR (เหมือน createpost) ─── */
+        /* ─── NAVBAR ─── */
         .navbar {
             background: var(--green-dark);
             display: flex;
@@ -372,8 +372,6 @@
 
     <div class="nav-spacer"></div>
 
-    
-
     <!-- Profile Dropdown -->
     <div class="nav-dropdown">
         <div class="nav-dropdown-trigger">
@@ -439,9 +437,7 @@
         </div>
     </div>
 
-    <!-- FORM -->
-
-        <!-- ข้อมูลธนาคาร -->
+    <!-- ═══ BANK FORM ═══ -->
     <form th:action="@{/manager/profile/update-bank}" method="post" id="bankForm">
         <div class="card">
             <div class="card-title">
@@ -453,6 +449,7 @@
                 <span>ข้อมูลธนาคารใช้สำหรับรับชำระเงินจากนักท่องเที่ยว — กรอกให้ครบก่อนเปิดรับจอง</span>
             </div>
 
+            <!-- Badge สถานะ -->
             <div th:if="${loggedInManager?.bankName != null and loggedInManager?.accountNumber != null}">
                 <span class="bank-filled"><i class="fas fa-circle-check" style="font-size:10px;"></i> มีข้อมูลธนาคารแล้ว</span>
             </div>
@@ -460,6 +457,7 @@
                 <span class="bank-empty"><i class="fas fa-triangle-exclamation" style="font-size:10px;"></i> ยังไม่ได้กรอกข้อมูลธนาคาร</span>
             </div>
 
+            <!-- แถว 1: ธนาคาร + สาขา -->
             <div class="form-row" style="margin-top:14px;">
                 <div class="form-group">
                     <label class="form-label">ธนาคาร <span class="req">*</span></label>
@@ -477,6 +475,24 @@
                     <div class="form-hint" id="bankNameHint"></div>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">สาขา</label>
+                    <input class="form-control" type="text" name="bankBranch" id="bankBranchInput"
+                           th:value="${loggedInManager?.bankBranch}"
+                           placeholder="เช่น สาขาเซ็นทรัลเชียงใหม่" maxlength="100"/>
+                    <div class="form-hint">ไม่บังคับ — ระบุสาขาหากต้องการ</div>
+                </div>
+            </div>
+
+            <!-- แถว 2: ชื่อบัญชี + เลขบัญชี -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">ชื่อบัญชี <span class="req">*</span></label>
+                    <input class="form-control" type="text" name="accountName" id="accountNameInput"
+                           th:value="${loggedInManager?.accountName}"
+                           placeholder="ชื่อ-นามสกุลตามสมุดบัญชี" maxlength="200"/>
+                    <div class="form-hint" id="accountNameHint"></div>
+                </div>
+                <div class="form-group">
                     <label class="form-label">เลขบัญชีธนาคาร <span class="req">*</span></label>
                     <input class="form-control" type="text" name="accountNumber" id="accountNumberInput"
                            th:value="${loggedInManager?.accountNumber}"
@@ -492,8 +508,9 @@
                 </button>
             </div>
         </div>
-        </form>
+    </form>
 
+    <!-- ═══ PROFILE FORM ═══ -->
     <form th:action="@{/manager/profile/update}" method="post" id="profileForm">
 
         <!-- ข้อมูลส่วนตัว -->
@@ -517,7 +534,6 @@
                 </div>
             </div>
 
-            <!-- อีเมล -->
             <div class="form-group">
                 <label class="form-label">อีเมล <span class="req">*</span></label>
                 <input class="form-control" type="email" name="email" id="emailInput"
@@ -546,9 +562,6 @@
                 </div>
             </div>
         </div>
-
-
-
 
         <!-- ความปลอดภัย -->
         <div class="card">
@@ -600,7 +613,6 @@
         </div>
 
         <!-- Action Bar -->
-
         <div class="action-bar">
             <a class="btn-cancel" th:href="@{/manager/dashboard}">
                 <i class="fas fa-rotate-left"></i> รีเซ็ต
@@ -611,8 +623,7 @@
             </button>
         </div>
 
-
-    </form><!-- /profileForm -->
+    </form>
 
 </div>
 
@@ -625,15 +636,36 @@
 </footer>
 
 <script>
-
-    // ─── Real-time: เลขบัญชีธนาคาร ───
-    const accountInput = document.getElementById('accountNumberInput');
-    const accountHint  = document.getElementById('accountHint');
-    const bankSelect   = document.getElementById('bankNameSelect');
-    const bankHint     = document.getElementById('bankNameHint');
-
+    // ─── Regex ───
+    const nameRegex    = /^[ก-์a-zA-Z]+$/;
+    const emailRegex   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex   = /^0[689][0-9]{8}$/;
     const accountRegex = /^[0-9\-]{10,20}$/;
 
+    // ─── DOM refs: bank ───
+    const bankSelect       = document.getElementById('bankNameSelect');
+    const bankHint         = document.getElementById('bankNameHint');
+    const bankBranchInput  = document.getElementById('bankBranchInput');
+    const accountNameInput = document.getElementById('accountNameInput');
+    const accountNameHint  = document.getElementById('accountNameHint');
+    const accountInput     = document.getElementById('accountNumberInput');
+    const accountHint      = document.getElementById('accountHint');
+
+    // ─── Real-time: ชื่อบัญชี ───
+    if (accountNameInput) {
+        accountNameInput.addEventListener('input', () => {
+            const v = accountNameInput.value.trim();
+            if (!v) {
+                accountNameHint.textContent = 'กรุณากรอกชื่อบัญชี';
+                accountNameHint.style.color = '#b71c1c';
+            } else {
+                accountNameHint.textContent = '✓ ถูกต้อง';
+                accountNameHint.style.color = '#2e7d32';
+            }
+        });
+    }
+
+    // ─── Real-time: เลขบัญชีธนาคาร ───
     if (accountInput) {
         accountInput.addEventListener('input', () => {
             const v = accountInput.value.trim();
@@ -652,14 +684,22 @@
 
     // ─── Validate bank form ก่อน submit ───
     document.getElementById('bankForm').addEventListener('submit', function(e) {
-        const bank = bankSelect.value;
-        const acc  = accountInput.value.trim();
+        const bank    = bankSelect.value;
+        const accName = accountNameInput.value.trim();
+        const acc     = accountInput.value.trim();
 
         if (!bank) {
             e.preventDefault();
             bankHint.textContent = 'กรุณาเลือกธนาคาร';
             bankHint.style.color = '#b71c1c';
             bankSelect.focus();
+            return;
+        }
+        if (!accName) {
+            e.preventDefault();
+            accountNameHint.textContent = 'กรุณากรอกชื่อบัญชี';
+            accountNameHint.style.color = '#b71c1c';
+            accountNameInput.focus();
             return;
         }
         if (!acc || !accountRegex.test(acc)) {
@@ -683,11 +723,6 @@
             icon.classList.replace('fa-eye-slash', 'fa-eye');
         }
     }
-
-    // ─── Regex ───
-    const nameRegex  = /^[ก-์a-zA-Z]+$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^0[689][0-9]{8}$/;
 
     // ─── Real-time: ชื่อ / นามสกุล ───
     function attachNameValidation(inputId, label) {
@@ -764,7 +799,7 @@
     newPw.addEventListener('input', checkMatch);
     confirmPw.addEventListener('input', checkMatch);
 
-    // ─── Validate ก่อน submit ───
+    // ─── Validate profileForm ก่อน submit ───
     document.getElementById('profileForm').addEventListener('submit', function(e) {
         const fn  = document.getElementById('firstname').value.trim();
         const ln  = document.getElementById('lastname').value.trim();

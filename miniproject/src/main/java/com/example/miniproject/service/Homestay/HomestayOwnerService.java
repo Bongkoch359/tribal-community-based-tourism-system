@@ -38,8 +38,6 @@ public List<Integer> register(RegisterOwnerRequest req) {
     owner.setEmail(req.getEmail());
     owner.setPhone(req.getPhone());
     owner.setPassword(req.getPassword());
-    owner.setBankName(req.getBankName());
-    owner.setAccountNumber(req.getAccountNumber());
     owner.setVerificationstatus(false);
     owner.setAccountstatus("pending");
 
@@ -119,7 +117,9 @@ public List<Integer> register(RegisterOwnerRequest req) {
         owner.setEmail(req.getEmail().trim());
         owner.setPhone(req.getPhone() != null ? req.getPhone().trim() : null);
         owner.setBankName(req.getBankName() != null ? req.getBankName().trim() : null);
+        owner.setAccountName(req.getAccountName() != null ? req.getAccountName().trim() : null);
         owner.setAccountNumber(req.getAccountNumber() != null ? req.getAccountNumber().trim() : null);
+        owner.setBankBranch(req.getBankBranch() != null ? req.getBankBranch().trim() : null);
 
         return ownerRepository.save(owner);
     }

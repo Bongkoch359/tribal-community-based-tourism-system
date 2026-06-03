@@ -13,7 +13,6 @@ public class CommunityManagerService {
     private ManagerRepository managerRepository;
 
     public Communitymanager login(String email, String password) {
-        // คืนค่าข้อมูลผู้จัดการหากพบในฐานข้อมูล 
         return managerRepository.findByEmailAndPassword(email, password);
     }
 
@@ -22,7 +21,7 @@ public class CommunityManagerService {
         return managerRepository.findById(managerId)
                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบผู้จัดการ ID: " + managerId));
     }
- 
+
     // ─── อัปเดตข้อมูลส่วนตัว (ไม่เปลี่ยนรหัสผ่าน) ───
     @Transactional
     public void updateProfile(String managerId, String firstname, String lastname,
@@ -34,13 +33,16 @@ public class CommunityManagerService {
         manager.setPhone(phone);
         managerRepository.save(manager);
     }
- 
+
     // ─── อัปเดตข้อมูลธนาคาร ───
     @Transactional
-    public void updateBankInfo(String managerId, String bankName, String accountNumber) {
+    public void updateBankInfo(String managerId, String bankName, String accountName,
+                               String accountNumber, String bankBranch) {
         Communitymanager manager = getById(managerId);
         manager.setBankName(bankName);
+        manager.setAccountName(accountName);
         manager.setAccountNumber(accountNumber);
+        manager.setBankBranch(bankBranch);
         managerRepository.save(manager);
     }
 
@@ -50,12 +52,11 @@ public class CommunityManagerService {
                                           String email, String phone,
                                           String currentPassword, String newPassword) {
         Communitymanager manager = getById(managerId);
- 
-        // ตรวจสอบรหัสผ่านปัจจุบัน
+
         if (!manager.getPassword().equals(currentPassword)) {
             throw new IllegalArgumentException("รหัสผ่านปัจจุบันไม่ถูกต้อง");
         }
- 
+
         manager.setFirstname(firstname);
         manager.setLastname(lastname);
         manager.setEmail(email);

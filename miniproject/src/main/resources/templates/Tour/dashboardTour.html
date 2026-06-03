@@ -20,7 +20,6 @@
             --text-muted:   #6b7c6e;
             --white:        #ffffff;
             --card-shadow:  0 4px 24px rgba(0,0,0,.13);
-            /* aliases ให้ส่วนอื่นของหน้ายังทำงานได้ */
             --bg-page:      #f3fae8;
             --bg-card:      #ffffff;
             --border:       #e2ddd4;
@@ -178,6 +177,72 @@
         .dropdown-item.logout { color: #c0392b; }
         .dropdown-item.logout i { color: #c0392b; }
         .dropdown-item.logout:hover { background: #fff5f5; }
+
+        /* ─── BANK WARNING BANNER ─── */
+        .bank-warning-banner {
+            background: #fff8e1;
+            border-bottom: 2px solid #f9a825;
+            padding: 0 2rem;
+        }
+        .bank-warning-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 0;
+            font-size: 13px;
+            color: #5f3e00;
+        }
+        .bank-warning-inner > .warn-icon {
+            font-size: 1.25rem;
+            color: #f9a825;
+            flex-shrink: 0;
+        }
+        .bank-warning-inner > .warn-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .bank-warning-inner .warn-title {
+            font-weight: 700;
+            font-size: 13.5px;
+            color: #4e2d00;
+        }
+        .bank-warning-inner .warn-sub {
+            color: #7a5200;
+            font-size: 12.5px;
+        }
+        .bank-warning-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f9a825;
+            color: #fff;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+        .bank-warning-btn:hover { background: #e65100; }
+        .bank-warning-dismiss {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #b07000;
+            font-size: 14px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .bank-warning-dismiss:hover { background: rgba(0,0,0,0.06); }
 
         /* ─── PAGE ─── */
         .page { padding: 28px 28px 40px; max-width: 1200px; margin: auto }
@@ -364,31 +429,27 @@
         @media (max-width: 560px) {
             .stats-grid { grid-template-columns: 1fr; }
             .page { padding: 16px; }
+            .bank-warning-inner { flex-wrap: wrap; }
         }
 
-         .footer {
+        .footer {
             margin-top: 3rem;
             padding: 1rem 2rem;
             background: #3a7d1e;
             color: #d9f99d;
             font-size: 0.9rem;
         }
-
         .footer-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .footer a {
             color: #65a30d;
             text-decoration: none;
             margin-left: 8px;
         }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
+        .footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -400,28 +461,20 @@
         ระบบท่องเที่ยวชุมชนชนเผ่า
     </a>
 
-    <!-- spacer ดันเมนูไปขวา -->
     <div style="flex:1;"></div>
 
-    <!-- ภาพรวม -->
     <a th:href="@{/manager/dashboard}" class="nav-link active">
         <i class="fas fa-globe"></i>
         ภาพรวม
     </a>
-
-    <!-- จัดการโพสต์ -->
     <a th:href="@{/manager/posts}" class="nav-link">
         <i class="fas fa-bullhorn"></i>
         จัดการโพสต์
     </a>
-
-    <!-- จัดการทัวร์ -->
     <a th:href="@{/manager/tours}" class="nav-link">
         <i class="fas fa-bus"></i>
         จัดการทัวร์
     </a>
-
-    <!-- ตรวจสอบการจอง -->
     <a th:href="@{/manager/bookings}" class="nav-link">
         <i class="fas fa-calendar-days"></i>
         ตรวจสอบการจอง
@@ -454,6 +507,26 @@
         </div>
     </div>
 </nav>
+
+<!-- ═══ BANK WARNING BANNER ═══ -->
+<!-- แสดงเฉพาะเมื่อยังไม่ได้กรอกข้อมูลธนาคาร -->
+<div class="bank-warning-banner" id="bankWarningBanner"
+     th:if="${bankInfoMissing}" style="display:block;">
+    <div class="bank-warning-inner">
+        <i class="fas fa-triangle-exclamation warn-icon"></i>
+        <div class="warn-text">
+            <span class="warn-title">ยังไม่ได้กรอกข้อมูลธนาคาร</span>
+            <span class="warn-sub">กรุณากรอกข้อมูลธนาคารก่อนเปิดรับการจอง — นักท่องเที่ยวจะไม่สามารถจองทัวร์ได้จนกว่าจะกรอกครบ</span>
+        </div>
+        <a th:href="@{/manager/profile}" class="bank-warning-btn">
+            <i class="fas fa-building-columns"></i>
+            กรอกข้อมูลธนาคาร
+        </a>
+        <button class="bank-warning-dismiss" onclick="dismissBankWarning()" title="ปิด">
+            <i class="fas fa-xmark"></i>
+        </button>
+    </div>
+</div>
 
 <!-- ═══ PAGE ═══ -->
 <div class="page">
@@ -535,7 +608,6 @@
                 <span class="card-title">ทัวร์ยอดนิยม</span>
                 <a th:href="@{/manager/tours/create}" class="btn-primary">+ สร้างทัวร์</a>
             </div>
-
             <div th:if="${popularTours != null and !popularTours.isEmpty()}">
                 <div class="tour-row" th:each="t : ${popularTours}">
                     <div class="tour-thumb">🏕️</div>
@@ -618,6 +690,7 @@
         </div>
     </div>
 </div>
+
 <!-- ─── FOOTER ─── -->
 <footer class="footer">
     <div class="footer-content">
@@ -631,5 +704,20 @@
         </span>
     </div>
 </footer>
+
+<script>
+    function dismissBankWarning() {
+        const banner = document.getElementById('bankWarningBanner');
+        if (banner) {
+            banner.style.transition = 'opacity 0.3s, max-height 0.4s';
+            banner.style.opacity = '0';
+            banner.style.overflow = 'hidden';
+            banner.style.maxHeight = banner.offsetHeight + 'px';
+            setTimeout(() => { banner.style.maxHeight = '0'; banner.style.padding = '0'; }, 10);
+            setTimeout(() => { banner.style.display = 'none'; }, 420);
+        }
+    }
+</script>
+
 </body>
 </html>

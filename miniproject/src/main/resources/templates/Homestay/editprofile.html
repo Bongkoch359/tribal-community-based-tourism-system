@@ -7,6 +7,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link th:href="@{/css/Homestay/edit-profile.css}" rel="stylesheet">
+    <style>
+        .bank-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #fff8e1;
+            border: 1.5px solid #f59e0b;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            color: #7c4a00;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+        .bank-alert-icon {
+            font-size: 1.3rem;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
     <!-- Top Nav -->
@@ -77,19 +97,46 @@
             </section>
 
             <!-- Bank Info Section -->
-            <section class="form-section">
+            <section class="form-section" id="bankSection">
                 <div class="section-header">
                     <span class="section-icon">&#127981;</span>
                     <h2 class="section-title">ข้อมูลบัญชีธนาคาร</h2>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="bankName">ชื่อธนาคาร <span class="required">*</span></label>
-                    <div class="input-with-icon">
-                        <input type="text" id="bankName" name="bankName" class="form-input" placeholder="เช่น ธนาคารกสิกรไทย, ธนาคารไทยพาณิชย์">
-                        <span class="input-icon">&#127981;</span>
+                <!-- Banner แจ้งเตือนกรณียังไม่กรอกข้อมูลธนาคาร -->
+                <div class="bank-alert" id="bankAlert" style="display:none;">
+                    <span class="bank-alert-icon">&#9888;</span>
+                    <div>
+                        <strong>กรุณากรอกข้อมูลบัญชีธนาคาร</strong><br>
+                        <small>คุณยังไม่ได้กรอกข้อมูลธนาคาร โฮมสเตย์จะไม่สามารถรับเงินได้จนกว่าจะกรอกข้อมูลนี้</small>
                     </div>
-                    <span class="error-msg" id="bankNameError"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bankName">ชื่อธนาคาร <span class="required">*</span></label>
+                        <div class="input-with-icon">
+                            <input type="text" id="bankName" name="bankName" class="form-input" placeholder="เช่น ธนาคารกสิกรไทย">
+                            <span class="input-icon">&#127981;</span>
+                        </div>
+                        <span class="error-msg" id="bankNameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bankBranch">สาขา</label>
+                        <div class="input-with-icon">
+                            <input type="text" id="bankBranch" name="bankBranch" class="form-input" placeholder="เช่น สาขาเชียงใหม่">
+                            <span class="input-icon">&#128205;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="accountName">ชื่อบัญชี <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <input type="text" id="accountName" name="accountName" class="form-input" placeholder="ชื่อ-นามสกุล ตามหน้าสมุดบัญชี">
+                        <span class="input-icon">&#128100;</span>
+                    </div>
+                    <span class="error-msg" id="accountNameError"></span>
                 </div>
 
                 <div class="form-group">
@@ -158,5 +205,16 @@
     </main>
 
     <script th:src="@{/js/Homestay/edit-profile.js}"></script>
-</body>
+    <script>
+        // แสดง bank alert ถ้ายังไม่มีข้อมูลธนาคาร (ให้ edit-profile.js populate ก่อน แล้วค่อยเช็ค)
+        document.addEventListener('profileLoaded', function(e) {
+            const data = e.detail;
+            // populate field ธนาคารใหม่
+            if (data.bankBranch)   document.getElementById('bankBranch').value   = data.bankBranch;
+            if (data.accountName)  document.getElementById('accountName').value  = data.accountName;
+            // แสดง alert ถ้าไม่มีข้อมูลธนาคารครบ
+            const missing = !data.bankName || !data.accountNumber || !data.accountName;
+            document.getElementById('bankAlert').style.display = missing ? 'flex' : 'none';
+        });
+    </script>
 </html>
