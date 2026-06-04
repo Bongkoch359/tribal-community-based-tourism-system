@@ -31,7 +31,8 @@ public class Tour {
     private Integer maxSeatstour;
     private Double adultprice;
     private Double childprice;
-    @Column(length = 1000)
+     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String images;
 
     @ManyToOne

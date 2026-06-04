@@ -503,12 +503,8 @@
             <i class="fas fa-check checkmark-icon"></i>
         </div>
         <div class="modal-title">บันทึกทัวร์สำเร็จ!</div>
-        <div class="modal-desc">ทัวร์ของคุณถูกบันทึกเรียบร้อยแล้ว<br>กำลังนำคุณไปยังรายการทัวร์...</div>
-        <div class="modal-countdown">กลับอัตโนมัติใน <span class="countdown-num" id="countdownNum">3</span> วินาที</div>
+        <div class="modal-desc">ทัวร์ของคุณถูกบันทึกเรียบร้อยแล้ว</div>
         <div class="modal-btn-row">
-            <button class="modal-btn-primary" onclick="goToList()">
-                <i class="fas fa-list"></i> ไปยังรายการทัวร์
-            </button>
         </div>
         <div class="modal-progress-bar">
             <div class="modal-progress-fill" id="progressFill"></div>
@@ -810,27 +806,17 @@ function goToList() {
 
 function showSuccessModal() {
     const modal = document.getElementById('successModal');
-    const numEl = document.getElementById('countdownNum');
     const fill  = document.getElementById('progressFill');
 
     modal.classList.add('show');
 
-    let sec = 3;
-    numEl.textContent = sec;
-
-    // reset animation
     fill.style.animation = 'none';
-    fill.offsetHeight; // reflow
-    fill.style.animation = 'progress-drain 3s linear forwards';
+    fill.offsetHeight;
+    fill.style.animation = 'progress-drain 2s linear forwards';
 
-    const timer = setInterval(() => {
-        sec--;
-        numEl.textContent = sec;
-        if (sec <= 0) {
-            clearInterval(timer);
-            goToList();
-        }
-    }, 1000);
+    setTimeout(() => {
+        goToList();
+    }, 2000);
 }
 
 document.getElementById('tourForm').addEventListener('submit', function (e) {

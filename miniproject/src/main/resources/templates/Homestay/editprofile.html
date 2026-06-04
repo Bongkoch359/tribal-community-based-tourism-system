@@ -113,22 +113,33 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="bankName">ชื่อธนาคาร <span class="required">*</span></label>
-                        <div class="input-with-icon">
-                            <input type="text" id="bankName" name="bankName" class="form-input" placeholder="เช่น ธนาคารกสิกรไทย">
-                            <span class="input-icon">&#127981;</span>
-                        </div>
-                        <span class="error-msg" id="bankNameError"></span>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="bankBranch">สาขา</label>
-                        <div class="input-with-icon">
-                            <input type="text" id="bankBranch" name="bankBranch" class="form-input" placeholder="เช่น สาขาเชียงใหม่">
-                            <span class="input-icon">&#128205;</span>
-                        </div>
-                    </div>
-                </div>
+    <div class="form-group">
+        <label class="form-label" for="bankName">ชื่อธนาคาร <span class="required">*</span></label>
+        <select id="bankName" name="bankName" class="form-input">
+            <option value="">-- เลือกธนาคาร --</option>
+            <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ (BBL)</option>
+            <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย (KBANK)</option>
+            <option value="ธนาคารกรุงไทย">ธนาคารกรุงไทย (KTB)</option>
+            <option value="ธนาคารทหารไทยธนชาต">ธนาคารทหารไทยธนชาต (TTB)</option>
+            <option value="ธนาคารไทยพาณิชย์">ธนาคารไทยพาณิชย์ (SCB)</option>
+            <option value="ธนาคารกรุงศรีอยุธยา">ธนาคารกรุงศรีอยุธยา (BAY)</option>
+            <option value="ธนาคารออมสิน">ธนาคารออมสิน (GSB)</option>
+            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร">ธนาคารเพื่อการเกษตรและสหกรณ์ (ธ.ก.ส.)</option>
+            <option value="ธนาคารอาคารสงเคราะห์">ธนาคารอาคารสงเคราะห์ (GHB)</option>
+            <option value="ธนาคารซีไอเอ็มบีไทย">ธนาคารซีไอเอ็มบีไทย (CIMB)</option>
+            <option value="ธนาคารแลนด์ แอนด์ เฮ้าส์">ธนาคารแลนด์ แอนด์ เฮ้าส์ (LH Bank)</option>
+            <option value="ธนาคารยูโอบี">ธนาคารยูโอบี (UOB)</option>
+        </select>
+        <span class="error-msg" id="bankNameError"></span>
+    </div>
+    <div class="form-group">
+        <label class="form-label" for="bankBranch">สาขา</label>
+        <div class="input-with-icon">
+            <input type="text" id="bankBranch" name="bankBranch" class="form-input" placeholder="เช่น สาขาเชียงใหม่">
+            <span class="input-icon">&#128205;</span>
+        </div>
+    </div>
+</div>
 
                 <div class="form-group">
                     <label class="form-label" for="accountName">ชื่อบัญชี <span class="required">*</span></label>
@@ -208,13 +219,16 @@
     <script>
         // แสดง bank alert ถ้ายังไม่มีข้อมูลธนาคาร (ให้ edit-profile.js populate ก่อน แล้วค่อยเช็ค)
         document.addEventListener('profileLoaded', function(e) {
-            const data = e.detail;
-            // populate field ธนาคารใหม่
-            if (data.bankBranch)   document.getElementById('bankBranch').value   = data.bankBranch;
-            if (data.accountName)  document.getElementById('accountName').value  = data.accountName;
-            // แสดง alert ถ้าไม่มีข้อมูลธนาคารครบ
-            const missing = !data.bankName || !data.accountNumber || !data.accountName;
-            document.getElementById('bankAlert').style.display = missing ? 'flex' : 'none';
-        });
+    const data = e.detail;
+    // bankName เป็น select ต้อง set value
+    if (data.bankName) {
+        document.getElementById('bankName').value = data.bankName;
+    }
+    if (data.bankBranch)  document.getElementById('bankBranch').value  = data.bankBranch;
+    if (data.accountName) document.getElementById('accountName').value = data.accountName;
+
+    const missing = !data.bankName || !data.accountNumber || !data.accountName;
+    document.getElementById('bankAlert').style.display = missing ? 'flex' : 'none';
+});
     </script>
 </html>

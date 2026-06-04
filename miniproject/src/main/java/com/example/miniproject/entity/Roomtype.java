@@ -26,7 +26,8 @@ public class Roomtype {
 
     private Double pricepernight;
 
-    @Column(length = 255)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String roomcondition;
 
     @Lob
