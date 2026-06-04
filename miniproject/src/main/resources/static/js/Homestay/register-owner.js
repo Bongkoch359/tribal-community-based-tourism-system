@@ -1,10 +1,9 @@
 // ============================================================
-//  register-owner.js  (เปลี่ยนจาก base64 → multipart/form-data)
+//  register-owner.js
 // ============================================================
 
 'use strict';
 
-// ─── เก็บ File objects ของแต่ละ homestay block ───
 const homestayImages = {};
 
 // ============================================================
@@ -30,13 +29,9 @@ function hideSpan(spanId) {
     const span = document.getElementById(spanId);
     if (span) { span.style.display = 'none'; }
 }
-function getVal(id) {
-    const el = document.getElementById(id);
-    return el ? el.value : '';
-}
 
 // ============================================================
-//  STEP 1 — VALIDATORS (เหมือนเดิมทุกอย่าง)
+//  STEP 1 — VALIDATORS
 // ============================================================
 function validateFirstname() {
     const input = document.getElementById('firstname');
@@ -74,22 +69,6 @@ function validatePhone() {
     if (!/^0[689]/.test(val)) { showError(input, 'phoneError', 'หมายเลขโทรศัพท์ต้องขึ้นต้นด้วย 06, 08 หรือ 09 เท่านั้น'); return false; }
     showValid(input, 'phoneError'); return true;
 }
-function validateBankName() {
-    const input = document.getElementById('bankName');
-    const val = input.value.trim();
-    if (val === '') { showError(input, 'bankNameError', 'กรุณากรอกชื่อธนาคาร'); return false; }
-    if (val.length < 2 || val.length > 100) { showError(input, 'bankNameError', 'ชื่อธนาคารต้องมีความยาว 2–100 ตัวอักษร'); return false; }
-    showValid(input, 'bankNameError'); return true;
-}
-function validateAccountNumber() {
-    const input = document.getElementById('accountNumber');
-    const val = input.value.trim();
-    if (val === '') { showError(input, 'accountNumberError', 'กรุณากรอกเลขบัญชีธนาคาร'); return false; }
-    if (/\s/.test(val)) { showError(input, 'accountNumberError', 'เลขบัญชีต้องไม่มีช่องว่าง'); return false; }
-    if (!/^\d+$/.test(val)) { showError(input, 'accountNumberError', 'เลขบัญชีต้องเป็นตัวเลขเท่านั้น'); return false; }
-    if (val.length < 10 || val.length > 30) { showError(input, 'accountNumberError', 'เลขบัญชีต้องมีความยาว 10–30 หลัก'); return false; }
-    showValid(input, 'accountNumberError'); return true;
-}
 function validatePassword() {
     const input = document.getElementById('password');
     const val = input.value;
@@ -112,13 +91,15 @@ function validateAgree() {
     if (!cb.checked) { showSpanError('agreeError', 'กรุณายอมรับเงื่อนไขการใช้งาน'); return false; }
     hideSpan('agreeError'); return true;
 }
+
 function validateStep1() {
-    const ok = [validateFirstname(), validateLastname(), validateEmail(),
-        validatePhone(), validateBankName(), validateAccountNumber(),
+    const ok = [
+        validateFirstname(), validateLastname(), validateEmail(), validatePhone(),
         validatePassword(), validateConfirmPassword(), validateAgree()
     ].every(Boolean);
-    if (ok) { goToPage(2); }
-    else {
+    if (ok) {
+        goToPage(2);
+    } else {
         const first = document.querySelector('#page-1 .is-invalid');
         if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); first.focus(); }
     }
@@ -132,7 +113,7 @@ let homestayCount = 0;
 function addHomestay() {
     homestayCount++;
     const idx = homestayCount;
-    homestayImages[idx] = []; // init array เก็บ File objects
+    homestayImages[idx] = [];
 
     const list  = document.getElementById('homestay-list');
     const block = document.createElement('div');
@@ -166,7 +147,6 @@ function addHomestay() {
             <span class="field-error" id="hs_descError_${idx}"></span>
         </div>
 
-        <!-- Upload รูปภาพ -->
         <div class="mb-2">
             <label class="form-label">รูปภาพโฮมสเตย์ <span class="text-muted">(ไม่บังคับ)</span></label>
             <div class="hs-upload-zone" id="hs_zone_${idx}"
@@ -187,7 +167,6 @@ function addHomestay() {
     `;
     list.appendChild(block);
 
-    // inject CSS upload zone ครั้งเดียว
     if (!document.getElementById('hs-upload-style')) {
         const style = document.createElement('style');
         style.id = 'hs-upload-style';
@@ -228,7 +207,6 @@ function removeHomestay(idx) {
     delete homestayImages[idx];
 }
 
-// ─── จัดการรูป — เก็บเป็น File object (ไม่แปลง base64) ───
 function handleHsImages(idx, fileList) {
     const MAX = 5 * 1024 * 1024;
     Array.from(fileList).forEach(file => {
@@ -248,25 +226,20 @@ function handleHsDrop(e, idx) {
     handleHsImages(idx, e.dataTransfer.files);
 }
 
-// ─── Preview ใช้ blob URL แทน base64 (เบากว่ามาก) ───
 function renderHsPreviews(idx) {
     const grid = document.getElementById(`hs_preview_${idx}`);
     grid.innerHTML = '';
-
     if (!homestayImages[idx] || homestayImages[idx].length === 0) {
-        grid.style.display = 'none';
-        return;
+        grid.style.display = 'none'; return;
     }
-
     grid.style.display = 'grid';
     homestayImages[idx].forEach((file, i) => {
-        const blobUrl = URL.createObjectURL(file); // ✅ blob URL แทน FileReader
+        const blobUrl = URL.createObjectURL(file);
         const card = document.createElement('div');
         card.className = 'hs-preview-card';
         card.innerHTML = `
             <img src="${blobUrl}" alt="">
-            <button type="button" class="hs-remove-btn"
-                    onclick="removeHsImage(${idx}, ${i})">
+            <button type="button" class="hs-remove-btn" onclick="removeHsImage(${idx}, ${i})">
                 <i class="fas fa-xmark"></i>
             </button>
             <span class="hs-img-num">${i + 1}</span>
@@ -281,7 +254,7 @@ function removeHsImage(idx, imgIdx) {
 }
 
 // ============================================================
-//  STEP 2 — SUBMIT ALL ✅ ส่งเป็น multipart/form-data
+//  SUBMIT ALL
 // ============================================================
 async function submitAll() {
     if (!validateAllHomestays()) return;
@@ -289,44 +262,31 @@ async function submitAll() {
     const btn = document.querySelector('.btn-submit');
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>กำลังส่ง...'; }
 
-    // ── สร้าง FormData ──
     const fd = new FormData();
 
-    // ข้อมูล owner
-    fd.append('firstname',     document.getElementById('firstname').value.trim());
-    fd.append('lastname',      document.getElementById('lastname').value.trim());
-    fd.append('email',         document.getElementById('email').value.trim());
-    fd.append('phone',         document.getElementById('phone').value.trim());
-    fd.append('bankName',      document.getElementById('bankName').value.trim());
-    fd.append('accountNumber', document.getElementById('accountNumber').value.trim());
-    fd.append('password',      document.getElementById('password').value.trim());
+    fd.append('firstname', document.getElementById('firstname').value.trim());
+    fd.append('lastname',  document.getElementById('lastname').value.trim());
+    fd.append('email',     document.getElementById('email').value.trim());
+    fd.append('phone',     document.getElementById('phone').value.trim());
+    fd.append('password',  document.getElementById('password').value.trim());
 
-    // ข้อมูล homestay แต่ละ block
     const blocks = document.querySelectorAll('.homestay-block');
-    let hsIndex  = 0; // index 0-based สำหรับ server
+    let hsIndex  = 0;
 
     blocks.forEach(block => {
-        const idx = block.id.split('-').pop(); // block index (1-based จาก DOM)
-
+        const idx = block.id.split('-').pop();
         fd.append(`homestays[${hsIndex}].homestayname`, document.getElementById(`hs_name_${idx}`).value.trim());
         fd.append(`homestays[${hsIndex}].address`,      document.getElementById(`hs_address_${idx}`).value.trim());
         fd.append(`homestays[${hsIndex}].description`,  document.getElementById(`hs_desc_${idx}`).value.trim());
-
-        // รูปภาพ — แนบ File จริง ไม่แปลง base64
         (homestayImages[idx] || []).forEach(file => {
             fd.append(`homestays[${hsIndex}].images`, file);
         });
-
         hsIndex++;
     });
 
     try {
-        const res  = await fetch('/owner/register', {
-            method: 'POST',
-            body:   fd  // ห้ามใส่ Content-Type header — browser จัดการ boundary เอง
-        });
+        const res  = await fetch('/owner/register', { method: 'POST', body: fd });
         const data = await res.json();
-
         if (data.success) {
             goToPage(3);
         } else {
@@ -340,18 +300,18 @@ async function submitAll() {
 }
 
 // ============================================================
-//  VALIDATORS (เหมือนเดิม)
+//  VALIDATORS HOMESTAY
 // ============================================================
 function bindHomestayListeners(idx) {
     const nameInput    = document.getElementById(`hs_name_${idx}`);
     const addressInput = document.getElementById(`hs_address_${idx}`);
     const descInput    = document.getElementById(`hs_desc_${idx}`);
-    nameInput.addEventListener('blur',  () => validateHsName(idx));
+    nameInput.addEventListener('blur',    () => validateHsName(idx));
     addressInput.addEventListener('blur', () => validateHsAddress(idx));
-    descInput.addEventListener('blur',  () => validateHsDesc(idx));
-    nameInput.addEventListener('input', () => { if (nameInput.classList.contains('is-invalid')) validateHsName(idx); });
+    descInput.addEventListener('blur',    () => validateHsDesc(idx));
+    nameInput.addEventListener('input',    () => { if (nameInput.classList.contains('is-invalid'))    validateHsName(idx); });
     addressInput.addEventListener('input', () => { if (addressInput.classList.contains('is-invalid')) validateHsAddress(idx); });
-    descInput.addEventListener('input', () => { if (descInput.classList.contains('is-invalid')) validateHsDesc(idx); });
+    descInput.addEventListener('input',    () => { if (descInput.classList.contains('is-invalid'))    validateHsDesc(idx); });
 }
 function validateHsName(idx) {
     const input = document.getElementById(`hs_name_${idx}`);
@@ -429,8 +389,6 @@ const step1Fields = [
     { id: 'lastname',        fn: validateLastname        },
     { id: 'email',           fn: validateEmail           },
     { id: 'phone',           fn: validatePhone           },
-    { id: 'bankName',        fn: validateBankName        },
-    { id: 'accountNumber',   fn: validateAccountNumber   },
     { id: 'password',        fn: validatePassword        },
     { id: 'confirmPassword', fn: validateConfirmPassword },
 ];
@@ -440,6 +398,7 @@ step1Fields.forEach(({ id, fn }) => {
     el.addEventListener('blur', fn);
     el.addEventListener('input', () => { if (el.classList.contains('is-invalid')) fn(); });
 });
+
 document.getElementById('password')?.addEventListener('input', () => {
     const cp = document.getElementById('confirmPassword');
     if (cp && cp.value !== '') validateConfirmPassword();

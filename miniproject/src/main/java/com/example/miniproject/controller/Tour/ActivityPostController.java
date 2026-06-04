@@ -66,26 +66,29 @@ public class ActivityPostController {
 
     // ─── บันทึกโพสต์ใหม่ ───
     @PostMapping("/create")
-    public String createPost(
-            @RequestParam("title")       String title,
-            @RequestParam("location")    String location,
-            @RequestParam("description") String description,
-            @RequestParam("status")      String status,
-            @RequestParam(value = "images", required = false) String images,
-            HttpSession session,
-            Model model) {
+public String createPost(
+        @RequestParam("title")       String title,
+        @RequestParam("location")    String location,
+        @RequestParam("description") String description,
+        @RequestParam("status")      String status,
+        @RequestParam(value = "images", required = false) String images,
+        HttpSession session,
+        Model model) {
 
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/manager/login";
+    Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+    if (manager == null) return "redirect:/manager/login";
 
-        try {
-            activityPostService.createPost(title, location, description, status, images, manager);
-            return "redirect:/manager/posts";
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
-            return "Tour/createPost";
-        }
+    try {
+        activityPostService.createPost(title, location, description, status, images, manager);
+        // ← เปลี่ยนจาก redirect เป็น return หน้าเดิม
+        model.addAttribute("loggedInManager", manager);
+        model.addAttribute("successMessage", "บันทึกโพสต์สำเร็จ!");
+        return "Tour/createPost";
+    } catch (Exception e) {
+        model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
+        return "Tour/createPost";
     }
+}
 
     // ─── แสดงฟอร์มแก้ไขโพสต์ ───
     @GetMapping("/{id}/edit")

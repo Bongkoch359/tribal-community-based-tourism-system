@@ -56,17 +56,16 @@ function fillForm(data) {
     lastnameInput.value    = data.lastname      || '';
     emailInput.value       = data.email         || '';
     phoneInput.value       = data.phone         || '';
-    bankNameInput.value    = data.bankName      || '';
+    const bankSelect = document.getElementById('bankName');
+    if (bankSelect) bankSelect.value = data.bankName || '';
     bankBranchInput.value  = data.bankBranch    || '';
     accountNameInput.value = data.accountName   || '';
     accountNumInput.value  = data.accountNumber || '';
 
-    // Profile card
     const fullName = `${data.firstname || ''} ${data.lastname || ''}`.trim();
     document.getElementById('profileName').textContent  = fullName || 'ไม่ระบุชื่อ';
     document.getElementById('profileEmail').textContent = data.email || '-';
 
-    // Avatar initials
     const initials = ((data.firstname?.[0] || '') + (data.lastname?.[0] || '')).toUpperCase() || 'HO';
     document.getElementById('avatarInitials').textContent = initials;
 }
@@ -89,7 +88,7 @@ function bindEvents() {
     lastnameInput.addEventListener('input',    () => validateField(lastnameInput,  'lastnameError',  'กรุณากรอกนามสกุล'));
     emailInput.addEventListener('input',       validateEmail);
     phoneInput.addEventListener('input',       validatePhone);
-    bankNameInput.addEventListener('input',    validateBankName);
+    bankNameInput.addEventListener('change',    validateBankName);
     accountNameInput.addEventListener('input', validateAccountName);
     accountNumInput.addEventListener('input',  validateAccountNumber);
     newPwInput.addEventListener('input',       validateNewPassword);
@@ -151,7 +150,7 @@ async function saveProfile() {
             lastname:      lastnameInput.value.trim(),
             email:         emailInput.value.trim(),
             phone:         phoneInput.value.trim(),
-            bankName:      bankNameInput.value.trim(),
+            bankName:      document.getElementById('bankName').value, // อ่านจาก select โดยตรง
             bankBranch:    bankBranchInput.value.trim(),
             accountName:   accountNameInput.value.trim(),
             accountNumber: accountNumInput.value.trim(),
@@ -209,11 +208,9 @@ function validatePhone() {
 }
 
 function validateBankName() {
-    const val = bankNameInput.value.trim();
-    const msg = !val ? 'กรุณากรอกชื่อธนาคาร'
-              : val.length < 2 || val.length > 100 ? 'ชื่อธนาคารต้องมีความยาว 2–100 ตัวอักษร'
-              : '';
-    showError(bankNameInput, 'bankNameError', msg);
+    const val = document.getElementById('bankName').value; 
+    const msg = !val ? 'กรุณาเลือกธนาคาร' : '';
+    showError(document.getElementById('bankName'), 'bankNameError', msg);
     return !msg;
 }
 

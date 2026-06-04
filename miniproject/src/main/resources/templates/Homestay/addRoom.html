@@ -124,6 +124,93 @@
         .facility-chip:has(input:checked) i {
             color: #fff !important;
         }
+        /* ═══ SUCCESS MODAL ═══ */
+.modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(10,30,12,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.modal-backdrop.show { opacity: 1; pointer-events: all; }
+.modal-box {
+    background: #fff; border-radius: 20px;
+    padding: 40px 36px 32px; max-width: 380px; width: 90%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    opacity: 0;
+}
+.modal-backdrop.show .modal-box { transform: scale(1) translateY(0); opacity: 1; }
+.checkmark-wrap {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg,#1a3d1f,#2d6a35);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(26,61,31,0.35);
+    position: relative;
+}
+.checkmark-wrap::after {
+    content: ''; position: absolute; inset: -4px;
+    border-radius: 50%; border: 3px solid rgba(26,61,31,0.15);
+}
+.checkmark-ring {
+    position: absolute; inset: -8px; border-radius: 50%;
+    border: 2px solid rgba(26,61,31,0.08);
+    animation: ring-pulse 1.5s ease-out 0.4s both;
+}
+@keyframes ring-pulse {
+    0%   { transform: scale(0.9); opacity: 0; }
+    50%  { opacity: 1; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+.checkmark-icon {
+    font-size: 36px; color: #fff;
+    animation: pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+}
+@keyframes pop-in {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+.modal-title { font-size: 20px; font-weight: 700; color: #2d6a2d; margin-bottom: 8px; }
+.modal-desc  { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 24px; }
+.modal-countdown { font-size: 12px; color: #999; margin-bottom: 20px; }
+.countdown-num {
+    display: inline-block; background: #f3fae8;
+    border: 1.5px solid #ccc; border-radius: 20px;
+    padding: 2px 10px; font-weight: 700; color: #2d6a2d; min-width: 28px;
+}
+.modal-btn-row { display: flex; gap: 10px; justify-content: center; }
+.modal-btn-primary {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #2d6a2d; color: #fff;
+    padding: 10px 22px; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: 'Sarabun', sans-serif;
+    border: none; cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+.modal-btn-primary:hover { background: #3d8c3d; }
+.modal-btn-primary:active { transform: scale(0.97); }
+.modal-progress-bar {
+    height: 3px; background: #e8f4ea;
+    border-radius: 0 0 20px 20px;
+    margin: 24px -36px -32px; overflow: hidden;
+}
+.modal-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #65a30d, #2d6a2d);
+    border-radius: 3px; width: 100%;
+    transform-origin: left;
+    animation: progress-drain 3s linear forwards;
+}
+@keyframes progress-drain {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0); }
+}
     </style>
 </head>
 <body>
@@ -151,6 +238,23 @@
         </div>
     </div>
 </nav>
+<!-- ═══ SUCCESS MODAL ═══ -->
+<div class="modal-backdrop" id="successModal">
+    <div class="modal-box">
+        <div class="checkmark-wrap">
+            <div class="checkmark-ring"></div>
+            <i class="fas fa-check checkmark-icon"></i>
+        </div>
+        <div class="modal-title">บันทึกสำเร็จ!</div>
+        <div class="modal-desc">ประเภทที่พักถูกบันทึกเรียบร้อยแล้ว</div>
+        
+        <div class="modal-btn-row">
+        </div>
+        <div class="modal-progress-bar">
+            <div class="modal-progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+</div>
 
 <!-- ─── CONTENT ─── -->
 <div class="page">
@@ -441,9 +545,7 @@ async function submitForm() {
     if (!validate()) return;
 
     const fd = new FormData();
-    // Hidden field
     fd.append('homestayid',    document.querySelector('input[name="homestayid"]').value);
-    // Form fields
     fd.append('typename',      document.getElementById('typename').value);
     fd.append('bedtype',       document.getElementById('bedtype').value);
     fd.append('pricepernight', document.getElementById('pricepernight').value);
@@ -453,12 +555,9 @@ async function submitForm() {
     fd.append('roomcondition', document.getElementById('roomcondition').value);
     fd.append('status',        document.getElementById('status').value);
 
-    // Facilities
     document.querySelectorAll('input[name="facilitiesIds"]:checked').forEach(cb => {
         fd.append('facilitiesIds', cb.value);
     });
-
-    // รูปภาพ (เฉพาะที่ยังไม่ลบ)
     selectedFiles.filter(f => f !== null).forEach(file => {
         fd.append('images', file);
     });
@@ -470,9 +569,9 @@ async function submitForm() {
     try {
         const res  = await fetch('/addroom', { method: 'POST', body: fd });
         const data = await res.json();
+
         if (data.success) {
-            const homestayid = document.querySelector('input[name="homestayid"]').value;
-            window.location.href = '/owner/rooms?homestayid=' + homestayid;
+            showSuccessModal();
         } else {
             alert('เกิดข้อผิดพลาด: ' + (data.message || ''));
             btn.disabled = false;
@@ -483,6 +582,27 @@ async function submitForm() {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
     }
+}
+
+function goToList() {
+    const homestayid = document.querySelector('input[name="homestayid"]').value;
+    window.location.href = '/owner/rooms?homestayid=' + homestayid;
+}
+
+function showSuccessModal() {
+    const modal = document.getElementById('successModal');
+    const fill  = document.getElementById('progressFill');
+
+    modal.classList.add('show');
+
+   
+    fill.style.animation = 'none';
+    fill.offsetHeight;
+    fill.style.animation = 'progress-drain 2s linear forwards';
+
+    setTimeout(() => {
+        goToList();
+    }, 2000);
 }
 </script>
 </body>
