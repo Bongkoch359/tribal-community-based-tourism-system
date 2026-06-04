@@ -209,6 +209,6 @@ public class TribeController {
     }
 
     model.addAttribute("tribe", selected);
-    return "tribe-detail"; 
+    return "Member/tribe-detail"; 
 }
 }
