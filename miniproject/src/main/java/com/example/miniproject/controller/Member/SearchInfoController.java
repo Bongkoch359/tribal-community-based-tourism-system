@@ -61,6 +61,21 @@ public class SearchInfoController {
         }
 
 
+    // ===== DEBUG LOG เพิ่มตรงนี้ =====
+    System.out.println("========== DEBUG SEARCH ==========");
+    System.out.println("keyword   : " + keyword);
+    System.out.println("type      : " + type);
+    System.out.println("numGuest  : " + numGuest);
+    System.out.println("startDate : " + startDate);
+    System.out.println("endDate   : " + endDate);
+    System.out.println("tours     : " + tours.size() + " รายการ");
+    tours.forEach(t -> System.out.println("  -> " + t.getTourid() 
+        + " | " + t.getTourmname() 
+        + " | status=" + t.getStatus()));
+    System.out.println("===================================");
+    // ===================================
+    
+
         // 3. ส่งข้อมูลและสเตททั้งหมดเข้าสู่ Model เพื่อแสดงผลและคงค่าไว้บนฟอร์มหน้าเว็บ
         model.addAttribute("activities",    activities);
         model.addAttribute("tours",         tours);

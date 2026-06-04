@@ -9,58 +9,64 @@ import com.example.miniproject.entity.Tour;
 
 public interface TourRepository extends JpaRepository<Tour, String> {
 
-    // ค้นหาชื่อทัวร์
     List<Tour> findByTourmnameContainingIgnoreCase(String tourmname);
-
     List<Tour> findByCommunitymanagerManagerid(String managerId);
-    
-
-    // ดึงทัวร์ active
     List<Tour> findByStatus(String status);
-
-    // ค้นหาชื่อ + status
-    List<Tour> findByTourmnameContainingIgnoreCaseAndStatus(
-            String tourmname,
-            String status
-    );
-
-     // ─── ดึงตาม manager (ใหม่ — ใช้ใน listTour) ──────────
+    List<Tour> findByTourmnameContainingIgnoreCaseAndStatus(String tourmname, String status);
     List<Tour> findByCommunitymanager(Communitymanager communitymanager);
 
-    // ค้นหาตามจำนวนที่นั่ง
     @Query("""
         SELECT t FROM Tour t
-        WHERE t.status = 'active'
+        WHERE t.status = 'เปิดจอง'
         AND t.minSeatstour <= :guests
         AND t.maxSeatstour >= :guests
     """)
     List<Tour> findByAvailableSeats(@Param("guests") int guests);
 
-    // ค้นหาแบบรวม
+    // ค้นหาแบบไม่มีวันที่
     @Query("""
         SELECT t FROM Tour t
-        WHERE (t.status IS NULL OR LOWER(t.status) = 'active')
+        WHERE t.status = 'เปิดจอง'
         AND (:keyword IS NULL
-             OR LOWER(t.tourmname)
-             LIKE LOWER(CONCAT('%', :keyword, '%')))
-        AND (:guests IS NULL 
-             OR :guests <= 1 
+             OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        AND (:guests IS NULL
+             OR :guests <= 1
              OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
         ORDER BY t.tourmname ASC
     """)
     List<Tour> search(@Param("keyword") String keyword,
                       @Param("guests") Integer guests);
 
-    //นับตามสถานะ
     long countByStatus(String status);
-    // ดึงทัวร์ยอดนิยม (เรียงตามจำนวนการจอง)
+
     @Query("SELECT t FROM Tour t LEFT JOIN t.bookingTourDetails d GROUP BY t ORDER BY COUNT(d) DESC")
     List<Tour> findTopToursByBookingCount(@Param("limit") int limit);
 
-    // ดึงทัวร์ของ manager คนนั้น
     @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerid ORDER BY t.tourmname ASC")
     List<Tour> findByManagerId(@Param("managerid") String managerid);
 
-    
-
+    // ✅ แก้ Logic — นับที่นั่งที่จองแล้วในวันนั้น แล้วเช็คว่าเหลือพอไหม
+    @Query("""
+        SELECT t FROM Tour t
+        WHERE t.status = 'เปิดจอง'
+        AND (:keyword IS NULL
+             OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        AND (:guests IS NULL OR :guests <= 1
+             OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
+        AND (:startDate IS NULL OR :endDate IS NULL OR (
+            t.maxSeatstour - (
+                SELECT COALESCE(SUM(d.numofadult + COALESCE(d.numofchild, 0)), 0)
+                FROM Bookingtourdetail d
+                WHERE d.tour = t
+                AND d.startdate BETWEEN :startDate AND :endDate
+            ) >= :guests
+        ))
+        ORDER BY t.tourmname ASC
+    """)
+    List<Tour> searchWithDate(
+        @Param("keyword")   String keyword,
+        @Param("guests")    Integer guests,
+        @Param("startDate") java.sql.Date startDate,
+        @Param("endDate")   java.sql.Date endDate
+    );
 }

@@ -86,68 +86,129 @@ public class TribeController {
 
     @GetMapping("/tribe-info/{id}")
     public String tribeDetail(@PathVariable int id, Model model) {
-        Tribe selected = tribeList.stream()
-                .filter(t -> t.getId() == id)
-                .findFirst().orElse(null);
+    Tribe selected = tribeList.stream()
+            .filter(t -> t.getId() == id)
+            .findFirst().orElse(null);
 
-        // ดักจับไอดีเพื่อเพิ่มคลังคำศัพท์ให้กับทุก ๆ ชนเผ่าก่อนส่งไปยังหน้ากากเว็บ (Thymeleaf)
-        if (selected != null) {
-            switch (id) {
-                case 1: // กะเหรี่ยง
-                    selected.setVocabularies(Arrays.asList(
-                        new Vocabulary("โอ้โฮโม่ะ", "Oh-Ho-Mo", "สวัสดี", "ทักทาย"),
-                        new Vocabulary("ต่าบลู่", "Ta-Bloo", "ขอบคุณ", "ทักทาย"),
-                        new Vocabulary("ต่าบือ", "Ta-Beu", "อร่อย", "อาหาร")
-                    ));
-                    break;
-                case 2: // ม้ง
-                    selected.setVocabularies(Arrays.asList(
-                        new Vocabulary("ยอจ่อง", "Yaw-Jong", "สวัสดี", "ทักทาย"),
-                        new Vocabulary("อัวจ๊ง", "Ua-Tsaug", "ขอบคุณ", "ทักทาย"),
-                        new Vocabulary("นยอ", "Nyob", "กินข้าว", "อาหาร")
-                    ));
-                    break;
-                case 3: // อาข่า
-                    selected.setVocabularies(Arrays.asList(
-                        new Vocabulary("อู่โบ๊อะ", "U-Bo-Ah", "สวัสดี", "ทักทาย"),
-                        new Vocabulary("กุลูหม่าอะ", "Gu-Lu-Ma-Ah", "ขอบคุณ", "ทักทาย"),
-                        new Vocabulary("ชะโบ๊อะ", "Cha-Bo-Ah", "อร่อย", "อาหาร")
-                    ));
-                    break;
-                case 4: // ลาหู่
-                    selected.setVocabularies(Arrays.asList(
-                        new Vocabulary("อ่อมีชาต๊ะ", "Aw-Mee-Cha-Ta", "สวัสดี", "ทักทาย"),
-                        new Vocabulary("อ่อลื่อจาต๊ะ", "Aw-Leu-Ja-Ta", "ขอบคุณ", "ทักทาย")
-                    ));
-                    break;
-                case 5: // ลีซู
-                    selected.setVocabularies(Arrays.asList(
-                        new Vocabulary("อาหมี่ชา", "Ah-Mee-Cha", "สวัสดี", "ทักทาย"),
-                        new Vocabulary("ขะจื่อชา", "Kha-Jeu-Cha", "ขอบคุณ", "ทักทาย")
-                    ));
-                    break;
-                case 6: // กะเหรี่ยงคอยาว
-                    selected.setVocabularies(Arrays.asList(
-                        new Vocabulary("คะแด๊วนา", "Kha-Daew-Na", "สวัสดี", "ทักทาย"),
-                        new Vocabulary("ต่าบลู่", "Ta-Bloo", "ขอบคุณ", "ทักทาย")
-                    ));
-                    break;
-                case 7: // เย้า
-                    selected.setVocabularies(Arrays.asList(
-                        new Vocabulary("กวนโฮ้ย", "Kuan-Hoi", "สวัสดี", "ทักทาย"),
-                        new Vocabulary("ต้ายเจี่ย", "Tai-Jia", "ขอบคุณ", "ทักทาย")
-                    ));
-                    break;
-                case 8: // ลัวะ
-                    selected.setVocabularies(Arrays.asList(
-                        new Vocabulary("ปาเงอไม", "Pa-Nger-Mai", "สวัสดี", "ทักทาย"),
-                        new Vocabulary("ซะโม้ะ", "Sa-Moh", "ขอบคุณ", "ทักทาย")
-                    ));
-                    break;
-            }
+    // ดักจับไอดีเพื่อเพิ่มคลังคำศัพท์ให้กับทุก ๆ ชนเผ่าก่อนส่งไปยังหน้ากากเว็บ (Thymeleaf)
+    if (selected != null) {
+        switch (id) {
+            case 1: // กะเหรี่ยง
+                selected.setVocabularies(Arrays.asList(
+                    new Vocabulary("โอ้โฮโม่ะ", "Oh-Ho-Mo", "สวัสดี", "ทักทาย"),
+                    new Vocabulary("ต่าบลู่", "Ta-Bloo", "ขอบคุณ", "ทักทาย"),
+                    new Vocabulary("ลีแช่คอ", "Lee-Chae-Khaw", "ลาก่อน", "ทักทาย"),
+                    new Vocabulary("ต่าบือ", "Ta-Beu", "อร่อย", "อาหาร"),
+                    new Vocabulary("อ่อหมี่", "Aw-Mee", "กินข้าว", "อาหาร"),
+                    new Vocabulary("ที", "Tee", "น้ำ", "อาหาร"),
+                    new Vocabulary("มึซา", "Meu-Sa", "ไฟ", "ธรรมชาติ"),
+                    new Vocabulary("โมะ", "Maw", "แม่", "ครอบครัว"),
+                    new Vocabulary("ป๋า", "Pah", "พ่อ", "ครอบครัว"),
+                    new Vocabulary("เพลอ", "Pler", "ดวงดาว", "ธรรมชาติ")
+                ));
+                break;
+            case 2: // ม้ง
+                selected.setVocabularies(Arrays.asList(
+                    new Vocabulary("ยอจ่อง", "Yaw-Jong", "สวัสดี", "ทักทาย"),
+                    new Vocabulary("อัวจ๊ง", "Ua-Tsaug", "ขอบคุณ", "ทักทาย"),
+                    new Vocabulary("โม๊นัว", "Moh-Nua", "ลาก่อน", "ทักทาย"),
+                    new Vocabulary("นยอ", "Nyob", "กินข้าว", "อาหาร"),
+                    new Vocabulary("เจ๊าจียา", "Chao-Chee-Ya", "อร่อยมาก", "อาหาร"),
+                    new Vocabulary("เต๋", "Tee", "น้ำ", "อาหาร"),
+                    new Vocabulary("โหน่", "Noo", "ดวงอาทิตย์", "ธรรมชาติ"),
+                    new Vocabulary("ลี่", "Lee", "ดวงจันทร์", "ธรรมชาติ"),
+                    new Vocabulary("เลอ", "Ler", "ไป", "ทั่วไป"),
+                    new Vocabulary("ตู๊", "Too", "ลูกชาย", "ครอบครัว")
+                ));
+                break;
+            case 3: // อาข่า
+                selected.setVocabularies(Arrays.asList(
+                    new Vocabulary("อู่โบ๊อะ", "U-Bo-Ah", "สวัสดี", "ทักทาย"),
+                    new Vocabulary("กุลูหม่าอะ", "Gu-Lu-Ma-Ah", "ขอบคุณ", "ทักทาย"),
+                    new Vocabulary("หลี่เซอเล่อ", "Lee-Ser-Ler", "โชคดี/ลาก่อน", "ทักทาย"),
+                    new Vocabulary("ชะโบ๊อะ", "Cha-Bo-Ah", "อร่อย", "อาหาร"),
+                    new Vocabulary("ฮ่อจ้าอะ", "Haw-Cha-Ah", "กินข้าว", "อาหาร"),
+                    new Vocabulary("อี๊ชู", "Ee-Choo", "น้ำ", "อาหาร"),
+                    new Vocabulary("อาม่า", "Ah-Ma", "แม่", "ครอบครัว"),
+                    new Vocabulary("อาปาดา", "Ah-Pa-Da", "พ่อ", "ครอบครัว"),
+                    new Vocabulary("กะลา", "Ka-La", "เสือ", "สัตว์"),
+                    new Vocabulary("หมื่อก่า", "Meu-Ka", "ท้องฟ้า", "ธรรมชาติ")
+                ));
+                break;
+            case 4: // ลาหู่
+                selected.setVocabularies(Arrays.asList(
+                    new Vocabulary("อ่อมีชาต๊ะ", "Aw-Mee-Cha-Ta", "สวัสดี", "ทักทาย"),
+                    new Vocabulary("อ่อลื่อจาต๊ะ", "Aw-Leu-Ja-Ta", "ขอบคุณ", "ทักทาย"),
+                    new Vocabulary("ชิวื้ดอต๊ะ", "Chi-Weu-Daw-Ta", "ลาก่อน", "ทักทาย"),
+                    new Vocabulary("จาหมื่อเวย", "Ja-Meu-Weiy", "อร่อย", "อาหาร"),
+                    new Vocabulary("ออจาแว๊", "Aw-Ja-Wae", "กินข้าว", "อาหาร"),
+                    new Vocabulary("อี่กื่อ", "Ee-Keu", "น้ำ", "อาหาร"),
+                    new Vocabulary("เอ่หมี่", "Ae-Mee", "แม่", "ครอบครัว"),
+                    new Vocabulary("ออเป่", "Aw-Pae", "พ่อ", "ครอบครัว"),
+                    new Vocabulary("กื่อ", "Keu", "สุนัข", "สัตว์"),
+                    new Vocabulary("เก่อจา", "Ker-Cha", "พระเจ้า/สิ่งศักดิ์สิทธิ์", "ทั่วไป")
+                ));
+                break;
+            case 5: // ลีซู
+                selected.setVocabularies(Arrays.asList(
+                    new Vocabulary("อาหมี่ชา", "Ah-Mee-Cha", "สวัสดี", "ทักทาย"),
+                    new Vocabulary("ขะจื่อชา", "Kha-Jeu-Cha", "ขอบคุณ", "ทักทาย"),
+                    new Vocabulary("ละเหน่เจีย", "La-Nae-Chia", "ลาก่อน", "ทักทาย"),
+                    new Vocabulary("คัตจี่ซา", "Khat-Chee-Sa", "อร่อย", "อาหาร"),
+                    new Vocabulary("ซาจอแป่", "Sa-Chor-Pae", "กินข้าว", "อาหาร"),
+                    new Vocabulary("ยื่อกู่", "Yeu-Koo", "น้ำ", "อาหาร"),
+                    new Vocabulary("อามะ", "Ah-Ma", "แม่", "ครอบครัว"),
+                    new Vocabulary("อาปะ", "Ah-Pa", "พ่อ", "ครอบครัว"),
+                    new Vocabulary("อะนะ", "Ah-Na", "สุนัข", "สัตว์"),
+                    new Vocabulary("มึอื่อ", "Meu-Eeu", "ท้องฟ้า", "ธรรมชาติ")
+                ));
+                break;
+            case 6: // กะเหรี่ยงคอยาว
+                selected.setVocabularies(Arrays.asList(
+                    new Vocabulary("คะแด๊วนา", "Kha-Daew-Na", "สวัสดี", "ทักทาย"),
+                    new Vocabulary("ต่าบลู่", "Ta-Bloo", "ขอบคุณ", "ทักทาย"),
+                    new Vocabulary("ลูแว่คอ", "Loo-Wae-Khaw", "ลาก่อน", "ทักทาย"),
+                    new Vocabulary("เม้บือ", "Mae-Beu", "อร่อย", "อาหาร"),
+                    new Vocabulary("ดี๊", "Dee", "กินข้าว", "อาหาร"),
+                    new Vocabulary("ถู่", "Thoo", "น้ำ", "อาหาร"),
+                    new Vocabulary("โม้", "Moh", "แม่", "ครอบครัว"),
+                    new Vocabulary("เป้", "Pae", "พ่อ", "ครอบครัว"),
+                    new Vocabulary("ช้อ", "Chaw", "ไก่", "สัตว์"),
+                    new Vocabulary("คะแน", "Kha-Nae", "ช้าง", "สัตว์")
+                ));
+                break;
+            case 7: // เย้า
+                selected.setVocabularies(Arrays.asList(
+                    new Vocabulary("กวนโฮ้ย", "Kuan-Hoi", "สวัสดี", "ทักทาย"),
+                    new Vocabulary("ต้ายเจี่ย", "Tai-Jia", "ขอบคุณ", "ทักทาย"),
+                    new Vocabulary("ป้ายเจี่ย", "Pai-Jia", "ลาก่อน", "ทักทาย"),
+                    new Vocabulary("ฮดจิ่น", "Hod-Chin", "อร่อย", "อาหาร"),
+                    new Vocabulary("หน่านจ้าวน์", "Nan-Chawn", "กินข้าว", "อาหาร"),
+                    new Vocabulary("ออม", "Aom", "น้ำ", "อาหาร"),
+                    new Vocabulary("ม้วย", "Muay", "แม่", "ครอบครัว"),
+                    new Vocabulary("เตี่ย", "Tia", "พ่อ", "ครอบครัว"),
+                    new Vocabulary("ต่ง", "Tong", "ดวงดาว", "ธรรมชาติ"),
+                    new Vocabulary("จิ่ว", "Chiu", "นก", "สัตว์")
+                ));
+                break;
+            case 8: // ลัวะ
+                selected.setVocabularies(Arrays.asList(
+                    new Vocabulary("ปาเงอไม", "Pa-Nger-Mai", "สวัสดี", "ทักทาย"),
+                    new Vocabulary("ซะโม้ะ", "Sa-Moh", "ขอบคุณ", "ทักทาย"),
+                    new Vocabulary("โอ้ยอา", "Oui-Ah", "ลาก่อน", "ทักทาย"),
+                    new Vocabulary("แอลั่ก", "Ae-Lak", "อร่อย", "อาหาร"),
+                    new Vocabulary("ปอนประ", "Pawn-Pra", "กินข้าว", "อาหาร"),
+                    new Vocabulary("ระแอม", "Ra-Aem", "น้ำ", "อาหาร"),
+                    new Vocabulary("มะ", "Ma", "แม่", "ครอบครัว"),
+                    new Vocabulary("บะ", "Ba", "พ่อ", "ครอบครัว"),
+                    new Vocabulary("ซ้อะ", "Soh", "สุนัข", "สัตว์"),
+                    new Vocabulary("คะโช้ะ", "Kha-Choh", "ช้าง", "สัตว์")
+                ));
+                break;
         }
-
-        model.addAttribute("tribe", selected);
-        return "Member/tribe-detail";
     }
+
+    model.addAttribute("tribe", selected);
+    return "tribe-detail"; 
+}
 }

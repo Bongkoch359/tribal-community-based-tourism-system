@@ -53,37 +53,54 @@ public class SearchInfoService {
         }
     }
 
-    /**
-     * step 6.1-6.2: searchTour()
-     * ค้นหาทัวร์ชุมชนขั้นสูง (กรองทั้งชื่อทัวร์, จำนวนคนที่รับได้ และช่วงเวลาเดินทาง)
-     */
-    public List<Tour> searchTour(String keyword, Integer numGuest, String startDate, String endDate) {
-        try {
-            // แปลงค่าว่างให้เป็น null เพื่อให้เอาไปคิวรีได้ถูกต้อง
-            String kw = (keyword == null || keyword.isBlank()) ? null : keyword;
+   public List<Tour> searchTour(String keyword, Integer numGuest,
+                              String startDate, String endDate) {
+    try {
+        String kw = (keyword == null || keyword.isBlank()) ? null : keyword;
 
-            // ✨ แก้ตรงนี้: เปลี่ยนจาก searchAdvanced มาเรียก search ธรรมดาที่รับแค่ 2 ตัวแปร
-            return tourRepository.search(kw, numGuest);
-            
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
+        // แปลง String → java.sql.Date (null-safe)
+        java.sql.Date sd = parseDate(startDate);
+        java.sql.Date ed = parseDate(endDate);
 
-    /**
-     * step 7.1-7.2: searchHomestay()
-     * ค้นหาโฮมสเตย์/ที่พักชุมชน
-     */
-    public List<Homestay> searchHomestay(String keyword, Integer numGuest, String startDate, String endDate) {
-        try {
-            // ถ้าไม่ระบุคีย์เวิร์ด คืนค่าโฮมสเตย์ทั้งหมด
-            if (keyword == null || keyword.isBlank()) {
-                return homestayRepository.findAll();
-            }
-            // ค้นหาโฮมสเตย์จากชื่อที่ใกล้เคียง
-            return homestayRepository.findByHomestaynameContainingIgnoreCase(keyword);
-        } catch (Exception e) {
-            return new ArrayList<>();
+        // มีวันที่ → ใช้ query กรองช่วงเวลา
+        if (sd != null && ed != null) {
+            return tourRepository.searchWithDate(kw, numGuest, sd, ed);
         }
+        // ไม่มีวันที่ → ใช้ query เดิม
+        return tourRepository.search(kw, numGuest);
+
+    } catch (Exception e) {
+        return new ArrayList<>();
     }
+}
+
+public List<Homestay> searchHomestay(String keyword, Integer numGuest,
+                                      String startDate, String endDate) {
+    try {
+        String kw = (keyword == null || keyword.isBlank()) ? null : keyword;
+
+        java.sql.Date sd = parseDate(startDate);
+        java.sql.Date ed = parseDate(endDate);
+
+        if (sd != null && ed != null) {
+            return homestayRepository.searchWithDate(kw, sd, ed);
+        }
+        // ไม่มีวันที่ → คืนทั้งหมด/กรองแค่ keyword
+        if (kw == null) return homestayRepository.findAll();
+        return homestayRepository.findByHomestaynameContainingIgnoreCase(kw);
+
+    } catch (Exception e) {
+        return new ArrayList<>();
+    }
+}
+
+// helper แปลง String เป็น java.sql.Date
+private java.sql.Date parseDate(String dateStr) {
+    try {
+        if (dateStr == null || dateStr.isBlank()) return null;
+        return java.sql.Date.valueOf(dateStr); // รับ format yyyy-MM-dd ตรง ๆ
+    } catch (Exception e) {
+        return null;
+    }
+}
 }

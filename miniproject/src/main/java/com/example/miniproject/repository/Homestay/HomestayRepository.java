@@ -43,4 +43,25 @@ public interface HomestayRepository extends JpaRepository<Homestay, Integer> {
        "JOIN rd.roomtype rt WHERE rt.homestay.homestayid = :homestayid " +
        "AND b.bookingStatus = 'pending'")
    Long countPendingBookingByHomestayId(@Param("homestayid") Integer homestayid);
+
+
+   // ค้นหาโฮมสเตย์ที่มีห้องว่างในช่วงวันที่
+@Query("""
+    SELECT DISTINCT h FROM Homestay h
+    JOIN h.roomtypes r
+    WHERE (:keyword IS NULL
+           OR LOWER(h.homestayname) LIKE LOWER(CONCAT('%', :keyword, '%')))
+    AND r.status = 'เปิดจอง'
+    AND (:startDate IS NULL OR :endDate IS NULL OR NOT EXISTS (
+        SELECT d FROM Bookingroomdetail d
+        WHERE d.roomtype = r
+        AND NOT (d.checkoutdate <= :startDate OR d.checkindate >= :endDate)
+    ))
+    ORDER BY h.homestayname ASC
+""")
+List<Homestay> searchWithDate(
+    @Param("keyword")   String keyword,
+    @Param("startDate") java.sql.Date startDate,
+    @Param("endDate")   java.sql.Date endDate
+);
 }
