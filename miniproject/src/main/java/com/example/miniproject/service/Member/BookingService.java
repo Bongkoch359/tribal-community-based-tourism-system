@@ -310,8 +310,10 @@ public class BookingService {
         Integer children,
         String note,
         Boolean isBookerGoing,
-        String guestFirstname,
-        String guestLastname) {
+        String pickuptype,           // ✅ เพิ่ม
+        String pickuplocation,       // ✅ เพิ่ม
+        List<String> guestFirstnames,
+        List<String> guestLastnames) {
 
     // ── 1. Validate date ──────────────────────────────────
     LocalDate startDate = LocalDate.parse(tourDate);
@@ -364,7 +366,8 @@ public class BookingService {
     booking.setIsBookerGoing(
             isBookerGoing != null ? isBookerGoing : true);
     booking.setTotalamount(subtotal);
-
+    booking.setPickuptype(pickuptype);
+    booking.setPickuplocation(pickuplocation);
     bookingRepository.save(booking);
 
     // ── 7. สร้าง Bookingtourdetail ──────────────────────
@@ -389,22 +392,21 @@ public class BookingService {
     bookingtourdetailRepository.save(detail);
 
     // ── 8. Guest ─────────────────────────────────────────
-    if (Boolean.FALSE.equals(isBookerGoing)
-            && guestFirstname != null
-            && !guestFirstname.isBlank()) {
+    if (guestFirstnames != null && !guestFirstnames.isEmpty()) {
+        for (int i = 0; i < guestFirstnames.size(); i++) {
+            String fname = guestFirstnames.get(i);
+            if (fname == null || fname.isBlank()) continue;
 
-        Guest guest = new Guest();
+            String lname = (guestLastnames != null && i < guestLastnames.size())
+                    ? guestLastnames.get(i) : "";
 
-        guest.setGuestid(generateGuestId());
-        guest.setFirstname(guestFirstname.trim());
-        guest.setLastname(
-                guestLastname != null
-                        ? guestLastname.trim()
-                        : "");
-
-        guest.setBooking(booking);
-
-        guestRepository.save(guest);
+            Guest guest = new Guest();
+            guest.setGuestid(generateGuestId());
+            guest.setFirstname(fname.trim());
+            guest.setLastname(lname.trim());
+            guest.setBooking(booking);
+            guestRepository.save(guest);
+        }
     }
 
     return booking.getBookingid();

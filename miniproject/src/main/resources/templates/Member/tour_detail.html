@@ -912,61 +912,31 @@
         <div class="bk-divider"></div>
 
         <div class="bk-field">
-          <div class="bk-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            วันที่เดินทาง
-          </div>
-          <input type="date" class="bk-input" id="tourDate" />
-        </div>
+  <div class="bk-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="4" width="18" height="18" rx="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    วันที่เดินทาง
+  </div>
+  <input type="date" class="bk-input" id="tourDate" />
+</div>
 
-        <div class="bk-counter-row">
-          <div class="bk-counter-label">
-            ผู้ใหญ่
-            <small>฿<span id="adultUnitPriceLabel"
-                          th:text="${#numbers.formatDecimal(tour.adultprice, 0, 'COMMA', 0, 'POINT')}">850</span>/คน</small>
-          </div>
-          <div class="bk-counter">
-            <button class="bk-btn" onclick="changeCount('adult',-1)">−</button>
-            <span class="bk-count" id="adultCount">1</span>
-            <button class="bk-btn" onclick="changeCount('adult',1)">+</button>
-          </div>
-        </div>
-        <div class="bk-counter-row">
-          <div class="bk-counter-label">
-            เด็ก
-            <small>฿<span id="childUnitPriceLabel"
-                          th:text="${#numbers.formatDecimal(tour.childprice, 0, 'COMMA', 0, 'POINT')}">500</span>/คน</small>
-          </div>
-          <div class="bk-counter">
-            <button class="bk-btn" onclick="changeCount('child',-1)">−</button>
-            <span class="bk-count" id="childCount">0</span>
-            <button class="bk-btn" onclick="changeCount('child',1)">+</button>
-          </div>
-        </div>
+<div class="bk-divider"></div>
 
-        <div class="bk-divider"></div>
-
-        <div class="bk-summary"
-             th:attr="data-adult-price=${tour.adultprice}, data-child-price=${tour.childprice}">
-          <div class="bk-sum-row">
-            <span>ผู้ใหญ่ <span id="sumAdult">1</span> ×
-              ฿<span id="adultUnitPrice"
-                     th:text="${#numbers.formatDecimal(tour.adultprice, 0, 'COMMA', 0, 'POINT')}">850</span></span>
-            <span>฿<span id="sumAdultTotal">850</span></span>
-          </div>
-          <div class="bk-sum-row">
-            <span>เด็ก <span id="sumChild">0</span> ×
-              ฿<span id="childUnitPrice"
-                     th:text="${#numbers.formatDecimal(tour.childprice, 0, 'COMMA', 0, 'POINT')}">500</span></span>
-            <span>฿<span id="sumChildTotal">0</span></span>
-          </div>
-          <div class="bk-sum-row total">
-            <span>รวมทั้งสิ้น</span>
-            <span>฿<span id="grandTotal">850</span></span>
-          </div>
-        </div>
+<!-- แสดงราคาต่อคน ไม่คำนวณรวม -->
+<div class="bk-summary">
+  <div class="bk-sum-row">
+    <span>ราคาผู้ใหญ่</span>
+    <span>฿<span th:text="${#numbers.formatDecimal(tour.adultprice, 0, 'COMMA', 0, 'POINT')}">850</span>/คน</span>
+  </div>
+  <div class="bk-sum-row">
+    <span>ราคาเด็ก</span>
+    <span>฿<span th:text="${#numbers.formatDecimal(tour.childprice, 0, 'COMMA', 0, 'POINT')}">500</span>/คน</span>
+  </div>
+</div>
 
         <!-- ยังไม่ได้ล็อกอิน -->
         <th:block th:if="${session.loggedInMember == null
@@ -996,7 +966,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
             </svg>
-            ยกเลิกได้ฟรี 48 ชั่วโมงก่อนทริป
+            ยกเลิกได้ฟรี 24 ชั่วโมงก่อนทริป
           </div>
         </th:block>
 
@@ -1110,9 +1080,8 @@
     if (!date) { alert('กรุณาเลือกวันที่เดินทางก่อน'); return; }
     const tourId = document.querySelector('[data-tour-id]')?.dataset.tourId || '1';
    const params = new URLSearchParams({ 
-      tourdate: date,     // <-- เปลี่ยนตัวแปรฝั่งซ้ายเป็น tourdate
-      numAdult: adults, 
-      numChild: children 
+      tourdate: date,    // <-- เปลี่ยนตัวแปรฝั่งซ้ายเป็น tourdate
+      
     });
     window.location.href = `/booking/tour/${tourId}?${params}`;
   }

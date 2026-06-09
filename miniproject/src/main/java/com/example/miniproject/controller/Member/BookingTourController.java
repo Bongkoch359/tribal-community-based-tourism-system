@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
 
 import com.example.miniproject.entity.Member;
 import com.example.miniproject.entity.Tour;
@@ -55,17 +56,21 @@ public class BookingTourController {
     // ════════════════════════════════════════════════════════
 
     @PostMapping("/booking/tour/create")
-    public String createBooking(
-            @RequestParam("tourid") String tourId,
-            @RequestParam("tourdate") String tourDate,
-            @RequestParam("adult") Integer adult,
-            @RequestParam(value = "children", defaultValue = "0") Integer children,
-            @RequestParam(value = "note", required = false) String note,
-            @RequestParam(value = "isBookerGoing", defaultValue = "true") Boolean isBookerGoing,
-            @RequestParam(value = "guestFirstname", required = false) String guestFirstname,
-            @RequestParam(value = "guestLastname", required = false) String guestLastname,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+public String createBooking(
+        @RequestParam("tourid") String tourId,
+        @RequestParam("tourdate") String tourDate,
+        @RequestParam("adult") Integer adult,
+        @RequestParam(value = "children", defaultValue = "0") Integer children,
+        @RequestParam(value = "note", required = false) String note,
+        @RequestParam(value = "isBookerGoing", defaultValue = "true") Boolean isBookerGoing,
+        // ✅ เพิ่ม
+        @RequestParam(value = "pickuptype", defaultValue = "จุดรับส่วนกลาง") String pickuptype,
+        @RequestParam(value = "pickuplocation", required = false) String pickuplocation,
+        // ✅ เปลี่ยนเป็น List
+        @RequestParam(value = "guestFirstname", required = false) List<String> guestFirstnames,
+        @RequestParam(value = "guestLastname",  required = false) List<String> guestLastnames,
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
 
         Member member = (Member) session.getAttribute("loggedInMember");
 
@@ -75,16 +80,13 @@ public class BookingTourController {
 
         try {
 
-            String bookingId = bookingService.createTourBooking(
-                    member,
-                    tourId,
-                    tourDate,
-                    adult,
-                    children,
-                    note,
-                    isBookerGoing,
-                    guestFirstname,
-                    guestLastname);
+              String bookingId = bookingService.createTourBooking(
+            member, tourId, tourDate, adult, children, note,
+            isBookerGoing,
+            pickuptype,      
+            pickuplocation,  
+            guestFirstnames, 
+            guestLastnames);
 
             return "redirect:/member/bookings/detail/" + bookingId;
 
