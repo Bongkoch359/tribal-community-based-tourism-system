@@ -9,6 +9,7 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
+    --green-950: #0a1f12;
     --green-dark:#1a472a;
     --green-main:#2d7a4f;
     --green-light:#d8f3dc;
@@ -41,16 +42,26 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 
 /* ── TOP BAR ── */
 .top-bar {
-    background:var(--green-dark); padding:8px 5%;
-    display:flex; align-items:center; justify-content:flex-end; gap:20px;
+  background: var(--green-950);
+  padding: 8px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
 }
 .top-bar a {
-    color:rgba(255,255,255,.55); font-size:13px; font-weight:500;
-    transition:color .15s; display:flex; align-items:center; gap:5px; text-decoration:none;
+  color: rgba(255,255,255,0.55);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color .15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
-.top-bar a:hover { color:#fff; }
-.top-bar a svg { width:13px; height:13px; }
-.top-bar-divider { width:1px; height:13px; background:rgba(255,255,255,.14); }
+.top-bar a:hover { color: #fff; }
+.top-bar a svg { width: 14px; height: 14px; }
+.top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
+
 
 /* ── NAVBAR ── */
 .navbar {
@@ -362,16 +373,28 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 
 <!-- ══ TOP BAR ══ -->
 <div class="top-bar">
-    <a href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
-        ภาษาไทย
-    </a>
-    <div class="top-bar-divider"></div>
-    <a href="/member/bookings/list">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-        การจองของฉัน
-    </a>
+  <a href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+    </svg>
+    ภาษาไทย
+  </a>
+  <div class="top-bar-divider"></div>
+  <a href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    ช่วยเหลือ
+  </a>
+  <div class="top-bar-divider"></div>
+  <a href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+    </svg>
+    การจองของฉัน
+  </a>
 </div>
+
 
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar">

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบท่องเที่ยวชุมชนชนเผ่า - กรอกข้อมูลการจอง</title>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -262,15 +261,16 @@ img { display: block; }
   font-family: 'Sarabun', sans-serif;
 }
 
-/* SEAT AVAILABILITY */
-.seat-bar-wrap { margin-top: 16px; }
-.seat-bar-label { font-size: 12px; color: var(--neutral-500); font-weight: 600; margin-bottom: 6px; display: flex; justify-content: space-between; }
-.seat-bar-label span:last-child { font-weight: 700; color: var(--neutral-800); }
-.seat-bar-track { height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden; }
-.seat-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--green-400), var(--green-600)); transition: width .3s; }
-.seat-remaining { margin-top: 6px; font-size: 12px; color: var(--green-700); font-weight: 700; }
-.seat-remaining.warn { color: var(--amber-600); }
-.seat-remaining.full { color: #dc2626; }
+/* SEAT STATUS BADGE */
+.seat-status { margin-top: 14px; }
+.seat-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  border-radius: var(--r-md); padding: 9px 14px;
+  font-size: 13px; font-weight: 700;
+}
+.seat-badge.full  { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+.seat-badge.low   { background: #fff8ed; color: #92400e; border: 1px solid #fcd34d; }
+.seat-badge.open  { background: var(--green-50); color: var(--green-700); border: 1px solid var(--green-200); }
 
 /* RADIO GROUP */
 .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
@@ -356,6 +356,10 @@ img { display: block; }
   box-shadow: 0 6px 24px rgba(232,150,10,0.50); transform: translateY(-1px);
 }
 .btn-confirm:active { transform: scale(0.98); }
+.btn-confirm:disabled {
+  background: var(--neutral-300); color: var(--neutral-500);
+  box-shadow: none; cursor: not-allowed; transform: none;
+}
 .no-fee-note {
   text-align: center; font-size: 12px; color: var(--green-700); font-weight: 600;
   margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;
@@ -372,11 +376,19 @@ img { display: block; }
   .passenger-row { grid-template-columns: 1fr; }
 }
     </style>
+
+    <!-- ✅ inject ค่าจาก Thymeleaf เข้า JS ก่อน Alpine load -->
+    <script th:inline="javascript">
+      const ADULT_PRICE     = /*[[${tour.adultprice}]]*/ 850;
+      const CHILD_PRICE     = /*[[${tour.childprice}]]*/ 500;
+      const AVAILABLE_SEATS = /*[[${availableSeats}]]*/ 0;
+    </script>
+
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body x-data="{
-  adultPrice: /*[[${tour.adultprice}]]*/ 850,
-  childPrice: /*[[${tour.childprice}]]*/ 500,
-  maxSeats: /*[[${tour.maxSeatstour}]]*/ 20,
+  adultPrice: ADULT_PRICE,
+  childPrice: CHILD_PRICE,
   numOfAdult: 1,
   numOfChild: 0,
   isBookingForOther: false,
@@ -386,7 +398,6 @@ img { display: block; }
     return Array.from({ length: this.numOfGuest }, (_, i) => i + 1);
   },
   get guestListSelf() {
-    /* ถ้าไปเอง คนแรกคือตัวเอง ไม่ต้องกรอก → กรอกคนที่เหลือ */
     return Array.from({ length: this.numOfGuest - 1 }, (_, i) => i + 2);
   }
 }">
@@ -436,7 +447,8 @@ img { display: block; }
   </div>
   <div class="nav-divider"></div>
   <div class="auth-group">
-    <div class="user-menu-wrapper" id="userMenuWrapper">
+    <!-- ✅ null-safe: แสดงเฉพาะถ้า login แล้ว -->
+    <div class="user-menu-wrapper" id="userMenuWrapper" th:if="${session.loggedInMember != null}">
       <button class="btn-user-menu" onclick="toggleUserMenu()">
         <div class="user-avatar">
           <span th:text="${#strings.substring(session.loggedInMember.firstname, 0, 1)}">ม</span>
@@ -563,20 +575,19 @@ img { display: block; }
               </div>
             </div>
 
-            <!-- ที่นั่งคงเหลือ -->
-            <div class="seat-bar-wrap">
-              <div class="seat-bar-label">
-                <span>ที่นั่งที่เลือก</span>
-                <span x-text="numOfGuest + ' / ' + maxSeats + ' ที่'"></span>
-              </div>
-              <div class="seat-bar-track">
-                <div class="seat-bar-fill" :style="'width:' + Math.min(numOfGuest / maxSeats * 100, 100) + '%'"></div>
-              </div>
-              <div class="seat-remaining"
-                   :class="{ 'warn': numOfGuest >= maxSeats * 0.8, 'full': numOfGuest >= maxSeats }"
-                   x-text="numOfGuest >= maxSeats ? '⚠️ เต็มจำนวนที่นั่งแล้ว' : '✓ เหลือที่นั่งว่างในรอบนี้'">
-              </div>
+            <!-- ✅ สถานะที่นั่ง — ใช้ Thymeleaf ล้วน ไม่ต้องพึ่ง Alpine -->
+            <div class="seat-status">
+              <span class="seat-badge full" th:if="${availableSeats <= 0}">
+                ❌ ทัวร์รอบนี้เต็มแล้ว ไม่สามารถจองได้
+              </span>
+              <span class="seat-badge low" th:if="${availableSeats > 0 and availableSeats <= 3}">
+                ⚠️ ที่นั่งเหลือน้อย — รีบจองด่วน!
+              </span>
+              <span class="seat-badge open" th:if="${availableSeats > 3}">
+                ✓ ยังมีที่นั่งว่าง
+              </span>
             </div>
+
           </div>
         </div>
 
@@ -631,23 +642,20 @@ img { display: block; }
               3. รายชื่อผู้เดินทาง
             </div>
 
-            <!-- กรณีไปเอง: แสดงชื่อตัวเองก่อน แล้วกรอกคนที่เหลือ -->
+            <!-- กรณีไปเอง -->
             <template x-if="!isBookingForOther">
               <div>
                 <div class="info-tip info-tip-green">
                   📋 กรอกชื่อจริงของผู้เดินทางทุกคน เพื่อใช้ยืนยันตัวตนในวันทัวร์
                 </div>
-
-                <!-- ชื่อตัวเองแสดงเป็น card ล็อก -->
                 <div class="booker-self-card">
                   <div class="icon">🙋</div>
                   <div>
-                    <div class="name" th:text="${session.loggedInMember.firstname + ' ' + session.loggedInMember.lastname}">ชื่อ</div>
+                    <div class="name" th:if="${session.loggedInMember != null}"
+                         th:text="${session.loggedInMember.firstname + ' ' + session.loggedInMember.lastname}">ชื่อ</div>
                     <div class="note">ผู้จอง — ใช้ชื่อจากโปรไฟล์</div>
                   </div>
                 </div>
-
-                <!-- กรอกคนที่เหลือ (numOfGuest - 1 คน) -->
                 <div class="guest-list">
                   <template x-for="i in guestListSelf" :key="i">
                     <div class="guest-card">
@@ -661,19 +669,15 @@ img { display: block; }
                       <div class="form-grid-2">
                         <div class="form-group">
                           <label class="form-label">ชื่อจริง <span class="req">*</span></label>
-                          <input type="text" name="guestFirstname" placeholder="ชื่อจริง"
-                                 class="form-input" required>
+                          <input type="text" name="guestFirstname" placeholder="ชื่อจริง" class="form-input" required>
                         </div>
                         <div class="form-group">
                           <label class="form-label">นามสกุล <span class="req">*</span></label>
-                          <input type="text" name="guestLastname" placeholder="นามสกุล"
-                                 class="form-input" required>
+                          <input type="text" name="guestLastname" placeholder="นามสกุล" class="form-input" required>
                         </div>
                       </div>
                     </div>
                   </template>
-
-                  <!-- ถ้าจอง 1 คน (ตัวเองคนเดียว) -->
                   <template x-if="numOfGuest === 1">
                     <div class="info-tip" style="margin-top:4px;">
                       👤 จองสำหรับตัวเองคนเดียว ไม่ต้องกรอกชื่อเพิ่มเติม
@@ -683,7 +687,7 @@ img { display: block; }
               </div>
             </template>
 
-            <!-- กรณีจองให้คนอื่น: กรอกทุกคน -->
+            <!-- กรณีจองให้คนอื่น -->
             <template x-if="isBookingForOther">
               <div>
                 <div class="info-tip">
@@ -702,13 +706,11 @@ img { display: block; }
                       <div class="form-grid-2">
                         <div class="form-group">
                           <label class="form-label">ชื่อจริง <span class="req">*</span></label>
-                          <input type="text" name="guestFirstname" placeholder="ชื่อจริง"
-                                 class="form-input" required>
+                          <input type="text" name="guestFirstname" placeholder="ชื่อจริง" class="form-input" required>
                         </div>
                         <div class="form-group">
                           <label class="form-label">นามสกุล <span class="req">*</span></label>
-                          <input type="text" name="guestLastname" placeholder="นามสกุล"
-                                 class="form-input" required>
+                          <input type="text" name="guestLastname" placeholder="นามสกุล" class="form-input" required>
                         </div>
                       </div>
                     </div>
@@ -786,11 +788,14 @@ img { display: block; }
             </div>
           </div>
 
+          <!-- ✅ ปิดปุ่มถ้าเต็ม -->
           <button type="button" class="btn-confirm"
-                  onclick="document.getElementById('bookingForm').submit();">
-            🚀 ยืนยันการจองตอนนี้
+                  th:disabled="${availableSeats <= 0}"
+                  th:onclick="${availableSeats <= 0} ? '' : 'document.getElementById(\'bookingForm\').submit();'">
+            <span th:if="${availableSeats <= 0}">❌ ทัวร์รอบนี้เต็มแล้ว</span>
+            <span th:if="${availableSeats > 0}">🚀 ยืนยันการจองตอนนี้</span>
           </button>
-          <div class="no-fee-note">🛡️ ไม่มีค่าธรรมเนียมการจองเพิ่มเติม</div>
+          <div class="no-fee-note" th:if="${availableSeats > 0}">🛡️ ไม่มีค่าธรรมเนียมการจองเพิ่มเติม</div>
         </div>
       </div>
     </div>
@@ -814,22 +819,22 @@ window.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('tourdate-input');
     if (input) {
       input.value = d;
-      // อัพเดต sidebar date display
       const parts = d.split('-');
       document.getElementById('sidebar-date').textContent =
         parts[2] + '/' + parts[1] + '/' + (parseInt(parts[0]) + 543);
     }
   }
-
-  // อัพเดต sidebar date เมื่อเปลี่ยนวัน
-  document.getElementById('tourdate-input').addEventListener('change', function() {
-    const val = this.value;
-    if (val) {
-      const parts = val.split('-');
-      document.getElementById('sidebar-date').textContent =
-        parts[2] + '/' + parts[1] + '/' + (parseInt(parts[0]) + 543);
-    }
-  });
+  const dateInput = document.getElementById('tourdate-input');
+  if (dateInput) {
+    dateInput.addEventListener('change', function() {
+      const val = this.value;
+      if (val) {
+        const parts = val.split('-');
+        document.getElementById('sidebar-date').textContent =
+          parts[2] + '/' + parts[1] + '/' + (parseInt(parts[0]) + 543);
+      }
+    });
+  }
 });
 </script>
 </body>

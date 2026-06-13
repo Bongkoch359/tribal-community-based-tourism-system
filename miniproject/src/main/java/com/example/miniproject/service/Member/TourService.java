@@ -46,6 +46,10 @@ public class TourService {
                 .filter(t -> "เปิดจอง".equalsIgnoreCase(t.getStatus()));
     }
 
+    //ใช้เฉพาะหน้าจองทัวร์ (fetch bookings มาด้วย)
+    public Optional<Tour> getTourByIdWithBookings(String tourid) {
+        return tourRepository.findByIdWithBookings(tourid);
+    }
     // ─────────────────────────────────────────────────────────
     // ดึงทัวร์ตาม ID — ไม่กรองสถานะ (สำหรับ manager ดูรายละเอียด)
     // ─────────────────────────────────────────────────────────

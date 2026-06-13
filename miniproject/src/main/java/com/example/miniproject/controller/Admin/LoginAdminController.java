@@ -1,10 +1,17 @@
 package com.example.miniproject.controller.Admin;
 
 import java.util.Optional;
+import java.util.List;
+import org.springframework.ui.Model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import com.example.miniproject.entity.Communitymanager;
+import com.example.miniproject.entity.Homestayowner;
+import com.example.miniproject.entity.enums.ManagerStatus;
+import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
+import com.example.miniproject.service.Admin.ManagerService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.miniproject.entity.Admin;
@@ -17,6 +24,12 @@ public class LoginAdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private HomestayOwnerRepository ownerRepository;
+
+    @Autowired
+    private ManagerService managerService;
 
     @GetMapping("/")
 public String home() {
@@ -32,13 +45,46 @@ public String home() {
         return "Admin/admin_login";
     }
 
+// ── แก้ตรงนี้: เพิ่ม Model และดึงข้อมูลจริงจาก DB ──
     @GetMapping("/admin/dashboard")
-    public String dashboard(HttpSession session) {
+    public String dashboard(HttpSession session, Model model) {
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
+ 
+        // ข้อมูล Homestay
+        List<Homestayowner> allOwners = ownerRepository.findAll();
+ 
+        long homestayPending = allOwners.stream()
+            .filter(o -> (o.getVerificationstatus() == null || !o.getVerificationstatus())
+                      && !"REJECTED".equals(o.getAccountstatus()))
+            .count();
+ 
+        long homestayApproved = allOwners.stream()
+            .filter(o -> Boolean.TRUE.equals(o.getVerificationstatus()))
+            .count();
+ 
+        long homestayRejected = allOwners.stream()
+            .filter(o -> "REJECTED".equals(o.getAccountstatus()))
+            .count();
+ 
+        // ข้อมูล Manager
+        List<Communitymanager> managers = managerService.getAll();
+        long managerTotal  = managers != null ? managers.size() : 0;
+        long managerActive = managers != null ? managers.stream()
+            .filter(m -> m.getAccountstatus() == ManagerStatus.ACTIVE)
+            .count() : 0;
+ 
+        model.addAttribute("homestayTotal",    allOwners.size());
+        model.addAttribute("homestayPending",  homestayPending);
+        model.addAttribute("homestayApproved", homestayApproved);
+        model.addAttribute("homestayRejected", homestayRejected);
+        model.addAttribute("managerTotal",     managerTotal);
+        model.addAttribute("managerActive",    managerActive);
+ 
         return "Admin/admin_dashboard";
     }
+ 
 
     // step 3-6: validate → loginAdmin() → return T/F
     @PostMapping("/admin/login")

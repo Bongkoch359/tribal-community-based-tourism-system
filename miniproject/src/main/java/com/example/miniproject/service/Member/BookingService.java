@@ -341,12 +341,23 @@ public class BookingService {
                         + tour.getMinSeatstour() + " คน");
     }
 
-    if (tour.getMaxSeatstour() != null
-            && totalGuest > tour.getMaxSeatstour()) {
-
+   
+if (tour.getMaxSeatstour() != null) {
+    int bookedSeats = tour.getBookingTourDetails().stream()
+        .filter(td -> td.getBooking() != null
+                   && td.getBooking().getBookingStatus() != BookingStatus.CANCEL)
+        .mapToInt(td -> {
+            int a = td.getNumofadult() != null ? td.getNumofadult() : 0;
+            int c = td.getNumofchild() != null ? td.getNumofchild() : 0;
+            return a + c;
+        })
+        .sum();
+    int availableSeats = tour.getMaxSeatstour() - bookedSeats;
+    if (totalGuest > availableSeats) {
         throw new IllegalArgumentException(
-                "จำนวนผู้เข้าร่วมเกินที่กำหนด");
+            "ที่นั่งคงเหลือไม่เพียงพอ (เหลือ " + availableSeats + " ที่นั่ง)");
     }
+}
 
     // ── 5. คำนวณราคา ────────────────────────────────────
     double subtotal =

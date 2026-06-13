@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ท่องเที่ยวชุมชนเผ่า – สัมผัสวิถีชีวิตบนดอย</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/search.css}" href="../static/css/search.css">
+  <link rel="stylesheet" th:href="@{/css/search.css}" href="../static/css/Member/search.css">
 </head>
 <body>
 
@@ -46,7 +46,7 @@
       </svg>
     </div>
     <div class="brand-name">
-      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
+      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
       <span class="brand-name-line2">Tribal Community Tourism</span>
     </div>
   </a>
@@ -809,7 +809,7 @@
           <div class="f-icon">
             <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
           </div>
-          ท่องเที่ยวชุมชนเผ่า
+          ระบบท่องเที่ยวชุมชนชนเผ่า
         </div>
         <p class="footer-desc">
           แพลตฟอร์มท่องเที่ยวที่เชื่อมโยงนักท่องเที่ยวกับชุมชนชนเผ่าภาคเหนือ เพื่อประสบการณ์ที่แท้จริงและยั่งยืน
@@ -829,9 +829,12 @@
       </div>
       <div class="footer-col">
         <h4>บริการ</h4>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>การจองของฉัน</a>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>ศูนย์ช่วยเหลือ</a>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>ลงทะเบียนโฮมสเตย์</a>
+        <a th:href="@{/member/bookings/list}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6"/></svg>การจองของฉัน</a>
+        <a th:href="@{/owner/register}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6"/></svg>ลงทะเบียนโฮมสเตย์</a>
       </div>
       <div class="footer-col">
         <h4>ติดต่อ</h4>
@@ -841,7 +844,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 ระบบท่องเที่ยวชุมชนเผ่า · สงวนลิขสิทธิ์</span>
+      <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า · สงวนลิขสิทธิ์</span>
       <div class="footer-bottom-links">
         <a href="#">นโยบายความเป็นส่วนตัว</a>
         <a href="#">เงื่อนไขการใช้งาน</a>
