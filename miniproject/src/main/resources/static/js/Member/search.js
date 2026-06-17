@@ -46,26 +46,22 @@ function switchTab(type) {
     block.classList.toggle('show', block.dataset.type === type);
   });
 
-  // 5. ✅ Toggle search fields ตาม tab
+  // 5. Toggle search fields ตาม tab
   const dateTour     = document.getElementById('date-tour-wrapper');
   const dateRange    = document.getElementById('date-range-wrapper');
   const guestWrapper = document.getElementById('guest-wrapper');
 
-  // ซ่อนทั้งหมดก่อน
   if (dateTour)     dateTour.style.display     = 'none';
   if (dateRange)    dateRange.style.display    = 'none';
   if (guestWrapper) guestWrapper.style.display = 'none';
 
   if (type === 'tour') {
-    // Tour: วันที่เดินทาง (1 วัน) + จำนวนผู้เดินทาง
     if (dateTour)     dateTour.style.display     = 'flex';
     if (guestWrapper) guestWrapper.style.display = 'flex';
   } else if (type === 'homestay') {
-    // Homestay: วันเข้า-ออก + จำนวนผู้เข้าพัก
     if (dateRange)    dateRange.style.display    = 'flex';
     if (guestWrapper) guestWrapper.style.display = 'flex';
   }
-  // activity: ไม่แสดงวันที่และจำนวนคน
 
   // 6. Sync tour endDate = startDate
   if (type === 'tour') {
@@ -133,9 +129,15 @@ function toggleUserMenu() {
   if (wrapper) wrapper.classList.toggle('open');
 }
 
-document.addEventListener('click', function (e) {
+/* ── Click ข้างนอกปิด dropdown ทั้งหมด ── */
+document.addEventListener('click', function(e) {
+  // ปิด user menu
   const wrapper = document.getElementById('userMenuWrapper');
   if (wrapper && !wrapper.contains(e.target)) wrapper.classList.remove('open');
+
+  // ปิด login dropdown
+  const dropdown = document.querySelector('.login-dropdown');
+  if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove('open');
 });
 
 /* ── Init ── */
@@ -152,4 +154,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!type || !tabCfg[type]) type = 'activity';
 
   switchTab(type);
+
+  // Login Dropdown
+  const dropdown = document.querySelector('.login-dropdown');
+  const btn      = document.querySelector('.btn-login');
+
+  if (btn && dropdown) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+  }
 });

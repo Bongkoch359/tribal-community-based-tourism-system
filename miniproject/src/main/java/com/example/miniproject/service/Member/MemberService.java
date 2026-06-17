@@ -14,39 +14,41 @@ public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
 
-    // ─── Register User ────────────────────────────────────────────────
-    public boolean registerUser(Member member, String confirmPassword) {
+    public String registerUser(Member member, String confirmPassword) {
 
-        System.out.println("Registering: " + member.getFirstname() + " " + member.getLastname());
+    System.out.println("Registering: " + member.getFirstname() + " " + member.getLastname());
 
-        if (member.getFirstname() == null || member.getFirstname().isBlank() ||
-            member.getLastname()  == null || member.getLastname().isBlank()  ||
-            member.getEmail()     == null || member.getEmail().isBlank()     ||
-            member.getPassword()  == null || member.getPassword().isBlank()) {
-            return false;
-        }
-
-        if (memberRepository.existsByEmail(member.getEmail())) {
-            return false;
-        }
-
-        if (!member.getPassword().equals(confirmPassword)) {
-            return false;
-        }
-
-        if (member.getMemberid() == null || member.getMemberid().isBlank()) {
-            String generatedId = "M" + System.currentTimeMillis();
-            member.setMemberid(generatedId);
-        }
-
-        try {
-            memberRepository.save(member);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    // Alternate Flow 3.1 — ข้อมูลไม่ครบ
+    if (member.getFirstname() == null || member.getFirstname().isBlank() ||
+        member.getLastname()  == null || member.getLastname().isBlank()  ||
+        member.getEmail()     == null || member.getEmail().isBlank()     ||
+        member.getPassword()  == null || member.getPassword().isBlank()) {
+        return "กรุณากรอกข้อมูลให้ถูกต้อง";
     }
+
+    // Alternate Flow 5.1.1 — email ซ้ำ
+    if (memberRepository.existsByEmail(member.getEmail())) {
+        return "ข้อมูลผู้ใช้ซ้ำ กรุณาลองใหม่อีกครั้ง";
+    }
+
+    // รหัสผ่านไม่ตรงกัน
+    if (!member.getPassword().equals(confirmPassword)) {
+        return "รหัสผ่านไม่ตรงกัน";
+    }
+
+    if (member.getMemberid() == null || member.getMemberid().isBlank()) {
+        String generatedId = "M" + System.currentTimeMillis();
+        member.setMemberid(generatedId);
+    }
+
+    try {
+        memberRepository.save(member);
+        return "SUCCESS";
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "เกิดข้อผิดพลาด กรุณาลองใหม่";
+    }
+}
 
     // ─── Login Member ─────────────────────────────────────────────────
     public String loginMember(String email, String password) {

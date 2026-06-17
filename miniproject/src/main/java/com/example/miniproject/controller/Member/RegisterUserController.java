@@ -19,20 +19,20 @@ public class RegisterUserController {
         model.addAttribute("member", new Member());
         return "Member/member_register";
     }
+@PostMapping
+public String registerUser(@ModelAttribute Member member,
+                           @RequestParam String confirmPassword,
+                           Model model) {
 
-    @PostMapping
-    public String registerUser(@ModelAttribute Member member,
-                               @RequestParam String confirmPassword,
-                               Model model) {
+    String result = memberService.registerUser(member, confirmPassword);
 
-        boolean success = memberService.registerUser(member, confirmPassword);
-
-        if (success) {
-            return "redirect:/member/login?registered=true";
-        }
-
-        model.addAttribute("errorMessage", "กรุณากรอกข้อมูลให้ถูกต้อง หรืออีเมลนี้มีผู้ใช้แล้ว");
-        model.addAttribute("member", member);
-        return "Member/member_register";
+    if ("SUCCESS".equals(result)) {
+        return "redirect:/member/login?registered=true";
     }
+
+    // ส่ง errorMessage ที่ได้จาก Service ไปแสดงใน HTML ตรงๆ
+    model.addAttribute("errorMessage", result);
+    model.addAttribute("member", member);
+    return "Member/member_register";
+}
 }

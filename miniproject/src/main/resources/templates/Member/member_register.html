@@ -42,7 +42,7 @@
     a { text-decoration: none; color: inherit; }
     button { font-family: 'Sarabun', sans-serif; cursor: pointer; }
 
-    /* ─── TOP BAR ─────────────────────────────── */
+    /* TOP BAR */
     .top-bar {
       background: var(--green-950);
       padding: 8px 5%;
@@ -61,7 +61,7 @@
     .top-bar a svg { width: 14px; height: 14px; }
     .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
 
-    /* ─── NAVBAR ─────────────────────────────── */
+    /* NAVBAR */
     .navbar {
       background: var(--green-800);
       height: var(--navbar-h);
@@ -122,7 +122,7 @@
     .btn-login:active { transform: scale(0.97); }
     .btn-login svg { width: 17px; height: 17px; }
 
-    /* ─── PAGE LAYOUT ─────────────────────────── */
+    /* PAGE LAYOUT */
     .page-body {
       min-height: calc(100vh - var(--navbar-h) - 38px);
       display: flex;
@@ -196,6 +196,16 @@
       box-shadow: 0 0 0 3px rgba(82,183,136,0.14);
     }
     .form-control::placeholder { color: #c0bdb8; font-weight: 400; }
+
+    /* เพิ่ม: input ที่ error */
+    .form-control.input-error {
+      border-color: #fca5a5;
+      background: #fff8f8;
+    }
+    .form-control.input-error:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+    }
 
     .btn-submit {
       width: 100%;
@@ -309,7 +319,7 @@
       <p>กรอกข้อมูลด้านล่างเพื่อสร้างบัญชีใหม่</p>
     </div>
 
-    <!-- Alerts -->
+    <!-- Server-side Alerts (Thymeleaf) -->
     <div th:if="${errorMessage}" class="alert alert-error">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
@@ -324,7 +334,16 @@
       <span th:text="${successMessage}"></span>
     </div>
 
-    <form th:action="@{/member/register}" method="post">
+    <!-- Client-side Alert (JS) — ซ่อนไว้ก่อน แสดงเมื่อ JS เจอ error -->
+    <div id="js-alert" class="alert alert-error" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="js-alert-msg"></span>
+    </div>
+
+    <form th:action="@{/member/register}" method="post" id="register-form" novalidate>
 
       <div class="sec-label">ข้อมูลส่วนตัว</div>
 
@@ -333,14 +352,14 @@
           <label class="form-label">ชื่อ <span class="req">*</span></label>
           <div class="input-wrap">
             <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input class="form-control" type="text" name="firstname" placeholder="ชื่อ" required/>
+            <input class="form-control" type="text" name="firstname" id="firstname" placeholder="ชื่อ"/>
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">นามสกุล <span class="req">*</span></label>
           <div class="input-wrap">
             <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input class="form-control" type="text" name="lastname" placeholder="นามสกุล" required/>
+            <input class="form-control" type="text" name="lastname" id="lastname" placeholder="นามสกุล"/>
           </div>
         </div>
       </div>
@@ -349,7 +368,7 @@
         <label class="form-label">อีเมล <span class="req">*</span></label>
         <div class="input-wrap">
           <svg class="input-icon" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-          <input class="form-control" type="email" name="email" placeholder="example@email.com" required/>
+          <input class="form-control" type="email" name="email" id="email" placeholder="example@email.com"/>
         </div>
       </div>
 
@@ -384,7 +403,7 @@
         <label class="form-label">รหัสผ่าน <span class="req">*</span></label>
         <div class="input-wrap">
           <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          <input class="form-control" type="password" name="password" placeholder="กรอกรหัสผ่าน" required/>
+          <input class="form-control" type="password" name="password" id="password" placeholder="กรอกรหัสผ่าน"/>
         </div>
       </div>
 
@@ -392,7 +411,7 @@
         <label class="form-label">ยืนยันรหัสผ่าน <span class="req">*</span></label>
         <div class="input-wrap">
           <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          <input class="form-control" type="password" name="confirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง" required/>
+          <input class="form-control" type="password" name="confirmPassword" id="confirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง"/>
         </div>
       </div>
 
@@ -408,6 +427,72 @@
 
   </div>
 </div>
+
+<script>
+  document.getElementById('register-form').addEventListener('submit', function(e) {
+    const fields = {
+      firstname:       document.getElementById('firstname'),
+      lastname:        document.getElementById('lastname'),
+      email:           document.getElementById('email'),
+      password:        document.getElementById('password'),
+      confirmPassword: document.getElementById('confirmPassword')
+    };
+
+    Object.values(fields).forEach(el => el.classList.remove('input-error'));
+    hideAlert();
+
+    // 1. ช่องบังคับว่างไหม
+    var emptyFound = false;
+    Object.values(fields).forEach(el => {
+      if (!el.value.trim()) {
+        el.classList.add('input-error');
+        emptyFound = true;
+      }
+    });
+    if (emptyFound) {
+      e.preventDefault();
+      showAlert('กรุณากรอกข้อมูลให้ถูกต้อง');
+      return;
+    }
+
+    // 2. เบอร์โทรต้องเป็นตัวเลข 10 หลัก (ถ้ากรอก)
+    const phone = document.querySelector('[name="phone"]').value.trim();
+    if (phone && !/^[0-9]{10}$/.test(phone)) {
+      document.querySelector('[name="phone"]').classList.add('input-error');
+      e.preventDefault();
+      showAlert('กรุณากรอกเบอร์โทรให้ถูกต้อง (ตัวเลข 10 หลัก)');
+      return;
+    }
+
+    // 3. รหัสผ่านต้องมีอย่างน้อย 6 ตัว
+    if (fields.password.value.length < 6) {
+      fields.password.classList.add('input-error');
+      e.preventDefault();
+      showAlert('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
+      return;
+    }
+
+    // 4. รหัสผ่านไม่ตรงกัน
+    if (fields.password.value !== fields.confirmPassword.value) {
+      fields.password.classList.add('input-error');
+      fields.confirmPassword.classList.add('input-error');
+      e.preventDefault();
+      showAlert('รหัสผ่านไม่ตรงกัน');
+      return;
+    }
+  });
+
+  function showAlert(msg) {
+    var box = document.getElementById('js-alert');
+    document.getElementById('js-alert-msg').textContent = msg;
+    box.style.display = 'flex';
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function hideAlert() {
+    document.getElementById('js-alert').style.display = 'none';
+  }
+</script>
 
 </body>
 </html>

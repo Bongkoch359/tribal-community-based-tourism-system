@@ -34,7 +34,6 @@
       --neutral-50:  #fafaf9;
       --white: #ffffff;
       --navbar-h: 100px;
-      --shadow-xl: 0 24px 64px rgba(0,0,0,0.16), 0 8px 20px rgba(0,0,0,0.08);
       --r-sm: 8px;
       --r-md: 12px;
       --r-lg: 16px;
@@ -53,7 +52,7 @@
     a { text-decoration: none; color: inherit; }
     button { font-family: 'Sarabun', sans-serif; cursor: pointer; }
 
-    /* ─── TOP BAR ─────────────────────────────── */
+    /* TOP BAR */
     .top-bar {
       background: var(--green-950);
       padding: 8px 5%;
@@ -64,18 +63,15 @@
     }
     .top-bar a {
       color: rgba(255,255,255,0.55);
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 14px; font-weight: 500;
       transition: color .15s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      display: flex; align-items: center; gap: 5px;
     }
     .top-bar a:hover { color: #fff; }
     .top-bar a svg { width: 14px; height: 14px; }
     .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
 
-    /* ─── NAVBAR ─────────────────────────────── */
+    /* NAVBAR */
     .navbar {
       background: var(--green-800);
       height: var(--navbar-h);
@@ -88,14 +84,9 @@
       z-index: 1000;
       box-shadow: 0 3px 16px rgba(0,0,0,0.28);
     }
-
     .navbar-brand {
-      color: #fff;
-      margin-right: auto;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-shrink: 0;
+      color: #fff; margin-right: auto;
+      display: flex; align-items: center; gap: 14px; flex-shrink: 0;
     }
     .brand-icon {
       width: 48px; height: 48px;
@@ -113,10 +104,8 @@
     .nav-links { display: flex; align-items: center; gap: 2px; }
     .nav-link {
       color: rgba(255,255,255,0.80);
-      font-size: 16px;
-      font-weight: 600;
-      padding: 10px 16px;
-      border-radius: var(--r-sm);
+      font-size: 16px; font-weight: 600;
+      padding: 10px 16px; border-radius: var(--r-sm);
       transition: background .15s, color .15s;
       white-space: nowrap;
       display: flex; align-items: center; gap: 7px;
@@ -125,10 +114,8 @@
     .nav-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
     .nav-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.14); margin: 0 8px; }
-
     .auth-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
-    /* Register button */
     .btn-register {
       background: var(--amber-500);
       border: none; color: #fff;
@@ -144,7 +131,7 @@
     .btn-register:active { transform: scale(0.97); }
     .btn-register svg { width: 17px; height: 17px; }
 
-    /* ─── PAGE BODY ─────────────────────────── */
+    /* PAGE BODY */
     .page-body {
       min-height: calc(100vh - var(--navbar-h) - 38px);
       display: flex;
@@ -153,7 +140,7 @@
       padding: 48px 24px 64px;
     }
 
-    /* ─── FORM CARD ──────────────────────────── */
+    /* FORM CARD */
     .form-card {
       background: #fff;
       border-radius: 18px;
@@ -176,10 +163,7 @@
       width: 28px; height: 28px;
       stroke: var(--green-800); fill: none; stroke-width: 1.8;
     }
-    .form-card-header h1 {
-      font-size: 26px; font-weight: 800;
-      color: var(--neutral-800); margin-bottom: 6px;
-    }
+    .form-card-header h1 { font-size: 26px; font-weight: 800; color: var(--neutral-800); margin-bottom: 6px; }
     .form-card-header p { font-size: 15px; color: var(--neutral-400); }
 
     /* ALERT */
@@ -194,10 +178,7 @@
 
     /* FORM */
     .form-group { margin-bottom: 20px; }
-    .form-label {
-      display: block; font-size: 14px; font-weight: 700;
-      color: #3a3a3a; margin-bottom: 7px;
-    }
+    .form-label { display: block; font-size: 14px; font-weight: 700; color: #3a3a3a; margin-bottom: 7px; }
 
     .input-wrap { position: relative; }
     .input-icon {
@@ -225,6 +206,15 @@
     }
     .form-control::placeholder { color: #c0bdb8; font-weight: 400; }
 
+    .form-control.input-error {
+      border-color: #fca5a5;
+      background: #fff8f8;
+    }
+    .form-control.input-error:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+    }
+
     /* SUBMIT */
     .btn-submit {
       width: 100%;
@@ -241,32 +231,12 @@
     .btn-submit:active { transform: scale(0.98); }
     .btn-submit svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; }
 
-    /* FOOTER LINK */
     .form-footer {
       text-align: center; font-size: 15px;
       color: var(--neutral-400); margin-top: 24px;
     }
-    .form-footer a { color: var(--green-600); font-weight: 700; text-decoration: none; }
+    .form-footer a { color: var(--green-600); font-weight: 700; }
     .form-footer a:hover { text-decoration: underline; }
-
-    /* OTHER LOGINS — now only admin */
-    .or-divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 24px 0 20px; color: var(--neutral-400); font-size: 13px;
-    }
-    .or-divider::before, .or-divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--neutral-200);
-    }
-    .other-logins { display: flex; flex-direction: column; gap: 10px; }
-    .other-btn {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 11px 16px; border-radius: 9px;
-      font-size: 15px; font-weight: 600; font-family: 'Sarabun', sans-serif;
-      text-decoration: none; transition: background .15s, border-color .15s;
-      border: 1.5px solid var(--neutral-200); color: var(--neutral-600); background: #fff;
-    }
-    .other-btn:hover { background: var(--neutral-50); border-color: var(--neutral-300); }
-    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
     @media (max-width: 768px) {
       .top-bar { display: none; }
@@ -352,7 +322,6 @@
 <div class="page-body">
   <div class="form-card">
 
-    <!-- HEADER -->
     <div class="form-card-header">
       <div class="header-icon">
         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -361,7 +330,7 @@
       <p>ยินดีต้อนรับสู่ระบบท่องเที่ยวชุมชนชนเผ่า</p>
     </div>
 
-    <!-- ALERTS -->
+    <!-- Server-side Alerts (Thymeleaf) -->
     <div th:if="${errorMessage}" class="alert alert-error">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
@@ -376,8 +345,17 @@
       <span th:text="${successMessage}"></span>
     </div>
 
+    <!-- Client-side Alert (JS) -->
+    <div id="js-alert" class="alert alert-error" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="js-alert-msg"></span>
+    </div>
+
     <!-- FORM -->
-    <form th:action="@{/member/login}" method="post">
+    <form th:action="@{/member/login}" method="post" id="login-form" novalidate>
 
       <div class="form-group">
         <label class="form-label">อีเมล</label>
@@ -385,7 +363,7 @@
           <svg class="input-icon" viewBox="0 0 24 24">
             <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
           </svg>
-          <input class="form-control" type="email" name="email" placeholder="example@email.com" required/>
+          <input class="form-control" type="email" name="email" id="email" placeholder="example@email.com"/>
         </div>
       </div>
 
@@ -396,7 +374,7 @@
             <rect x="3" y="11" width="18" height="11" rx="2"/>
             <path d="M7 11V7a5 5 0 0110 0v4"/>
           </svg>
-          <input class="form-control" type="password" name="password" placeholder="กรอกรหัสผ่าน" required/>
+          <input class="form-control" type="password" name="password" id="password" placeholder="กรอกรหัสผ่าน"/>
         </div>
       </div>
 
@@ -412,6 +390,37 @@
 
   </div>
 </div>
+
+<script>
+  document.getElementById('login-form').addEventListener('submit', function(e) {
+    const email    = document.getElementById('email');
+    const password = document.getElementById('password');
+
+    email.classList.remove('input-error');
+    password.classList.remove('input-error');
+    hideAlert();
+
+    // Flow 3.1 — ไม่กรอกข้อมูล
+    if (!email.value.trim() || !password.value.trim()) {
+      e.preventDefault();
+      if (!email.value.trim())    email.classList.add('input-error');
+      if (!password.value.trim()) password.classList.add('input-error');
+      showAlert('กรุณากรอกอีเมลและรหัสผ่าน');
+      return;
+    }
+  });
+
+  function showAlert(msg) {
+    var box = document.getElementById('js-alert');
+    document.getElementById('js-alert-msg').textContent = msg;
+    box.style.display = 'flex';
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function hideAlert() {
+    document.getElementById('js-alert').style.display = 'none';
+  }
+</script>
 
 </body>
 </html>
