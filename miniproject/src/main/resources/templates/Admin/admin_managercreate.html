@@ -39,7 +39,6 @@
     flex-direction: column;
   }
 
-  /* ── NAVBAR ── */
   .navbar {
     background: #0a1f12;
     height: 100px;
@@ -115,7 +114,6 @@
   }
   .logout-btn:hover { color: rgba(255,255,255,0.7); }
 
-  /* ── CONTENT ── */
   .content { max-width: 850px; margin: 0 auto; padding: 40px 24px; flex: 1; width: 100%; }
 
   .btn-back {
@@ -131,7 +129,6 @@
   }
   .btn-back:hover { color: var(--amber-700); }
 
-  /* CARD */
   .card {
     background: var(--white);
     border-radius: 20px;
@@ -150,7 +147,6 @@
 
   .card-header h2 { font-size: 24px; font-weight: 700; color: var(--neutral-800); }
 
-  /* MESSAGE */
   .message {
     border-radius: 12px;
     padding: 16px;
@@ -162,7 +158,6 @@
   .message.success { background: var(--green-50); border: 1px solid var(--green-600); color: var(--green-700); }
   .message.error { background: var(--red-100); border: 1px solid var(--red-700); color: var(--red-700); }
 
-  /* FORM UI */
   .section-label {
     font-size: 13px;
     color: var(--amber-700);
@@ -212,9 +207,17 @@
     box-shadow: 0 0 0 4px rgba(45, 122, 79, 0.08);
   }
 
+  .form-group input.input-error {
+    border-color: #fca5a5;
+    background: #fff8f8;
+  }
+  .form-group input.input-error:focus {
+    border-color: var(--red-700);
+    box-shadow: 0 0 0 3px rgba(185,28,28,0.12);
+  }
+
   .required { color: var(--red-700); margin-left: 4px; }
 
-  /* BUTTONS */
   .btn-row {
     display: flex;
     justify-content: flex-end;
@@ -256,7 +259,6 @@
   }
   .btn-submit:hover { background: var(--green-700); transform: translateY(-2px); }
 
-  /* ── FOOTER ── */
   .footer {
     background: #0a1f12;
     border-top: 1px solid rgba(255,255,255,0.08);
@@ -281,7 +283,6 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
   <a href="/admin/dashboard" class="navbar-brand">
     <div class="brand-icon">🏔️</div>
@@ -306,7 +307,6 @@
   </div>
 </nav>
 
-<!-- MAIN CONTENT -->
 <div class="content">
   <a href="/admin/manager" class="btn-back">← กลับไปยังหน้ารายชื่อ</a>
 
@@ -316,47 +316,51 @@
       <h2>สร้างบัญชีผู้จัดการใหม่</h2>
     </div>
 
+    <!-- ข้อความจาก server (step 6 / Alternate 5.1.1) -->
     <div th:if="${message}" th:text="${message}" th:class="'message ' + ${alertType}"></div>
 
-    <form action="/admin/manager/create" method="post">
+    <!-- ข้อความจาก validate script ฝั่ง client (Alternate 3.1) -->
+    <div id="js-alert" class="message error" style="display:none;"></div>
+
+    <form action="/admin/manager/create" method="post" id="create-manager-form" novalidate>
 
       <div class="section-label">ข้อมูลส่วนบุคคล</div>
       <div class="row">
         <div class="form-group">
           <label>ชื่อ <span class="required">*</span></label>
-          <input type="text" name="firstname" placeholder="ระบุชื่อภาษาไทย" required />
+          <input type="text" name="firstname" id="firstname" placeholder="ระบุชื่อภาษาไทย" />
         </div>
         <div class="form-group">
           <label>นามสกุล <span class="required">*</span></label>
-          <input type="text" name="lastname" placeholder="ระบุนามสกุลภาษาไทย" required />
+          <input type="text" name="lastname" id="lastname" placeholder="ระบุนามสกุลภาษาไทย" />
         </div>
       </div>
 
       <div class="row">
         <div class="form-group">
           <label>เบอร์โทรศัพท์ <span class="required">*</span></label>
-          <input type="tel" name="phone" placeholder="0xx-xxx-xxxx" required />
+          <input type="tel" name="phone" id="phone" placeholder="0xx-xxx-xxxx" />
         </div>
         <div class="form-group">
           <label>ชุมชนที่รับผิดชอบ <span class="required">*</span></label>
-          <input type="text" name="tribe" placeholder="เช่น ชุมชนบ้านป่าเหมี้ยง" required />
+          <input type="text" name="tribe" id="tribe" placeholder="เช่น ชุมชนบ้านป่าเหมี้ยง" />
         </div>
       </div>
 
       <div class="section-label">ข้อมูลความปลอดภัย</div>
       <div class="form-group">
         <label>อีเมล (ใช้เป็น Username) <span class="required">*</span></label>
-        <input type="email" name="email" placeholder="example@tourism.com" required />
+        <input type="email" name="email" id="email" placeholder="example@tourism.com" />
       </div>
 
       <div class="row">
         <div class="form-group">
           <label>กำหนดรหัสผ่าน <span class="required">*</span></label>
-          <input type="password" name="password" id="pwd" placeholder="ระบุรหัสผ่าน 8 ตัวขึ้นไป" required />
+          <input type="password" name="password" id="pwd" placeholder="ระบุรหัสผ่าน 8 ตัวขึ้นไป" />
         </div>
         <div class="form-group">
           <label>ยืนยันรหัสผ่านอีกครั้ง <span class="required">*</span></label>
-          <input type="password" name="confirmPassword" id="cpwd" placeholder="ระบุรหัสผ่านให้ตรงกัน" required />
+          <input type="password" name="confirmPassword" id="cpwd" placeholder="ระบุรหัสผ่านให้ตรงกัน" />
         </div>
       </div>
 
@@ -368,26 +372,66 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
   <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
   <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
 </footer>
 
 <script>
-  // ตรวจสอบรหัสผ่านก่อนส่งฟอร์ม
-  document.querySelector('form').addEventListener('submit', function(e) {
-    const pwd  = document.getElementById('pwd').value;
-    const cpwd = document.getElementById('cpwd').value;
-    if (pwd !== cpwd) {
+  var fieldIds = ['firstname', 'lastname', 'phone', 'tribe', 'email', 'pwd', 'cpwd'];
+
+  document.getElementById('create-manager-form').addEventListener('submit', function (e) {
+    hideJsAlert();
+    fieldIds.forEach(function (id) {
+      document.getElementById(id).classList.remove('input-error');
+    });
+
+    // step 3 — validate script: ตรวจสอบความครบถ้วนของข้อมูล
+    var hasEmpty = false;
+    fieldIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.classList.add('input-error');
+        hasEmpty = true;
+      }
+    });
+
+    // Alternate 3.1 — กรอกข้อมูลไม่ถูกต้องหรือไม่ครบถ้วน
+    if (hasEmpty) {
       e.preventDefault();
-      alert('ขออภัย: รหัสผ่านทั้งสองช่องไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง');
+      showJsAlert('กรุณากรอกข้อมูลให้ถูกต้อง');
+      return;
     }
-    if (pwd.length < 8) {
-        e.preventDefault();
-        alert('รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร');
+
+    var pwd  = document.getElementById('pwd');
+    var cpwd = document.getElementById('cpwd');
+
+    if (pwd.value.length < 8) {
+      e.preventDefault();
+      pwd.classList.add('input-error');
+      showJsAlert('กรุณากรอกข้อมูลให้ถูกต้อง');
+      return;
+    }
+
+    if (pwd.value !== cpwd.value) {
+      e.preventDefault();
+      pwd.classList.add('input-error');
+      cpwd.classList.add('input-error');
+      showJsAlert('กรุณากรอกข้อมูลให้ถูกต้อง');
+      return;
     }
   });
+
+  function showJsAlert(msg) {
+    var box = document.getElementById('js-alert');
+    box.textContent = msg;
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function hideJsAlert() {
+    document.getElementById('js-alert').style.display = 'none';
+  }
 </script>
 </body>
 </html>

@@ -447,6 +447,20 @@
     .footer { flex-direction: column; gap: 4px; text-align: center; }
     .table-wrap { overflow-x: auto; }
   }
+
+  .alert-error {
+    background: var(--red-100);
+    color: var(--red-700);
+    border: 1px solid #fca5a5;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 </style>
 </head>
 
@@ -489,6 +503,12 @@
     <a href="/admin/homestay" class="active">📥 คำขอรออนุมัติ</a>
     <a href="/admin/homestay/all">📋 บัญชีโฮมสเตย์ทั้งหมด</a>
   </div>
+
+  <div th:if="${errorMessage}" class="alert-error">
+
+  ❌ <span th:text="${errorMessage}"></span>
+
+</div>
 
   <!-- Filter Pills -->
   <div class="filter-group">

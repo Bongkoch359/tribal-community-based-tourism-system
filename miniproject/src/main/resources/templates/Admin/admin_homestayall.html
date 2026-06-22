@@ -380,10 +380,10 @@
   <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
 </footer>
 
-<!-- ERROR TOAST (สำหรับ Alternate Flow: error query / error script) -->
+<!-- ERROR TOAST -->
 <div class="toast" id="errorToast">
   <span>⚠️</span>
-  <span id="errorToastMsg">ไม่สามารถระงับ/เปิดใช้งานบัญชีโฮมสเตย์นี้ได้ กรุณาลองใหม่อีกครั้ง</span>
+  <span id="errorToastMsg"></span>
 </div>
 
 <form id="suspendForm" method="post" style="display:none;"></form>
@@ -462,6 +462,12 @@
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3500);
   }
+
+  // ── รับ errorMessage จาก Controller (Alternate Flow 5.1.1) ──
+  window.addEventListener('DOMContentLoaded', () => {
+    const msg = /*[[${errorMessage}]]*/ null;
+    if (msg) showErrorToast(msg);
+  });
 </script>
 
 </body>

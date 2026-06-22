@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-
 @Service
 public class MemberService {
 
@@ -15,44 +14,42 @@ public class MemberService {
     private MemberRepository memberRepository;
 
     public String registerUser(Member member, String confirmPassword) {
+        System.out.println("Registering: " + member.getFirstname() + " " + member.getLastname());
 
-    System.out.println("Registering: " + member.getFirstname() + " " + member.getLastname());
+        // Alternate Flow 3.1 — ข้อมูลไม่ครบ
+        if (member.getFirstname() == null || member.getFirstname().isBlank() ||
+            member.getLastname()  == null || member.getLastname().isBlank()  ||
+            member.getEmail()     == null || member.getEmail().isBlank()     ||
+            member.getPassword()  == null || member.getPassword().isBlank()) {
+            return "กรุณากรอกข้อมูลให้ถูกต้อง";
+        }
 
-    // Alternate Flow 3.1 — ข้อมูลไม่ครบ
-    if (member.getFirstname() == null || member.getFirstname().isBlank() ||
-        member.getLastname()  == null || member.getLastname().isBlank()  ||
-        member.getEmail()     == null || member.getEmail().isBlank()     ||
-        member.getPassword()  == null || member.getPassword().isBlank()) {
-        return "กรุณากรอกข้อมูลให้ถูกต้อง";
+        // Alternate Flow 5.1.1 — email ซ้ำ
+        if (memberRepository.existsByEmail(member.getEmail())) {
+            return "ข้อมูลผู้ใช้ซ้ำ กรุณาลองใหม่อีกครั้ง";
+        }
+
+        // รหัสผ่านไม่ตรงกัน
+        if (!member.getPassword().equals(confirmPassword)) {
+            return "รหัสผ่านไม่ตรงกัน";
+        }
+
+        if (member.getMemberid() == null || member.getMemberid().isBlank()) {
+            String generatedId = "M" + System.currentTimeMillis();
+            member.setMemberid(generatedId);
+        }
+
+        try {
+            memberRepository.save(member);
+            return "SUCCESS";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "เกิดข้อผิดพลาด กรุณาลองใหม่";
+        }
     }
-
-    // Alternate Flow 5.1.1 — email ซ้ำ
-    if (memberRepository.existsByEmail(member.getEmail())) {
-        return "ข้อมูลผู้ใช้ซ้ำ กรุณาลองใหม่อีกครั้ง";
-    }
-
-    // รหัสผ่านไม่ตรงกัน
-    if (!member.getPassword().equals(confirmPassword)) {
-        return "รหัสผ่านไม่ตรงกัน";
-    }
-
-    if (member.getMemberid() == null || member.getMemberid().isBlank()) {
-        String generatedId = "M" + System.currentTimeMillis();
-        member.setMemberid(generatedId);
-    }
-
-    try {
-        memberRepository.save(member);
-        return "SUCCESS";
-    } catch (Exception e) {
-        e.printStackTrace();
-        return "เกิดข้อผิดพลาด กรุณาลองใหม่";
-    }
-}
 
     // ─── Login Member ─────────────────────────────────────────────────
     public String loginMember(String email, String password) {
-
         if (email == null || email.isBlank() ||
             password == null || password.isBlank()) {
             return "กรุณากรอกอีเมลและรหัสผ่าน";
@@ -74,7 +71,6 @@ public class MemberService {
     }
 
     // ─── Get Member ───────────────────────────────────────────────────
-
     public Optional<Member> getMemberByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
@@ -83,14 +79,13 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
 
-    // ✅ เพิ่มใหม่: ค้นหาด้วย ID (String)
+    // ค้นหาด้วย ID (String)
     public Optional<Member> getMemberById(String memberId) {
         return memberRepository.findById(memberId);
     }
 
     // ─── Update Profile ───────────────────────────────────────────────
-    // ✅ เพิ่มใหม่: ซีเคว้นข้อ 8 doEditProfile()
-
+    // ซีเคว้นข้อ 8 doEditProfile()
     public boolean updateProfile(Member updatedData) {
         try {
             // ดึงข้อมูลเดิมจาก DB ด้วย memberid (String)
@@ -116,20 +111,23 @@ public class MemberService {
                 existing.setAddress(updatedData.getAddress());
             }
 
-            // รหัสผ่าน: อัปเดตเฉพาะเมื่อกรอกมา
+            // รหัสผ่าน: อัปเดตเฉพาะเมื่อมีการกรอกมาใหม่
             if (updatedData.getPassword() != null && !updatedData.getPassword().isBlank()) {
                 existing.setPassword(updatedData.getPassword());
             }
 
+            // บันทึกลงฐานข้อมูล
             memberRepository.save(existing);
 
-            // copy ค่าใหม่กลับให้ Controller อัปเดต session ถูกต้อง
+            // ✅ ปรับปรุง: copy ค่าวัดผลล่าสุดกลับไปให้ครบถ้วน รวมไปถึง Password ด้วย
+            // เพื่อป้องกันไม่ให้ข้อมูลใน Session ของ Controller ขัดแย้งกับข้อมูลจริงใน DB
             updatedData.setFirstname(existing.getFirstname());
             updatedData.setLastname(existing.getLastname());
             updatedData.setEmail(existing.getEmail());
             updatedData.setPhone(existing.getPhone());
             updatedData.setBirthdate(existing.getBirthdate());
             updatedData.setAddress(existing.getAddress());
+            updatedData.setPassword(existing.getPassword()); // เพิ่มส่วนนี้เพื่อความถูกต้องของ Session
 
             return true;
 

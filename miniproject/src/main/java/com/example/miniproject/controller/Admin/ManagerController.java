@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.enums.ManagerStatus;
+import com.example.miniproject.service.Admin.EmailService;
 import com.example.miniproject.service.Admin.ManagerService;
 
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +22,9 @@ public class ManagerController {
 
     @Autowired
     private ManagerService managerService;
+
+    @Autowired
+    private EmailService emailService;
 
     // ============================================================
     // GET /admin/manager
@@ -38,12 +42,14 @@ public class ManagerController {
         // step 4.1: query data
         List<Communitymanager> managers = managerService.getAll();
 
-        // Alternate Flow 4.1.1
+        // Alternate Flow 4.1.1 — ไม่พบข้อมูล
         if (managers == null || managers.isEmpty()) {
             model.addAttribute("managers", List.of());
             model.addAttribute("allCount",      0);
             model.addAttribute("activeCount",   0);
             model.addAttribute("inactiveCount", 0);
+            model.addAttribute("message",   "ไม่พบรายการบัญชีผู้จัดการท่องเที่ยวชุมชน");
+            model.addAttribute("alertType", "error");
             return "Admin/admin_managerlist";
         }
 
@@ -131,9 +137,20 @@ public class ManagerController {
         }
 
         // step 6: display result — success
-        redirectAttributes.addFlashAttribute("message",   "สร้างบัญชีผู้จัดการเรียบร้อยแล้ว");
+        try {
+        emailService.sendManagerCreatedEmail(
+        email,
+        firstname + " " + lastname,
+        password
+        );
+        } catch (Exception e) {
+        System.err.println("ส่งอีเมลไม่สำเร็จ: " + e.getMessage());
+        }
+
+        redirectAttributes.addFlashAttribute("message", "สร้างบัญชีผู้จัดการเรียบร้อยแล้ว");
         redirectAttributes.addFlashAttribute("alertType", "success");
         return "redirect:/admin/manager";
+        
     }
 
     // ============================================================
@@ -178,7 +195,7 @@ public class ManagerController {
             redirectAttributes.addFlashAttribute("message",   "เปิดใช้งานบัญชีเรียบร้อยแล้ว");
             redirectAttributes.addFlashAttribute("alertType", "success");
         } else {
-            redirectAttributes.addFlashAttribute("message",   "ไม่พบบัญชีที่ต้องการเปิดใช้งาน");
+             redirectAttributes.addFlashAttribute("message",   "ไม่สามารถระงับบัญชีผู้จัดการท่องเที่ยวชุมชนนี้ได้ กรุณาลองใหม่อีกครั้ง");
             redirectAttributes.addFlashAttribute("alertType", "error");
         }
         return "redirect:/admin/manager";
