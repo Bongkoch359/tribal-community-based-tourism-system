@@ -167,7 +167,7 @@ img { display: block; }
 }
 .btn-login .icon-user svg { width: 17px; height: 17px; }
 .btn-login .chevron { width: 15px; height: 15px; transition: transform .2s; flex-shrink: 0; }
-.login-dropdown:hover .btn-login .chevron { transform: rotate(180deg); }
+.login-dropdown.open .btn-login .chevron { transform: rotate(180deg); }
 
 .login-dropdown-menu {
   display: none;
@@ -186,7 +186,7 @@ img { display: block; }
   from { opacity: 0; transform: translateY(-8px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.login-dropdown:hover .login-dropdown-menu { display: block; }
+.login-dropdown.open .login-dropdown-menu { display: block; }
 
 .dropdown-top {
   padding: 18px 20px 14px;
@@ -361,7 +361,7 @@ img { display: block; }
 .hero-overlay {
   position: absolute; 
   inset: 0;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.15) 100%);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.25) 35%, rgba(0, 0, 0, 0) 55%);
 }
 .hero-inner {
   position: relative; z-index: 1;

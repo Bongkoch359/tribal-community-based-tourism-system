@@ -99,4 +99,6 @@ long countByRoomHomestayIdAndStatus(
         @Param("homestayId") Integer homestayId,
         @Param("status") BookingStatus status);
 
+        
+
 }

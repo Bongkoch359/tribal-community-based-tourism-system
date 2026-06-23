@@ -1,6 +1,7 @@
 package com.example.miniproject.repository.Member;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,14 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     List<Tour> findByStatus(String status);
     List<Tour> findByTourmnameContainingIgnoreCaseAndStatus(String tourmname, String status);
     List<Tour> findByCommunitymanager(Communitymanager communitymanager);
+
+    @Query("""
+    SELECT DISTINCT t FROM Tour t
+    LEFT JOIN FETCH t.bookingTourDetails bd
+    LEFT JOIN FETCH bd.booking b
+    WHERE t.tourid = :tourid
+""")
+Optional<Tour> findByIdWithBookings(@Param("tourid") String tourid);
 
     @Query("""
         SELECT t FROM Tour t

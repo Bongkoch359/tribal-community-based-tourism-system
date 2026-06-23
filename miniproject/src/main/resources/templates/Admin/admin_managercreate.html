@@ -6,115 +6,147 @@
 <title>สร้างบัญชีผู้จัดการ - ระบบท่องเที่ยวชุมชนเผ่า</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body { 
-    font-family: 'Sarabun', sans-serif; 
-    background: #ffffff; /* เปลี่ยนเป็นขาวสะอาดตา */
-    color: #333;
-    line-height: 1.6;
+  :root {
+    --green-700: #215c35;
+    --green-600: #2d7a4f;
+    --green-500: #3d9e68;
+    --green-100: #d8f3dc;
+    --green-50:  #f0faf4;
+    --amber-700: #a16207;
+    --amber-100: #fef3c7;
+    --red-700:   #b91c1c;
+    --red-100:   #fee2e2;
+    --neutral-800: #292524;
+    --neutral-700: #44403c;
+    --neutral-600: #57534e;
+    --neutral-500: #78716c;
+    --neutral-400: #a8a29e;
+    --neutral-300: #d6d3d1;
+    --neutral-200: #e7e5e4;
+    --neutral-100: #f5f5f4;
+    --white: #ffffff;
   }
 
-  /* --- NAVBAR (สูง 100px ตามธีมหลัก) --- */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--neutral-100);
+    color: var(--neutral-800);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
   .navbar {
-    background: #1e4d2b;
+    background: #0a1f12;
     height: 100px;
     display: flex;
     align-items: center;
     padding: 0 5%;
-    gap: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    gap: 8px;
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
 
   .navbar-brand {
     color: #fff;
     font-weight: 700;
-    font-size: 24px;
+    font-size: 22px;
     text-decoration: none;
     margin-right: auto;
-  }
-
-  .nav-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
+    flex-shrink: 0;
   }
 
-  .nav-link {
-    color: rgba(255,255,255,0.85);
-    text-decoration: none;
-    font-size: 17px;
-    font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 10px;
-    transition: all 0.2s;
-  }
-
-  .nav-link:hover, .nav-link.active {
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-  }
-
-  .admin-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-left: 20px;
-    border-left: 1px solid rgba(255,255,255,0.2);
-  }
-
-  .admin-badge {
-    background: #f4a261;
-    color: #fff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
+  .brand-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--green-500);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+    font-size: 24px;
+    flex-shrink: 0;
   }
 
-  /* --- CONTENT --- */
-  .content { max-width: 850px; margin: 0 auto; padding: 50px 24px; }
+  .nav-group { display: flex; align-items: center; gap: 6px; }
+
+  .nav-link {
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+  .nav-link.active { background: rgba(255,255,255,0.09); color: #fff; }
+
+  .nav-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.08); margin: 0 12px; }
+
+  .admin-area { display: flex; align-items: center; gap: 14px; }
+  .admin-info { text-align: right; }
+  .admin-name { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255,255,255,0.3); font-size: 12px; }
+
+  .admin-avatar {
+    width: 46px; height: 46px; background: var(--amber-700); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: var(--amber-100); flex-shrink: 0;
+  }
+
+  .logout-btn {
+    color: rgba(255,255,255,0.25); text-decoration: none; font-size: 13px;
+    font-weight: 500; transition: color 0.15s; white-space: nowrap;
+  }
+  .logout-btn:hover { color: rgba(255,255,255,0.7); }
+
+  .content { max-width: 850px; margin: 0 auto; padding: 40px 24px; flex: 1; width: 100%; }
 
   .btn-back {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: #1e4d2b;
+    color: var(--green-700);
     text-decoration: none;
     font-weight: 600;
     font-size: 16px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     transition: 0.2s;
   }
-  .btn-back:hover { color: #f4a261; }
+  .btn-back:hover { color: var(--amber-700); }
 
-  /* CARD */
   .card {
-    background: #fff;
+    background: var(--white);
     border-radius: 20px;
     padding: 45px;
-    border: 1px solid #f0f0f0;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    border: 1px solid var(--neutral-200);
   }
 
   .card-header {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f9f9f9;
+    margin-bottom: 35px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--neutral-200);
   }
-  
-  .card-header h2 { font-size: 26px; font-weight: 700; color: #1e4d2b; }
 
-  /* MESSAGE */
+  .card-header h2 { font-size: 24px; font-weight: 700; color: var(--neutral-800); }
+
   .message {
     border-radius: 12px;
     padding: 16px;
@@ -123,17 +155,16 @@
     text-align: center;
     font-weight: 500;
   }
-  .message.success { background: #eafaf1; border: 1px solid #2d6a4f; color: #1b4332; }
-  .message.error { background: #fff5f5; border: 1px solid #e74c3c; color: #c0392b; }
+  .message.success { background: var(--green-50); border: 1px solid var(--green-600); color: var(--green-700); }
+  .message.error { background: var(--red-100); border: 1px solid var(--red-700); color: var(--red-700); }
 
-  /* FORM UI */
   .section-label {
-    font-size: 14px;
-    color: #f4a261;
+    font-size: 13px;
+    color: var(--amber-700);
     font-weight: 700;
     letter-spacing: 1px;
-    margin-bottom: 20px;
-    margin-top: 35px;
+    margin-bottom: 18px;
+    margin-top: 30px;
     text-transform: uppercase;
     display: flex;
     align-items: center;
@@ -143,73 +174,81 @@
     content: "";
     flex: 1;
     height: 1px;
-    background: #eee;
+    background: var(--neutral-200);
   }
 
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  
-  .form-group { margin-bottom: 20px; }
-  .form-group label { 
-    display: block; 
-    font-size: 16px; 
-    color: #444; 
-    margin-bottom: 10px; 
-    font-weight: 600; 
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 15px;
+    color: var(--neutral-700);
+    margin-bottom: 8px;
+    font-weight: 600;
   }
 
   .form-group input, .form-group select {
     width: 100%;
-    border: 1.5px solid #eee;
+    border: 1.5px solid var(--neutral-200);
     border-radius: 12px;
-    padding: 14px 18px;
-    font-size: 16px;
+    padding: 13px 16px;
+    font-size: 15px;
     font-family: 'Sarabun', sans-serif;
-    color: #333;
+    color: var(--neutral-800);
     outline: none;
-    background: #fcfcfc;
+    background: var(--neutral-100);
     transition: all 0.2s;
   }
 
   .form-group input:focus {
-    border-color: #1e4d2b;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(30, 77, 43, 0.08);
+    border-color: var(--green-600);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(45, 122, 79, 0.08);
   }
 
-  .required { color: #e74c3c; margin-left: 4px; }
+  .form-group input.input-error {
+    border-color: #fca5a5;
+    background: #fff8f8;
+  }
+  .form-group input.input-error:focus {
+    border-color: var(--red-700);
+    box-shadow: 0 0 0 3px rgba(185,28,28,0.12);
+  }
 
-  /* BUTTONS */
+  .required { color: var(--red-700); margin-left: 4px; }
+
   .btn-row {
     display: flex;
     justify-content: flex-end;
-    gap: 15px;
-    margin-top: 40px;
-    padding-top: 30px;
-    border-top: 2px solid #f9f9f9;
+    gap: 14px;
+    margin-top: 35px;
+    padding-top: 26px;
+    border-top: 1px solid var(--neutral-200);
   }
 
   .btn-cancel {
-    background: #fff;
-    border: 1.5px solid #eee;
-    color: #666;
+    background: var(--white);
+    border: 1.5px solid var(--neutral-200);
+    color: var(--neutral-600);
     border-radius: 12px;
-    padding: 14px 30px;
-    font-size: 16px;
+    padding: 13px 28px;
+    font-size: 15px;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
     text-decoration: none;
     transition: all 0.2s;
   }
-  .btn-cancel:hover { background: #f5f5f5; border-color: #ddd; }
+  .btn-cancel:hover { background: var(--neutral-100); }
 
   .btn-submit {
-    background: #1e4d2b; /* ปรับเป็นสีเขียวเพื่อให้ดูเป็นปุ่มยืนยันหลัก */
+    background: var(--green-600);
     color: #fff;
     border: none;
     border-radius: 12px;
-    padding: 14px 35px;
-    font-size: 16px;
+    padding: 13px 32px;
+    font-size: 15px;
     font-weight: 700;
     font-family: inherit;
     cursor: pointer;
@@ -217,9 +256,24 @@
     align-items: center;
     gap: 8px;
     transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(30, 77, 43, 0.2);
   }
-  .btn-submit:hover { background: #153a20; transform: translateY(-2px); }
+  .btn-submit:hover { background: var(--green-700); transform: translateY(-2px); }
+
+  .footer {
+    background: #0a1f12;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 14px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-text { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+  @media (max-width: 768px) {
+    .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 12px; }
+    .nav-group { flex-wrap: wrap; gap: 4px; }
+    .footer { flex-direction: column; gap: 4px; text-align: center; }
+  }
 
   @media (max-width: 600px) {
     .row { grid-template-columns: 1fr; gap: 0; }
@@ -230,18 +284,26 @@
 <body>
 
 <nav class="navbar">
-  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนชนเผ่า</a>
+  <a href="/admin/dashboard" class="navbar-brand">
+    <div class="brand-icon">🏔️</div>
+    ระบบท่องเที่ยวชุมชนเผ่า
+  </a>
+
   <div class="nav-group">
     <a href="/admin/dashboard" class="nav-link">📊 Dashboard</a>
-    <a href="/admin/manager" class="nav-link active">👥 จัดการผู้จัดการ</a>
-    <a href="/admin/homestay" class="nav-link">🏠 จัดการโฮมสเตย์</a>
+    <a href="/admin/manager"   class="nav-link active">👥 จัดการผู้จัดการ</a>
+    <a href="/admin/homestay"  class="nav-link">🏠 จัดการโฮมสเตย์</a>
   </div>
-  <div class="admin-section">
-    <div style="text-align: right; margin-right: 10px;">
-        <p style="color: #fff; font-size: 14px; font-weight: 600;" th:text="${session.loggedInAdmin?.username ?: 'Admin'}">Admin</p>
-        <a href="/admin/logout" style="color: rgba(255,255,255,0.6); font-size: 12px; text-decoration: none;">ออกจากระบบ</a>
+
+  <div class="nav-divider"></div>
+
+  <div class="admin-area">
+    <div class="admin-info">
+      <div class="admin-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
+      <div class="admin-role">Super Admin</div>
     </div>
-    <div class="admin-badge">A</div>
+    <div class="admin-avatar">A</div>
+    <a href="/admin/logout" class="logout-btn">ออกจากระบบ</a>
   </div>
 </nav>
 
@@ -250,51 +312,55 @@
 
   <div class="card">
     <div class="card-header">
-      <span style="font-size:30px;">👤</span>
+      <span style="font-size:28px;">👤</span>
       <h2>สร้างบัญชีผู้จัดการใหม่</h2>
     </div>
 
+    <!-- ข้อความจาก server (step 6 / Alternate 5.1.1) -->
     <div th:if="${message}" th:text="${message}" th:class="'message ' + ${alertType}"></div>
 
-    <form action="/admin/manager/create" method="post">
+    <!-- ข้อความจาก validate script ฝั่ง client (Alternate 3.1) -->
+    <div id="js-alert" class="message error" style="display:none;"></div>
+
+    <form action="/admin/manager/create" method="post" id="create-manager-form" novalidate>
 
       <div class="section-label">ข้อมูลส่วนบุคคล</div>
       <div class="row">
         <div class="form-group">
           <label>ชื่อ <span class="required">*</span></label>
-          <input type="text" name="firstname" placeholder="ระบุชื่อภาษาไทย" required />
+          <input type="text" name="firstname" id="firstname" placeholder="ระบุชื่อภาษาไทย" />
         </div>
         <div class="form-group">
           <label>นามสกุล <span class="required">*</span></label>
-          <input type="text" name="lastname" placeholder="ระบุนามสกุลภาษาไทย" required />
+          <input type="text" name="lastname" id="lastname" placeholder="ระบุนามสกุลภาษาไทย" />
         </div>
       </div>
 
       <div class="row">
         <div class="form-group">
           <label>เบอร์โทรศัพท์ <span class="required">*</span></label>
-          <input type="tel" name="phone" placeholder="0xx-xxx-xxxx" required />
+          <input type="tel" name="phone" id="phone" placeholder="0xx-xxx-xxxx" />
         </div>
         <div class="form-group">
           <label>ชุมชนที่รับผิดชอบ <span class="required">*</span></label>
-          <input type="text" name="tribe" placeholder="เช่น ชุมชนบ้านป่าเหมี้ยง" required />
+          <input type="text" name="tribe" id="tribe" placeholder="เช่น ชุมชนบ้านป่าเหมี้ยง" />
         </div>
       </div>
 
       <div class="section-label">ข้อมูลความปลอดภัย</div>
       <div class="form-group">
         <label>อีเมล (ใช้เป็น Username) <span class="required">*</span></label>
-        <input type="email" name="email" placeholder="example@tourism.com" required />
+        <input type="email" name="email" id="email" placeholder="example@tourism.com" />
       </div>
 
       <div class="row">
         <div class="form-group">
           <label>กำหนดรหัสผ่าน <span class="required">*</span></label>
-          <input type="password" name="password" id="pwd" placeholder="ระบุรหัสผ่าน 8 ตัวขึ้นไป" required />
+          <input type="password" name="password" id="pwd" placeholder="ระบุรหัสผ่าน 8 ตัวขึ้นไป" />
         </div>
         <div class="form-group">
           <label>ยืนยันรหัสผ่านอีกครั้ง <span class="required">*</span></label>
-          <input type="password" name="confirmPassword" id="cpwd" placeholder="ระบุรหัสผ่านให้ตรงกัน" required />
+          <input type="password" name="confirmPassword" id="cpwd" placeholder="ระบุรหัสผ่านให้ตรงกัน" />
         </div>
       </div>
 
@@ -306,20 +372,66 @@
   </div>
 </div>
 
+<footer class="footer">
+  <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
+  <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
+</footer>
+
 <script>
-  // ตรวจสอบรหัสผ่านก่อนส่งฟอร์ม
-  document.querySelector('form').addEventListener('submit', function(e) {
-    const pwd  = document.getElementById('pwd').value;
-    const cpwd = document.getElementById('cpwd').value;
-    if (pwd !== cpwd) {
+  var fieldIds = ['firstname', 'lastname', 'phone', 'tribe', 'email', 'pwd', 'cpwd'];
+
+  document.getElementById('create-manager-form').addEventListener('submit', function (e) {
+    hideJsAlert();
+    fieldIds.forEach(function (id) {
+      document.getElementById(id).classList.remove('input-error');
+    });
+
+    // step 3 — validate script: ตรวจสอบความครบถ้วนของข้อมูล
+    var hasEmpty = false;
+    fieldIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.classList.add('input-error');
+        hasEmpty = true;
+      }
+    });
+
+    // Alternate 3.1 — กรอกข้อมูลไม่ถูกต้องหรือไม่ครบถ้วน
+    if (hasEmpty) {
       e.preventDefault();
-      alert('ขออภัย: รหัสผ่านทั้งสองช่องไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง');
+      showJsAlert('กรุณากรอกข้อมูลให้ถูกต้อง');
+      return;
     }
-    if (pwd.length < 8) {
-        e.preventDefault();
-        alert('รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร');
+
+    var pwd  = document.getElementById('pwd');
+    var cpwd = document.getElementById('cpwd');
+
+    if (pwd.value.length < 8) {
+      e.preventDefault();
+      pwd.classList.add('input-error');
+      showJsAlert('กรุณากรอกข้อมูลให้ถูกต้อง');
+      return;
+    }
+
+    if (pwd.value !== cpwd.value) {
+      e.preventDefault();
+      pwd.classList.add('input-error');
+      cpwd.classList.add('input-error');
+      showJsAlert('กรุณากรอกข้อมูลให้ถูกต้อง');
+      return;
     }
   });
+
+  function showJsAlert(msg) {
+    var box = document.getElementById('js-alert');
+    box.textContent = msg;
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function hideJsAlert() {
+    document.getElementById('js-alert').style.display = 'none';
+  }
 </script>
 </body>
 </html>

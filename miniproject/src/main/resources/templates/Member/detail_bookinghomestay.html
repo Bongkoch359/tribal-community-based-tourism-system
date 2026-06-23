@@ -9,56 +9,144 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-    --green-dark:#2d5a27;
-    --green-main:#3d7a35;
-    --green-light:#e8f5e1;
-    --green-accent:#5a9e50;
-    --orange:#e67e22;
-    --orange-light:#fdf3e7;
+    --green-950: #0a1f12;
+    --green-dark:#1a472a;
+    --green-main:#2d7a4f;
+    --green-light:#d8f3dc;
+    --green-accent:#52b788;
+    --orange:#e8960a;
+    --orange-light:#fff8ed;
     --red:#e53935;
     --red-light:#fdecea;
     --yellow:#f59e0b;
     --yellow-light:#fffbeb;
-    --blue:#1d6fa4;
-    --blue-light:#e8f4fb;
+    --blue:#0369a1;
+    --blue-light:#dbeafe;
     --gray-50:#f9fafb;
-    --gray-100:#f3f4f6;
-    --gray-200:#e5e7eb;
-    --gray-400:#9ca3af;
-    --gray-600:#6b7280;
-    --gray-800:#1f2937;
+    --gray-100:#f5f5f4;
+    --gray-200:#e7e5e4;
+    --gray-400:#a8a29e;
+    --gray-600:#57534e;
+    --gray-800:#292524;
     --shadow:0 2px 12px rgba(0,0,0,.08);
     --shadow-md:0 4px 20px rgba(0,0,0,.12);
-    --radius-lg:18px;
-
-    /* Inline-edit tokens */
-    --edit-border: #a8d5a0;
-    --edit-bg: #f6fbf5;
-    --edit-focus: #3d7a35;
-    --edit-highlight: rgba(61,122,53,.06);
+    --radius-lg:16px;
+    --edit-border:#a7e3c3;
+    --edit-bg:#f0faf4;
+    --edit-focus:#2d7a4f;
+    --edit-highlight:rgba(45,122,79,.06);
+    --navbar-h:100px;
 }
 
-body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-800); font-size:15px; }
+body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-800); font-size:15px; }
+
+/* ── TOP BAR ── */
+.top-bar {
+  background: var(--green-950);
+  padding: 8px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+.top-bar a {
+  color: rgba(255,255,255,0.55);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color .15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+}
+.top-bar a:hover { color: #fff; }
+.top-bar a svg { width: 14px; height: 14px; }
+.top-bar-divider { display: none; }
 
 /* ── NAVBAR ── */
 .navbar {
-    background:var(--green-dark); height:54px; padding:0 2rem;
-    display:flex; align-items:center; justify-content:space-between;
-    position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,.2);
+    background:#1a472a; height:var(--navbar-h);
+    display:flex; align-items:center; padding:0 5%; gap:8px;
+    position:sticky; top:0; z-index:1000;
+    box-shadow:0 3px 16px rgba(0,0,0,.28);
 }
-.navbar-brand { display:flex; align-items:center; gap:.6rem; color:#fff; font-weight:700; font-size:.95rem; text-decoration:none; }
-.logo-icon { width:30px; height:30px; background:var(--green-accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
-.navbar-nav { display:flex; align-items:center; gap:.4rem; }
-.nav-link { color:rgba(255,255,255,.75); text-decoration:none; font-size:.88rem; padding:.35rem .75rem; border-radius:6px; transition:.2s; }
-.nav-link:hover { color:#fff; background:rgba(255,255,255,.15); }
-.nav-avatar { width:32px; height:32px; border-radius:50%; background:var(--green-accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.85rem; }
+.navbar-brand { color:#fff; margin-right:auto; display:flex; align-items:center; gap:14px; text-decoration:none; }
+.brand-icon {
+    width:48px; height:48px; background:#52b788; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 12px rgba(82,183,136,.35);
+}
+.brand-icon svg { width:26px; height:26px; }
+.brand-name { display:flex; flex-direction:column; }
+.brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; }
+.brand-name-line2 { font-size:13px; font-weight:400; color:#a7e3c3; opacity:.8; }
+
+.nav-links { display:flex; align-items:center; gap:2px; }
+.nav-link {
+    color:rgba(255,255,255,.80); font-size:15px; font-weight:600;
+    padding:10px 15px; border-radius:8px; transition:.15s;
+    white-space:nowrap; display:flex; align-items:center; gap:6px; text-decoration:none;
+}
+.nav-link svg { width:16px; height:16px; opacity:.7; }
+.nav-link:hover { background:rgba(255,255,255,.12); color:#fff; }
+
+.nav-divider { width:1px; height:32px; background:rgba(255,255,255,.14); margin:0 8px; }
+
+.user-menu-wrapper { position:relative; }
+.btn-user-menu {
+    display:flex; align-items:center; gap:10px;
+    background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.25);
+    border-radius:50px; padding:8px 18px 8px 8px;
+    cursor:pointer; color:white; transition:.2s;
+}
+.btn-user-menu:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.45); }
+.user-avatar {
+    width:40px; height:40px; border-radius:50%;
+    background:linear-gradient(135deg,#52b788,#2d7a4f);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:17px; color:white;
+    border:2px solid rgba(255,255,255,.3);
+}
+.user-info { display:flex; flex-direction:column; text-align:left; line-height:1.25; }
+.user-name { font-size:15px; font-weight:700; color:white; max-width:110px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.user-role { font-size:12px; color:rgba(255,255,255,.65); }
+.chevron { width:15px; height:15px; transition:transform .2s; }
+.user-menu-wrapper.open .chevron { transform:rotate(180deg); }
+
+.user-dropdown-menu {
+    display:none; position:absolute; top:calc(100% + 14px); right:0;
+    background:white; border-radius:16px;
+    box-shadow:0 12px 48px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.08);
+    min-width:240px; padding:8px; z-index:1000;
+    border:1px solid var(--gray-200);
+}
+.user-menu-wrapper.open .user-dropdown-menu { display:block; }
+.udrop-item {
+    display:flex; align-items:center; gap:12px; padding:11px 14px;
+    border-radius:12px; color:var(--gray-600); text-decoration:none; transition:.15s; cursor:pointer;
+}
+.udrop-item:hover { background:var(--green-light); }
+.udrop-icon { width:38px; height:38px; border-radius:8px; background:var(--gray-100); display:flex; align-items:center; justify-content:center; }
+.udrop-icon svg { width:17px; height:17px; color:var(--gray-600); }
+.udrop-item:hover .udrop-icon { background:var(--green-light); }
+.udrop-item:hover .udrop-icon svg { color:var(--green-dark); }
+.udrop-text span { display:block; font-size:15px; font-weight:600; color:var(--gray-800); line-height:1.2; }
+.udrop-text small { font-size:12px; color:var(--gray-400); }
+.udrop-divider { height:1px; background:var(--gray-200); margin:8px 6px; }
+.udrop-logout:hover { background:#fef2f2; }
+.udrop-icon-red { background:#fee2e2; }
+.udrop-icon-red svg { color:#dc2626; }
+.udrop-logout .udrop-text span { color:#dc2626; }
 
 /* ── BREADCRUMB ── */
-.breadcrumb { background:#fff; padding:.55rem 2rem; border-bottom:1px solid var(--gray-200); font-size:.8rem; color:var(--gray-600); }
+.breadcrumb {
+    background:#fff; padding:.55rem 5%; border-bottom:1px solid var(--gray-200);
+    font-size:.8rem; color:var(--gray-600); max-width:100%;
+}
 .breadcrumb a { color:var(--green-main); text-decoration:none; }
 
 /* ── PAGE WRAP ── */
-.page-wrap { max-width:1160px; margin:0 auto; padding:1.5rem 1.25rem 3rem; }
+.page-wrap { max-width:1160px; margin:0 auto; padding:1.5rem 5% 3rem; }
 
 /* ── ALERT ── */
 .alert { border-radius:10px; padding:12px 16px; font-size:.88rem; font-weight:600; display:flex; align-items:center; gap:.5rem; margin-bottom:16px; }
@@ -73,7 +161,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
     margin-bottom:20px; flex-wrap:wrap; gap:12px;
 }
 .booking-header-left { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
-.booking-id-label { font-size:.8rem; color:var(--gray-600); }
+.booking-id-label { font-size:.78rem; color:var(--gray-600); }
 .booking-id { font-size:1.05rem; font-weight:800; color:var(--gray-800); }
 
 /* ── STATUS BADGES ── */
@@ -84,7 +172,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .status-CANCEL           { background:var(--red-light);    color:#b71c1c;         border:1px solid #ef9a9a; }
 .status-COMPLETED        { background:#f0fdf4;             color:#14532d;         border:1px solid #86efac; }
 
-/* ── EDIT TOGGLE BUTTON (header) ── */
+/* ── EDIT TOGGLE ── */
 .btn-edit-toggle {
     display:inline-flex; align-items:center; gap:.4rem;
     background:#fff; color:var(--green-main);
@@ -93,9 +181,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
     cursor:pointer; transition:.2s; font-family:inherit;
 }
 .btn-edit-toggle:hover { background:var(--green-light); }
-.btn-edit-toggle.editing {
-    background:var(--green-main); color:#fff;
-}
+.btn-edit-toggle.editing { background:var(--green-main); color:#fff; }
 .btn-edit-toggle.editing:hover { background:var(--green-dark); }
 
 /* ── LAYOUT ── */
@@ -114,7 +200,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .section-num { width:22px; height:22px; border-radius:50%; background:var(--green-main); color:#fff; font-size:.72rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
 .section-body { padding:18px 20px; }
 
-/* ── DETAIL GRID (view mode) ── */
+/* ── DETAIL GRID ── */
 .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .detail-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
 
@@ -123,80 +209,66 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 
 .detail-label { font-size:.75rem; color:var(--gray-600); font-weight:600; margin-bottom:4px; }
 .detail-value { font-size:.92rem; font-weight:700; color:var(--gray-800); }
-.detail-value.big { font-size:1.05rem; }
 .divider { height:1px; background:var(--gray-100); margin:14px 0; }
 
-/* ── INLINE EDIT FIELDS ── */
+/* ── INLINE EDIT ── */
 .inline-field { display:none; }
-
-.editing-mode .view-val   { display:none; }
+.editing-mode .view-val    { display:none; }
 .editing-mode .inline-field { display:block; }
 
-.inline-input,
-.inline-textarea {
+.inline-input, .inline-textarea, .inline-select {
     width:100%; padding:8px 10px;
-    border:1.5px solid var(--edit-border);
-    border-radius:8px; font-size:.9rem;
-    font-family:'Sarabun',sans-serif;
-    font-weight:600; color:var(--gray-800);
-    background:var(--edit-bg);
-    transition:border-color .18s, box-shadow .18s;
-    outline:none;
+    border:1.5px solid var(--edit-border); border-radius:8px;
+    font-size:.9rem; font-family:'Sarabun',sans-serif;
+    font-weight:600; color:var(--gray-800); background:var(--edit-bg);
+    transition:border-color .18s, box-shadow .18s; outline:none;
 }
-.inline-input:focus,
-.inline-textarea:focus {
-    border-color:var(--edit-focus);
-    box-shadow:0 0 0 3px rgba(61,122,53,.12);
+.inline-input:focus, .inline-textarea:focus, .inline-select:focus {
+    border-color:var(--edit-focus); box-shadow:0 0 0 3px rgba(45,122,79,.12);
 }
 .inline-textarea { resize:vertical; min-height:72px; }
 
-/* ── EDIT BANNER (appears inside card while editing) ── */
+/* ── EDIT BANNER ── */
 .edit-banner {
-    display:none;
-    background:var(--green-light);
+    display:none; background:var(--green-light);
     border-bottom:1px solid var(--edit-border);
-    padding:8px 20px;
-    font-size:.8rem; color:var(--green-dark); font-weight:700;
+    padding:8px 20px; font-size:.8rem; color:var(--green-dark); font-weight:700;
     align-items:center; gap:.4rem;
 }
 .editing-mode .edit-banner { display:flex; }
 
-/* ── INLINE SAVE/CANCEL ROW ── */
-.inline-actions {
-    display:none;
-    gap:8px; padding:14px 20px 18px;
-    border-top:1px solid var(--gray-100);
-}
+/* ── INLINE ACTIONS ── */
+.inline-actions { display:none; gap:8px; padding:14px 20px 18px; border-top:1px solid var(--gray-100); }
 .editing-mode .inline-actions { display:flex; }
 
 .btn-inline-cancel {
-    background:#fff; color:var(--gray-600);
-    border:1.5px solid var(--gray-200); border-radius:8px;
-    padding:9px 18px; font-size:.88rem; font-weight:700;
+    background:#fff; color:var(--gray-600); border:1.5px solid var(--gray-200);
+    border-radius:8px; padding:9px 18px; font-size:.88rem; font-weight:700;
     cursor:pointer; font-family:inherit; transition:.2s;
 }
 .btn-inline-cancel:hover { background:var(--gray-100); }
-
 .btn-inline-save {
-    background:var(--green-main); color:#fff;
-    border:none; border-radius:8px;
+    background:var(--green-main); color:#fff; border:none; border-radius:8px;
     padding:9px 22px; font-size:.88rem; font-weight:700;
-    cursor:pointer; font-family:inherit; transition:.2s;
-    display:flex; align-items:center; gap:.35rem;
+    cursor:pointer; font-family:inherit; transition:.2s; display:flex; align-items:center; gap:.35rem;
 }
 .btn-inline-save:hover { background:var(--green-dark); }
 
-/* ── TAG ── */
-.tag { display:inline-flex; align-items:center; gap:.3rem; padding:.2rem .65rem; border-radius:20px; font-size:.75rem; font-weight:700; }
-.tag-green  { background:var(--green-light);  color:var(--green-dark); }
-.tag-orange { background:var(--orange-light); color:#a04000; }
+/* ── INFO CHIP ── */
+.info-chip {
+    display:inline-flex; align-items:center; gap:.35rem;
+    padding:.25rem .75rem; border-radius:20px; font-size:.76rem; font-weight:700;
+}
+.chip-green  { background:var(--green-light);  color:var(--green-dark); }
+.chip-orange { background:var(--orange-light); color:#92400e; }
+.chip-blue   { background:var(--blue-light);   color:var(--blue); }
 
 /* ── GUEST LIST ── */
 .guest-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--gray-100); }
 .guest-row:last-child { border-bottom:none; padding-bottom:0; }
-.guest-avatar { width:36px; height:36px; border-radius:50%; background:var(--green-light); color:var(--green-dark); display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0; }
+.guest-avatar { width:36px; height:36px; border-radius:50%; background:var(--green-light); color:var(--green-dark); display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:700; flex-shrink:0; }
 .guest-name { font-weight:700; font-size:.9rem; }
-.guest-role { font-size:.75rem; color:var(--gray-600); margin-top:2px; }
+.guest-role { font-size:.75rem; color:var(--gray-400); margin-top:2px; }
 .guest-empty { color:var(--gray-400); font-size:.85rem; font-style:italic; }
 
 /* ── NOTE ── */
@@ -212,11 +284,12 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 }
 .btn-cancel-booking:hover { background:var(--red-light); }
 .btn-pay {
-    flex:2; min-width:180px; background:var(--green-main); color:#fff;
+    flex:2; min-width:180px; background:var(--orange); color:#fff;
     border:none; border-radius:8px; padding:12px;
     font-size:.92rem; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit;
+    text-decoration:none; display:flex; align-items:center; justify-content:center; gap:.4rem;
 }
-.btn-pay:hover { background:var(--green-dark); }
+.btn-pay:hover { background:#c27b04; }
 .btn-review {
     flex:1; min-width:150px; background:#f59e0b; color:#fff;
     border:none; border-radius:8px; padding:12px;
@@ -238,27 +311,26 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 }
 
 /* ── SIDEBAR ── */
-.summary-card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:sticky; top:70px; }
-.summary-img { width:100%; height:160px; object-fit:cover; display:block; }
-.summary-img-placeholder { width:100%; height:160px; background:linear-gradient(135deg,#c8e6c9,#a5d6a7); display:flex; align-items:center; justify-content:center; font-size:3rem; }
-.summary-body { padding:16px; }
-.homestay-name { font-size:1rem; font-weight:800; }
-.homestay-loc  { font-size:.78rem; color:var(--gray-600); margin-top:3px; }
+.summary-card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:sticky; top:calc(var(--navbar-h) + 16px); }
+.summary-img { width:100%; height:180px; object-fit:cover; display:block; }
+.summary-img-placeholder { width:100%; height:180px; background:linear-gradient(135deg,#d8f3dc,#a7e3c3); display:flex; align-items:center; justify-content:center; font-size:3rem; }
+.summary-body { padding:16px 18px; }
+.tour-name-sb { font-size:1rem; font-weight:800; line-height:1.35; }
+.tour-meta-sb { font-size:.78rem; color:var(--gray-600); margin-top:4px; display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
 .summary-divider { height:1px; background:var(--gray-100); margin:12px 0; }
 .sum-row { display:flex; justify-content:space-between; padding:4px 0; font-size:.82rem; }
-.sum-row .label { color:var(--gray-600); }
-.sum-row .val   { font-weight:600; }
+.sum-row .lbl { color:var(--gray-600); }
+.sum-row .val { font-weight:700; color:var(--gray-800); }
 .price-box { background:var(--green-light); border-radius:10px; padding:12px 14px; margin-top:10px; }
 .price-box-label { font-size:.78rem; color:var(--green-dark); font-weight:600; }
 .price-box-total { font-size:1.5rem; font-weight:800; color:var(--green-dark); margin-top:2px; }
-.price-box-note  { font-size:.72rem; color:var(--green-accent); margin-top:2px; }
 
 /* ── REVIEW MODAL ── */
 .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; align-items:center; justify-content:center; }
 .modal-overlay.open { display:flex; }
 .modal { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-md); width:100%; max-width:540px; max-height:90vh; overflow-y:auto; padding:24px; }
 .modal-title { font-size:1.05rem; font-weight:800; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; }
-.modal-close { background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--gray-600); line-height:1; }
+.modal-close { background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--gray-600); }
 .form-group { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
 .form-group label { font-size:.83rem; font-weight:700; }
 .form-control { padding:10px 12px; border:1.5px solid var(--gray-200); border-radius:8px; font-size:.88rem; font-family:inherit; color:var(--gray-800); }
@@ -271,25 +343,118 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 
 /* ── STAR ── */
 .star-wrap { display:flex; gap:4px; margin-top:6px; }
-.star-btn { background:none; border:none; font-size:2.2rem; cursor:pointer; color:#d1d5db; transition:color .15s, transform .1s; padding:0 2px; line-height:1; }
+.star-btn { background:none; border:none; font-size:2.2rem; cursor:pointer; color:#d1d5db; transition:color .15s,transform .1s; padding:0 2px; line-height:1; }
 .star-btn:hover, .star-btn.active { color:#f59e0b; }
-.star-btn:hover  { transform:scale(1.15); }
+.star-btn:hover { transform:scale(1.15); }
 .img-preview-wrap { margin-top:8px; display:none; }
 .img-preview-wrap img { max-width:100%; border-radius:10px; border:1.5px solid var(--gray-200); }
 
 /* ── RESPONSIVE ── */
-@media(max-width:900px){
+@media(max-width:900px) {
     .detail-layout { grid-template-columns:1fr; }
     .summary-card { position:static; }
     .detail-grid.cols3 { grid-template-columns:1fr 1fr; }
+    :root { --navbar-h:auto; }
+    .navbar { height:auto; padding:14px 5%; flex-wrap:wrap; gap:10px; }
 }
-@media(max-width:560px){
-    .detail-grid, .detail-grid.cols3 { grid-template-columns:1fr; }
+@media(max-width:560px) {
+    .detail-grid, .detail-grid.cols3 { grid-column:1fr; }
 }
 </style>
 </head>
 <body>
 
+<!-- ══ TOP BAR ══ -->
+<div class="top-bar">
+  <a href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+    </svg>
+    ภาษาไทย
+  </a>
+  <div class="top-bar-divider"></div>
+  <a href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    ช่วยเหลือ
+  </a>
+  <div class="top-bar-divider"></div>
+  <a href="/member/bookings/list">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+    </svg>
+    การจองของฉัน
+  </a>
+</div>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar">
+    <a href="/search" class="navbar-brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+        </div>
+        <div class="brand-name">
+            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
+            <span class="brand-name-line2">Tribal Community Tourism</span>
+        </div>
+    </a>
+
+    <div class="nav-links">
+        <a href="/search" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            หน้าแรก
+        </a>
+        <a th:href="@{/tribe-info}" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+            ข้อมูลชนเผ่า
+        </a>
+        <a href="/about" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            เกี่ยวกับเรา
+        </a>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="user-menu-wrapper" id="userMenuWrapper" th:if="${session.loggedInMember != null}">
+        <button class="btn-user-menu" onclick="toggleUserMenu()">
+            <div class="user-avatar">
+                <span th:text="${#strings.substring(session.loggedInMember.firstname,0,1)}">ม</span>
+            </div>
+            <div class="user-info">
+                <span class="user-name" th:text="${session.loggedInMember.firstname}">ชื่อ</span>
+                <span class="user-role">สมาชิก</span>
+            </div>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="user-dropdown-menu" id="userDropdown">
+            <a href="/member/profile" class="udrop-item">
+                <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                <div class="udrop-text"><span>โปรไฟล์ของฉัน</span><small>ดูและแก้ไขข้อมูลส่วนตัว</small></div>
+            </a>
+            <a href="/member/bookings/list" class="udrop-item">
+                <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
+                <div class="udrop-text"><span>การจองของฉัน</span><small>ตรวจสอบสถานะการจอง</small></div>
+            </a>
+            <div class="udrop-divider"></div>
+            <a href="/member/login/logout" class="udrop-item udrop-logout">
+                <div class="udrop-icon udrop-icon-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></div>
+                <div class="udrop-text"><span>ออกจากระบบ</span><small>Sign out</small></div>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══ BREADCRUMB ══ -->
+<div class="breadcrumb">
+    <a href="/search">หน้าแรก</a> &rsaquo;
+    <a href="/member/bookings/list">การจองของฉัน</a> &rsaquo;
+    <a href="/member/bookings/list?type=HOMESTAY">โฮมสเตย์</a> &rsaquo;
+    <span th:text="${booking.bookingid}">รหัสการจอง</span>
+</div>
+
+<!-- ══ PAGE CONTENT ══ -->
 <div class="page-wrap">
 
 <div th:with="
@@ -321,7 +486,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
             </span>
         </div>
 
-        <!-- ปุ่มแก้ไข: เฉพาะ PENDING / WAITING_APPROVAL -->
         <button class="btn-edit-toggle" id="editToggleBtn"
                 th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
                 onclick="toggleEdit()">
@@ -335,10 +499,9 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
         <!-- ─── LEFT ─── -->
         <div>
 
-            <!-- SECTION 1 : ข้อมูลการเข้าพัก  (รองรับ inline edit) -->
+            <!-- SECTION 1 : ข้อมูลการเข้าพัก -->
             <div class="card" id="stayCard" th:if="${detail != null}">
 
-                <!-- Edit banner -->
                 <div class="edit-banner">✏️ กำลังแก้ไข — เปลี่ยนข้อมูลได้เลย แล้วกด "บันทึก"</div>
 
                 <div class="section-header">
@@ -348,7 +511,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                     </div>
                 </div>
 
-                <!-- form ครอบ section นี้ -->
                 <form th:action="@{/booking/homestay/edit/{id}(id=${booking.bookingid})}" method="post" id="editForm">
 
                     <div class="section-body">
@@ -359,7 +521,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                                 <div class="detail-label">ประเภทห้อง</div>
                                 <div class="detail-value view-val"
                                      th:text="${detail.roomtype != null ? detail.roomtype.typename : '-'}"></div>
-                                <!-- ไม่มี inline-field เพราะไม่ให้แก้ -->
                             </div>
 
                             <!-- จำนวนห้อง (ไม่แก้ได้) -->
@@ -420,35 +581,27 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                                            th:value="${detail.numofChcldren != null ? detail.numofChcldren : 0}">
                                 </div>
                             </div>
-                            <!-- จำนวนคืน (คำนวณอัตโนมัติ) -->
+                            <!-- จำนวนคืน -->
                             <div class="detail-item">
                                 <div class="detail-label">จำนวนคืน</div>
                                 <div class="detail-value" id="nights-display">-</div>
                             </div>
                         </div>
 
-                        <!-- hidden สำหรับ JS คำนวณคืน -->
                         <span id="js-checkin"  th:attr="data-date=${detail.checkindate}"  style="display:none;"></span>
                         <span id="js-checkout" th:attr="data-date=${detail.checkoutdate}" style="display:none;"></span>
                     </div>
 
-                    <!-- ── SECTION 4 ฝังใน form เดียวกัน (หมายเหตุ) ── -->
+                    <!-- SECTION 4 : หมายเหตุ -->
                     <div style="padding:0 20px 4px;border-top:1px solid var(--gray-100);">
                         <div style="display:flex;align-items:center;gap:.5rem;padding:14px 0 8px;font-weight:800;font-size:.95rem;">
                             <div class="section-num">4</div>
                             หมายเหตุ
                         </div>
-
-                        <!-- view mode -->
                         <div class="view-val">
-                            <p class="note-text"
-                               th:if="${booking.note != null and !booking.note.isEmpty()}"
-                               th:text="${booking.note}"></p>
-                            <p class="note-empty"
-                               th:if="${booking.note == null or booking.note.isEmpty()}">ไม่มีหมายเหตุ</p>
+                            <p class="note-text" th:if="${booking.note != null and !booking.note.isEmpty()}" th:text="${booking.note}"></p>
+                            <p class="note-empty" th:if="${booking.note == null or booking.note.isEmpty()}">ไม่มีหมายเหตุ</p>
                         </div>
-
-                        <!-- inline edit -->
                         <div class="inline-field" style="padding-bottom:6px;">
                             <textarea class="inline-textarea" name="note" rows="3"
                                       placeholder="หมายเหตุเพิ่มเติม..."
@@ -456,7 +609,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                         </div>
                     </div>
 
-                    <!-- Inline save / cancel (hidden until editing) -->
                     <div class="inline-actions">
                         <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
                         <button type="submit"  class="btn-inline-save">💾 บันทึกการเปลี่ยนแปลง</button>
@@ -502,10 +654,11 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                         <div class="section-num">3</div>
                         รายชื่อผู้เข้าพัก
                     </div>
+                    <span class="info-chip chip-green" th:if="${booking.isBookerGoing}">🙋 ผู้จองไปเอง</span>
+                    <span class="info-chip chip-orange" th:if="${!booking.isBookerGoing}">🎁 จองให้ผู้อื่น</span>
                 </div>
                 <div class="section-body">
 
-                    <!-- กรณีผู้จองไปเอง: แสดงชื่อ ไม่ให้แก้ -->
                     <div th:if="${booking.isBookerGoing}">
                         <div class="guest-row">
                             <div class="guest-avatar">👤</div>
@@ -519,46 +672,34 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                         </div>
                     </div>
 
-                    <!-- กรณีจองให้ผู้อื่น: แสดงชื่อ + inline edit -->
                     <div th:if="${!booking.isBookerGoing}">
                         <div th:if="${booking.guests != null}" th:each="g,iter : ${booking.guests}">
                             <div class="guest-row">
                                 <div class="guest-avatar">👥</div>
                                 <div style="flex:1;">
-                                    <!-- view mode -->
                                     <div class="view-val">
                                         <div class="guest-name"
                                              th:text="${(g.firstname != null ? g.firstname : '')
                                                        + ' '
                                                        + (g.lastname  != null ? g.lastname  : '')}"></div>
+                                        <div class="guest-role">ผู้เข้าพัก</div>
                                     </div>
-                                    <!-- inline edit (ส่งใน editForm) -->
                                     <div class="inline-field">
                                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                                             <div>
                                                 <div class="detail-label">ชื่อ</div>
-                                                <input class="inline-input" type="text"
-                                                       name="guestFirstname"
-                                                       th:value="${g.firstname}"
-                                                       placeholder="ชื่อ">
+                                                <input class="inline-input" type="text" name="guestFirstname" th:value="${g.firstname}" placeholder="ชื่อ">
                                             </div>
                                             <div>
                                                 <div class="detail-label">นามสกุล</div>
-                                                <input class="inline-input" type="text"
-                                                       name="guestLastname"
-                                                       th:value="${g.lastname}"
-                                                       placeholder="นามสกุล">
+                                                <input class="inline-input" type="text" name="guestLastname" th:value="${g.lastname}" placeholder="นามสกุล">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- ไม่มี guest -->
-                        <p class="guest-empty"
-                           th:if="${booking.guests == null or booking.guests.isEmpty()}">
-                            ไม่มีรายชื่อผู้เข้าพัก
-                        </p>
+                        <p class="guest-empty" th:if="${booking.guests == null or booking.guests.isEmpty()}">ไม่มีรายชื่อผู้เข้าพัก</p>
                     </div>
 
                 </div>
@@ -572,8 +713,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 
                 <a th:if="${sts == 'PENDING'}"
                    th:href="@{/payment/homestay/{id}(id=${booking.bookingid})}"
-                   class="btn-pay"
-                   style="text-decoration:none;display:flex;align-items:center;justify-content:center;gap:.4rem;">
+                   class="btn-pay">
                     💳 ไปหน้าชำระเงิน
                 </a>
 
@@ -594,47 +734,51 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
         </div>
         <!-- /LEFT -->
 
-       
-       <!-- ─── RIGHT (SIDEBAR) ─── -->
-<div class="summary-card">
-    
-    <!-- แก้ไขตรงนี้: ประกาศตัวแปรสปลิตรูปภาพด้วยคอมม่า (,) และเช็คเงื่อนไขดึงรูปแรกสุด -->
-    <th:block th:with="hasImages=${detail != null and detail.roomtype != null and detail.roomtype.images != null and !detail.roomtype.images.isEmpty()},
-                       roomImgs=${hasImages ? #strings.arraySplit(detail.roomtype.images, ',') : null}">
-                       
-        <!-- แสดงรูปแรกสุดถ้ามีข้อมูลภาพอยู่จริง -->
-        <img class="summary-img"
-             th:if="${roomImgs != null and roomImgs.length > 0}"
-             th:src="@{{path}(path=${roomImgs[0]})}" 
-             alt="room">
+        <!-- ─── RIGHT SIDEBAR ─── -->
+        <div>
+            <div class="summary-card"
+                 th:with="hasImages=${detail != null and detail.roomtype != null and detail.roomtype.images != null and !detail.roomtype.images.isEmpty()},
+                           roomImgs=${hasImages ? #strings.arraySplit(detail.roomtype.images, ',') : null}">
 
-        <!-- แสดงภาพ Placeholder สัญลักษณ์บ้าน 🏠 ถ้าไม่มีข้อมูลรูปภาพเลย -->
-        <div class="summary-img-placeholder"
-             th:if="${roomImgs == null or roomImgs.length == 0}">🏠</div>
-             
-    </th:block>
+                <img class="summary-img"
+                     th:if="${roomImgs != null and roomImgs.length > 0}"
+                     th:src="@{{path}(path=${roomImgs[0]})}"
+                     alt="room">
+                <div class="summary-img-placeholder"
+                     th:if="${roomImgs == null or roomImgs.length == 0}">🏠</div>
 
-    <div class="summary-body">
-        <div class="homestay-name"
-             th:text="${detail != null and detail.roomtype != null
-                        and detail.roomtype.homestay != null
-                        ? detail.roomtype.homestay.homestayname : '-'}"></div>
+                <div class="summary-body">
+                    <div class="tour-name-sb"
+                         th:text="${detail != null and detail.roomtype != null
+                                    and detail.roomtype.homestay != null
+                                    ? detail.roomtype.homestay.homestayname : '-'}"></div>
+                    <div class="tour-meta-sb">
+                        📍
+                        <span th:text="${detail != null and detail.roomtype != null
+                                         and detail.roomtype.homestay != null
+                                         ? detail.roomtype.homestay.address : '-'}"></span>
+                    </div>
 
-                <div class="homestay-loc">
-                    📍
-                    <span th:text="${detail != null and detail.roomtype != null
-                                     and detail.roomtype.homestay != null
-                                     ? detail.roomtype.homestay.address : '-'}"></span>
-                </div>
+                    <div class="summary-divider"></div>
 
-                <div class="summary-divider"></div>
+                    <div class="sum-row">
+                        <span class="lbl">เช็คอิน</span>
+                        <span class="val" th:text="${detail != null and detail.checkindate != null ? #dates.format(detail.checkindate,'dd/MM/yyyy') : '-'}"></span>
+                    </div>
+                    <div class="sum-row">
+                        <span class="lbl">เช็คเอาท์</span>
+                        <span class="val" th:text="${detail != null and detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'dd/MM/yyyy') : '-'}"></span>
+                    </div>
+                    <div class="sum-row">
+                        <span class="lbl">ประเภทห้อง</span>
+                        <span class="val" th:text="${detail != null and detail.roomtype != null ? detail.roomtype.typename : '-'}"></span>
+                    </div>
 
-                <div class="price-box">
-                    <div class="price-box-label">ราคารวมทั้งหมด</div>
-                    <div class="price-box-total">
-                        ฿
-                        <span th:text="${booking.totalamount != null ?
-                            #numbers.formatDecimal(booking.totalamount, 0, 'COMMA', 0, 'POINT') : '0'}"></span>
+                    <div class="price-box">
+                        <div class="price-box-label">ราคารวมทั้งหมด</div>
+                        <div class="price-box-total">
+                            ฿ <span th:text="${booking.totalamount != null ? #numbers.formatDecimal(booking.totalamount,0,'COMMA',0,'POINT') : '0'}"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -643,8 +787,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 
     </div><!-- /detail-layout -->
 
-
-    <!-- ══ MODAL : รีวิว ══ -->
+    <!-- ══ REVIEW MODAL ══ -->
     <div class="modal-overlay" id="reviewModal"
          th:if="${sts == 'COMPLETED' and booking.review == null}">
         <div class="modal">
@@ -652,15 +795,10 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                 ⭐ เขียนรีวิวการเข้าพัก
                 <button class="modal-close" onclick="closeReviewModal()">✕</button>
             </div>
-
             <p style="font-size:.85rem;color:var(--gray-600);margin-bottom:16px;font-weight:600;"
-               th:text="${detail != null and detail.roomtype != null
-                          and detail.roomtype.homestay != null
-                          ? detail.roomtype.homestay.homestayname : ''}"></p>
-
+               th:text="${detail != null and detail.roomtype != null and detail.roomtype.homestay != null ? detail.roomtype.homestay.homestayname : ''}"></p>
             <form th:action="@{/member/review/submit}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="bookingId" th:value="${booking.bookingid}">
-
                 <div class="form-group">
                     <label>ให้คะแนน <span style="color:var(--red);">*</span></label>
                     <div class="star-wrap" id="starWrap">
@@ -673,13 +811,11 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                     <input type="hidden" name="rating" id="ratingInput" required>
                     <span id="ratingLabel" style="font-size:.78rem;color:var(--gray-600);margin-top:4px;"></span>
                 </div>
-
                 <div class="form-group">
                     <label>รีวิว</label>
                     <textarea class="form-control" name="comment" rows="4" maxlength="255"
                               placeholder="เล่าประสบการณ์ เช่น บรรยากาศ การบริการ อาหาร ห้องพัก..."></textarea>
                 </div>
-
                 <div class="form-group">
                     <label>รูปภาพประกอบ (ถ้ามี)</label>
                     <input type="file" name="reviewimage" class="form-control" accept="image/*"
@@ -688,7 +824,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                         <img id="imgPreview" src="" alt="preview">
                     </div>
                 </div>
-
                 <div class="modal-actions">
                     <button type="button" class="btn-modal-cancel" onclick="closeReviewModal()">ยกเลิก</button>
                     <button type="submit" class="btn-modal-save" id="submitReviewBtn" disabled>⭐ ส่งรีวิว</button>
@@ -713,10 +848,8 @@ function calcNights() {
     const editCi = document.getElementById('edit-checkin');
     const editCo = document.getElementById('edit-checkout');
     const isEditing = document.getElementById('stayCard')?.classList.contains('editing-mode');
-
     let ciStr = isEditing && editCi ? editCi.value : (ciEl ? ciEl.dataset.date : null);
     let coStr = isEditing && editCo ? editCo.value : (coEl ? coEl.dataset.date : null);
-
     if (ciStr && coStr) {
         const ci = new Date(ciStr), co = new Date(coStr);
         if (!isNaN(ci) && !isNaN(co)) {
@@ -726,9 +859,7 @@ function calcNights() {
         }
     }
 }
-
 window.addEventListener('DOMContentLoaded', calcNights);
-
 const editCiInput = document.getElementById('edit-checkin');
 const editCoInput = document.getElementById('edit-checkout');
 if (editCiInput) editCiInput.addEventListener('change', calcNights);
@@ -736,7 +867,6 @@ if (editCoInput) editCoInput.addEventListener('change', calcNights);
 
 /* ════ Inline Edit Toggle ════ */
 let editing = false;
-
 function setEditCards(on) {
     ['stayCard','guestCard'].forEach(function(id) {
         const el = document.getElementById(id);
@@ -745,7 +875,6 @@ function setEditCards(on) {
         el.classList.toggle('is-editable',  on);
     });
 }
-
 function toggleEdit() {
     editing = !editing;
     const btn = document.getElementById('editToggleBtn');
@@ -758,11 +887,7 @@ function toggleEdit() {
         exitEdit(btn);
     }
 }
-
-function cancelEdit() {
-    exitEdit(document.getElementById('editToggleBtn'));
-}
-
+function cancelEdit() { exitEdit(document.getElementById('editToggleBtn')); }
 function exitEdit(btn) {
     editing = false;
     setEditCards(false);
@@ -773,8 +898,7 @@ function exitEdit(btn) {
 /* ════ Review Modal ════ */
 function openReviewModal()  { const m = document.getElementById('reviewModal'); if (m) m.classList.add('open'); }
 function closeReviewModal() { const m = document.getElementById('reviewModal'); if (m) m.classList.remove('open'); }
-
-const ratingLabels = ['','แย่มาก','พอใช้','ปานกลาง','ดี','ดีมาก'];
+const ratingLabels = ['','แย่มาก 😞','พอใช้ 😐','ปานกลาง 🙂','ดี 😊','ดีมาก 🤩'];
 document.querySelectorAll('.star-btn').forEach(function(btn) {
     btn.addEventListener('click', function () {
         var val = parseInt(this.dataset.val);
@@ -785,7 +909,6 @@ document.querySelectorAll('.star-btn').forEach(function(btn) {
         if (lbl) lbl.textContent = ratingLabels[val] || '';
     });
 });
-
 function previewReviewImage(event) {
     var file = event.target.files[0];
     if (!file) return;
@@ -799,6 +922,15 @@ function confirmCancel() {
         document.getElementById('cancelForm').submit();
     }
 }
+
+/* ════ User Menu ════ */
+function toggleUserMenu() {
+    document.getElementById('userMenuWrapper').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+    const w = document.getElementById('userMenuWrapper');
+    if (w && !w.contains(e.target)) w.classList.remove('open');
+});
 </script>
 </body>
 </html>

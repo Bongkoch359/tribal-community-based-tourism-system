@@ -9,7 +9,6 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-    /* ── ตรงกับ search.css ทุก token ── */
     --green-950: #0a1f12;
     --green-900: #14321e;
     --green-800: #1a472a;
@@ -34,8 +33,6 @@
     --neutral-200: #e7e5e4;
     --neutral-100: #f5f5f4;
     --neutral-50:  #fafaf9;
-
-    /* alias */
     --green-dark:  #1a472a;
     --green-main:  #2d7a4f;
     --green-light: #d8f3dc;
@@ -52,17 +49,38 @@
     --gray-800:    #292524;
     --shadow:0 2px 12px rgba(0,0,0,.08);
     --radius-lg:18px;
+    --navbar-h: 100px;
 }
 
 body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-800); font-size:15px; }
 
 /* ══════════════════════════════
-   NAVBAR  (ใช้ CSS ตาม search.css)
+   TOP BAR
 ══════════════════════════════ */
-:root { --navbar-h: 100px; }
+.top-bar {
+    background: var(--green-950);
+    padding: 8px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+}
+.top-bar a {
+    color: rgba(255,255,255,0.55);
+    font-size: 14px; font-weight: 500;
+    transition: color .15s;
+    display: flex; align-items: center; gap: 5px;
+    text-decoration: none;
+}
+.top-bar a:hover { color: #fff; }
+.top-bar a svg { width: 14px; height: 14px; }
+.top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
 
+/* ══════════════════════════════
+   NAVBAR
+══════════════════════════════ */
 .navbar {
-    background: var(--green-800); /* #1a472a ตรงกับ search.css */
+    background: var(--green-800);
     height: var(--navbar-h);
     display: flex;
     align-items: center;
@@ -76,26 +94,37 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .navbar-brand {
     color: #fff;
     margin-right: auto;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-shrink: 0;
-    text-decoration: none;
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0; text-decoration: none;
 }
 .brand-icon {
     width: 48px; height: 48px;
-    background: var(--green-400); /* #52b788 ตรงกับ search.css */
+    background: var(--green-400);
     border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(82,183,136,.35);
-    font-size: 1.5rem;
 }
+.brand-icon svg { width: 26px; height: 26px; fill: white; }
 .brand-name { display: flex; flex-direction: column; }
 .brand-name-line1 { font-size: 20px; font-weight: 800; line-height: 1.15; }
 .brand-name-line2 { font-size: 13px; font-weight: 400; color: var(--green-200); opacity: .8; }
 
-/* user menu (แสดงเฉพาะ login แล้ว) */
+.nav-links { display: flex; align-items: center; gap: 2px; }
+.nav-link {
+    color: rgba(255,255,255,0.80);
+    font-size: 16px; font-weight: 600;
+    padding: 10px 16px; border-radius: 8px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 7px;
+    text-decoration: none;
+}
+.nav-link svg { width: 17px; height: 17px; opacity: .7; flex-shrink: 0; }
+.nav-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.nav-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.14); margin: 0 8px; }
+
+/* user menu */
 .user-menu-wrapper { position: relative; }
 .btn-user-menu {
     display: flex; align-items: center; gap: 10px;
@@ -169,16 +198,16 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .breadcrumb a { color: var(--green-main); text-decoration: none; }
 
 /* ══════════════════════════════
-   STEPS  (กึ่งกลางหน้า)
+   STEPS
 ══════════════════════════════ */
 .steps-wrap {
     background: #fff; border-bottom: 1px solid var(--gray-200);
     padding: .75rem 2rem;
-    display: flex; justify-content: center; /* ← กึ่งกลาง */
+    display: flex; justify-content: center;
 }
 .steps {
     display: flex; align-items: center;
-    width: 100%; max-width: 540px; /* ← จำกัดความกว้าง */
+    width: 100%; max-width: 540px;
 }
 .step {
     display: flex; align-items: center; gap: .45rem;
@@ -230,9 +259,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 .booking-banner-sub { font-size: .8rem; opacity: .85; }
 .booking-banner-id { background: rgba(255,255,255,.2); border-radius: 8px; padding: 6px 12px; font-size: .8rem; font-weight: 700; white-space: nowrap; }
 
-/* ══════════════════════════════
-   DEADLINE BOX  (แทน countdown เดิม)
-══════════════════════════════ */
+/* DEADLINE BOX */
 .deadline-wrap {
     background: linear-gradient(135deg,#fffbeb,#fef3c7);
     border: 1px solid #fcd34d; border-radius: 12px;
@@ -328,26 +355,77 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
     .booking-banner { flex-direction: column; text-align: center; }
     :root { --navbar-h: auto; }
     .navbar { height: auto; padding: 14px 5%; }
+    .top-bar { display: none; }
+    .brand-name-line2 { display: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════ NAVBAR (login แล้วเท่านั้น) ══════════ -->
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+    </svg>
+    ภาษาไทย
+  </a>
+  <div class="top-bar-divider"></div>
+  <a href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    ช่วยเหลือ
+  </a>
+  <div class="top-bar-divider"></div>
+  <a href="/member/bookings/list">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+    </svg>
+    การจองของฉัน
+  </a>
+</div>
+
+<!-- NAVBAR -->
 <nav class="navbar">
-    <a href="/" class="navbar-brand">
-        <div class="brand-icon">🏕️</div>
+    <a href="/search" class="navbar-brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+        </div>
         <div class="brand-name">
             <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
             <span class="brand-name-line2">Tribal Community Tourism</span>
         </div>
     </a>
 
-    <!-- แสดงเฉพาะ login แล้ว -->
+    <div class="nav-links">
+        <a href="/search" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            หน้าแรก
+        </a>
+        <a th:href="@{/tribe-info}" href="#" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+            </svg>
+            ข้อมูลชนเผ่า
+        </a>
+        <a href="/about" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            เกี่ยวกับเรา
+        </a>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <!-- user menu (แสดงเฉพาะ login แล้ว) -->
     <div class="user-menu-wrapper" id="userMenuWrapper">
         <button class="btn-user-menu" onclick="toggleUserMenu()">
             <div class="user-avatar">
-                <!-- Thymeleaf: ตัวอักษรแรกของ firstname -->
                 <span th:text="${session.loggedInMember != null} ?
                     ${#strings.substring(session.loggedInMember.firstname,0,1)} :
                     (${session.loggedInManager != null} ?
@@ -411,7 +489,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
     &nbsp;›&nbsp; ชำระเงิน
 </div>
 
-<!-- ══════════ STEPS (กึ่งกลาง) ══════════ -->
+<!-- STEPS -->
 <div class="steps-wrap">
     <div class="steps">
         <div class="step done">
@@ -458,7 +536,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
         <div class="booking-banner-id">#<span th:text="${payment.bookingId}"></span></div>
     </div>
 
-    <!-- ══════════ DEADLINE BOX (แทน countdown 24 ชั่วโมง) ══════════ -->
+    <!-- DEADLINE BOX -->
     <div class="deadline-wrap">
         <div class="deadline-icon">📅</div>
         <div style="flex:1;">
@@ -473,7 +551,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 
     <div class="pay-layout">
 
-        <!-- ─── LEFT ─── -->
+        <!-- LEFT -->
         <div>
 
             <!-- ① ข้อมูลการชำระเงิน -->
@@ -493,7 +571,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                                 <div class="bank-name"
                                      th:text="${payment.bankName != null ? payment.bankName : 'ธนาคาร'}"></div>
                                 <div class="bank-account" th:text="${payment.bankAccount}"></div>
-                                <!-- ✅ แสดง accountName แทน homestayName -->
                                 <div class="bank-holder"
                                      th:text="${payment.accountName != null ? payment.accountName : '-'}"></div>
                             </div>
@@ -571,7 +648,7 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
         </div>
         <!-- /LEFT -->
 
-        <!-- ─── RIGHT SIDEBAR ─── -->
+        <!-- RIGHT SIDEBAR -->
         <div class="summary-card">
             <img class="summary-img"
                  th:if="${payment.roomImageUrl != null}"
@@ -600,7 +677,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
                     <span class="val"
                           th:text="${payment.checkIn != null ? #dates.format(payment.checkIn,'dd MMM yyyy') : '-'}">-</span>
                 </div>
-                <!-- ✅ แสดงวันกำหนดชำระ -->
                 <div class="sum-row">
                     <span class="label">ชำระก่อนวันที่</span>
                     <span class="val" style="color:#b45309;"
@@ -647,19 +723,12 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
 <script th:inline="javascript">
 /*<![CDATA[*/
 
-/* ══════════════════════════════
-   DEADLINE — แสดงเหลืออีกกี่วัน
-══════════════════════════════ */
 (function () {
     const deadlineStr = /*[[${payment.paymentDeadline}]]*/ null;
     if (!deadlineStr) return;
-
-    // ให้หมดเวลา 23:59:59 ของวัน deadline
     const deadline = new Date(deadlineStr);
     deadline.setHours(23, 59, 59, 0);
-
     const el = document.getElementById('remainText');
-
     function tick() {
         const diff = deadline - Date.now();
         if (diff <= 0) {
@@ -671,7 +740,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
         const hours = Math.floor((diff % 86400000) / 3600000);
         const mins  = Math.floor((diff % 3600000) / 60000);
         const secs  = Math.floor((diff % 60000) / 1000);
-
         if (days > 0) {
             el.textContent = `เหลืออีก ${days} วัน ${hours} ชั่วโมง`;
         } else {
@@ -685,7 +753,6 @@ body { font-family:'Sarabun',sans-serif; background:#f5f7f5; color:var(--gray-80
     tick();
 })();
 
-/* ══ USER MENU TOGGLE ══ */
 function toggleUserMenu() {
     document.getElementById('userMenuWrapper').classList.toggle('open');
 }
@@ -694,7 +761,6 @@ document.addEventListener('click', function(e) {
     if (w && !w.contains(e.target)) w.classList.remove('open');
 });
 
-/* ══ COPY ACCOUNT ══ */
 function copyAccount(btn) {
     navigator.clipboard.writeText(btn.dataset.account).then(() => {
         btn.textContent = '✅ คัดลอกแล้ว';
@@ -703,7 +769,6 @@ function copyAccount(btn) {
     });
 }
 
-/* ══ FILE UPLOAD ══ */
 function handleFileSelect(input) {
     const file = input.files[0];
     if (!file) return;
@@ -730,7 +795,6 @@ function removeFile() {
     document.getElementById('previewArea').style.display = 'none';
 }
 
-/* ══ DRAG & DROP ══ */
 const dz = document.getElementById('dropZone');
 ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
 ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
@@ -741,7 +805,6 @@ dz.addEventListener('drop', e => {
     input.files = dt.files; handleFileSelect(input);
 });
 
-/* ══ SUBMIT ══ */
 function submitPayment() {
     if (!document.getElementById('slipFile').files[0]) { alert('กรุณาอัปโหลดสลิปการโอนเงิน'); return; }
     if (!confirm('ยืนยันการส่งหลักฐานการชำระเงินใช่หรือไม่?')) return;

@@ -30,11 +30,11 @@ public class EditProfileController {
             return "redirect:/member/login";
         }
 
-        // getProfile(): ดึงข้อมูลล่าสุดจาก DB (memberid เป็น String)
+        // getProfile(): ดึงข้อมูลล่าสุดจาก DB
         Member member = memberService.getMemberById(loggedIn.getMemberid())
-                                     .orElse(loggedIn); // fallback ใช้จาก session
+                                     .orElse(loggedIn);
 
-        // display result: ส่งไปหน้า edit_profile.html
+        // display result: ส่งไปหน้าฟอร์มแก้ไขข้อมูล
         model.addAttribute("member", member);
         return "Member/member_editprofile";
     }
@@ -45,7 +45,6 @@ public class EditProfileController {
     // ══════════════════════════════════════════════════════
     @PostMapping("/edit")
     public String doEditProfile(
-            // ชื่อ @RequestParam ต้องตรงกับ name="" ใน HTML form
             @RequestParam("firstname")                          String firstname,
             @RequestParam("lastname")                           String lastname,
             @RequestParam(value = "phone",      required = false) String phone,
@@ -65,60 +64,68 @@ public class EditProfileController {
             return "redirect:/member/login";
         }
 
-        // ══ Alternate 6.1: Server-side validate ══════════
+        // ══ Step 7 (Pre-build): เตรียม Object จากข้อมูลที่กรอกเข้ามา เพื่อใช้ดัก Alternate Flows ════
+        Member currentInput = new Member();
+        currentInput.setMemberid(loggedIn.getMemberid());
+        currentInput.setFirstname(firstname != null ? firstname.trim() : "");
+        currentInput.setLastname(lastname != null ? lastname.trim() : "");
+        currentInput.setEmail(loggedIn.getEmail()); // อีเมลดึงจากระบบเดิม ห้ามแก้ไข
+        currentInput.setPhone(phone != null ? phone.trim() : "");
+        currentInput.setBirthdate(birthdate);
+        currentInput.setAddress(address != null ? address.trim() : "");
+
+        // ══ Alternate Flow 6.1 — ข้อมูลไม่ครบ (หรือกรอกไม่ถูกต้อง) ══════════
         if (firstname == null || firstname.isBlank() ||
             lastname  == null || lastname.isBlank()) {
-            model.addAttribute("errorMessage", "กรุณากรอกชื่อและนามสกุลให้ครบถ้วน");
-            model.addAttribute("member", loggedIn);
+            // ดัก Alternate Flow: แสดงกล่องข้อความเตือนให้ตรงตามเอกสารสเปก
+            model.addAttribute("errorMessage", "กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน");
+            model.addAttribute("member", currentInput); // คงค่าที่กรอกไว้หน้าจอ
             return "Member/member_editprofile";
         }
 
+        // ✅ เพิ่มใหม่: ตรวจสอบเบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก
+        if (phone != null && !phone.isBlank()) {
+        String cleanPhone = phone.trim();
+        // ใช้ Regular Expression เช็กว่าเป็นตัวเลขล้วน [0-9] และมีความยาว 10 ตัวพอดี
+        if (!cleanPhone.matches("^[0-9]{10}$")) {
+        model.addAttribute("errorMessage", "กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน");
+        model.addAttribute("member", currentInput);
+        return "Member/member_editprofile";
+        }
+        }
+
+        // ══ Alternate Flow เพิ่มเติม: ตรวจสอบความถูกต้องของรหัสผ่านใหม่ ══════════
         if (newPassword != null && !newPassword.isBlank()) {
             if (newPassword.length() < 6) {
                 model.addAttribute("errorMessage", "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
-                model.addAttribute("member", loggedIn);
-                return "Member/edit_profile";
+                model.addAttribute("member", currentInput);
+                return "Member/member_editprofile"; 
             }
             if (!newPassword.equals(confirmPassword)) {
-                model.addAttribute("errorMessage", "รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน");
-                model.addAttribute("member", loggedIn);
+                model.addAttribute("errorMessage", "รหัสผ่านไม่ตรงกัน");
+                model.addAttribute("member", currentInput);
                 return "Member/member_editprofile";
             }
-        }
-
-        // ══ Step 7: เตรียม object ที่จะ update ══════════
-        Member toUpdate = new Member();
-        toUpdate.setMemberid(loggedIn.getMemberid()); // String ID
-        toUpdate.setFirstname(firstname.trim());
-        toUpdate.setLastname(lastname.trim());
-        toUpdate.setEmail(loggedIn.getEmail());        // email ไม่เปลี่ยน
-        toUpdate.setPhone(phone != null ? phone.trim() : "");
-        toUpdate.setBirthdate(birthdate);
-        toUpdate.setAddress(address != null ? address.trim() : "");
-
-        // รหัสผ่าน: ส่งเฉพาะเมื่อกรอก
-        if (newPassword != null && !newPassword.isBlank()) {
-            toUpdate.setPassword(newPassword);
+            currentInput.setPassword(newPassword);
         } else {
-            // ถ้าไม่กรอก → ส่ง null เพื่อให้ Service ข้ามการอัปเดตรหัสผ่าน
-            toUpdate.setPassword(null);
+            currentInput.setPassword(null); // Service จะข้ามการอัปเดตรหัสผ่านถ้าเป็น null
         }
 
-        // ══ Step 8: doEditProfile() ══════════════════════
-        boolean saved = memberService.updateProfile(toUpdate);
+        // ══ Step 8: doEditProfile() (ส่งวัตถุไปบันทึกที่ระบบ) ══════════════════════
+        boolean saved = memberService.updateProfile(currentInput);
 
-        // ══ Alternate 8.1.1: บันทึกไม่ได้ ════════════════
+        // ══ Alternate Flow 8.1.1 — เกิดข้อผิดพลาด/บันทึกไม่ได้ ════════════════
         if (!saved) {
-            model.addAttribute("errorMessage",
-                    "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
-            model.addAttribute("member", loggedIn);
+            // แจ้งเตือนข้อความความผิดพลาดตามสเปกของระบบที่กำหนดไว้
+            model.addAttribute("errorMessage", "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+            model.addAttribute("member", currentInput); // คงค่าที่กรอกล่าสุดไว้ ไม่ให้พิมพ์ใหม่หมด
             return "Member/member_editprofile";
         }
 
-        // ══ Step 9: สำเร็จ → อัปเดต session ══════════════
-        session.setAttribute("loggedInMember", toUpdate);
+        // ══ Step 9: สำเร็จ → อัปเดตข้อมูลใน Session ของผู้ใช้ ══════════════
+        session.setAttribute("loggedInMember", currentInput);
 
-        // display result พร้อม flash message
+        // แสดงผลสำเร็จด้วย Flash Attribute และโหลดหน้าเว็บใหม่ป้องกันการกดส่งซ้ำ (F5)
         ra.addFlashAttribute("successMessage", "แก้ไขข้อมูลสำเร็จแล้ว!");
         return "redirect:/member/profile/edit";
     }

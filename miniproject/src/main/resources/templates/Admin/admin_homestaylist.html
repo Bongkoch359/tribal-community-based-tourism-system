@@ -6,144 +6,197 @@
 <title>รายการคำขอโฮมสเตย์ - ระบบท่องเที่ยวชุมชนเผ่า</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body { 
-    font-family: 'Sarabun', sans-serif; 
-    background: #ffffff; 
-    color: #333;
-    line-height: 1.6;
+  :root {
+    --green-700: #215c35;
+    --green-600: #2d7a4f;
+    --green-500: #3d9e68;
+    --green-100: #d8f3dc;
+    --green-50:  #f0faf4;
+    --amber-700: #a16207;
+    --amber-600: #c27b04;
+    --amber-500: #e8960a;
+    --amber-400: #f5aa1f;
+    --amber-100: #fef3c7;
+    --red-700:   #b91c1c;
+    --red-100:   #fee2e2;
+    --neutral-950: #0c0a09;
+    --neutral-800: #292524;
+    --neutral-700: #44403c;
+    --neutral-600: #57534e;
+    --neutral-500: #78716c;
+    --neutral-400: #a8a29e;
+    --neutral-300: #d6d3d1;
+    --neutral-200: #e7e5e4;
+    --neutral-100: #f5f5f4;
+    --white: #ffffff;
   }
 
-  /* --- NAVBAR --- */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--neutral-100);
+    color: var(--neutral-800);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── NAVBAR ── */
   .navbar {
-    background: #1e4d2b;
+    background: #0a1f12;
     height: 100px;
     display: flex;
     align-items: center;
     padding: 0 5%;
-    gap: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    gap: 8px;
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
 
   .navbar-brand {
     color: #fff;
     font-weight: 700;
-    font-size: 24px;
+    font-size: 22px;
     text-decoration: none;
     margin-right: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  .brand-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--green-500);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
   }
 
   .nav-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
   }
 
   .nav-link {
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.45);
     text-decoration: none;
     font-size: 17px;
     font-weight: 500;
-    padding: 10px 18px;
+    padding: 10px 20px;
     border-radius: 10px;
-    transition: all 0.2s;
-  }
-
-  .nav-link:hover, .nav-link.active {
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-  }
-
-  .admin-section {
+    transition: all 0.15s ease;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding-left: 20px;
-    border-left: 1px solid rgba(255,255,255,0.2);
+    gap: 8px;
+    white-space: nowrap;
   }
 
-  .admin-badge {
-    background: #f4a261;
-    color: #fff;
+  .nav-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+  .nav-link.active { background: rgba(255,255,255,0.09); color: #fff; }
+
+  .nav-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.08);
+    margin: 0 12px;
+  }
+
+  .admin-area { display: flex; align-items: center; gap: 14px; }
+
+  .admin-info { text-align: right; }
+  .admin-name { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255,255,255,0.3); font-size: 12px; }
+
+  .admin-avatar {
+    width: 46px;
+    height: 46px;
+    background: var(--amber-700);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
+    font-size: 18px;
+    color: var(--amber-100);
+    flex-shrink: 0;
   }
 
-  /* --- CONTENT --- */
-  .content { 
-    max-width: 1250px; 
-    margin: 0 auto; 
-    padding: 50px 24px; 
+  .logout-btn {
+    color: rgba(255,255,255,0.25);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.15s;
+    white-space: nowrap;
+  }
+  .logout-btn:hover { color: rgba(255,255,255,0.7); }
+
+  /* ── CONTENT ── */
+  .content {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    flex: 1;
+    width: 100%;
   }
 
   .page-header {
-    margin-bottom: 35px;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 20px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--neutral-200);
+    padding-bottom: 18px;
   }
 
-  .page-header h1 { 
-    font-size: 32px; 
-    font-weight: 700; 
-    color: #1e4d2b; 
-    margin-bottom: 5px;
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--neutral-800);
+    margin-bottom: 4px;
   }
 
-  .page-header p { 
-    font-size: 18px; 
-    color: #666; 
-  }
+  .page-header p { font-size: 14px; color: var(--neutral-500); }
 
   /* TOP MENU TABS */
-  .top-menu {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-  }
+  .top-menu { display: flex; gap: 10px; margin-bottom: 20px; }
 
   .top-menu a {
     text-decoration: none;
-    font-size: 16px;
-    padding: 12px 24px;
-    color: #666;
-    background: #f8f9fa;
+    font-size: 15px;
+    padding: 11px 22px;
+    color: var(--neutral-600);
+    background: var(--white);
     border-radius: 10px;
-    border: 1px solid #eee;
+    border: 1px solid var(--neutral-200);
     transition: all 0.2s;
     font-weight: 500;
   }
 
   .top-menu a.active {
-    background: #1e4d2b;
+    background: #0a1f12;
     color: #fff;
-    border-color: #1e4d2b;
+    border-color: #0a1f12;
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(30, 77, 43, 0.15);
   }
 
   /* FILTER PILLS */
-  .filter-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-  }
+  .filter-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 
   .filter-pill {
     padding: 8px 18px;
     border-radius: 20px;
-    background: #fff;
-    border: 1px solid #ddd;
+    background: var(--white);
+    border: 1px solid var(--neutral-200);
     font-size: 14px;
-    color: #555;
+    color: var(--neutral-600);
     cursor: pointer;
     text-decoration: none;
     transition: 0.2s;
@@ -151,64 +204,49 @@
   }
 
   .filter-pill.active {
-    background: #1e4d2b;
+    background: var(--green-600);
     color: #fff;
-    border-color: #1e4d2b;
+    border-color: var(--green-600);
   }
 
   /* TABLE UI */
   .table-wrap {
-    background: #fff;
+    background: var(--white);
     border-radius: 16px;
-    border: 1px solid #eee;
+    border: 1px solid var(--neutral-200);
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+  table { width: 100%; border-collapse: collapse; }
 
   thead th {
-    padding: 20px 18px;
-    background: #fcfcfc;
+    padding: 18px 18px;
+    background: var(--neutral-100);
     text-align: left;
-    border-bottom: 2px solid #f0f0f0;
-    color: #1e4d2b;
+    border-bottom: 1px solid var(--neutral-200);
+    color: var(--neutral-700);
     font-weight: 700;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   tbody td {
-    padding: 20px 18px;
-    border-bottom: 1px solid #f9f9f9;
-    font-size: 16px;
+    padding: 18px 18px;
+    border-bottom: 1px solid var(--neutral-100);
+    font-size: 15px;
     vertical-align: middle;
   }
 
-  tbody tr:hover { background: #fcfdfc; }
+  tbody tr:hover { background: var(--green-50); }
 
   /* BADGES */
-  .badge {
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-  }
+  .badge { padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; }
 
-  .pending {
-    background: #fff8e1;
-    color: #f39c12;
-    border: 1px solid #ffeaa7;
-  }
+  .pending { background: var(--amber-100); color: var(--amber-700); border: 1px solid #ffeaa7; }
+  .approved-badge { background: var(--green-100); color: var(--green-700); }
+  .rejected-badge { background: var(--red-100); color: var(--red-700); }
 
   /* ACTION BUTTONS */
-  .action-group {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-  }
+  .action-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
   .btn-action {
     padding: 8px 16px;
@@ -221,51 +259,239 @@
     font-family: 'Sarabun', sans-serif;
   }
 
-  .btn-approve {
-    background: #2d6a4f;
-    color: #fff;
+  .btn-detail {
+    background: var(--neutral-100);
+    color: var(--neutral-700);
+    border: 1px solid var(--neutral-200);
   }
-  .btn-approve:hover { background: #1b4332; transform: translateY(-2px); }
+  .btn-detail:hover { background: var(--neutral-200); }
+
+  .btn-approve { background: var(--green-600); color: #fff; }
+  .btn-approve:hover { background: var(--green-700); transform: translateY(-2px); }
 
   .btn-reject {
     background: #fff;
-    border: 1.5px solid #e74c3c;
-    color: #e74c3c;
+    border: 1.5px solid var(--red-700);
+    color: var(--red-700);
   }
-  .btn-reject:hover { background: #fff5f5; }
+  .btn-reject:hover { background: var(--red-100); }
 
-  .empty {
+  .empty { text-align: center; padding: 80px; color: var(--neutral-400); font-size: 16px; }
+
+  .owner-name { font-weight: 700; color: var(--neutral-800); }
+  .homestay-name { font-weight: 600; color: var(--green-700); }
+
+  /* FOOTER */
+  .footer {
+    background: #0a1f12;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 14px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-text { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(12,10,9,0.55);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+
+  .modal-box {
+    background: var(--white);
+    border-radius: 16px;
+    max-width: 720px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 32px;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    color: var(--neutral-400);
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--neutral-700); }
+
+  .modal-section-title {
+    color: var(--green-700);
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .modal-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px; }
+  .modal-field { flex: 1 1 180px; }
+  .modal-field label {
+    font-size: 12px;
+    color: var(--neutral-500);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .modal-field .value { font-size: 15px; font-weight: 600; color: var(--neutral-800); }
+
+  .modal-divider {
+    margin: 22px 0;
+    border: none;
+    border-top: 1px solid var(--neutral-200);
+  }
+
+  .hs-block {
+    border: 1px solid var(--neutral-200);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .hs-block h3 { color: var(--green-700); font-size: 16px; margin-bottom: 4px; }
+  .hs-block .hs-address { font-size: 13px; color: var(--neutral-500); margin-bottom: 10px; }
+  .hs-desc-box {
+    background: var(--neutral-100);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-top: 8px;
+  }
+  .hs-images { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .hs-images img {
+    width: 130px;
+    height: 95px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--neutral-200);
+  }
+
+  .room-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  .room-table th, .room-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--neutral-100);
+    text-align: left;
+  }
+  .room-table th { color: var(--neutral-600); font-weight: 600; background: var(--neutral-100); }
+
+  .modal-action-bar { display: flex; gap: 12px; margin-top: 24px; }
+  .modal-action-bar .btn-action { padding: 12px 28px; font-size: 15px; }
+
+  /* hidden source data */
+  .detail-source { display: none; }
+
+  /* ── CONFIRM MODAL ── */
+  .confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(12,10,9,0.55);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .confirm-overlay.show { display: flex; }
+
+  .confirm-box {
+    background: var(--white);
+    border-radius: 16px;
+    max-width: 380px;
+    width: 100%;
+    padding: 32px 28px;
     text-align: center;
-    padding: 80px;
-    color: #999;
-    font-size: 18px;
   }
 
-  .owner-name { font-weight: 700; color: #1a1a1a; }
-  .homestay-name { font-weight: 600; color: #1e4d2b; }
+  .confirm-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+  }
+  .confirm-icon.approve { background: var(--green-100); color: var(--green-700); }
+  .confirm-icon.reject  { background: var(--red-100); color: var(--red-700); }
+
+  .confirm-title { font-size: 17px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px; }
+  .confirm-desc  { font-size: 14px; color: var(--neutral-500); margin-bottom: 24px; line-height: 1.6; }
+  .confirm-desc strong { color: var(--neutral-800); }
+
+  .confirm-actions { display: flex; gap: 10px; }
+  .confirm-actions .btn-action { flex: 1; padding: 11px; font-size: 15px; }
+
+  .btn-cancel {
+    background: var(--white);
+    border: 1px solid var(--neutral-300);
+    color: var(--neutral-700);
+  }
+  .btn-cancel:hover { background: var(--neutral-100); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 12px; }
+    .nav-group { flex-wrap: wrap; gap: 4px; }
+    .footer { flex-direction: column; gap: 4px; text-align: center; }
+    .table-wrap { overflow-x: auto; }
+  }
+
+  .alert-error {
+    background: var(--red-100);
+    color: var(--red-700);
+    border: 1px solid #fca5a5;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
-  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนชนเผ่า</a>
-  
+  <a href="/admin/dashboard" class="navbar-brand">
+    <div class="brand-icon">🏔️</div>
+    ระบบท่องเที่ยวชุมชนเผ่า
+  </a>
+
   <div class="nav-group">
     <a href="/admin/dashboard" class="nav-link">📊 Dashboard</a>
-    <a href="/admin/manager" class="nav-link">👥 จัดการผู้จัดการ</a>
-    <a href="/admin/homestay" class="nav-link active">🏠 จัดการโฮมสเตย์</a>
+    <a href="/admin/manager"   class="nav-link">👥 จัดการผู้จัดการ</a>
+    <a href="/admin/homestay"  class="nav-link active">🏠 จัดการโฮมสเตย์</a>
   </div>
 
-  <div class="admin-section">
-    <div style="text-align: right; margin-right: 12px;">
-      <p style="color: #fff; font-size: 14px; font-weight: 600;">Admin User</p>
-      <a href="/admin/logout" style="color: rgba(255,255,255,0.6); font-size: 12px; text-decoration: none;">ออกจากระบบ</a>
+  <div class="nav-divider"></div>
+
+  <div class="admin-area">
+    <div class="admin-info">
+      <div class="admin-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
+      <div class="admin-role">Super Admin</div>
     </div>
-    <div class="admin-badge">A</div>
+    <div class="admin-avatar">A</div>
+    <a href="/admin/logout" class="logout-btn">ออกจากระบบ</a>
   </div>
 </nav>
 
+<!-- MAIN CONTENT -->
 <div class="content">
 
   <div class="page-header">
@@ -278,7 +504,13 @@
     <a href="/admin/homestay/all">📋 บัญชีโฮมสเตย์ทั้งหมด</a>
   </div>
 
-  <!-- Filter Pills แสดงจำนวนจริงจาก Model -->
+  <div th:if="${errorMessage}" class="alert-error">
+
+  ❌ <span th:text="${errorMessage}"></span>
+
+</div>
+
+  <!-- Filter Pills -->
   <div class="filter-group">
     <a href="#" class="filter-pill active" data-filter="all">
       ทั้งหมด (<span th:text="${allCount}">0</span>)
@@ -315,65 +547,167 @@
 
           <td>
             <div class="owner-name" th:text="${h.firstname + ' ' + h.lastname}">ชื่อ-นามสกุล</div>
-            <div style="font-size:13px; color:#999;">
+            <div style="font-size:13px; color:var(--neutral-400);">
               ID: #<span th:text="${h.ownerid}">001</span>
             </div>
           </td>
 
           <td>
             <div style="font-size: 14px;" th:text="${h.email}">email</div>
-            <div style="font-size: 13px; color: #777;" th:text="${h.phone}">phone</div>
+            <div style="font-size: 13px; color: var(--neutral-500);" th:text="${h.phone}">phone</div>
           </td>
 
           <td class="homestay-name">
             <span th:if="${h.homestays != null and !h.homestays.isEmpty()}"
                   th:text="${h.homestays[0].homestayname}">ชื่อโฮมสเตย์</span>
             <span th:if="${h.homestays == null or h.homestays.isEmpty()}"
-                  style="color:#aaa;">-</span>
+                  style="color:var(--neutral-400);">-</span>
           </td>
 
           <td>
-            <!-- รออนุมัติ -->
             <span th:if="${isPending and !isRejected}"
                   class="badge pending">⏳ รอการตรวจสอบ</span>
-            <!-- อนุมัติแล้ว -->
             <span th:if="${isApproved}"
-                  class="badge" style="background:#eafaf1; color:#2d6a4f;">✅ อนุมัติแล้ว</span>
-            <!-- ปฏิเสธแล้ว -->
+                  class="badge approved-badge">✅ อนุมัติแล้ว</span>
             <span th:if="${isRejected}"
-                  class="badge" style="background:#fdecea; color:#c0392b;">❌ ปฏิเสธแล้ว</span>
+                  class="badge rejected-badge">❌ ปฏิเสธแล้ว</span>
           </td>
 
           <td>
             <div class="action-group">
-              <!-- ปุ่มอนุมัติ (แสดงเฉพาะ pending) -->
-              <form th:if="${isPending and !isRejected}"
-                    th:action="@{/admin/homestay/approve/{id}(id=${h.ownerid})}"
-                    method="post">
-                <button type="submit" class="btn-action btn-approve">✅ อนุมัติ</button>
-              </form>
+              <!-- ปุ่มดูรายละเอียด -->
+              <button type="button" class="btn-action btn-detail"
+                      th:attr="onclick='openDetailModal(' + ${h.ownerid} + ')'">
+                👁️ ดูรายละเอียด
+              </button>
 
-              <!-- ปุ่มปฏิเสธ (แสดงเฉพาะ pending) -->
-              <form th:if="${isPending and !isRejected}"
-                    th:action="@{/admin/homestay/reject/{id}(id=${h.ownerid})}"
-                    method="post">
-                <button type="submit" class="btn-action btn-reject">❌ ปฏิเสธ</button>
-              </form>
+              <!-- ปุ่มอนุมัติ/ปฏิเสธ เฉพาะ pending -->
+              <button type="button" th:if="${isPending and !isRejected}"
+                      class="btn-action btn-approve"
+                      th:attr="onclick='openConfirmModal(' + ${h.ownerid} + ', &quot;approve&quot;, &quot;' + ${h.firstname + ' ' + h.lastname} + '&quot;)'">
+                ✅ อนุมัติ
+              </button>
+
+              <button type="button" th:if="${isPending and !isRejected}"
+                      class="btn-action btn-reject"
+                      th:attr="onclick='openConfirmModal(' + ${h.ownerid} + ', &quot;reject&quot;, &quot;' + ${h.firstname + ' ' + h.lastname} + '&quot;)'">
+                ❌ ปฏิเสธ
+              </button>
             </div>
           </td>
         </tr>
 
-       <tr id="empty-row" style="display: none;">
-  <td colspan="5" class="empty">
-    <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
-    ยังไม่มีคำขอสมัครโฮมสเตย์ใหม่ในขณะนี้
-  </td>
-</tr>
+        <tr id="empty-row" style="display: none;">
+          <td colspan="5" class="empty">
+            <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
+            ยังไม่มีคำขอสมัครโฮมสเตย์ใหม่ในขณะนี้
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 
+  <!-- HIDDEN DETAIL SOURCE DATA (per owner) -->
+  <div th:each="h : ${homestays}" th:id="'detail-' + ${h.ownerid}" class="detail-source"
+       th:attr="data-ownerid=${h.ownerid},
+                data-pending=${h.verificationstatus == null or !h.verificationstatus}">
+    <div class="d-owner-name" th:text="${h.firstname + ' ' + h.lastname}"></div>
+    <div class="d-ownerid" th:text="${h.ownerid}"></div>
+    <div class="d-email" th:text="${h.email}"></div>
+    <div class="d-phone" th:text="${h.phone}"></div>
+    <div class="d-bank" th:text="${h.bankName}"></div>
+    <div class="d-accname" th:text="${h.accountName}"></div>
+    <div class="d-accnumber" th:text="${h.accountNumber}"></div>
+    <div class="d-branch" th:text="${h.bankBranch}"></div>
+
+    <div th:each="hs : ${h.homestays}" class="d-homestay-block">
+      <div class="d-hs-name" th:text="${hs.homestayname}"></div>
+      <div class="d-hs-address" th:text="${hs.address}"></div>
+      <div class="d-hs-desc" th:text="${hs.description}"></div>
+      <div class="d-hs-images" th:text="${hs.images}"></div>
+
+      <div th:each="rt : ${hs.roomtypes}" class="d-room">
+        <span class="d-room-name" th:text="${rt.typename}"></span>
+        <span class="d-room-bed" th:text="${rt.bedtype}"></span>
+        <span class="d-room-price" th:text="${rt.pricepernight}"></span>
+        <span class="d-room-max" th:text="${rt.maxguest}"></span>
+        <span class="d-room-total" th:text="${rt.totalrooms}"></span>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+<!-- DETAIL MODAL -->
+<div id="detailModal" class="modal-overlay">
+  <div class="modal-box">
+    <button type="button" class="modal-close" onclick="closeDetailModal()">×</button>
+
+    <div class="modal-section-title">👤 ข้อมูลเจ้าของ</div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>ชื่อ-นามสกุล</label>
+        <div class="value" id="m-owner-name">-</div>
+      </div>
+      <div class="modal-field">
+        <label>อีเมล</label>
+        <div class="value" id="m-email">-</div>
+      </div>
+      <div class="modal-field">
+        <label>เบอร์โทร</label>
+        <div class="value" id="m-phone">-</div>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>ธนาคาร</label>
+        <div class="value" id="m-bank">-</div>
+      </div>
+      <div class="modal-field">
+        <label>ชื่อบัญชี</label>
+        <div class="value" id="m-accname">-</div>
+      </div>
+      <div class="modal-field">
+        <label>เลขที่บัญชี</label>
+        <div class="value" id="m-accnumber">-</div>
+      </div>
+      <div class="modal-field">
+        <label>สาขา</label>
+        <div class="value" id="m-branch">-</div>
+      </div>
+    </div>
+
+    <hr class="modal-divider">
+
+    <div class="modal-section-title">🏠 ข้อมูลโฮมสเตย์</div>
+    <div id="m-homestay-container"></div>
+
+    <div class="modal-action-bar" id="m-action-bar"></div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirmModal" class="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirm-icon">✅</div>
+    <div class="confirm-title" id="confirm-title">ยืนยันการอนุมัติ</div>
+    <div class="confirm-desc" id="confirm-desc">
+      คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?
+    </div>
+    <div class="confirm-actions">
+      <button type="button" class="btn-action btn-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
+      <form id="confirm-form" method="post" style="flex:1;">
+        <button type="submit" class="btn-action" id="confirm-submit-btn" style="width:100%;">ยืนยัน</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
+  <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
+</footer>
 
 <script>
   // Filter Pills — กรองแถวตาม data-status
@@ -385,38 +719,153 @@
       this.classList.add('active');
 
       const filter = this.dataset.filter;
-      
-      // ตัวแปรสำหรับนับจำนวนแถวที่แสดงผลอยู่ ณ ขณะนั้น
       let visibleRows = 0;
 
-      // วนลูปจัดการแถวข้อมูลโฮมสเตย์ทั้งหมด
       document.querySelectorAll('tbody tr[data-status]').forEach(row => {
         if (filter === 'all' || row.dataset.status === filter) {
           row.style.display = '';
-          visibleRows++; // หากแถวตรงตามเงื่อนไขฟิลเตอร์ ให้นับเพิ่ม
+          visibleRows++;
         } else {
           row.style.display = 'none';
         }
       });
 
-      // จัดการการแสดงผลของแถว "ยังไม่มีคำขอ" (กล่องพัสดุ 📦)
       const emptyRow = document.getElementById('empty-row');
       if (emptyRow) {
-        if (visibleRows === 0) {
-          emptyRow.style.display = ''; // แสดงกล่องพัสดุเมื่อไม่มีข้อมูลในแท็บนั้นเลย
-        } else {
-          emptyRow.style.display = 'none'; // ซ่อนกล่องพัสดุเมื่อมีข้อมูลแสดงอยู่
-        }
+        emptyRow.style.display = visibleRows === 0 ? '' : 'none';
       }
     });
   });
 
-  // สั่งให้ระบบทำการคลิกเลือกแท็บ "รออนุมัติ" โดยอัตโนมัติทันทีเมื่อเปิดหน้าเว็บขึ้นมาครั้งแรก
+  // เลือกแท็บ "รออนุมัติ" อัตโนมัติเมื่อโหลดหน้า
   window.addEventListener('DOMContentLoaded', () => {
     const pendingPill = document.querySelector('[data-filter="pending"]');
-    if (pendingPill) {
-      pendingPill.click(); 
+    if (pendingPill) pendingPill.click();
+  });
+
+  // ===== CONFIRM MODAL (Alternate Flow 3.1 / 5.1.1) =====
+  function openConfirmModal(ownerId, action, ownerName) {
+    const icon = document.getElementById('confirm-icon');
+    const title = document.getElementById('confirm-title');
+    const desc = document.getElementById('confirm-desc');
+    const nameEl = document.getElementById('confirm-name');
+    const form = document.getElementById('confirm-form');
+    const submitBtn = document.getElementById('confirm-submit-btn');
+
+    nameEl.textContent = ownerName;
+
+    if (action === 'approve') {
+      icon.className = 'confirm-icon approve';
+      icon.textContent = '✅';
+      title.textContent = 'ยืนยันการอนุมัติ';
+      desc.innerHTML = 'คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?';
+      document.getElementById('confirm-name').textContent = ownerName;
+      submitBtn.className = 'btn-action btn-approve';
+      submitBtn.textContent = 'ยืนยัน';
+      form.action = '/admin/homestay/approve/' + ownerId;
+    } else {
+      icon.className = 'confirm-icon reject';
+      icon.textContent = '❌';
+      title.textContent = 'ยืนยันการปฏิเสธ';
+      desc.innerHTML = 'คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?';
+      document.getElementById('confirm-name').textContent = ownerName;
+      submitBtn.className = 'btn-action btn-reject';
+      submitBtn.textContent = 'ยืนยัน';
+      form.action = '/admin/homestay/reject/' + ownerId;
     }
+
+    document.getElementById('confirmModal').classList.add('show');
+  }
+
+  function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.remove('show');
+  }
+
+  // ปิด confirm modal เมื่อคลิกพื้นหลัง
+  document.getElementById('confirmModal').addEventListener('click', function (e) {
+    if (e.target === this) closeConfirmModal();
+  });
+  function openDetailModal(ownerId) {
+    const src = document.getElementById('detail-' + ownerId);
+    if (!src) return;
+
+    document.getElementById('m-owner-name').textContent = src.querySelector('.d-owner-name').textContent || '-';
+    document.getElementById('m-email').textContent = src.querySelector('.d-email').textContent || '-';
+    document.getElementById('m-phone').textContent = src.querySelector('.d-phone').textContent || '-';
+    document.getElementById('m-bank').textContent = src.querySelector('.d-bank').textContent || '-';
+    document.getElementById('m-accname').textContent = src.querySelector('.d-accname').textContent || '-';
+    document.getElementById('m-accnumber').textContent = src.querySelector('.d-accnumber').textContent || '-';
+    document.getElementById('m-branch').textContent = src.querySelector('.d-branch').textContent || '-';
+
+    const container = document.getElementById('m-homestay-container');
+    container.innerHTML = '';
+
+    const blocks = src.querySelectorAll('.d-homestay-block');
+    if (blocks.length === 0) {
+      container.innerHTML = '<p style="color:var(--neutral-400);">ยังไม่มีข้อมูลโฮมสเตย์</p>';
+    } else {
+      blocks.forEach(block => {
+        const name = block.querySelector('.d-hs-name').textContent;
+        const address = block.querySelector('.d-hs-address').textContent;
+        const desc = block.querySelector('.d-hs-desc').textContent;
+        const images = block.querySelector('.d-hs-images').textContent;
+
+        let roomsHtml = '';
+        block.querySelectorAll('.d-room').forEach(room => {
+          roomsHtml += `<tr>
+            <td>${room.querySelector('.d-room-name').textContent}</td>
+            <td>${room.querySelector('.d-room-bed').textContent}</td>
+            <td>${room.querySelector('.d-room-price').textContent}</td>
+            <td>${room.querySelector('.d-room-max').textContent}</td>
+            <td>${room.querySelector('.d-room-total').textContent}</td>
+          </tr>`;
+        });
+
+        let imagesHtml = '';
+        if (images && images.trim()) {
+          images.split(',').forEach(img => {
+            const url = img.trim();
+            if (url) imagesHtml += `<img src="${url}" alt="homestay image">`;
+          });
+        }
+
+        container.innerHTML += `
+          <div class="hs-block">
+            <h3>${name || '-'}</h3>
+            <div class="hs-address">${address || ''}</div>
+            <div class="hs-desc-box">${desc || 'ไม่มีคำอธิบาย'}</div>
+            <div class="hs-images">${imagesHtml}</div>
+            ${roomsHtml ? `<table class="room-table">
+              <thead><tr><th>ประเภทห้อง</th><th>เตียง</th><th>ราคา/คืน</th><th>รับสูงสุด</th><th>จำนวนห้อง</th></tr></thead>
+              <tbody>${roomsHtml}</tbody>
+            </table>` : ''}
+          </div>`;
+      });
+    }
+
+    // ปุ่มอนุมัติ/ปฏิเสธ — แสดงเฉพาะรายการที่ยังรออนุมัติ
+    const actionBar = document.getElementById('m-action-bar');
+    const isPending = src.dataset.pending === 'true';
+
+    if (isPending) {
+      const ownerName = src.querySelector('.d-owner-name').textContent || '';
+      actionBar.innerHTML = `
+        <button type="button" class="btn-action btn-approve" onclick="openConfirmModal(${ownerId}, 'approve', '${ownerName.replace(/'/g, "\\'")}')">✅ อนุมัติ</button>
+        <button type="button" class="btn-action btn-reject" onclick="openConfirmModal(${ownerId}, 'reject', '${ownerName.replace(/'/g, "\\'")}')">❌ ปฏิเสธ</button>`;
+    } else {
+      actionBar.innerHTML = '';
+    }
+
+    document.getElementById('detailModal').classList.add('show');
+  }
+
+  function closeDetailModal() {
+    document.getElementById('detailModal').classList.remove('show');
+  }
+
+  // ปิด modal เมื่อคลิกพื้นหลัง
+  document.getElementById('detailModal').addEventListener('click', function (e) {
+    if (e.target === this) closeDetailModal();
   });
 </script>
 

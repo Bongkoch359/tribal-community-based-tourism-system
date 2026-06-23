@@ -4,222 +4,409 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>แผงควบคุมผู้ดูแลระบบ - ระบบท่องเที่ยวชุมชนเผ่า</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body { 
-    font-family: 'Sarabun', sans-serif; 
-    background: #ffffff; /* พื้นหลังขาวสะอาด */
-    color: #333;
-    line-height: 1.6;
+  :root {
+    --green-700: #215c35;
+    --green-600: #2d7a4f;
+    --green-500: #3d9e68;
+    --green-100: #d8f3dc;
+    --green-50:  #f0faf4;
+    --amber-700: #a16207;
+    --amber-600: #c27b04;
+    --amber-500: #e8960a;
+    --amber-400: #f5aa1f;
+    --amber-100: #fef3c7;
+    --red-700:   #b91c1c;
+    --red-100:   #fee2e2;
+    --neutral-950: #0c0a09;
+    --neutral-800: #292524;
+    --neutral-700: #44403c;
+    --neutral-600: #57534e;
+    --neutral-500: #78716c;
+    --neutral-400: #a8a29e;
+    --neutral-300: #d6d3d1;
+    --neutral-200: #e7e5e4;
+    --neutral-100: #f5f5f4;
+    --white: #ffffff;
   }
 
-  /* --- NAVBAR (สูง 100px ตามธีมหลัก) --- */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--neutral-100);
+    color: var(--neutral-800);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── NAVBAR ── */
   .navbar {
-    background: #1e4d2b;
-    height: 100px; /* ปรับสูง 100px ตามสั่ง */
+    background: #0a1f12;
+    height: 100px;
     display: flex;
     align-items: center;
     padding: 0 5%;
-    gap: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    gap: 8px;
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
 
   .navbar-brand {
     color: #fff;
     font-weight: 700;
-    font-size: 24px; /* ตัวหนังสือใหญ่ชัดเจน */
+    font-size: 22px;
     text-decoration: none;
     margin-right: auto;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  .brand-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--green-500);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
   }
 
   .nav-group {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 6px;
   }
 
   .nav-link {
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.45);
     text-decoration: none;
-    font-size: 18px; /* ขนาดตัวอักษรเมนูใหญ่ขึ้น */
+    font-size: 17px;
     font-weight: 500;
     padding: 10px 20px;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-  }
-
-  .nav-link:hover, .nav-link.active {
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-  }
-
-  .admin-section {
+    border-radius: 10px;
+    transition: all 0.15s ease;
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding-left: 20px;
-    border-left: 1px solid rgba(255,255,255,0.2);
-    margin-left: 10px;
+    gap: 8px;
+    white-space: nowrap;
   }
 
-  .admin-name {
-    color: #fff;
-    font-size: 16px;
-    font-weight: 600;
+  .nav-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+  .nav-link.active { background: rgba(255,255,255,0.09); color: #fff; }
+
+  .nav-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.08);
+    margin: 0 12px;
   }
 
-  .admin-badge {
-    background: #f4a261;
-    color: #fff;
+  .admin-area { display: flex; align-items: center; gap: 14px; }
+
+  .admin-info { text-align: right; }
+  .admin-name { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255,255,255,0.3); font-size: 12px; }
+
+  .admin-avatar {
+    width: 46px;
+    height: 46px;
+    background: var(--amber-700);
     border-radius: 50%;
-    width: 45px; /* ขนาด Badge ใหญ่ขึ้นให้รับกับ Nav 100px */
-    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 18px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    color: var(--amber-100);
+    flex-shrink: 0;
   }
 
   .logout-btn {
-    color: #ff9f9f;
+    color: rgba(255,255,255,0.25);
     text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    transition: color 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.15s;
+    white-space: nowrap;
   }
-  .logout-btn:hover { color: #fff; }
+  .logout-btn:hover { color: rgba(255,255,255,0.7); }
 
-  /* --- CONTENT --- */
-  .content { 
-    max-width: 1200px; 
-    margin: 0 auto; 
-    padding: 60px 24px; 
+  /* ── CONTENT ── */
+  .content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    flex: 1;
+    width: 100%;
   }
 
-  /* WELCOME BANNER */
+  /* WELCOME */
   .welcome-banner {
-    background: linear-gradient(135deg, #1e4d2b, #2d6a4f);
-    border-radius: 20px;
-    padding: 50px;
+    background: #0a1f12;
+    border-radius: 16px;
+    padding: 32px 36px;
     color: #fff;
-    margin-bottom: 45px;
-    box-shadow: 0 10px 30px rgba(30, 77, 43, 0.15);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
   }
 
-  .welcome-banner h1 { 
-    font-size: 36px; /* หัวข้อใหญ่พิเศษ */
-    font-weight: 700; 
-    margin-bottom: 12px; 
+  .welcome-text h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .welcome-text p  { font-size: 14px; color: rgba(255,255,255,0.45); }
+
+  .welcome-stats { display: flex; gap: 12px; flex-shrink: 0; }
+
+  .welcome-stat {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 90px;
   }
 
-  .welcome-banner p { 
-    font-size: 18px; 
-    opacity: 0.9; 
-    font-weight: 400;
+  .ws-num   { font-size: 26px; font-weight: 700; color: var(--amber-400); line-height: 1; }
+  .ws-label { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+  /* STAT ROW */
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--neutral-500);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
   }
 
-  /* MENU CARDS GRID */
-  .grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-    gap: 30px; 
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--neutral-200);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+
+  .stat-label  { font-size: 12px; color: var(--neutral-500); margin-bottom: 8px; font-weight: 500; }
+  .stat-number { font-size: 32px; font-weight: 700; color: var(--neutral-800); line-height: 1; }
+  .stat-number.amber { color: var(--amber-600); }
+  .stat-number.red   { color: var(--red-700); }
+
+  .stat-delta { font-size: 12px; margin-top: 6px; font-weight: 500; }
+  .delta-up   { color: var(--green-600); }
+  .delta-warn { color: var(--amber-600); }
+  .delta-red  { color: var(--red-700); }
+
+  /* MENU CARDS */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
   }
 
   .menu-card {
-    background: #fff;
-    border-radius: 20px;
-    padding: 40px;
-    border: 1px solid #f0f0f0;
+    background: var(--white);
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+    border: 1px solid var(--neutral-200);
     text-decoration: none;
     color: inherit;
     display: block;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
   }
 
   .menu-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    border-color: #1e4d2b;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.07);
+    border-color: var(--neutral-300);
   }
 
-  .menu-icon { 
-    font-size: 50px; 
-    margin-bottom: 20px; 
-    display: block;
+  .card-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
   }
 
-  .menu-title { 
-    font-size: 22px; 
-    font-weight: 700; 
-    color: #1e4d2b;
-    margin-bottom: 10px; 
+  .icon-green { background: var(--green-50); }
+  .icon-amber { background: var(--amber-100); }
+
+  .menu-title { font-size: 17px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px; }
+  .menu-desc  { font-size: 14px; color: var(--neutral-500); line-height: 1.6; margin-bottom: 16px; }
+
+  .menu-pill {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
   }
 
-  .menu-desc { 
-    font-size: 16px; 
-    color: #666; 
-    line-height: 1.5;
+  .pill-green { background: var(--green-100); color: var(--green-700); }
+  .pill-amber { background: var(--amber-100); color: var(--amber-700); }
+
+  /* FOOTER */
+  .footer {
+    background: #0a1f12;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 14px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  /* Responsive */
-  @media (max-width: 992px) {
-    .navbar { height: auto; padding: 20px; flex-direction: column; gap: 15px; }
-    .nav-group { flex-wrap: wrap; justify-content: center; }
-    .welcome-banner { padding: 30px; text-align: center; }
+  .footer-text { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 12px; }
+    .nav-group { flex-wrap: wrap; gap: 4px; }
+    .welcome-banner { flex-direction: column; align-items: flex-start; padding: 24px; }
+    .welcome-stats { flex-wrap: wrap; }
+    .stat-row { grid-template-columns: 1fr 1fr; }
+    .stat-row .stat-card:last-child { grid-column: span 2; }
+    .footer { flex-direction: column; gap: 4px; text-align: center; }
   }
 </style>
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
-  <a href="/admin/dashboard" class="navbar-brand">🏔️ ระบบท่องเที่ยวชุมชนเผ่า</a>
-  
+  <a href="/admin/dashboard" class="navbar-brand">
+    <div class="brand-icon">🏔️</div>
+    ระบบท่องเที่ยวชุมชนเผ่า
+  </a>
+
   <div class="nav-group">
     <a href="/admin/dashboard" class="nav-link active">📊 Dashboard</a>
-    <a href="/admin/manager" class="nav-link">👥 จัดการผู้จัดการ</a>
-    <a href="/admin/homestay" class="nav-link">🏠 จัดการโฮมสเตย์</a>
+    <a href="/admin/manager"   class="nav-link">👥 จัดการผู้จัดการ</a>
+    <a href="/admin/homestay"  class="nav-link">🏠 จัดการโฮมสเตย์</a>
   </div>
 
-  <div class="admin-section">
-    <div class="admin-info" style="text-align: right;">
+  <div class="nav-divider"></div>
+
+  <div class="admin-area">
+    <div class="admin-info">
       <div class="admin-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
-      <a href="/admin/logout" class="logout-btn">ออกจากระบบ</a>
+      <div class="admin-role">Super Admin</div>
     </div>
-    <div class="admin-badge">A</div>
+    <div class="admin-avatar">A</div>
+    <a href="/admin/logout" class="logout-btn">ออกจากระบบ</a>
   </div>
 </nav>
 
+<!-- MAIN CONTENT -->
 <div class="content">
+
+  <!-- WELCOME BANNER -->
   <div class="welcome-banner">
-    <h1>ยินดีต้อนรับ, <span th:text="${session.loggedInAdmin?.username ?: 'Admin'}">Admin</span> 👋</h1>
-    <p>ระบบบริหารจัดการข้อมูลการท่องเที่ยวชุมชน — เลือกโมดูลที่คุณต้องการดำเนินการด้านล่าง</p>
+    <div class="welcome-text">
+      <h1>ยินดีต้อนรับ, <span th:text="${session.loggedInAdmin?.username ?: 'Admin'}">Admin</span> 👋</h1>
+      <p>ระบบบริหารจัดการข้อมูลการท่องเที่ยวชุมชน — เลือกโมดูลที่ต้องการด้านล่าง</p>
+    </div>
+    <div class="welcome-stats">
+      <div class="welcome-stat">
+        <div class="ws-num" th:text="${homestayPending}">0</div>
+        <div class="ws-label">รอพิจารณา</div>
+      </div>
+      <div class="welcome-stat">
+        <div class="ws-num" th:text="${homestayApproved}">0</div>
+        <div class="ws-label">โฮมสเตย์</div>
+      </div>
+      <div class="welcome-stat">
+        <div class="ws-num" th:text="${managerTotal}">0</div>
+        <div class="ws-label">ผู้จัดการ</div>
+      </div>
+    </div>
   </div>
 
+  <!-- STAT ROW: HOMESTAY -->
+  <div class="section-label" style="margin-bottom:12px;">สถิติโฮมสเตย์</div>
+  <div class="stat-row" style="margin-bottom:20px;">
+    <div class="stat-card">
+      <div class="stat-label">โฮมสเตย์ทั้งหมด</div>
+      <div class="stat-number" th:text="${homestayTotal}">0</div>
+      <div class="stat-delta delta-up">ทั้งหมดในระบบ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">รออนุมัติ</div>
+      <div class="stat-number amber" th:text="${homestayPending}">0</div>
+      <div class="stat-delta delta-warn"
+           th:text="${homestayPending > 0} ? '⚠ ต้องดำเนินการ' : '✓ ไม่มีรายการค้าง'">
+        ต้องดำเนินการ
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ปฏิเสธแล้ว</div>
+      <div class="stat-number red" th:text="${homestayRejected}">0</div>
+      <div class="stat-delta delta-red">รายการที่ไม่ผ่าน</div>
+    </div>
+  </div>
+
+  <!-- STAT ROW: MANAGER -->
+  <div class="section-label" style="margin-bottom:12px;">สถิติผู้จัดการชุมชน</div>
+  <div class="stat-row" style="grid-template-columns: repeat(2, 1fr); margin-bottom:32px;">
+    <div class="stat-card">
+      <div class="stat-label">ผู้จัดการทั้งหมด</div>
+      <div class="stat-number" th:text="${managerTotal}">0</div>
+      <div class="stat-delta delta-up">บัญชีในระบบ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ใช้งานอยู่</div>
+      <div class="stat-number" th:text="${managerActive}">0</div>
+      <div class="stat-delta delta-up">สถานะ Active</div>
+    </div>
+  </div>
+
+  <!-- MENU CARDS -->
+  <div class="section-label">โมดูลการจัดการ</div>
   <div class="grid">
     <a href="/admin/manager" class="menu-card">
-      <span class="menu-icon">👥</span>
+      <div class="card-icon-wrap icon-green">👥</div>
       <div class="menu-title">จัดการผู้จัดการชุมชน</div>
       <div class="menu-desc">ตรวจสอบบัญชีรายชื่อ สร้างบัญชีใหม่ หรือระงับการเข้าใช้งานของผู้จัดการชุมชนแต่ละพื้นที่</div>
+      <span class="menu-pill pill-green"
+            th:text="${managerTotal} + ' บัญชี'">0 บัญชี</span>
     </a>
 
     <a href="/admin/homestay" class="menu-card">
-      <span class="menu-icon">🏠</span>
+      <div class="card-icon-wrap icon-amber">🏠</div>
       <div class="menu-title">จัดการโฮมสเตย์</div>
       <div class="menu-desc">พิจารณาอนุมัติโฮมสเตย์ที่สมัครเข้าโครงการ หรือจัดการสถานะการให้บริการของโฮมสเตย์ในระบบ</div>
+      <span class="menu-pill pill-amber"
+            th:text="${homestayPending} + ' รอดำเนินการ'">0 รอดำเนินการ</span>
     </a>
   </div>
+
 </div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
+  <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
+</footer>
 
 </body>
 </html>

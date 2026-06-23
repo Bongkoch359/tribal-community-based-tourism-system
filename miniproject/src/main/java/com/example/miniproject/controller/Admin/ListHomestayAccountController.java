@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
@@ -23,67 +24,51 @@ public class ListHomestayAccountController {
     @Autowired
     private EmailService emailService;
 
-
-    // GET /admin/homestay → รายการคำขอสมัคร 
-   @GetMapping
+    // GET /admin/homestay → รายการคำขอสมัคร
+    // Basic Flow 1-6 ของ List Homestay Account
+    @GetMapping
     public String listHomestay(Model model, HttpSession session) {
 
-    if (session.getAttribute("loggedInAdmin") == null) {
-        return "redirect:/admin/login";
+        if (session.getAttribute("loggedInAdmin") == null)
+            return "redirect:/admin/login";
+
+        List<Homestayowner> all = ownerrepository.findAll();
+
+        List<Homestayowner> pending = all.stream()
+            .filter(o -> o.getVerificationstatus() == null || !o.getVerificationstatus())
+            .filter(o -> !"REJECTED".equals(o.getAccountstatus()))
+            .toList();
+
+        List<Homestayowner> rejected = all.stream()
+            .filter(o -> "REJECTED".equals(o.getAccountstatus()))
+            .toList();
+
+        List<Homestayowner> homestaysForThisPage = new java.util.ArrayList<>();
+        homestaysForThisPage.addAll(pending);
+        homestaysForThisPage.addAll(rejected);
+
+        model.addAttribute("homestays",     homestaysForThisPage);
+        model.addAttribute("allCount",      homestaysForThisPage.size());
+        model.addAttribute("pendingCount",  pending.size());
+        model.addAttribute("approvedCount", 0);
+        model.addAttribute("rejectedCount", rejected.size());
+
+        return "Admin/admin_homestaylist";
     }
 
-    List<Homestayowner> all = ownerrepository.findAll();
-
-    // 1. ดึงรายการที่ รออนุมัติ (Pending)
-    List<Homestayowner> pending = all.stream()
-        .filter(o -> o.getVerificationstatus() == null || !o.getVerificationstatus())
-        .filter(o -> !"REJECTED".equals(o.getAccountstatus()))
-        .toList();
-
-    // 2. ดึงรายการที่ ปฏิเสธแล้ว (Rejected)
-    List<Homestayowner> rejected = all.stream()
-        .filter(o -> "REJECTED".equals(o.getAccountstatus()))
-        .toList();
-
-    // 3. รวมเฉพาะข้อมูลที่จะแสดงในหน้านี้ (คำขอใหม่ + ปฏิเสธ) ไม่เอาพวกที่อนุมัติแล้วมารวม
-    List<Homestayowner> homestaysForThisPage = new java.util.ArrayList<>();
-    homestaysForThisPage.addAll(pending);
-    homestaysForThisPage.addAll(rejected);
-
-    // 🌟 แก้ตรงนี้: ส่งเฉพาะรายการคำขอสมัคร (ไม่เอาอนุมัติแล้ว) ไปแสดงในตาราง
-    model.addAttribute("homestays",     homestaysForThisPage);
-    
-    // 🌟 แก้ไขตัวนับจำนวนให้ถูกต้องสัมพันธ์กับข้อมูลที่ส่งไป
-    model.addAttribute("allCount",      homestaysForThisPage.size()); // จำนวนคำขอทั้งหมดในหน้านี้ (Pending + Rejected)
-    model.addAttribute("pendingCount",  pending.size());              // จำนวนรออนุมัติ
-    model.addAttribute("approvedCount", 0);                           // บังคับเป็น 0 เพราะคนที่อนุมัติแล้วถูกย้ายไปหน้า /all แล้ว
-    model.addAttribute("rejectedCount", rejected.size());             // จำนวนที่ปฏิเสธแล้ว
-
-    return "Admin/admin_homestaylist";
-}
-
-    // ============================================================
     // GET /admin/homestay/all → บัญชีที่อนุมัติแล้วทั้งหมด
-    // ============================================================
     @GetMapping("/all")
     public String listAllHomestay(Model model, HttpSession session) {
 
-        if (session.getAttribute("loggedInAdmin") == null) {
+        if (session.getAttribute("loggedInAdmin") == null)
             return "redirect:/admin/login";
-        }
 
-        // แสดงเฉพาะที่ผ่านการตรวจสอบแล้ว
         List<Homestayowner> approved = ownerrepository.findAll().stream()
             .filter(o -> Boolean.TRUE.equals(o.getVerificationstatus()))
             .toList();
 
-        long activeCount = approved.stream()
-            .filter(o -> !"SUSPENDED".equals(o.getAccountstatus()))
-            .count();
-
-        long suspendCount = approved.stream()
-            .filter(o -> "SUSPENDED".equals(o.getAccountstatus()))
-            .count();
+        long activeCount  = approved.stream().filter(o -> !"SUSPENDED".equals(o.getAccountstatus())).count();
+        long suspendCount = approved.stream().filter(o ->  "SUSPENDED".equals(o.getAccountstatus())).count();
 
         model.addAttribute("homestays",    approved);
         model.addAttribute("allCount",     approved.size());
@@ -93,86 +78,130 @@ public class ListHomestayAccountController {
         return "Admin/admin_homestayall";
     }
 
-    // ============================================================
     // POST /admin/homestay/approve/{id}
-    // ============================================================
-   @PostMapping("/approve/{id}")
-public String approveHomestay(@PathVariable Integer id, HttpSession session) {
+    // Basic Flow 5 / Alternate Flow 5.1.1 — error update message
+    @PostMapping("/approve/{id}")
+    public String approveHomestay(@PathVariable Integer id,
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttrs) {
+
+        if (session.getAttribute("loggedInAdmin") == null)
+            return "redirect:/admin/login";
+
+        try {
+            Homestayowner owner = ownerrepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
+
+            // Basic Flow 5.1 — update status
+            owner.setVerificationstatus(true);
+            owner.setAccountstatus("ACTIVE");
+            ownerrepository.save(owner);
+
+            // Basic Flow 5.2 — ส่งอีเมลแจ้งเตือน
+            try {
+                emailService.sendApprovalEmail(
+                    owner.getEmail(),
+                    owner.getFirstname() + " " + owner.getLastname()
+                );
+            } catch (Exception mailEx) {
+                System.err.println("ส่งอีเมลไม่สำเร็จ: " + mailEx.getMessage());
+            }
+
+        } catch (Exception e) {
+            // Alternate Flow 5.1.1 — error update message → กลับไปแสดงที่ Page
+            redirectAttrs.addFlashAttribute("errorMessage",
+                "ไม่สามารถอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ได้ กรุณาลองใหม่อีกครั้ง");
+            return "redirect:/admin/homestay";
+        }
+
+        return "redirect:/admin/homestay";
+    }
+
+    // POST /admin/homestay/reject/{id}
+    // Basic Flow 5 / Alternate Flow 5.1.1 — error update message
+    @PostMapping("/reject/{id}")
+    public String rejectHomestay(@PathVariable Integer id,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttrs) {
+
+        if (session.getAttribute("loggedInAdmin") == null)
+            return "redirect:/admin/login";
+
+        try {
+            Homestayowner owner = ownerrepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
+
+            // Basic Flow 5.1 — update status
+            owner.setVerificationstatus(false);
+            owner.setAccountstatus("REJECTED");
+            ownerrepository.save(owner);
+
+            // Basic Flow 5.2 — ส่งอีเมลแจ้งเตือน
+            try {
+                emailService.sendRejectionEmail(
+                    owner.getEmail(),
+                    owner.getFirstname() + " " + owner.getLastname()
+                );
+            } catch (Exception mailEx) {
+                System.err.println("ส่งอีเมลไม่สำเร็จ: " + mailEx.getMessage());
+            }
+
+        } catch (Exception e) {
+            // Alternate Flow 5.1.1 — error update message → กลับไปแสดงที่ Page
+            redirectAttrs.addFlashAttribute("errorMessage",
+                "ไม่สามารถปฏิเสธการสมัครสมาชิกเจ้าของโฮมสเตย์ได้ กรุณาลองใหม่อีกครั้ง");
+            return "redirect:/admin/homestay";
+        }
+
+        return "redirect:/admin/homestay";
+    }
+
+    // POST /admin/homestay/suspend/{id}@PostMapping("/suspend/{id}")
+public String suspendHomestay(@PathVariable Integer id,
+                              HttpSession session,
+                              RedirectAttributes redirectAttrs) {
+
     if (session.getAttribute("loggedInAdmin") == null)
         return "redirect:/admin/login";
 
-    ownerrepository.findById(id).ifPresent(o -> {
-        o.setVerificationstatus(true);
-        o.setAccountstatus("ACTIVE");
-        ownerrepository.save(o);
+    try {
+        Homestayowner owner = ownerrepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล"));
 
-        // ส่งอีเมลแจ้งเตือน
-        try {
-            emailService.sendApprovalEmail(
-                o.getEmail(),
-                o.getFirstname() + " " + o.getLastname()
-            );
-        } catch (Exception e) {
-            System.err.println("ส่งอีเมลไม่สำเร็จ: " + e.getMessage());
-        }
-    });
+        // Basic Flow 5.1 — update status
+        owner.setAccountstatus("SUSPENDED");
+        ownerrepository.save(owner);
 
-    return "redirect:/admin/homestay";
+    } catch (Exception e) {
+        // Alternate Flow 5.1.1 — error query message
+        redirectAttrs.addFlashAttribute("errorMessage",
+            "ไม่สามารถระงับบัญชีโฮมสเตย์นี้ได้ กรุณาลองใหม่อีกครั้ง");
+    }
+
+    return "redirect:/admin/homestay/all";
 }
 
-@PostMapping("/reject/{id}")
-public String rejectHomestay(@PathVariable Integer id, HttpSession session) {
+@PostMapping("/activate/{id}")
+public String activateHomestay(@PathVariable Integer id,
+                               HttpSession session,
+                               RedirectAttributes redirectAttrs) {
+
     if (session.getAttribute("loggedInAdmin") == null)
         return "redirect:/admin/login";
 
-    ownerrepository.findById(id).ifPresent(o -> {
-        o.setVerificationstatus(false);
-        o.setAccountstatus("REJECTED");
-        ownerrepository.save(o);
+    try {
+        Homestayowner owner = ownerrepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล"));
 
-        //  ส่งอีเมลแจ้งเตือน
-        try {
-            emailService.sendRejectionEmail(
-                o.getEmail(),
-                o.getFirstname() + " " + o.getLastname()
-            );
-        } catch (Exception e) {
-            System.err.println("ส่งอีเมลไม่สำเร็จ: " + e.getMessage());
-        }
-    });
+        owner.setAccountstatus("ACTIVE");
+        ownerrepository.save(owner);
 
-    return "redirect:/admin/homestay";
+    } catch (Exception e) {
+        // Alternate Flow 5.1.1 — error query message
+        redirectAttrs.addFlashAttribute("errorMessage",
+            "ไม่สามารถเปิดใช้งานบัญชีโฮมสเตย์นี้ได้ กรุณาลองใหม่อีกครั้ง");
+    }
+
+    return "redirect:/admin/homestay/all";
 }
-
-    // POST /admin/homestay/suspend/{id}
-    @PostMapping("/suspend/{id}")
-    public String suspendHomestay(@PathVariable Integer id, HttpSession session) {
-
-        if (session.getAttribute("loggedInAdmin") == null) {
-            return "redirect:/admin/login";
-        }
-
-        ownerrepository.findById(id).ifPresent(o -> {
-            o.setAccountstatus("SUSPENDED");
-            ownerrepository.save(o);
-        });
-
-        return "redirect:/admin/homestay/all";
-    }
-
-    // POST /admin/homestay/activate/{id}
-    @PostMapping("/activate/{id}")
-    public String activateHomestay(@PathVariable Integer id, HttpSession session) {
-
-        if (session.getAttribute("loggedInAdmin") == null) {
-            return "redirect:/admin/login";
-        }
-
-        ownerrepository.findById(id).ifPresent(o -> {
-            o.setAccountstatus("ACTIVE");
-            ownerrepository.save(o);
-        });
-
-        return "redirect:/admin/homestay/all";
-    }
 }

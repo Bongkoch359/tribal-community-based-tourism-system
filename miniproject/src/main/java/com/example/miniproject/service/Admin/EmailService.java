@@ -37,4 +37,20 @@ public class EmailService {
         );
         mailSender.send(message);
     }
+
+    public void sendManagerCreatedEmail(String toEmail, String managerName, String password) {
+    SimpleMailMessage message = new SimpleMailMessage();
+    message.setTo(toEmail);
+    message.setSubject("✅ บัญชีผู้จัดการท่องเที่ยวชุมชนของคุณถูกสร้างแล้ว");
+    message.setText(
+        "เรียน คุณ" + managerName + ",\n\n" +
+        "แอดมินได้สร้างบัญชีผู้จัดการท่องเที่ยวชุมชนให้คุณเรียบร้อยแล้ว\n\n" +
+        "ข้อมูลสำหรับเข้าสู่ระบบ:\n" +
+        "  Username (อีเมล): " + toEmail + "\n" +
+        "  Password: " + password + "\n\n" +
+        "คุณสามารถเข้าสู่ระบบได้ที่: http://localhost:8080/manager/login\n\n" +
+        "ทีมงานระบบท่องเที่ยวชุมชนชนเผ่า"
+    );
+    mailSender.send(message);
+}
 }
