@@ -333,7 +333,7 @@ function validateHsDesc(idx) {
     const input = document.getElementById(`hs_desc_${idx}`);
     const val = input.value.trim();
     if (val === '') { showValid(input, `hs_descError_${idx}`); return true; }
-    if (val.length < 3 || val.length > 255) { showError(input, `hs_descError_${idx}`, 'รายละเอียดโฮมสเตย์ต้องมีความยาว 3–255 ตัวอักษร (หากกรอก)'); return false; }
+    if (val.length < 3 || val.length > 5000) { showError(input, `hs_descError_${idx}`, 'รายละเอียดโฮมสเตย์ต้องมีความยาว 3–5000 ตัวอักษร (หากกรอก)'); return false; }
     showValid(input, `hs_descError_${idx}`); return true;
 }
 function validateAllHomestays() {

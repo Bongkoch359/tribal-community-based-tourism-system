@@ -20,7 +20,8 @@ public class Homestay {
     @Column(length = 255)
     private String address;
 
-    @Column(length = 255)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @Lob
