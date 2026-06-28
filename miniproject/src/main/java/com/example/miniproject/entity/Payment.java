@@ -15,27 +15,14 @@ public class Payment {
 	private String paymentslip;
 	
 	@Enumerated(EnumType.STRING)
-    @Column(name = "payment_status", length = 50)
+    @Column(name = "paymentstatus", length = 50)
     private PaymentStatus paymentStatus;
     
    @OneToOne
 	@JoinColumn(name = "bookingid", nullable = false, unique = true)
 	private Booking booking;
 
-	public enum paymentstatus {
-    UNPAID("ยังไม่ชำระเงิน"),
-    PAID("ชำระเงินแล้ว");
-
-    private String label;
-
-    paymentstatus(String label) {
-        this.label = label;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-}
+	
 	
 	public Payment() {
 		// TODO Auto-generated constructor stub
@@ -89,6 +76,10 @@ public class Payment {
 	public void setPaymentStatus(PaymentStatus paymentStatus) {
 		this.paymentStatus = paymentStatus;
 	}
+
+	
+
+	
 	
 	
 }

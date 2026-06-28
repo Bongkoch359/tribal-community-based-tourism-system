@@ -2,46 +2,47 @@ package com.example.miniproject.service.Tour;
 
 import com.example.miniproject.dto.Tour.DashboardStatsDTO;
 import com.example.miniproject.dto.Tour.BookingRowDTO;
-import com.example.miniproject.dto.Tour.TourRowDTO;
 import com.example.miniproject.dto.Tour.PostRowDTO;
-import com.example.miniproject.dto.Tour.ActivityLogDTO;
+import com.example.miniproject.dto.Tour.MonthlyRevenueDTO;
 import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.TourRepository;
 import com.example.miniproject.repository.Member.ActivitypostRepository;
 import com.example.miniproject.repository.Member.PaymentRepository;
-import com.example.miniproject.entity.enums.BookingStatus;
+import com.example.miniproject.entity.enums.ActivityStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
- 
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
- 
+
 @Service
 public class DashboardService {
- 
+
     @Autowired
     private BookingRepository bookingRepository;
- 
+
     @Autowired
     private TourRepository tourRepository;
- 
+
     @Autowired
     private ActivitypostRepository activitypostRepository;
- 
+
     @Autowired
     private PaymentRepository paymentRepository;
- 
+
     // รวมสถิติภาพรวม
     public DashboardStatsDTO getDashboardStats() {
         DashboardStatsDTO dto = new DashboardStatsDTO();
-        dto.setTotalBookings(bookingRepository.count());
-        dto.setActiveTours(tourRepository.countByStatus("OPEN"));
+        dto.setActiveTours(tourRepository.countByStatus("เปิดจอง"));
         dto.setTotalTours(tourRepository.count());
-        dto.setTotalPosts(activitypostRepository.count());
         dto.setTotalRevenue(paymentRepository.sumPaidAmount());
+        dto.setPendingBookings(bookingRepository.countPendingBookings());
         return dto;
     }
- 
+
     // 5 การจองล่าสุด
     public List<BookingRowDTO> getRecentBookings(int limit) {
         return bookingRepository.findTop5ByOrderByBookingdateDesc()
@@ -54,43 +55,19 @@ public class DashboardService {
                             ? b.getMember().getFirstname() + " " + b.getMember().getLastname()
                             : "-");
                     row.setBookingType(b.getBookingType() != null ? b.getBookingType().name() : "-");
+                    row.setBookingdate(b.getBookingdate() != null ? b.getBookingdate().toString() : "-");
+                    row.setTotalamount(b.getTotalamount() != null ? b.getTotalamount() : 0.0);
                     row.setStatus(b.getBookingStatus() != null ? b.getBookingStatus().name() : "-");
                     return row;
                 })
                 .collect(Collectors.toList());
     }
- 
-    // ทัวร์ยอดนิยม — เรียงตามจำนวนการจองมากสุด (ใช้ query เดิมแต่ map bookingCount ให้ถูกต้อง)
-public List<TourRowDTO> getPopularTours(int limit) {
-    return tourRepository.findTopToursByBookingCount(limit)
-            .stream()
-            .map(t -> {
-                TourRowDTO row = new TourRowDTO();
-                row.setTourid(t.getTourid());
-                row.setTourname(t.getTourmname());
-                row.setAdultprice(t.getAdultprice());
-                row.setStatus(t.getStatus());
-                // นับจาก BookingTourDetail ที่มีสถานะ CONFIRMED เท่านั้น
-                long confirmedCount = t.getBookingTourDetails() != null
-                        ? t.getBookingTourDetails().stream()
-                            .filter(d -> d.getBooking() != null
-                                && BookingStatus.CONFIRMED.equals(d.getBooking().getBookingStatus()))
-                            .count()
-                        : 0;
-                row.setBookingCount((int) confirmedCount);
-                return row;
-            })
-            // เรียง descending ตาม bookingCount
-            .sorted((a, b) -> Integer.compare(b.getBookingCount(), a.getBookingCount()))
-            .limit(limit)
-            .collect(Collectors.toList());
-}
- 
-    // โพสต์กิจกรรมล่าสุด
-    public List<PostRowDTO> getRecentPosts(int limit) {
-        return activitypostRepository.findTop3ByOrderByCreateddateDesc()
+
+    // โพสต์กิจกรรมทั้งหมดที่สถานะ PUBLISHED
+    public List<PostRowDTO> getPublishedPosts() {
+        return activitypostRepository
+                .findByStatusOrderByCreateddateDesc(ActivityStatus.PUBLISHED)
                 .stream()
-                .limit(limit)
                 .map(p -> {
                     PostRowDTO row = new PostRowDTO();
                     row.setActivityid(p.getActivityid());
@@ -101,32 +78,26 @@ public List<TourRowDTO> getPopularTours(int limit) {
                 })
                 .collect(Collectors.toList());
     }
- 
-    // activity log จำลอง (หรือดึงจาก log table ถ้ามี)
-    public List<ActivityLogDTO> getRecentActivityLog(int limit) {
-        // ดึงการจองล่าสุดมาแปลงเป็น activity log
-        return bookingRepository.findTop5ByOrderByBookingdateDesc()
-                .stream()
-                .limit(limit)
-                .map(b -> {
-                    ActivityLogDTO log = new ActivityLogDTO();
-                    log.setMessage("การจอง " + b.getBookingid() + " - " +
-                            (b.getBookingStatus() != null ? b.getBookingStatus().name() : "ไม่ระบุ"));
-                    log.setType(resolveLogType(b.getBookingStatus()));
-                    log.setTimestamp(b.getBookingdate() != null ? b.getBookingdate().toString() : "-");
-                    return log;
-                })
-                .collect(Collectors.toList());
-    }
- 
-    private String resolveLogType(BookingStatus status) {
-        if (status == null) return "gray";
-        return switch (status) {
-            case CONFIRMED -> "green";
-            case PENDING -> "amber";
-            case CANCEL -> "red";
-            default -> "gray";
-        };
+
+    // รายได้รายเดือนของปีปัจจุบัน (12 เดือนครบ แม้บางเดือนเป็น 0)
+    public List<MonthlyRevenueDTO> getMonthlyRevenue() {
+        int year = LocalDate.now().getYear();
+
+        // ดึงจาก DB: Object[]{ month(Integer), revenue(Double) }
+        List<Object[]> rows = paymentRepository.findMonthlyRevenue(year);
+
+        // แปลงเป็น map month->revenue
+        Map<Integer, Double> revenueMap = rows.stream()
+                .collect(Collectors.toMap(
+                        r -> ((Number) r[0]).intValue(),
+                        r -> ((Number) r[1]).doubleValue()
+                ));
+
+        // สร้างครบ 12 เดือน (เดือนที่ไม่มีข้อมูลใส่ 0)
+        List<MonthlyRevenueDTO> result = new ArrayList<>();
+        for (int m = 1; m <= 12; m++) {
+            result.add(new MonthlyRevenueDTO(m, revenueMap.getOrDefault(m, 0.0)));
+        }
+        return result;
     }
 }
- 
