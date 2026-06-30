@@ -43,5 +43,19 @@ List<Payment> findByHomestayId(@Param("homestayId") String homestayId);
 List<Payment> findByHomestayIdAndStatus(@Param("homestayId") String homestayId,
                                         @Param("status") PaymentStatus status);
 
-   
+ 
+                                        /**
+ * รายได้รวมรายเดือนในปีที่กำหนด (เฉพาะ CONFIRMED)//หน้าแดชบอช
+ * Return: Object[]{month (Integer), totalRevenue (Double)}
+ */
+@Query("""
+    SELECT MONTH(p.paymentdate) AS month,
+           COALESCE(SUM(p.amount), 0) AS totalRevenue
+    FROM Payment p
+    WHERE YEAR(p.paymentdate) = :year
+      AND p.paymentStatus = com.example.miniproject.entity.enums.PaymentStatus.PAID
+    GROUP BY MONTH(p.paymentdate)
+    ORDER BY MONTH(p.paymentdate)
+""")
+List<Object[]> findMonthlyRevenue(@Param("year") int year);
 }

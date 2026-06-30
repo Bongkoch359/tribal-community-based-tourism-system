@@ -6,170 +6,47 @@
     <title>ภาพรวมระบบ - ผู้จัดการชุมชน</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --green-dark:   #3a7d1e;
-            --green-mid:    #65a30d;
-            --green-light:  #a3e635;
-            --orange:       #f0a500;
-            --orange-light: #a3e635;
-            --bg:           #f3fae8;
-            --text-dark:    #3a7d1e;
-            --text-muted:   #6b7c6e;
-            --white:        #ffffff;
-            --card-shadow:  0 4px 24px rgba(0,0,0,.13);
-            --bg-page:      #f3fae8;
-            --bg-card:      #ffffff;
-            --border:       #e2ddd4;
-            --text-main:    #1a3a4a;
-            --text-hint:    #9a9a96;
-            --amber:        #65a30d;
-            --amber-light:  #d9f99d;
-            --amber-text:   #3a7d1e;
-            --red-light:    #fde8e8;
-            --red-text:     #a32d2d;
-            --gray-light:   #e9ecef;
-            --gray-text:    #555;
-            --radius-card:  12px;
-            --radius-sm:    6px;
-            --shadow-card:  0 4px 24px rgba(0,0,0,.13);
+            --green-dark:  #3a7d1e;
+            --green-mid:   #65a30d;
+            --green-light: #a3e635;
+            --orange:      #f0a500;
+            --bg:          #f3fae8;
+            --text-muted:  #6b7c6e;
+            --white:       #ffffff;
+            --bg-card:     #ffffff;
+            --border:      #e2ddd4;
+            --text-main:   #1a3a4a;
+            --text-hint:   #9a9a96;
+            --radius-card: 12px;
+            --radius-sm:   6px;
+            --shadow-card: 0 4px 24px rgba(0,0,0,.13);
         }
 
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background: var(--bg);
-            color: var(--text-dark);
-            font-size: 14px;
-            line-height: 1.6;
-        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text-main); font-size: 14px; line-height: 1.6; }
 
         /* ─── NAVBAR ─── */
-        .navbar {
-            background: var(--green-dark);
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            height: 84px;
-            gap: .25rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,.25);
-        }
-        .nav-brand {
-            color: var(--white);
-            font-size: 1.05rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: .6rem;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-        .nav-brand i { color: #ffffff; font-size: 1.2rem; }
-        .nav-link {
-            color: rgba(255,255,255,.7);
-            font-size: .92rem;
-            font-weight: 500;
-            padding: .45rem 1rem;
-            border-radius: 6px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: .45rem;
-            transition: all .2s;
-            white-space: nowrap;
-        }
+        .navbar { background: var(--green-dark); display: flex; align-items: center; padding: 0 2rem; height: 84px; gap: .25rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+        .nav-brand { color: var(--white); font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: .6rem; text-decoration: none; white-space: nowrap; }
+        .nav-link { color: rgba(255,255,255,.7); font-size: .92rem; font-weight: 500; padding: .45rem 1rem; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: .45rem; transition: all .2s; white-space: nowrap; }
         .nav-link:hover { color: var(--white); background: rgba(255,255,255,.08); }
-        .nav-link.active {
-            color: var(--white);
-            border-bottom: 3px solid #65a30d;
-            border-radius: 0;
-            padding-bottom: calc(.45rem - 3px);
-        }
-        .nav-link i { font-size: .9rem; }
-        .nav-user {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255,255,255,.85);
-            font-size: .92rem;
-            font-weight: 500;
-            cursor: pointer;
-            margin-left: auto;
-        }
-        .nav-avatar {
-            width: 36px; height: 36px;
-            background: var(--orange);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: .85rem; font-weight: 700; color: #fff;
-        }
-
-        /* ─── PROFILE DROPDOWN ─── */
-        .nav-dropdown { position: relative; }
-        .nav-dropdown-trigger {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255,255,255,.85);
-            font-size: .92rem;
-            font-weight: 500;
-            cursor: pointer;
-            padding: .4rem .6rem;
-            border-radius: 8px;
-            transition: background .2s;
-            user-select: none;
-        }
+        .nav-link.active { color: var(--white); border-bottom: 3px solid #65a30d; border-radius: 0; padding-bottom: calc(.45rem - 3px); }
+        .nav-dropdown { position: relative; margin-left: auto; }
+        .nav-dropdown-trigger { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.85); font-size: .92rem; font-weight: 500; cursor: pointer; padding: .4rem .6rem; border-radius: 8px; transition: background .2s; user-select: none; }
         .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
-        .nav-dropdown-trigger .chevron {
-            font-size: .75rem;
-            color: rgba(255,255,255,.6);
-            transition: transform .2s;
-        }
+        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
         .nav-dropdown:hover .chevron { transform: rotate(180deg); }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: calc(100% + 8px);
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 8px 28px rgba(0,0,0,.15);
-            border: 1px solid #e8e8e8;
-            min-width: 200px;
-            padding: 6px 0;
-            z-index: 200;
-        }
-        .dropdown-menu::before {
-            content: '';
-            position: absolute;
-            top: -10px; left: 0; right: 0;
-            height: 10px;
-        }
+        .nav-avatar { width: 36px; height: 36px; background: var(--orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; color: #fff; }
+        .dropdown-menu { display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #fff; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.15); border: 1px solid #e8e8e8; min-width: 200px; padding: 6px 0; z-index: 200; }
         .nav-dropdown:hover .dropdown-menu { display: block; }
-
-        .dropdown-header {
-            padding: .7rem 1rem .5rem;
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 4px;
-        }
+        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
         .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #3a7d1e; }
         .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-            padding: .6rem 1rem;
-            font-size: .88rem;
-            color: #333;
-            text-decoration: none;
-            transition: background .15s;
-        }
+        .dropdown-item { display: flex; align-items: center; gap: .65rem; padding: .6rem 1rem; font-size: .88rem; color: #333; text-decoration: none; transition: background .15s; }
         .dropdown-item i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
         .dropdown-item:hover { background: #f3fae8; color: var(--green-dark); }
         .dropdown-item:hover i { color: var(--green-dark); }
@@ -178,278 +55,100 @@
         .dropdown-item.logout i { color: #c0392b; }
         .dropdown-item.logout:hover { background: #fff5f5; }
 
-        /* ─── BANK WARNING BANNER ─── */
-        .bank-warning-banner {
-            background: #fff8e1;
-            border-bottom: 2px solid #f9a825;
-            padding: 0 2rem;
-        }
-        .bank-warning-inner {
-            max-width: 1200px;
-            margin: auto;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 13px 0;
-            font-size: 13px;
-            color: #5f3e00;
-        }
-        .bank-warning-inner > .warn-icon {
-            font-size: 1.25rem;
-            color: #f9a825;
-            flex-shrink: 0;
-        }
-        .bank-warning-inner > .warn-text {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .bank-warning-inner .warn-title {
-            font-weight: 700;
-            font-size: 13.5px;
-            color: #4e2d00;
-        }
-        .bank-warning-inner .warn-sub {
-            color: #7a5200;
-            font-size: 12.5px;
-        }
-        .bank-warning-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #f9a825;
-            color: #fff;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 12.5px;
-            font-weight: 600;
-            padding: 8px 18px;
-            border-radius: 6px;
-            text-decoration: none;
-            white-space: nowrap;
-            transition: background 0.15s;
-            flex-shrink: 0;
-        }
+        /* ─── BANK BANNER ─── */
+        .bank-warning-banner { background: #fff8e1; border-bottom: 2px solid #f9a825; padding: 0 2rem; }
+        .bank-warning-inner { max-width: 1200px; margin: auto; display: flex; align-items: center; gap: 14px; padding: 13px 0; font-size: 13px; color: #5f3e00; }
+        .warn-icon { font-size: 1.25rem; color: #f9a825; flex-shrink: 0; }
+        .warn-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .warn-title { font-weight: 700; font-size: 13.5px; color: #4e2d00; }
+        .warn-sub { color: #7a5200; font-size: 12.5px; }
+        .bank-warning-btn { display: inline-flex; align-items: center; gap: 6px; background: #f9a825; color: #fff; font-family: 'Sarabun', sans-serif; font-size: 12.5px; font-weight: 600; padding: 8px 18px; border-radius: 6px; text-decoration: none; white-space: nowrap; transition: background 0.15s; flex-shrink: 0; }
         .bank-warning-btn:hover { background: #e65100; }
-        .bank-warning-dismiss {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #b07000;
-            font-size: 14px;
-            padding: 4px 6px;
-            border-radius: 4px;
-            flex-shrink: 0;
-            transition: background 0.15s;
-        }
+        .bank-warning-dismiss { background: none; border: none; cursor: pointer; color: #b07000; font-size: 14px; padding: 4px 6px; border-radius: 4px; flex-shrink: 0; }
         .bank-warning-dismiss:hover { background: rgba(0,0,0,0.06); }
 
         /* ─── PAGE ─── */
-        .page { padding: 28px 28px 40px; max-width: 1200px; margin: auto }
-
-        .page-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--green-dark);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 22px;
-        }
+        .page { padding: 28px 28px 40px; max-width: 1200px; margin: auto; }
+        .page-title { font-size: 20px; font-weight: 600; color: var(--green-dark); display: flex; align-items: center; gap: 8px; margin-bottom: 22px; }
         .page-title svg { width: 20px; height: 20px; }
 
-        /* ─── STAT CARDS ─── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-        .stat-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-card);
-            border: 1px solid var(--border);
-            padding: 18px 20px;
-            box-shadow: var(--shadow-card);
-        }
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        .stat-value {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--text-main);
-            line-height: 1.1;
-        }
-        .stat-sub {
-            font-size: 12px;
-            margin-top: 5px;
-            color: var(--text-hint);
-        }
-        .stat-sub.up { color: var(--green-mid); }
+        /* ─── STAT CARDS (4 การ์ด) ─── */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+        .stat-card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); padding: 18px 20px; box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 14px; }
+        .stat-icon-wrap { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .icon-green  { background: #d9f99d; color: var(--green-dark); }
+        .icon-teal   { background: #ccfbf1; color: #0f766e; }
+        .icon-orange { background: #fff3cd; color: #92400e; }
+        .icon-purple { background: #ede9fe; color: #6d28d9; }
+        .stat-body { flex: 1; min-width: 0; }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .stat-value { font-size: 24px; font-weight: 700; color: var(--text-main); line-height: 1.1; }
+        .stat-sub   { font-size: 11px; margin-top: 4px; color: var(--text-hint); }
+        .stat-sub.up { color: var(--green-mid); font-weight: 500; }
 
-        /* ─── SECTION ROW ─── */
-        .section-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
+        /* ─── TWO-COL ROW ─── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 
         /* ─── CARD ─── */
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius-card);
-            border: 1px solid var(--border);
-            padding: 18px 20px;
-            box-shadow: var(--shadow-card);
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-main);
-        }
+        .card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); box-shadow: var(--shadow-card); overflow: hidden; }
+        .card-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+        .card-head h3 { font-size: 14px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0; }
+        .card-body { padding: 0 20px 16px; }
 
-        /* ─── BUTTONS ─── */
-        .btn-primary {
-            font-size: 12px;
-            font-family: 'Sarabun', sans-serif;
-            padding: 5px 14px;
-            background: var(--green-dark);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: background 0.15s;
-        }
-        .btn-primary:hover { background: var(--green-mid); }
-        .btn-outline {
-            font-size: 12px;
-            font-family: 'Sarabun', sans-serif;
-            padding: 5px 12px;
-            background: transparent;
-            color: var(--green-dark);
-            border: 1px solid var(--green-dark);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.15s;
-        }
+        /* ─── OUTLINE BUTTON ─── */
+        .btn-outline { font-size: 12px; font-family: 'Sarabun', sans-serif; padding: 4px 12px; background: transparent; color: var(--green-dark); border: 1px solid var(--green-dark); border-radius: var(--radius-sm); cursor: pointer; text-decoration: none; transition: background 0.15s; }
         .btn-outline:hover { background: var(--green-light); }
+        .btn-primary { font-size: 12px; font-family: 'Sarabun', sans-serif; padding: 4px 12px; background: var(--green-dark); color: #fff; border: none; border-radius: var(--radius-sm); cursor: pointer; text-decoration: none; transition: background 0.15s; }
+        .btn-primary:hover { background: var(--green-mid); }
 
-        /* ─── TABLE ─── */
-        .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .tbl th {
-            text-align: left;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-hint);
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            padding: 0 8px 8px;
-            border-bottom: 1px solid var(--border);
-        }
-        .tbl td {
-            padding: 9px 8px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-main);
-            vertical-align: middle;
-        }
-        .tbl tr:last-child td { border-bottom: none; }
-        .tbl tr:hover td { background: #fafaf8; }
+        /* ─── BOOKING TABLE ─── */
+        .booking-table-wrap { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); box-shadow: var(--shadow-card); overflow: hidden; margin-bottom: 16px; }
+        .booking-table-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+        .booking-table-head h3 { font-size: 14px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0; }
+        table.b-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        table.b-table thead tr { background: #f5f0e8; }
+        table.b-table th { padding: 10px 16px; text-align: left; font-weight: 600; color: #6b6b68; font-size: 12px; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; }
+        table.b-table td { padding: 12px 16px; border-top: 1px solid #f0ece3; color: var(--text-main); vertical-align: middle; }
+        table.b-table tbody tr:hover td { background: #faf8f4; }
+        .b-id     { font-family: monospace; font-size: 12px; color: #6b6b68; }
+        .b-name   { font-weight: 500; }
+        .b-amount { font-weight: 600; color: var(--green-dark); }
 
         /* ─── BADGES ─── */
-        .badge {
-            display: inline-block;
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-        .badge-green  { background: var(--green-light); color: var(--green-dark); }
-        .badge-amber  { background: var(--amber-light); color: var(--amber-text); }
-        .badge-gray   { background: var(--gray-light);  color: var(--gray-text);  }
-        .badge-red    { background: var(--red-light);   color: var(--red-text);   }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge-pending   { background: #fff3cd; color: #856404; }
+        .badge-waiting   { background: #cfe2ff; color: #084298; }
+        .badge-confirmed { background: #d1e7dd; color: #0a3622; }
+        .badge-cancel    { background: #f8d7da; color: #842029; }
+        .badge-draft     { background: #e9ecef; color: #495057; }
+        .badge-published { background: #d9f99d; color: #3a7d1e; }
+        .badge-other     { background: #e2e3e5; color: #41464b; }
 
-        /* ─── TOUR ROWS ─── */
-        .tour-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
-        }
-        .tour-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .tour-thumb {
-            width: 38px; height: 38px;
-            border-radius: 8px;
-            background: #a3e635;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        .tour-name { font-size: 13px; font-weight: 500; color: var(--text-main); }
-        .tour-meta { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
-        .tour-price { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--green-dark); white-space: nowrap; }
+        /* ─── POST ROWS ─── */
+        .post-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .post-row:last-child { border-bottom: none; }
+        .post-icon { width: 36px; height: 36px; border-radius: 8px; background: #ede9fe; color: #6d28d9; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .post-info { flex: 1; min-width: 0; }
+        .post-title { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .post-location { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
 
-        /* ─── ACTIVITY LOG ─── */
-        .activity-item { display: flex; gap: 10px; padding: 8px 0; }
-        .activity-item:not(:last-child) { border-bottom: 1px solid var(--border); }
-        .act-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            margin-top: 6px; flex-shrink: 0;
-        }
-        .dot-green  { background: var(--green-mid); }
-        .dot-amber  { background: var(--amber); }
-        .dot-red    { background: #c0392b; }
-        .dot-gray   { background: #aaa; }
-        .act-msg  { font-size: 13px; color: var(--text-main); }
-        .act-time { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+        /* ─── CHART CARD ─── */
+        .chart-card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); box-shadow: var(--shadow-card); margin-bottom: 16px; }
+        .chart-body { padding: 8px 20px 20px; }
+        canvas#revenueChart { max-height: 220px; }
 
-        /* ─── EMPTY STATE ─── */
-        .empty { text-align: center; padding: 24px; color: var(--text-hint); font-size: 13px; }
+        /* ─── EMPTY ─── */
+        .empty { text-align: center; color: var(--text-hint); padding: 28px 16px; font-size: 13px; }
+        .empty i { display: block; font-size: 1.4rem; margin-bottom: 6px; }
 
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 900px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .section-row { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 560px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .page { padding: 16px; }
-            .bank-warning-inner { flex-wrap: wrap; }
-        }
-
-        .footer {
-            margin-top: 3rem;
-            padding: 1rem 2rem;
-            background: #3a7d1e;
-            color: #d9f99d;
-            font-size: 0.9rem;
-        }
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .footer a {
-            color: #65a30d;
-            text-decoration: none;
-            margin-left: 8px;
-        }
+        /* ─── FOOTER ─── */
+        .footer { margin-top: 3rem; padding: 1rem 2rem; background: #3a7d1e; color: #d9f99d; font-size: .9rem; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; }
+        .footer a { color: #65a30d; text-decoration: none; margin-left: 8px; }
         .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 1000px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .two-col { grid-template-columns: 1fr; } }
+        @media (max-width: 560px)  { .stats-grid { grid-template-columns: 1fr; } .page { padding: 16px; } }
     </style>
 </head>
 <body>
@@ -460,71 +159,46 @@
         <i class="fas fa-mountain-sun"></i>
         ระบบท่องเที่ยวชุมชนชนเผ่า
     </a>
-
     <div style="flex:1;"></div>
-
-    <a th:href="@{/manager/dashboard}" class="nav-link active">
-        <i class="fas fa-globe"></i>
-        ภาพรวม
-    </a>
-    <a th:href="@{/manager/posts}" class="nav-link">
-        <i class="fas fa-bullhorn"></i>
-        จัดการโพสต์
-    </a>
-    <a th:href="@{/manager/tours}" class="nav-link">
-        <i class="fas fa-bus"></i>
-        จัดการทัวร์
-    </a>
-    <a th:href="@{/manager/bookings}" class="nav-link">
-        <i class="fas fa-calendar-days"></i>
-        ตรวจสอบการจอง
-    </a>
-
-    <!-- Profile Dropdown -->
-    <div class="nav-dropdown" style="margin-left:1rem;">
+    <a th:href="@{/manager/dashboard}" class="nav-link active"><i class="fas fa-globe"></i> ภาพรวม</a>
+    <a th:href="@{/manager/posts}"     class="nav-link"><i class="fas fa-bullhorn"></i> จัดการโพสต์</a>
+    <a th:href="@{/manager/tours}"     class="nav-link"><i class="fas fa-bus"></i> จัดการทัวร์</a>
+    <a th:href="@{/manager/bookings}"  class="nav-link"><i class="fas fa-calendar-days"></i> ตรวจสอบการจอง</a>
+    <div class="nav-dropdown">
         <div class="nav-dropdown-trigger">
             <div class="nav-avatar"
                  th:text="${loggedInManager != null and loggedInManager.firstname != null}
-                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
+                           ? ${#strings.substring(loggedInManager.firstname,0,1)
+                             + (#strings.length(loggedInManager.lastname) > 0
+                                ? #strings.substring(loggedInManager.lastname,0,1) : '')}
                            : 'CM'">CM</div>
-            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+            <span th:text="${loggedInManager != null}
+                           ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
+                           : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
             <i class="fas fa-chevron-down chevron"></i>
         </div>
         <div class="dropdown-menu">
             <div class="dropdown-header">
                 <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</div>
-                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''"></div>
             </div>
-            <a th:href="@{/manager/profile}" class="dropdown-item">
-                <i class="fas fa-user-pen"></i>
-                แก้ไขโปรไฟล์
-            </a>
+            <a th:href="@{/manager/profile}" class="dropdown-item"><i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์</a>
             <hr class="dropdown-divider">
-            <a th:href="@{/logout}" class="dropdown-item logout">
-                <i class="fas fa-right-from-bracket"></i>
-                ออกจากระบบ
-            </a>
+            <a th:href="@{/logout}" class="dropdown-item logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
         </div>
     </div>
 </nav>
 
-<!-- ═══ BANK WARNING BANNER ═══ -->
-<!-- แสดงเฉพาะเมื่อยังไม่ได้กรอกข้อมูลธนาคาร -->
-<div class="bank-warning-banner" id="bankWarningBanner"
-     th:if="${bankInfoMissing}" style="display:block;">
+<!-- ═══ BANK BANNER ═══ -->
+<div class="bank-warning-banner" id="bankWarningBanner" th:if="${bankInfoMissing}" style="display:block;">
     <div class="bank-warning-inner">
         <i class="fas fa-triangle-exclamation warn-icon"></i>
         <div class="warn-text">
             <span class="warn-title">ยังไม่ได้กรอกข้อมูลธนาคาร</span>
             <span class="warn-sub">กรุณากรอกข้อมูลธนาคารก่อนเปิดรับการจอง</span>
         </div>
-        <a th:href="@{/manager/profile}" class="bank-warning-btn">
-            <i class="fas fa-building-columns"></i>
-            กรอกข้อมูลธนาคาร
-        </a>
-        <button class="bank-warning-dismiss" onclick="dismissBankWarning()" title="ปิด">
-            <i class="fas fa-xmark"></i>
-        </button>
+        <a th:href="@{/manager/profile}" class="bank-warning-btn"><i class="fas fa-building-columns"></i> กรอกข้อมูลธนาคาร</a>
+        <button class="bank-warning-dismiss" onclick="dismissBankWarning()" title="ปิด"><i class="fas fa-xmark"></i></button>
     </div>
 </div>
 
@@ -538,156 +212,126 @@
         ภาพรวมระบบ
     </div>
 
-    <!-- STAT CARDS -->
+    <!-- ─── STAT CARDS (4 การ์ด) ─── -->
     <div class="stats-grid" th:if="${stats != null}">
+
         <div class="stat-card">
-            <div class="stat-label">การจองทั้งหมด</div>
-            <div class="stat-value" th:text="${stats.totalBookings}">0</div>
-            <div class="stat-sub up">▲ อัปเดตล่าสุด</div>
+            <div class="stat-icon-wrap icon-green"><i class="fas fa-bus"></i></div>
+            <div class="stat-body">
+                <div class="stat-label">ทัวร์ที่เปิดจอง</div>
+                <div class="stat-value" th:text="${stats.activeTours}">0</div>
+                <div class="stat-sub" th:text="'จาก ' + ${stats.totalTours} + ' ทัวร์ทั้งหมด'">จาก 0 ทัวร์</div>
+            </div>
         </div>
+
         <div class="stat-card">
-            <div class="stat-label">ทัวร์ที่เปิดรับ</div>
-            <div class="stat-value" th:text="${stats.activeTours}">0</div>
-            <div class="stat-sub" th:text="'จาก ' + ${stats.totalTours} + ' ทัวร์ทั้งหมด'">จาก 0 ทัวร์</div>
+            <div class="stat-icon-wrap icon-teal"><i class="fas fa-thai-baht-sign"></i></div>
+            <div class="stat-body">
+                <div class="stat-label">รายได้รวม (บาท)</div>
+                <div class="stat-value" th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 0, 'POINT')}">0</div>
+                <div class="stat-sub up">เฉพาะที่ยืนยันแล้ว</div>
+            </div>
         </div>
+
         <div class="stat-card">
-            <div class="stat-label">โพสต์กิจกรรม</div>
-            <div class="stat-value" th:text="${stats.totalPosts}">0</div>
-            <div class="stat-sub up">▲ อัปเดตล่าสุด</div>
+            <div class="stat-icon-wrap icon-orange"><i class="fas fa-clock"></i></div>
+            <div class="stat-body">
+                <div class="stat-label">รอตรวจสอบการจอง</div>
+                <div class="stat-value" th:text="${stats.pendingBookings}">0</div>
+                <div class="stat-sub">รายการที่ยังไม่ได้ดำเนินการ</div>
+            </div>
         </div>
+
         <div class="stat-card">
-            <div class="stat-label">รายได้รวม (บาท)</div>
-            <div class="stat-value"
-                 th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 0, 'POINT')}">0</div>
-            <div class="stat-sub up">▲ เฉพาะที่ชำระแล้ว</div>
+            <div class="stat-icon-wrap icon-purple"><i class="fas fa-bullhorn"></i></div>
+            <div class="stat-body">
+                <div class="stat-label">โพสต์กิจกรรม</div>
+                <div class="stat-value" th:text="${recentPosts != null ? recentPosts.size() : 0}">0</div>
+                <div class="stat-sub">3 รายการล่าสุด</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ─── กราฟรายได้รายเดือน (เต็มความกว้าง) ─── -->
+    <div class="chart-card">
+        <div class="card-head">
+            <h3><i class="fas fa-chart-line" style="color:var(--green-mid);"></i> รายได้รายเดือน (ปีปัจจุบัน)</h3>
+        </div>
+        <div class="chart-body">
+            <canvas id="revenueChart"></canvas>
         </div>
     </div>
 
-    <!-- ROW 1: Recent Bookings + Popular Tours -->
-    <div class="section-row">
+    <!-- ─── ROW: การจองล่าสุด + โพสต์กิจกรรม ─── -->
+    <div class="two-col">
 
-        <!-- Recent Bookings -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">การจองล่าสุด</span>
-                <a th:href="@{/manager/bookings}" class="btn-outline">ดูทั้งหมด</a>
+        <!-- การจองล่าสุด -->
+        <div class="booking-table-wrap" style="margin-bottom:0;">
+            <div class="booking-table-head">
+                <h3><i class="fas fa-clock-rotate-left"></i> การจองล่าสุด</h3>
+                <a th:href="@{/manager/bookings}" class="btn-outline">ดูทั้งหมด →</a>
             </div>
-            <table class="tbl" th:if="${recentBookings != null and !recentBookings.isEmpty()}">
+            <table class="b-table" th:if="${recentBookings != null and !recentBookings.isEmpty()}">
                 <thead>
                     <tr>
-                        <th>รหัสการจอง</th>
-                        <th>สมาชิก</th>
-                        <th>ประเภท</th>
+                        <th>รหัส</th>
+                        <th>ผู้จอง</th>
+                        <th>วันที่</th>
+                        <th>ยอดรวม</th>
                         <th>สถานะ</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="b : ${recentBookings}">
-                        <td th:text="${b.bookingid}">-</td>
-                        <td th:text="${b.memberName}">-</td>
-                        <td th:text="${b.bookingType}">-</td>
+                        <td class="b-id"   th:text="${b.bookingid}">-</td>
+                        <td class="b-name" th:text="${b.memberName}">-</td>
+                        <td th:text="${b.bookingdate}">-</td>
+                        <td class="b-amount"
+                            th:text="${#numbers.formatDecimal(b.totalamount,1,'COMMA',0,'POINT')} + ' ฿'">0 ฿</td>
                         <td>
-                            <span class="badge"
-                                  th:classappend="${b.status == 'CONFIRMED'} ? 'badge-green'
-                                               : (${b.status == 'PENDING'}   ? 'badge-amber'
-                                               : (${b.status == 'CANCELLED'} ? 'badge-red'
-                                               : 'badge-gray'))"
-                                  th:text="${b.status}">-</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="empty" th:if="${recentBookings == null or recentBookings.isEmpty()}">
-                ยังไม่มีข้อมูลการจอง
-            </div>
-        </div>
-
-        <!-- Popular Tours -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">ทัวร์ยอดนิยม</span>
-                <a th:href="@{/manager/tours/create}" class="btn-primary">+ สร้างทัวร์</a>
-            </div>
-            <div th:if="${popularTours != null and !popularTours.isEmpty()}">
-                <div class="tour-row" th:each="t : ${popularTours}">
-                    <div class="tour-thumb">🏕️</div>
-                    <div>
-                        <div class="tour-name" th:text="${t.tourname}">-</div>
-                        <div class="tour-meta"
-                             th:text="'จอง ' + ${t.bookingCount} + ' ครั้ง'">-</div>
-                    </div>
-                    <div class="tour-price"
-                         th:text="'฿' + ${#numbers.formatDecimal(t.adultprice, 1, 'COMMA', 0, 'POINT')} + '/คน'">-</div>
-                </div>
-            </div>
-            <div class="empty" th:if="${popularTours == null or popularTours.isEmpty()}">
-                ยังไม่มีทัวร์
-            </div>
-        </div>
-    </div>
-
-    <!-- ROW 2: Recent Posts + Activity Log -->
-    <div class="section-row">
-
-        <!-- Recent Posts -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">โพสต์กิจกรรมล่าสุด</span>
-                <a th:href="@{/manager/posts/create}" class="btn-primary">+ สร้างโพสต์</a>
-            </div>
-            <table class="tbl" th:if="${recentPosts != null and !recentPosts.isEmpty()}">
-                <thead>
-                    <tr>
-                        <th>หัวข้อ</th>
-                        <th>สถานที่</th>
-                        <th>สถานะ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="p : ${recentPosts}">
-                        <td th:text="${p.title}">-</td>
-                        <td th:text="${p.location}">-</td>
-                        <td>
-                            <span class="badge"
-                                  th:classappend="${p.status == 'PUBLISHED'} ? 'badge-green'
-                                               : (${p.status == 'DRAFT'}     ? 'badge-gray'
-                                               : 'badge-amber')"
-                                  th:text="${p.status == 'PUBLISHED'} ? 'เผยแพร่'
-                                         : (${p.status == 'DRAFT'}    ? 'ฉบับร่าง' : ${p.status})">
-                                -
+                            <span th:switch="${b.status}">
+                                <span th:case="'PENDING'"          class="badge badge-pending">รอดำเนินการ</span>
+                                <span th:case="'WAITING_APPROVAL'" class="badge badge-waiting">รอตรวจสอบ</span>
+                                <span th:case="'CONFIRMED'"        class="badge badge-confirmed">ยืนยันแล้ว</span>
+                                <span th:case="'CANCEL'"           class="badge badge-cancel">ยกเลิก</span>
+                                <span th:case="*" class="badge badge-other" th:text="${b.status}">-</span>
                             </span>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div class="empty" th:if="${recentPosts == null or recentPosts.isEmpty()}">
-                ยังไม่มีโพสต์กิจกรรม
+            <div class="empty" th:if="${recentBookings == null or recentBookings.isEmpty()}">
+                <i class="fas fa-inbox"></i> ยังไม่มีการจอง
             </div>
         </div>
 
-        <!-- Activity Log -->
+        <!-- โพสต์กิจกรรมล่าสุด -->
         <div class="card">
-            <div class="card-header">
-                <span class="card-title">กิจกรรมล่าสุดในระบบ</span>
+            <div class="card-head">
+                <h3><i class="fas fa-bullhorn" style="color:#6d28d9;"></i> โพสต์กิจกรรมล่าสุด</h3>
+                <a th:href="@{/manager/posts/create}" class="btn-primary">+ สร้างโพสต์</a>
             </div>
-            <div th:if="${recentActivities != null and !recentActivities.isEmpty()}">
-                <div class="activity-item" th:each="a : ${recentActivities}">
-                    <div class="act-dot"
-                         th:classappend="${a.type == 'green'} ? 'dot-green'
-                                       : (${a.type == 'amber'} ? 'dot-amber'
-                                       : (${a.type == 'red'}   ? 'dot-red'
-                                       : 'dot-gray'))">
+            <div class="card-body" th:if="${recentPosts != null and !recentPosts.isEmpty()}">
+                <div class="post-row" th:each="p : ${recentPosts}">
+                    <div class="post-icon"><i class="fas fa-map-pin"></i></div>
+                    <div class="post-info">
+                        <div class="post-title" th:text="${p.title}">-</div>
+                        <div class="post-location">
+                            <i class="fas fa-location-dot" style="font-size:10px;"></i>
+                            <span th:text="${p.location}">-</span>
+                        </div>
                     </div>
-                    <div>
-                        <div class="act-msg"  th:text="${a.message}">-</div>
-                        <div class="act-time" th:text="${a.timestamp}">-</div>
-                    </div>
+                    <span class="badge"
+                          th:classappend="${p.status == 'PUBLISHED'} ? 'badge-published' : 'badge-draft'"
+                          th:text="${p.status == 'PUBLISHED'} ? 'เผยแพร่' : 'ฉบับร่าง'">-</span>
                 </div>
             </div>
-            <div class="empty" th:if="${recentActivities == null or recentActivities.isEmpty()}">
-                ยังไม่มีกิจกรรม
+            <div class="empty" th:if="${recentPosts == null or recentPosts.isEmpty()}">
+                <i class="fas fa-file-circle-plus"></i> ยังไม่มีโพสต์กิจกรรม
             </div>
         </div>
+
     </div>
 </div>
 
@@ -695,29 +339,65 @@
 <footer class="footer">
     <div class="footer-content">
         <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-        <span class="footer-right">
-            Version 1.0 |
-            <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
-            <a href="#" onclick="openContactModal()">
-                <i class="fas fa-headset"></i> ติดต่อแอดมิน
-            </a>
-        </span>
+        <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a> | <a href="#"><i class="fas fa-headset"></i> ติดต่อแอดมิน</a></span>
     </div>
 </footer>
 
-<script>
-    function dismissBankWarning() {
-        const banner = document.getElementById('bankWarningBanner');
-        if (banner) {
-            banner.style.transition = 'opacity 0.3s, max-height 0.4s';
-            banner.style.opacity = '0';
-            banner.style.overflow = 'hidden';
-            banner.style.maxHeight = banner.offsetHeight + 'px';
-            setTimeout(() => { banner.style.maxHeight = '0'; banner.style.padding = '0'; }, 10);
-            setTimeout(() => { banner.style.display = 'none'; }, 420);
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const labels  = /*[[${chartLabels}]]*/ '[]';
+    const data    = /*[[${chartData}]]*/ '[]';
+    /*]]>*/
+
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: JSON.parse(labels),
+            datasets: [{
+                label: 'รายได้ (บาท)',
+                data: JSON.parse(data),
+                backgroundColor: 'rgba(101,163,13,0.25)',
+                borderColor:     '#3a7d1e',
+                borderWidth: 2,
+                borderRadius: 6,
+                hoverBackgroundColor: 'rgba(101,163,13,0.5)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => '฿' + ctx.parsed.y.toLocaleString()
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 12 } } },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: {
+                        font: { family: 'Sarabun', size: 12 },
+                        callback: v => '฿' + v.toLocaleString()
+                    }
+                }
+            }
         }
+    });
+
+    function dismissBankWarning() {
+        const b = document.getElementById('bankWarningBanner');
+        if (!b) return;
+        b.style.transition = 'opacity .3s, max-height .4s';
+        b.style.opacity = '0'; b.style.overflow = 'hidden';
+        b.style.maxHeight = b.offsetHeight + 'px';
+        setTimeout(() => { b.style.maxHeight = '0'; b.style.padding = '0'; }, 10);
+        setTimeout(() => { b.style.display = 'none'; }, 420);
     }
 </script>
-
 </body>
 </html>

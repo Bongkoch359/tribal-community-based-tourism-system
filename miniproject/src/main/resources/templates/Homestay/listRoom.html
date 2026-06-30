@@ -179,7 +179,6 @@
         }
         .btn-add:hover { background: #c96e00; color: #fff; }
 
-        /* ── Homestay selector ── */
         .homestay-selector {
             display: flex;
             align-items: center;
@@ -364,7 +363,7 @@
         </a>
     </div>
 
-    <!-- ── Homestay Selector (แสดงเมื่อมี > 1 โฮมสเตย์) ── -->
+    <!-- ── Homestay Selector ── -->
     <div class="homestay-selector"
          th:if="${myHomestays != null and myHomestays.size() > 1}">
         <label><i class="fas fa-house"></i> โฮมสเตย์ :</label>
@@ -377,20 +376,12 @@
         </select>
     </div>
 
-    <!-- Filter tabs -->
-    <div class="filter-bar">
+    <!-- ── Filter Bar (dynamic) ── -->
+    <div class="filter-bar" id="filterBar">
         <button class="filter-btn active" onclick="filterRooms('all', this)">
             ทั้งหมด
         </button>
-        <button class="filter-btn" onclick="filterRooms('บ้านพัก', this)">
-            <i class="fas fa-house"></i> บ้านพัก
-        </button>
-        <button class="filter-btn" onclick="filterRooms('โดม', this)">
-            <i class="fas fa-circle-dot"></i> โดม
-        </button>
-        <button class="filter-btn" onclick="filterRooms('เต็นท์', this)">
-            <i class="fas fa-campground"></i> เต็นท์
-        </button>
+        <!-- ปุ่มกรองประเภทจะถูก generate อัตโนมัติจาก JS -->
     </div>
 
     <!-- Table -->
@@ -505,6 +496,32 @@
 </footer>
 
 <script>
+// mapping icon ตามชื่อประเภท — เพิ่มประเภทใหม่ตรง
+const typeIcons = {
+    'บ้านพัก': 'fa-house',
+    'โดม':     'fa-circle-dot',
+    'เต็นท์':  'fa-campground',
+};
+
+function buildFilterButtons() {
+    const rows = document.querySelectorAll('#roomBody tr[data-type]');
+    const seen = new Set();
+    rows.forEach(row => {
+        const t = row.getAttribute('data-type');
+        if (t) seen.add(t);
+    });
+
+    const bar = document.getElementById('filterBar');
+    seen.forEach(type => {
+        const icon = typeIcons[type] || 'fa-tag';   // fallback icon
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn';
+        btn.innerHTML = `<i class="fas ${icon}"></i> ${type}`;
+        btn.onclick = function () { filterRooms(type, this); };
+        bar.appendChild(btn);
+    });
+}
+
 function filterRooms(type, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -514,6 +531,8 @@ function filterRooms(type, btn) {
         row.style.display = (type === 'all' || rowType === type) ? '' : 'none';
     });
 }
+
+document.addEventListener('DOMContentLoaded', buildFilterButtons);
 </script>
 
 </body>
