@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import com.example.miniproject.entity.enums.ActivityStatus;
 import org.springframework.stereotype.Service;
 
 import com.example.miniproject.entity.Activitypost;
@@ -40,18 +41,21 @@ public class SearchInfoService {
      * step 5.1-5.2: searchActivity()
      * ค้นหากิจกรรมชุมชน (เนื่องจากเป็นแค่โพสต์ประชาสัมพันธ์ จึงกรองด้วย Keyword อย่างเดียว)
      */
-    public List<Activitypost> searchActivity(String keyword) {
-        try {
-            // ถ้าไม่ระบุคำค้นหา ให้ดึงโพสต์กิจกรรมทั้งหมดขึ้นมาแสดง โดยเรียงจากใหม่ไปเก่า
-            if (keyword == null || keyword.isBlank()) {
-                return activitypostRepository.findAllByOrderByCreateddateDesc();
-            }
-            // ค้นหาโพสต์กิจกรรมที่มีชื่อตรงกับคีย์เวิร์ดที่ป้อน
-            return activitypostRepository.findByTitleContainingIgnoreCase(keyword);
-        } catch (Exception e) {
-            return new ArrayList<>();
+public List<Activitypost> searchActivity(String keyword) {
+    try {
+        if (keyword == null || keyword.isBlank()) {
+            return activitypostRepository
+                .findByStatusOrderByCreateddateDesc(ActivityStatus.PUBLISHED);
         }
+        return activitypostRepository
+            .findByTitleContainingIgnoreCaseAndStatusOrLocationContainingIgnoreCaseAndStatus(
+                keyword, ActivityStatus.PUBLISHED,
+                keyword, ActivityStatus.PUBLISHED
+            );
+    } catch (Exception e) {
+        return new ArrayList<>();
     }
+}
 
    public List<Tour> searchTour(String keyword, Integer numGuest,
                               String startDate, String endDate) {
@@ -87,7 +91,7 @@ public List<Homestay> searchHomestay(String keyword, Integer numGuest,
         }
         // ไม่มีวันที่ → คืนทั้งหมด/กรองแค่ keyword
         if (kw == null) return homestayRepository.findAll();
-        return homestayRepository.findByHomestaynameContainingIgnoreCase(kw);
+        return homestayRepository.findByHomestaynameContainingIgnoreCaseOrAddressContainingIgnoreCase(kw, kw);
 
     } catch (Exception e) {
         return new ArrayList<>();

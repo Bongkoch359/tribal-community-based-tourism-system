@@ -26,7 +26,7 @@ public class ViewTourDetailController {
     @GetMapping("/tour/{id}")
     public String viewTourDetail(@PathVariable String id, Model model) {
 
-        Tour tour = tourRepository.findById(id).orElse(null);
+        Tour tour = tourRepository.findByIdWithBookings(id).orElse(null);
 
         if (tour == null) {
             return "redirect:/search";

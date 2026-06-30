@@ -5,17 +5,17 @@
 const tabCfg = {
   activity: {
     label: 'ค้นหากิจกรรม',
-    placeholder: 'ชื่อกิจกรรม หรือสถานที่',
+    placeholder: 'ชื่อกิจกรรม หรือสถานที่ เช่น อมก๋อย, ดอยอินทนนท์',
     guestLabel: 'จำนวนคน',
   },
   tour: {
     label: 'ค้นหาทัวร์ชุมชน',
-    placeholder: 'ชื่อทัวร์ หรือสถานที่',
+    placeholder: 'ชื่อทัวร์ หรือสถานที่ เช่น อมก๋อย, แม่แจ่ม',
     guestLabel: 'จำนวนผู้เดินทาง',
   },
   homestay: {
     label: 'ค้นหาโฮมสเตย์',
-    placeholder: 'ชื่อโฮมสเตย์ หรือที่อยู่',
+    placeholder: 'ชื่อโฮมสเตย์ หรือสถานที่ เช่น อมก๋อย, ปาย',
     guestLabel: 'จำนวนผู้เข้าพัก',
   },
 };
@@ -30,11 +30,11 @@ function switchTab(type) {
 
   // 2. Label + Placeholder
   const cfg = tabCfg[type] || tabCfg.activity;
-  const labelEl = document.getElementById('sf-label-text');
-  const inputEl = document.getElementById('keyword-input');
+  const labelEl      = document.getElementById('sf-label-text');
+  const inputEl      = document.getElementById('keyword-input');
   const guestLabelEl = document.getElementById('guest-label-text');
-  if (labelEl) labelEl.textContent = cfg.label;
-  if (inputEl) inputEl.placeholder = cfg.placeholder;
+  if (labelEl)      labelEl.textContent      = cfg.label;
+  if (inputEl)      inputEl.placeholder      = cfg.placeholder;
   if (guestLabelEl) guestLabelEl.textContent = cfg.guestLabel;
 
   // 3. Hidden type input
@@ -47,20 +47,25 @@ function switchTab(type) {
   });
 
   // 5. Toggle search fields ตาม tab
-  const dateTour     = document.getElementById('date-tour-wrapper');
-  const dateRange    = document.getElementById('date-range-wrapper');
-  const guestWrapper = document.getElementById('guest-wrapper');
+  const dateTour      = document.getElementById('date-tour-wrapper');
+  const checkinBox    = document.getElementById('checkin-wrapper');
+  const checkoutBox   = document.getElementById('checkout-wrapper');
+  const guestWrapper  = document.getElementById('guest-wrapper');
 
-  if (dateTour)     dateTour.style.display     = 'none';
-  if (dateRange)    dateRange.style.display    = 'none';
-  if (guestWrapper) guestWrapper.style.display = 'none';
+  // ซ่อนทั้งหมดก่อน
+  if (dateTour)    dateTour.style.display    = 'none';
+  if (checkinBox)  checkinBox.style.display  = 'none';
+  if (checkoutBox) checkoutBox.style.display = 'none';
+  if (guestWrapper)guestWrapper.style.display= 'none';
 
   if (type === 'tour') {
-    if (dateTour)     dateTour.style.display     = 'flex';
-    if (guestWrapper) guestWrapper.style.display = 'flex';
+    if (dateTour)    dateTour.style.display    = 'flex';
+    if (guestWrapper)guestWrapper.style.display= 'flex';
   } else if (type === 'homestay') {
-    if (dateRange)    dateRange.style.display    = 'flex';
-    if (guestWrapper) guestWrapper.style.display = 'flex';
+    // แยก 2 กล่องอิสระ
+    if (checkinBox)  checkinBox.style.display  = 'flex';
+    if (checkoutBox) checkoutBox.style.display = 'flex';
+    if (guestWrapper)guestWrapper.style.display= 'flex';
   }
 
   // 6. Sync tour endDate = startDate
@@ -74,7 +79,21 @@ function switchTab(type) {
     }
   }
 
-  // 7. Update URL
+  // 7. Validate checkout >= checkin
+  if (type === 'homestay') {
+    const checkinInput  = document.getElementById('checkin-input');
+    const checkoutInput = document.getElementById('checkout-input');
+    if (checkinInput && checkoutInput) {
+      checkinInput.addEventListener('change', () => {
+        if (checkoutInput.value && checkoutInput.value < checkinInput.value) {
+          checkoutInput.value = '';
+        }
+        checkoutInput.min = checkinInput.value;
+      });
+    }
+  }
+
+  // 8. Update URL
   try {
     const url = new URL(window.location.href);
     url.searchParams.set('type', type);
@@ -82,17 +101,19 @@ function switchTab(type) {
   } catch (e) {}
 }
 
-/* ── Favourite toggle ── */
+/* ── Bookmark toggle (แทน heart) ── */
 function toggleFav(btn) {
-  btn.classList.toggle('liked');
+  btn.classList.toggle('saved');
   const svg = btn.querySelector('svg');
   if (svg) {
-    if (btn.classList.contains('liked')) {
-      svg.setAttribute('fill', '#ef4444');
-      svg.setAttribute('stroke', '#ef4444');
+    if (btn.classList.contains('saved')) {
+      svg.setAttribute('fill', '#2d7a4f');
+      svg.setAttribute('stroke', '#2d7a4f');
+      btn.setAttribute('title', 'บันทึกแล้ว');
     } else {
       svg.setAttribute('fill', 'none');
       svg.setAttribute('stroke', 'currentColor');
+      btn.setAttribute('title', 'บันทึกรายการโปรด');
     }
   }
 }
@@ -103,16 +124,6 @@ function selectChip(el) {
     .querySelectorAll('.chip')
     .forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-}
-
-/* ── Featured filter ── */
-function filterFeatured(el) {
-  const filter = el.dataset.filter;
-  document.querySelectorAll('.feat-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('#featuredGrid .fcard').forEach(card => {
-    card.style.display = (filter === 'all' || card.dataset.type === filter) ? '' : 'none';
-  });
 }
 
 /* ── Guest counter ── */
@@ -131,11 +142,9 @@ function toggleUserMenu() {
 
 /* ── Click ข้างนอกปิด dropdown ทั้งหมด ── */
 document.addEventListener('click', function(e) {
-  // ปิด user menu
   const wrapper = document.getElementById('userMenuWrapper');
   if (wrapper && !wrapper.contains(e.target)) wrapper.classList.remove('open');
 
-  // ปิด login dropdown
   const dropdown = document.querySelector('.login-dropdown');
   if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove('open');
 });
@@ -158,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Login Dropdown
   const dropdown = document.querySelector('.login-dropdown');
   const btn      = document.querySelector('.btn-login');
-
   if (btn && dropdown) {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();

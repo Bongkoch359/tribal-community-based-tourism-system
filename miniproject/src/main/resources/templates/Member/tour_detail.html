@@ -62,12 +62,7 @@
       </svg>
       ข้อมูลชนเผ่า
     </a>
-    <a href="/about" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
-      </svg>
-      เกี่ยวกับเรา
-    </a>
+  
   </div>
 
   <div class="nav-divider"></div>
@@ -265,18 +260,24 @@
 ══════════════════════════════════════════ -->
 <div class="stat-strip">
   <div class="stat-strip-inner">
-    <div class="stat-strip-item">
-      <div class="stat-strip-icon" style="background:#d8f3dc;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2d7a4f" stroke-width="2">
-          <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
-        </svg>
-      </div>
-      <div>
-        <div class="stat-strip-label">จำนวนผู้เข้าร่วม</div>
-        <div class="stat-strip-value" th:text="${tour.minSeatstour} + ' – ' + ${tour.maxSeatstour}">2 – 15</div>
-        <div class="stat-strip-sub">คน/รอบ</div>
-      </div>
+
+   <div class="stat-strip-item">
+  <div class="stat-strip-icon" style="background:#d8f3dc;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#2d7a4f" stroke-width="2">
+      <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+    </svg>
+  </div>
+  <div>
+    <div class="stat-strip-label">ที่นั่งคงเหลือ</div>
+    <div class="stat-strip-value"
+         th:text="${tour.remainingSeats} + ' / ' + ${tour.maxSeatstour}"
+         th:style="${tour.full} ? 'color:#dc2626' : 'color:var(--green-800)'">
     </div>
+    <div class="stat-strip-sub"
+         th:text="${tour.full} ? 'เต็มแล้ว' : 'ที่นั่งว่าง'">
+    </div>
+  </div>
+</div>
     <div class="stat-strip-item">
       <div class="stat-strip-icon" style="background:#fef3c7;">
         <svg viewBox="0 0 24 24" fill="none" stroke="#c27b04" stroke-width="2">
@@ -286,9 +287,9 @@
       <div>
         <div class="stat-strip-label">สถานะทัวร์</div>
         <div class="stat-strip-value"
-             th:text="${tour.status != null} ? ${tour.status} : 'ไม่ระบุ'"
-             th:style="${tour.status == 'เปิดให้จอง'} ? 'color:var(--green-700)' : 'color:#dc2626'">เปิดให้จอง</div>
-        <div class="stat-strip-sub">สถานะปัจจุบัน</div>
+     th:text="${tour.status != null} ? ${tour.status} : 'ไม่ระบุ'"
+     th:style="${tour.status == 'เปิดจอง'} ? 'color:var(--green-700)' : 'color:#dc2626'">
+</div>
       </div>
     </div>
     <div class="stat-strip-item">
@@ -448,26 +449,30 @@
           </div>
         </div>
         <div class="bk-price-adult">
-          ผู้ใหญ่/คน &nbsp;|&nbsp; เด็ก
-          <strong style="color:var(--amber-600);">
-            ฿<span th:text="${#numbers.formatDecimal(tour.childprice, 0, 'COMMA', 0, 'POINT')}">500</span>
-          </strong>
-        </div>
+  ผู้ใหญ่/คน &nbsp;|&nbsp; เด็ก
+  <strong style="color:var(--amber-600);">
+    ฿<span th:text="${#numbers.formatDecimal(tour.childprice, 0, 'COMMA', 0, 'POINT')}">0</span>
+  </strong>
+</div>
 
         <div class="bk-divider"></div>
 
         <div class="bk-field">
-          <div class="bk-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            วันที่เดินทาง
-          </div>
-          <input type="date" class="bk-input" id="tourDate" />
-        </div>
+  <div class="bk-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="4" width="18" height="18" rx="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    วันที่เดินทาง
+  </div>
+  <input type="date" class="bk-input" id="tourDate"
+         th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+  <small style="color:#6b7280;font-size:0.8rem;margin-top:4px;display:block;">
+    * กรุณาเลือกวันที่ต้องการเดินทาง
+  </small>
+</div>
 
         <div class="bk-divider"></div>
 
@@ -498,21 +503,35 @@
           </div>
         </th:block>
 
-        <!-- ล็อกอินแล้ว (เฉพาะ Member) -->
-        <th:block th:if="${session.loggedInMember != null}">
-          <button class="btn-book-now" onclick="goToBooking()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            จองทัวร์นี้เลย!
-          </button>
-          <div class="bk-guarantee">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-            </svg>
-            ยกเลิกได้ฟรี 24 ชั่วโมงก่อนทริป
-          </div>
-        </th:block>
+      <!-- ล็อกอินแล้ว (เฉพาะ Member) -->
+<th:block th:if="${session.loggedInMember != null}">
+
+  <!-- กรณีเต็มแล้ว -->
+  <div th:if="${tour.full}" 
+       class="bk-login-prompt" 
+       style="background:#fee2e2;border-color:#fca5a5;">
+    <p style="color:#dc2626;font-weight:700;">
+      ⚠️ ที่นั่งเต็มแล้ว ไม่สามารถจองได้
+    </p>
+  </div>
+
+  <!-- กรณียังมีที่นั่ง -->
+  <button th:if="${!tour.full}" 
+          class="btn-book-now" 
+          onclick="goToBooking()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+    </svg>
+    จองทัวร์นี้เลย!
+  </button>
+
+  <div class="bk-guarantee" th:if="${!tour.full}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+    </svg>
+    ยกเลิกได้ฟรี 24 ชั่วโมงก่อนทริป
+  </div>
+</th:block>
 
         <!-- Manager / Owner / Admin -->
         <th:block th:if="${session.loggedInManager != null

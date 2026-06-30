@@ -85,4 +85,21 @@ public class Tour {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Transient
+private int bookedSeats = 0; // ไม่ map ลง DB
+
+public int getBookedSeats() { return bookedSeats; }
+public void setBookedSeats(int bookedSeats) { this.bookedSeats = bookedSeats; }
+
+@Transient
+public int getRemainingSeats() {
+    if (maxSeatstour == null) return 0;
+    return Math.max(0, maxSeatstour - bookedSeats);
+}
+
+@Transient
+public boolean isFull() {
+    return getRemainingSeats() == 0;
+}
 }

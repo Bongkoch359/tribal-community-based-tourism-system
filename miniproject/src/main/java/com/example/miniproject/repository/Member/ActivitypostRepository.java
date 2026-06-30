@@ -15,7 +15,12 @@ public interface ActivitypostRepository extends JpaRepository<Activitypost, Stri
 
     // ดึงทั้งหมดเรียงจากใหม่ไปเก่า
     List<Activitypost> findAllByOrderByCreateddateDesc();
+
+    List<Activitypost> findByTitleContainingIgnoreCaseAndStatus(String title, ActivityStatus status);
  
+    List<Activitypost> findByTitleContainingIgnoreCaseAndStatusOrLocationContainingIgnoreCaseAndStatus(
+    String title, ActivityStatus s1, String location, ActivityStatus s2);
+    
     // ดึงตามสถานะ
     List<Activitypost> findByStatusOrderByCreateddateDesc(ActivityStatus status);
  

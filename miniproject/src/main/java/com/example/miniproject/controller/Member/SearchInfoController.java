@@ -15,6 +15,7 @@ import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.repository.Member.ReviewRepository;
 import com.example.miniproject.service.Member.SearchInfoService;
+import com.example.miniproject.service.Member.TourService;
 
 @Controller
 @RequestMapping("/search")
@@ -25,6 +26,9 @@ public class SearchInfoController {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private TourService tourService; // ← เพิ่มตรงนี้ (ไม่ใช่ searchInfoService)
 
     @GetMapping
     public String searchPage(
@@ -60,6 +64,7 @@ public class SearchInfoController {
             tours = searchInfoService.searchTour(keyword, numGuest, startDate, endDate);
         }
 
+        tourService.injectBookedSeats(tours); // ← เพิ่มบรรทัดนี้
 
     // ===== DEBUG LOG เพิ่มตรงนี้ =====
     System.out.println("========== DEBUG SEARCH ==========");

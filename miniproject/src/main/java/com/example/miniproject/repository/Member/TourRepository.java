@@ -78,4 +78,21 @@ Optional<Tour> findByIdWithBookings(@Param("tourid") String tourid);
         @Param("startDate") java.sql.Date startDate,
         @Param("endDate")   java.sql.Date endDate
     );
+
+//คิวรีที่นั่ง
+@Query("""
+    SELECT t.tourid,
+           COALESCE(SUM(
+               CASE WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.CONFIRMED
+                    THEN d.numofadult + COALESCE(d.numofchild, 0)
+                    ELSE 0 END
+           ), 0)
+    FROM Tour t
+    LEFT JOIN t.bookingTourDetails d
+    LEFT JOIN d.booking b
+    GROUP BY t.tourid
+""")
+List<Object[]> findBookedSeatsAll();
+
+
 }

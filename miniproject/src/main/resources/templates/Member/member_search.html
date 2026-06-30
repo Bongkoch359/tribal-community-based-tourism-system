@@ -64,13 +64,7 @@
       </svg>
       ข้อมูลชนเผ่า
     </a>
-    <a href="/about" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 16v-4M12 8h.01"/>
-      </svg>
-      เกี่ยวกับเรา
-    </a>
+    <!-- "เกี่ยวกับเรา" ถูกลบออกตามที่ขอ -->
   </div>
 
   <div class="nav-divider"></div>
@@ -154,17 +148,12 @@
 
       <div class="user-menu-wrapper" id="userMenuWrapper">
         <button class="btn-user-menu" onclick="toggleUserMenu()">
-
           <div class="user-avatar">
-            <span th:if="${session.loggedInMember != null}"
-                  th:text="${#strings.substring(session.loggedInMember.firstname, 0, 1)}">ม</span>
-            <span th:if="${session.loggedInManager != null}"
-                  th:text="${#strings.substring(session.loggedInManager.firstname, 0, 1)}">จ</span>
-            <span th:if="${session.loggedInOwner != null}"
-                  th:text="${#strings.substring(session.loggedInOwner.firstname, 0, 1)}">พ</span>
+            <span th:if="${session.loggedInMember != null}"  th:text="${#strings.substring(session.loggedInMember.firstname, 0, 1)}">ม</span>
+            <span th:if="${session.loggedInManager != null}" th:text="${#strings.substring(session.loggedInManager.firstname, 0, 1)}">จ</span>
+            <span th:if="${session.loggedInOwner != null}"   th:text="${#strings.substring(session.loggedInOwner.firstname, 0, 1)}">พ</span>
             <span th:if="${session.loggedInAdmin != null}">A</span>
           </div>
-
           <div class="user-info">
             <span class="user-name"
                   th:text="${session.loggedInMember != null} ? ${session.loggedInMember.firstname} :
@@ -178,101 +167,57 @@
               บทบาท
             </span>
           </div>
-
           <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M6 9l6 6 6-6"/>
           </svg>
         </button>
 
         <div class="user-dropdown-menu" id="userDropdown">
-
           <th:block th:if="${session.loggedInMember != null}">
             <a href="/member/profile" class="udrop-item">
-              <div class="udrop-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <div class="udrop-text">
-                <span>โปรไฟล์ของฉัน</span>
-                <small>ดูและแก้ไขข้อมูลส่วนตัว</small>
-              </div>
+              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <div class="udrop-text"><span>โปรไฟล์ของฉัน</span><small>ดูและแก้ไขข้อมูลส่วนตัว</small></div>
             </a>
             <a href="/member/bookings/list" class="udrop-item">
-              <div class="udrop-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-              </div>
-              <div class="udrop-text">
-                <span>การจองของฉัน</span>
-                <small>ตรวจสอบสถานะการจอง</small>
-              </div>
+              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
+              <div class="udrop-text"><span>การจองของฉัน</span><small>ตรวจสอบสถานะการจอง</small></div>
             </a>
           </th:block>
-
           <th:block th:if="${session.loggedInManager != null}">
             <a href="/manager/dashboard" class="udrop-item">
-              <div class="udrop-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                  <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                </svg>
-              </div>
+              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
               <div class="udrop-text"><span>แดชบอร์ด</span><small>ภาพรวมการจัดการ</small></div>
             </a>
             <a href="/manager/tours" class="udrop-item">
-              <div class="udrop-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                </svg>
-              </div>
+              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div>
               <div class="udrop-text"><span>จัดการทัวร์</span><small>เพิ่ม / แก้ไข / ลบทัวร์</small></div>
             </a>
           </th:block>
-
           <th:block th:if="${session.loggedInOwner != null}">
             <a href="/owner/dashboard" class="udrop-item">
-              <div class="udrop-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                </svg>
-              </div>
+              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
               <div class="udrop-text"><span>จัดการโฮมสเตย์</span><small>ห้องพัก ราคา การจอง</small></div>
             </a>
           </th:block>
-
           <th:block th:if="${session.loggedInAdmin != null}">
             <a href="/admin/dashboard" class="udrop-item">
-              <div class="udrop-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                  <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-              </div>
+              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
               <div class="udrop-text"><span>Admin Dashboard</span><small>จัดการระบบทั้งหมด</small></div>
             </a>
           </th:block>
-
           <div class="udrop-divider"></div>
-
           <a href="/member/login/logout" class="udrop-item udrop-logout">
             <div class="udrop-icon udrop-icon-red">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
               </svg>
             </div>
-            <div class="udrop-text">
-              <span>ออกจากระบบ</span>
-              <small>Sign out</small>
-            </div>
+            <div class="udrop-text"><span>ออกจากระบบ</span><small>Sign out</small></div>
           </a>
-
         </div>
       </div>
 
     </th:block>
-
   </div>
 </nav>
 
@@ -286,14 +231,12 @@
     </svg>
     กิจกรรม
   </button>
-  
   <button class="tab-btn" th:classappend="${currentType == 'tour'} ? 'active'" data-tab="tour" onclick="switchTab('tour')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
     </svg>
     จองทัวร์ชุมชน
   </button>
-  
   <button class="tab-btn" th:classappend="${currentType == 'homestay'} ? 'active'" data-tab="homestay" onclick="switchTab('homestay')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -328,10 +271,7 @@
             <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
           </svg>
         </div>
-        <div class="stat-text">
-          <strong>12+ ชนเผ่า</strong>
-          <span>ในภาคเหนือ</span>
-        </div>
+        <div class="stat-text"><strong>12+ ชนเผ่า</strong><span>ในภาคเหนือ</span></div>
       </div>
       <div class="stat-item">
         <div class="stat-icon">
@@ -339,10 +279,7 @@
             <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
         </div>
-        <div class="stat-text">
-          <strong>200+ กิจกรรม</strong>
-          <span>ให้เลือกสัมผัส</span>
-        </div>
+        <div class="stat-text"><strong>200+ กิจกรรม</strong><span>ให้เลือกสัมผัส</span></div>
       </div>
       <div class="stat-item">
         <div class="stat-icon">
@@ -350,10 +287,7 @@
             <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
           </svg>
         </div>
-        <div class="stat-text">
-          <strong>4.9 / 5 คะแนน</strong>
-          <span>จากผู้เที่ยว 1,200+</span>
-        </div>
+        <div class="stat-text"><strong>4.9 / 5 คะแนน</strong><span>จากผู้เที่ยว 1,200+</span></div>
       </div>
     </div>
   </div>
@@ -361,17 +295,18 @@
 
 <!-- ══════════════════════════════════════════
      SEARCH BOX
-══════════════════════════════════════════ --><div class="search-wrapper">
+══════════════════════════════════════════ -->
+<div class="search-wrapper">
   <form action="/search" method="get" class="search-box" id="searchForm">
-    <input type="hidden" name="type" id="type-input" 
+    <input type="hidden" name="type" id="type-input"
            th:value="${currentType != null ? currentType : 'activity'}">
 
     <!-- ── ช่องค้นหาชื่อ (ทุก tab) ── -->
     <div class="sf">
       <div class="sf-label">
+        <!-- แว่นขยาย -->
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-          <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
         </svg>
         <span id="sf-label-text">ค้นหา</span>
       </div>
@@ -393,25 +328,35 @@
         วันที่เดินทาง
       </div>
       <input type="date" name="startDate" id="tour-date-input" th:value="${startDate}"/>
-      <!-- endDate = startDate สำหรับทัวร์ (1 วัน) -->
       <input type="hidden" name="endDate" id="tour-date-end-input" th:value="${startDate}"/>
     </div>
 
-    <!-- ── วันที่เข้า-ออก (Homestay) ── -->
-    <div class="sf sf-date" id="date-range-wrapper" style="display:none;">
+    <!-- ── วันที่เช็คอิน (Homestay) ── -->
+    <div class="sf sf-date" id="checkin-wrapper" style="display:none;">
       <div class="sf-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
           <line x1="16" y1="2" x2="16" y2="6"/>
           <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
-        วันที่เข้า – ออก
+        วันที่เช็คอิน <span class="sf-label-en">(Check-in)</span>
       </div>
-      <div class="date-range-group">
-        <input type="date" name="startDate" th:value="${startDate}" placeholder="เช็คอิน"/>
-        <span class="date-separator">→</span>
-        <input type="date" name="endDate" th:value="${endDate}" placeholder="เช็คเอาท์"/>
+      <input type="date" name="startDate" id="checkin-input" th:value="${startDate}"/>
+    </div>
+
+    <!-- ── วันที่เช็คเอาท์ (Homestay) ── -->
+    <div class="sf sf-date" id="checkout-wrapper" style="display:none;">
+      <div class="sf-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        วันที่เช็คเอาท์ <span class="sf-label-en">(Check-out)</span>
       </div>
+      <input type="date" name="endDate" id="checkout-input" th:value="${endDate}"/>
     </div>
 
     <!-- ── จำนวนคน (Tour + Homestay) ── -->
@@ -426,7 +371,7 @@
       <div class="guest-counter">
         <button type="button" class="guest-btn" onclick="changeGuest(-1)">−</button>
         <input type="number" name="numGuest" id="guestInput"
-               th:value="${numGuest != null ? numGuest : 1}" 
+               th:value="${numGuest != null ? numGuest : 1}"
                value="1" min="1" max="50" readonly/>
         <button type="button" class="guest-btn" onclick="changeGuest(1)">+</button>
       </div>
@@ -446,23 +391,24 @@
 ══════════════════════════════════════════ -->
 <div class="content">
 
-  <div class="featured-all" id="featuredAll" th:if="${param.managerId == null}">
+  <!-- รายการแนะนำ: แสดงเฉพาะตอนยังไม่ได้ค้นหา (keyword, startDate, endDate, numGuest ว่างทั้งหมด) -->
+  <div class="featured-all" id="featuredAll"
+       th:if="${param.managerId == null
+               and (keyword == null or keyword == '')
+               and (startDate == null or startDate == '')
+               and (endDate == null or endDate == '')}">
 
     <div class="featured-all-header">
       <div>
         <h2 class="featured-all-title">รายการแนะนำสำหรับคุณ</h2>
-        <p class="featured-all-sub">กิจกรรม ทัวร์ชุมชน และโฮมสเตย์ยอดนิยมในภาคเหนือ</p>
+        <p class="featured-all-sub">กิจกรรม ทัวร์ชุมชน และโฮมสเตย์ยอดนิยมในเชียงใหม่</p>
       </div>
-      <div class="feat-filter-chips">
-        <button class="feat-chip active" data-filter="all"      onclick="filterFeatured(this)">ทั้งหมด</button>
-        <button class="feat-chip"        data-filter="activity" onclick="filterFeatured(this)">🌿 กิจกรรม</button>
-        <button class="feat-chip"        data-filter="tour"     onclick="filterFeatured(this)">🗺️ ทัวร์ชุมชน</button>
-        <button class="feat-chip"        data-filter="homestay" onclick="filterFeatured(this)">🏠 โฮมสเตย์</button>
-      </div>
+      <!-- filter chips ถูกลบออกตามที่ขอ -->
     </div>
 
     <div class="featured-grid" id="featuredGrid">
 
+      <!-- Activities -->
       <th:block th:each="a,iterStat : ${activities}" th:if="${iterStat.index < 4}">
         <a th:href="@{/member/activity/{id}(id=${a.activityid})}" class="fcard" data-type="activity">
           <div class="fcard-img">
@@ -471,22 +417,9 @@
                  onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop'"
                  alt="" loading="lazy"/>
             <span class="fcard-badge badge-activity">กิจกรรม</span>
-            <button class="fcard-fav" onclick="toggleFav(this);event.preventDefault();">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-            </button>
+           
           </div>
           <div class="fcard-body">
-       
-            <div class="fcard-rating">
-             
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              <span th:text="${actRating[a.activityid]}">-</span>
-              <span class="fcard-reviews"
-                    th:text="'(' + ${actReviewCount[a.activityid]} + ' รีวิว)'"></span>
-            </div>
             <p class="fcard-name" th:text="${a.title}">ชื่อกิจกรรม</p>
             <p class="fcard-loc">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -502,37 +435,36 @@
         </a>
       </th:block>
 
+      <!-- Tours -->
       <th:block th:each="t,iterStat : ${tours}" th:if="${iterStat.index < 4}">
         <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
           <div class="fcard-img">
-             <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
-             th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
-             alt="ภาพทัวร์"
-             loading="lazy"/>
-
+            <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
+                 th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
+                 alt="ภาพทัวร์" loading="lazy"/>
             <span class="fcard-badge badge-tour">ทัวร์ชุมชน</span>
-            <button class="fcard-fav" onclick="toggleFav(this);event.preventDefault();">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-            </button>
+            <!-- badge เต็มแล้ว -->
+            <span th:if="${t.full}" class="fcard-badge badge-full">เต็มแล้ว</span>
+            
           </div>
           <div class="fcard-body">
-            <!-- ✅ rating จริงจาก map -->
             <div class="fcard-rating">
               <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#f59e0b;flex-shrink:0;">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
               <span th:text="${tourRating[t.tourid]}">-</span>
-              <span class="fcard-reviews"
-                    th:text="'(' + ${tourReviewCount[t.tourid]} + ' รีวิว)'"></span>
+              <span class="fcard-reviews" th:text="'(' + ${tourReviewCount[t.tourid]} + ' รีวิว)'"></span>
             </div>
             <p class="fcard-name" th:text="${t.tourmname}">ชื่อทัวร์</p>
+            <!-- ที่นั่งคงเหลือ -->
             <p class="fcard-loc">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 00-8 0v2"/><circle cx="12" cy="7" r="4"/>
               </svg>
-              <span th:text="'รับได้ ' + ${t.minSeatstour} + '–' + ${t.maxSeatstour} + ' คน'"></span>
+              <span th:if="${!t.full}"
+                    th:text="'ที่นั่งคงเหลือ ' + ${t.remainingSeats} + ' / ' + ${t.maxSeatstour} + ' คน'">
+              </span>
+              <span th:if="${t.full}" class="seats-full-text">เต็มแล้ว (Fully Booked)</span>
             </p>
             <div class="fcard-tags">
               <span class="fcard-tag fcard-tag-green">พาเที่ยวโดยชาวบ้าน</span>
@@ -550,34 +482,23 @@
         </a>
       </th:block>
 
-      <!-- ── โฮมสเตย์ (จำกัด 4 รายการ + รูปจาก uploads + rating จริง) ── -->
+      <!-- Homestays -->
       <th:block th:each="h,iterStat : ${homestays}" th:if="${iterStat.index < 4}">
         <a th:href="@{/homestay/{id}(id=${h.homestayid})}" class="fcard" data-type="homestay">
-          <div class="fcard-img"
-     th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
-
-    <!-- แสดงรูปแรกสุด (index 0) ที่ตัดได้จากเครื่องหมายจุลภาค -->
-    <img th:if="${imgs != null and imgs.length > 0}"
-         th:src="@{{path}(path=${imgs[0]})}"
-         alt="ภาพโฮมสเตย์"
-         loading="lazy"/>
-
+          <div class="fcard-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
+            <img th:if="${imgs != null and imgs.length > 0}"
+                 th:src="@{{path}(path=${imgs[0]})}"
+                 alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="fcard-badge badge-homestay">โฮมสเตย์</span>
-            <button class="fcard-fav" onclick="toggleFav(this);event.preventDefault();">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-            </button>
+            
           </div>
           <div class="fcard-body">
-            <!-- ✅ rating จริงจาก map -->
             <div class="fcard-rating">
               <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#f59e0b;flex-shrink:0;">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
               <span th:text="${hsRating[h.homestayid]}">-</span>
-              <span class="fcard-reviews"
-                    th:text="'(' + ${hsReviewCount[h.homestayid]} + ' รีวิว)'"></span>
+              <span class="fcard-reviews" th:text="'(' + ${hsReviewCount[h.homestayid]} + ' รีวิว)'"></span>
             </div>
             <p class="fcard-name" th:text="${h.homestayname}">ชื่อโฮมสเตย์</p>
             <p class="fcard-loc">
@@ -614,8 +535,8 @@
 
 
   <!-- ACTIVITY -->
-  <div class="section-block" data-type="activity" id="block-activity" 
-     th:classappend="${currentType == 'activity' || currentType == null} ? 'show' : ''">
+  <div class="section-block" data-type="activity" id="block-activity"
+       th:classappend="${currentType == 'activity' || currentType == null} ? 'show' : ''">
 
     <div class="section-header">
       <div class="section-header-left">
@@ -628,14 +549,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </a>
     </div>
-    <div class="filter-chips">
-      <button class="chip active" onclick="selectChip(this)">ทั้งหมด</button>
-      <button class="chip" onclick="selectChip(this)">เกษตรกรรม</button>
-      <button class="chip" onclick="selectChip(this)">งานหัตถกรรม</button>
-      <button class="chip" onclick="selectChip(this)">อาหารและการทำอาหาร</button>
-      <button class="chip" onclick="selectChip(this)">ธรรมชาติ</button>
-      <button class="chip" onclick="selectChip(this)">วัฒนธรรม</button>
-    </div>
+   
     <div class="grid">
       <th:block th:each="a : ${activities}">
         <div class="card">
@@ -645,11 +559,7 @@
                  onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=380&fit=crop'"
                  alt="" loading="lazy"/>
             <span class="card-badge badge-activity">กิจกรรม</span>
-            <button class="card-fav" onclick="toggleFav(this); event.preventDefault();">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-            </button>
+            
           </div>
           <div class="card-body">
             <p class="card-name" th:text="${a.title}">ชื่อกิจกรรม</p>
@@ -666,22 +576,14 @@
             <div class="card-footer">
               <a th:href="@{/member/activity/{id}(id=${a.activityid})}" class="btn-book">
                 ดูรายละเอียด
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg>
               </a>
             </div>
           </div>
         </div>
       </th:block>
-
       <div th:if="${#lists.isEmpty(activities)}" class="empty">
-        <div class="empty-icon">
-          <svg viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="M21 21l-4.35-4.35"/>
-          </svg>
-        </div>
+        <div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
         <h3>ไม่พบข้อมูลกิจกรรม</h3>
         <p>ลองค้นหาด้วยคำอื่น หรือล้างคำค้นเพื่อดูทั้งหมด</p>
       </div>
@@ -689,8 +591,8 @@
   </div>
 
   <!-- TOUR -->
- <div class="section-block" data-type="tour" id="block-tour" 
-     th:classappend="${currentType == 'tour'} ? 'show' : ''">
+  <div class="section-block" data-type="tour" id="block-tour"
+       th:classappend="${currentType == 'tour'} ? 'show' : ''">
 
     <div class="section-header">
       <div class="section-header-left">
@@ -706,21 +608,26 @@
     <div class="grid">
       <th:block th:each="t : ${tours}">
         <div class="card">
-           <div class="fcard-img">
-             <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
-             th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
-             alt="ภาพทัวร์"
-             loading="lazy"/>
+          <div class="fcard-img">
+            <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
+                 th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
+                 alt="ภาพทัวร์" loading="lazy"/>
             <span class="card-badge badge-tour">ทัวร์ชุมชน</span>
-            <button class="card-fav" onclick="toggleFav(this); event.preventDefault();">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            </button>
+            <!-- badge เต็มแล้ว -->
+            <span th:if="${t.full}" class="card-badge badge-full" style="top:auto;bottom:12px;">เต็มแล้ว</span>
+           
           </div>
           <div class="card-body">
             <p class="card-name" th:text="${t.tourmname}">ชื่อทัวร์</p>
+            <!-- ที่นั่งคงเหลือ -->
             <p class="card-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-8 0v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <span th:text="'ที่นั่ง ' + ${t.minSeatstour} + ' – ' + ${t.maxSeatstour} + ' คน'"></span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-8 0v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span th:if="${!t.full}"
+                    th:text="'ที่นั่งคงเหลือ ' + ${t.remainingSeats} + ' / ' + ${t.maxSeatstour} + ' คน'">
+              </span>
+              <span th:if="${t.full}" class="seats-full-text">เต็มแล้ว (Fully Booked)</span>
             </p>
             <div class="card-footer">
               <div>
@@ -729,7 +636,12 @@
                   <sup>฿</sup><span th:text="${#numbers.formatDecimal(t.adultprice,0,'COMMA',0,'POINT')}">0</span>
                 </div>
               </div>
-              <a th:href="@{/tour/{id}(id=${t.tourid})}" class="btn-book" style="background:#2d7a4f;">ดูรายละเอียด</a>
+              <a th:href="@{/tour/{id}(id=${t.tourid})}"
+                 class="btn-book"
+                 th:classappend="${t.full} ? ' btn-disabled'"
+                 th:style="${t.full} ? 'background:#9ca3af;cursor:not-allowed;' : 'background:#2d7a4f;'">
+                <span th:text="${t.full} ? 'เต็มแล้ว' : 'ดูรายละเอียด'">ดูรายละเอียด</span>
+              </a>
             </div>
           </div>
         </div>
@@ -742,8 +654,8 @@
   </div>
 
   <!-- HOMESTAY -->
-  <div class="section-block" data-type="homestay" id="block-homestay" 
-     th:classappend="${currentType == 'homestay'} ? 'show' : ''">
+  <div class="section-block" data-type="homestay" id="block-homestay"
+       th:classappend="${currentType == 'homestay'} ? 'show' : ''">
 
     <div class="section-header">
       <div class="section-header-left">
@@ -759,19 +671,12 @@
     <div class="grid">
       <th:block th:each="h : ${homestays}">
         <div class="card">
-          <div class="fcard-img"
-     th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
-
-    <!-- แสดงรูปแรกสุด (index 0) ที่ตัดได้จากเครื่องหมายจุลภาค -->
-    <img th:if="${imgs != null and imgs.length > 0}"
-         th:src="@{{path}(path=${imgs[0]})}"
-         alt="ภาพโฮมสเตย์"
-         loading="lazy"/>
-
+          <div class="fcard-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
+            <img th:if="${imgs != null and imgs.length > 0}"
+                 th:src="@{{path}(path=${imgs[0]})}"
+                 alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="card-badge badge-homestay">โฮมสเตย์</span>
-            <button class="card-fav" onclick="toggleFav(this); event.preventDefault();">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            </button>
+           
           </div>
           <div class="card-body">
             <p class="card-name" th:text="${h.homestayname}">ชื่อโฮมสเตย์</p>
@@ -829,12 +734,8 @@
       </div>
       <div class="footer-col">
         <h4>บริการ</h4>
-        <a th:href="@{/member/bookings/list}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6"/></svg>การจองของฉัน</a>
-        <a th:href="@{/owner/register}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6"/></svg>ลงทะเบียนโฮมสเตย์</a>
+        <a th:href="@{/member/bookings/list}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>การจองของฉัน</a>
+        <a th:href="@{/owner/register}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>ลงทะเบียนโฮมสเตย์</a>
       </div>
       <div class="footer-col">
         <h4>ติดต่อ</h4>

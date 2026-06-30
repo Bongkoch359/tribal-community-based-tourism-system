@@ -1,8 +1,11 @@
 package com.example.miniproject.service.Member;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +37,39 @@ public class TourService {
     // ─────────────────────────────────────────────────────────
     // ดึงเฉพาะทัวร์ที่ "เปิดจอง" (สำหรับหน้าค้นหาของผู้ใช้)
     // ─────────────────────────────────────────────────────────
-    public List<Tour> getAllActiveTours() {
-        return tourRepository.findByStatus("เปิดจอง");
-    }
+   public List<Tour> getAllActiveTours() {
+    List<Tour> tours = tourRepository.findByStatus("เปิดจอง");
+
+    // map tourid → bookedSeats
+    Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
+        .stream()
+        .collect(Collectors.toMap(
+            row -> (String) row[0],
+            row -> ((Number) row[1]).intValue()
+        ));
+
+    // inject ค่าเข้า tour แต่ละตัว
+    tours.forEach(t -> {
+        int booked = bookedMap.getOrDefault(t.getTourid(), 0);
+        t.setBookedSeats(booked); // ← เพิ่ม field นี้ใน Tour
+    });
+
+    return tours;
+}
+
+
+// เพิ่ม method นี้
+    public void injectBookedSeats(List<Tour> tours) {
+    Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
+        .stream()
+        .collect(Collectors.toMap(
+            row -> (String) row[0],
+            row -> ((Number) row[1]).intValue()
+        ));
+    tours.forEach(t ->
+        t.setBookedSeats(bookedMap.getOrDefault(t.getTourid(), 0))
+    );
+}
 
     // ─────────────────────────────────────────────────────────
     // ดึงทัวร์ตาม ID — เฉพาะที่ยังเปิดอยู่ (สำหรับผู้ใช้ทั่วไป)
