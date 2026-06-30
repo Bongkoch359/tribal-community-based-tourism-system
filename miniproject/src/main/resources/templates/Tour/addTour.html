@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,24 +8,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
-            --green-dark:  #3a7d1e;
-            --green-mid:   #65a30d;
+            --green-dark: #3a7d1e;
+            --green-mid: #65a30d;
             --green-light: #d9f99d;
-            --amber:       #65a30d;
+            --amber: #65a30d;
             --amber-hover: #4d7c0a;
-            --bg-page:     #f3fae8;
-            --bg-card:     #ffffff;
-            --border:      #e2ddd4;
-            --text-main:   #1c1c1a;
-            --text-muted:  #6b6b68;
-            --text-hint:   #9a9a96;
+            --bg-page: #f3fae8;
+            --bg-card: #ffffff;
+            --border: #e2ddd4;
+            --text-main: #1c1c1a;
+            --text-muted: #6b6b68;
+            --text-hint: #9a9a96;
             --radius-card: 12px;
-            --radius-sm:   6px;
-            --shadow-card: 0 1px 3px rgba(0,0,0,0.07);
-            --red:         #c0392b;
+            --radius-sm: 6px;
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07);
+            --red: #c0392b;
         }
 
         body {
@@ -45,8 +52,9 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
         }
+
         .nav-brand {
             color: #fff;
             font-size: 1.05rem;
@@ -57,13 +65,21 @@
             text-decoration: none;
             white-space: nowrap;
         }
-        .nav-brand i { font-size: 1.2rem; }
-        .nav-dropdown { position: relative; margin-left: auto; }
+
+        .nav-brand i {
+            font-size: 1.2rem;
+        }
+
+        .nav-dropdown {
+            position: relative;
+            margin-left: auto;
+        }
+
         .nav-dropdown-trigger {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: rgba(255,255,255,.85);
+            color: rgba(255, 255, 255, .85);
             font-size: .92rem;
             font-weight: 500;
             cursor: pointer;
@@ -72,48 +88,130 @@
             transition: background .2s;
             user-select: none;
         }
-        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
-        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
-        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
+
+        .nav-dropdown-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+        }
+
+        .nav-dropdown-trigger .chevron {
+            font-size: .75rem;
+            color: rgba(255, 255, 255, .6);
+            transition: transform .2s;
+        }
+
+        .nav-dropdown:hover .chevron {
+            transform: rotate(180deg);
+        }
+
         .dropdown-menu {
             display: none;
             position: absolute;
-            right: 0; top: calc(100% + 8px);
+            right: 0;
+            top: calc(100% + 8px);
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 8px 28px rgba(0,0,0,.15);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .15);
             border: 1px solid #e8e8e8;
             min-width: 200px;
             padding: 6px 0;
             z-index: 200;
         }
-        .dropdown-menu::before { content:''; position:absolute; top:-10px; left:0; right:0; height:10px; }
-        .nav-dropdown:hover .dropdown-menu { display: block; }
-        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
-        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
-        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
-        .dropdown-item {
-            display: flex; align-items: center; gap: .65rem;
-            padding: .6rem 1rem; font-size: .88rem; color: #333;
-            text-decoration: none; transition: background .15s;
+
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 10px;
         }
-        .dropdown-item i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
-        .dropdown-item:hover { background: #eefcda; color: var(--green-dark); }
-        .dropdown-item:hover i { color: var(--green-dark); }
-        .dropdown-divider { border: none; border-top: 1px solid #f0f0f0; margin: 4px 0; }
-        .dropdown-item.logout { color: #c0392b; }
-        .dropdown-item.logout i { color: #c0392b; }
-        .dropdown-item.logout:hover { background: #fff5f5; }
+
+        .nav-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: .7rem 1rem .5rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+
+        .dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: #1a2e1c;
+        }
+
+        .dropdown-header .d-role {
+            font-size: .78rem;
+            color: #6b7c6e;
+            margin-top: 1px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .6rem 1rem;
+            font-size: .88rem;
+            color: #333;
+            text-decoration: none;
+            transition: background .15s;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .dropdown-item:hover {
+            background: #eefcda;
+            color: var(--green-dark);
+        }
+
+        .dropdown-item:hover i {
+            color: var(--green-dark);
+        }
+
+        .dropdown-divider {
+            border: none;
+            border-top: 1px solid #f0f0f0;
+            margin: 4px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #c0392b;
+        }
+
+        .dropdown-item.logout i {
+            color: #c0392b;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff5f5;
+        }
+
         .nav-avatar {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             background: var(--amber);
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: .85rem; font-weight: 700; color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            font-weight: 700;
+            color: #fff;
         }
 
         /* ─── PAGE ─── */
-        .page { padding: 28px 28px 60px; max-width: 1100px; margin: auto; }
+        .page {
+            padding: 28px 28px 60px;
+            max-width: 1100px;
+            margin: auto;
+        }
 
         .back-link {
             display: inline-flex;
@@ -129,10 +227,24 @@
             border-radius: var(--radius-sm);
             transition: all 0.15s;
         }
-        .back-link:hover { color: var(--green-dark); background: #f3fae8; }
 
-        .page-title { font-size: 22px; font-weight: 700; color: var(--green-dark); margin-bottom: 4px; }
-        .page-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+        .back-link:hover {
+            color: var(--green-dark);
+            background: #f3fae8;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
 
         /* ─── LAYOUT ─── */
         .main-layout {
@@ -149,6 +261,7 @@
             padding: 20px;
             box-shadow: var(--shadow-card);
         }
+
         .card-title {
             font-size: 12px;
             font-weight: 700;
@@ -161,11 +274,32 @@
         }
 
         /* ─── FORM ─── */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .form-group { margin-bottom: 14px; }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 5px; }
-        .form-label .req { color: var(--red); margin-left: 2px; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .form-label .req {
+            color: var(--red);
+            margin-left: 2px;
+        }
 
         .form-control {
             width: 100%;
@@ -179,16 +313,50 @@
             outline: none;
             transition: border-color 0.15s, box-shadow 0.15s;
         }
-        .form-control::placeholder { color: var(--text-hint); }
-        .form-control:focus { border-color: var(--green-dark); box-shadow: 0 0 0 3px rgba(26,92,42,0.08); }
-        .form-control.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.08); }
-        textarea.form-control { resize: vertical; min-height: 100px; }
-        select.form-control { cursor: pointer; }
 
-        .input-suffix-wrap { display: flex; align-items: stretch; }
-        .input-suffix-wrap .form-control { border-radius: var(--radius-sm) 0 0 var(--radius-sm); border-right: none; }
+        .form-control::placeholder {
+            color: var(--text-hint);
+        }
+
+        .form-control:focus {
+            border-color: var(--green-dark);
+            box-shadow: 0 0 0 3px rgba(26, 92, 42, 0.08);
+        }
+
+        .form-control.error {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.08);
+        }
+
+        .form-control[readonly] {
+            background: #f3fae8;
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .input-suffix-wrap {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-suffix-wrap .form-control {
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+            border-right: none;
+        }
+
         .input-suffix {
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 0 12px;
             background: #f3fae8;
             border: 1.5px solid var(--border);
@@ -199,8 +367,16 @@
             white-space: nowrap;
         }
 
-        .field-error { display: none; font-size: 11px; color: var(--red); margin-top: 4px; }
-        .field-error.show { display: block; }
+        .field-error {
+            display: none;
+            font-size: 11px;
+            color: var(--red);
+            margin-top: 4px;
+        }
+
+        .field-error.show {
+            display: block;
+        }
 
         /* ─── MULTI-IMAGE UPLOAD ─── */
         .img-upload-zone {
@@ -213,21 +389,58 @@
             transition: border-color 0.15s, background 0.15s;
             margin-bottom: 14px;
         }
-        .img-upload-zone:hover { border-color: var(--green-mid); background: #f0f7f1; }
-        .img-upload-zone.drag-over { border-color: var(--green-dark); background: #e8f5ea; }
-        .img-upload-zone i { font-size: 32px; color: var(--text-hint); margin-bottom: 8px; display: block; }
-        .img-upload-zone .upload-title { font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
-        .img-upload-zone .upload-hint { font-size: 12px; color: var(--text-hint); }
+
+        .img-upload-zone:hover {
+            border-color: var(--green-mid);
+            background: #f0f7f1;
+        }
+
+        .img-upload-zone.drag-over {
+            border-color: var(--green-dark);
+            background: #e8f5ea;
+        }
+
+        .img-upload-zone i {
+            font-size: 32px;
+            color: var(--text-hint);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .img-upload-zone .upload-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .img-upload-zone .upload-hint {
+            font-size: 12px;
+            color: var(--text-hint);
+        }
+
         .upload-btn-label {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: var(--green-dark); color: #fff;
-            padding: 7px 16px; border-radius: var(--radius-sm);
-            font-size: 12px; font-weight: 600; cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--green-dark);
+            color: #fff;
+            padding: 7px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
             margin-top: 10px;
             transition: background 0.15s;
         }
-        .upload-btn-label:hover { background: var(--green-mid); }
-        input[type="file"] { display: none; }
+
+        .upload-btn-label:hover {
+            background: var(--green-mid);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
 
         /* ─── IMAGE GRID ─── */
         .img-grid {
@@ -236,6 +449,7 @@
             gap: 10px;
             margin-top: 4px;
         }
+
         .img-thumb {
             position: relative;
             aspect-ratio: 4/3;
@@ -245,36 +459,79 @@
             background: #f3fae8;
             transition: border-color 0.15s, transform 0.15s;
         }
-        .img-thumb:hover { border-color: var(--green-mid); transform: translateY(-2px); }
-        .img-thumb.primary { border-color: var(--amber); }
-        .img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .img-thumb:hover {
+            border-color: var(--green-mid);
+            transform: translateY(-2px);
+        }
+
+        .img-thumb.primary {
+            border-color: var(--amber);
+        }
+
+        .img-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .img-thumb .thumb-overlay {
-            position: absolute; inset: 0;
-            background: rgba(0,0,0,0); 
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0);
             transition: background 0.15s;
-            display: flex; align-items: flex-start; justify-content: flex-end;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
             padding: 6px;
             gap: 5px;
         }
-        .img-thumb:hover .thumb-overlay { background: rgba(0,0,0,0.28); }
+
+        .img-thumb:hover .thumb-overlay {
+            background: rgba(0, 0, 0, 0.28);
+        }
+
         .thumb-btn {
-            width: 26px; height: 26px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 11px;
             opacity: 0;
             transition: opacity 0.15s, background 0.15s;
         }
-        .img-thumb:hover .thumb-btn { opacity: 1; }
-        .thumb-btn.del-btn { background: var(--red); color: #fff; }
-        .thumb-btn.del-btn:hover { background: #a93226; }
-        .thumb-btn.star-btn { background: var(--amber); color: #fff; }
-        .thumb-btn.star-btn:hover { background: var(--amber-hover); }
+
+        .img-thumb:hover .thumb-btn {
+            opacity: 1;
+        }
+
+        .thumb-btn.del-btn {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .thumb-btn.del-btn:hover {
+            background: #a93226;
+        }
+
+        .thumb-btn.star-btn {
+            background: var(--amber);
+            color: #fff;
+        }
+
+        .thumb-btn.star-btn:hover {
+            background: var(--amber-hover);
+        }
+
         .primary-badge {
             position: absolute;
-            bottom: 6px; left: 6px;
+            bottom: 6px;
+            left: 6px;
             background: var(--amber);
             color: #fff;
             font-size: 10px;
@@ -282,7 +539,12 @@
             padding: 2px 7px;
             border-radius: 20px;
         }
-        .img-count-note { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
+        .img-count-note {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
 
         /* ─── ACTION BAR ─── */
         .action-bar {
@@ -292,55 +554,100 @@
             gap: 10px;
             margin-top: 24px;
         }
+
         .btn-cancel {
-            font-size: 13px; font-family: 'Sarabun', sans-serif;
-            padding: 9px 20px; background: transparent; color: var(--text-muted);
-            border: 1px solid var(--border); border-radius: var(--radius-sm);
-            cursor: pointer; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px;
+            font-family: 'Sarabun', sans-serif;
+            padding: 9px 20px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             transition: background 0.15s;
         }
-        .btn-cancel:hover { background: #f3fae8; }
+
+        .btn-cancel:hover {
+            background: #f3fae8;
+        }
+
         .btn-save {
-            font-size: 13px; font-family: 'Sarabun', sans-serif;
-            padding: 9px 22px; background: var(--amber); color: #fff;
-            border: none; border-radius: var(--radius-sm);
-            cursor: pointer; font-weight: 700;
-            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px;
+            font-family: 'Sarabun', sans-serif;
+            padding: 9px 22px;
+            background: var(--amber);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             transition: background 0.15s, transform 0.1s;
         }
-        .btn-save:hover { background: var(--amber-hover); }
-        .btn-save:active { transform: scale(0.98); }
+
+        .btn-save:hover {
+            background: var(--amber-hover);
+        }
+
+        .btn-save:active {
+            transform: scale(0.98);
+        }
 
         /* ─── ALERTS ─── */
         .alert-error {
-            background: #fff3f3; border: 1px solid #fccaca; color: #b91c1c;
-            border-radius: 8px; padding: 11px 14px; font-size: 13px;
-            margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+            background: #fff3f3;
+            border: 1px solid #fccaca;
+            color: #b91c1c;
+            border-radius: 8px;
+            padding: 11px 14px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
         .alert-success {
-            background: var(--green-light); border: 1px solid #a3e635; color: var(--green-dark);
-            border-radius: 8px; padding: 11px 14px; font-size: 13px;
-            margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+            background: var(--green-light);
+            border: 1px solid #a3e635;
+            color: var(--green-dark);
+            border-radius: 8px;
+            padding: 11px 14px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         /* ═══════════════════════════
            SUCCESS MODAL
         ═══════════════════════════ */
         .modal-backdrop {
-            position: fixed; inset: 0;
+            position: fixed;
+            inset: 0;
             background: rgba(10, 30, 12, 0.55);
             backdrop-filter: blur(4px);
             z-index: 500;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
+
         .modal-backdrop.show {
             opacity: 1;
             pointer-events: all;
         }
+
         .modal-box {
             background: #fff;
             border-radius: 20px;
@@ -348,11 +655,12 @@
             max-width: 380px;
             width: 90%;
             text-align: center;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
             transform: scale(0.85) translateY(20px);
             transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
             opacity: 0;
         }
+
         .modal-backdrop.show .modal-box {
             transform: scale(1) translateY(0);
             opacity: 1;
@@ -360,39 +668,66 @@
 
         /* animated checkmark */
         .checkmark-wrap {
-            width: 80px; height: 80px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #1a3d1f, #2d6a35);
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 0 auto 20px;
             position: relative;
-            box-shadow: 0 8px 24px rgba(26,61,31,0.35);
+            box-shadow: 0 8px 24px rgba(26, 61, 31, 0.35);
         }
+
         .checkmark-wrap::after {
             content: '';
-            position: absolute; inset: -4px;
+            position: absolute;
+            inset: -4px;
             border-radius: 50%;
-            border: 3px solid rgba(26,61,31,0.15);
+            border: 3px solid rgba(26, 61, 31, 0.15);
         }
+
         .checkmark-ring {
-            position: absolute; inset: -8px;
+            position: absolute;
+            inset: -8px;
             border-radius: 50%;
-            border: 2px solid rgba(26,61,31,0.08);
+            border: 2px solid rgba(26, 61, 31, 0.08);
             animation: ring-pulse 1.5s ease-out 0.4s both;
         }
+
         @keyframes ring-pulse {
-            0%   { transform: scale(0.9); opacity: 0; }
-            50%  { opacity: 1; }
-            100% { transform: scale(1.3); opacity: 0; }
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
         }
+
         .checkmark-icon {
             font-size: 36px;
             color: #fff;
             animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
         }
+
         @keyframes pop-in {
-            from { transform: scale(0); opacity: 0; }
-            to   { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-title {
@@ -401,17 +736,20 @@
             color: var(--green-dark);
             margin-bottom: 8px;
         }
+
         .modal-desc {
             font-size: 13px;
             color: var(--text-muted);
             line-height: 1.7;
             margin-bottom: 24px;
         }
+
         .modal-countdown {
             font-size: 12px;
             color: var(--text-hint);
             margin-bottom: 20px;
         }
+
         .countdown-num {
             display: inline-block;
             background: var(--bg-page);
@@ -422,17 +760,37 @@
             color: var(--green-dark);
             min-width: 28px;
         }
-        .modal-btn-row { display: flex; gap: 10px; justify-content: center; }
+
+        .modal-btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
         .modal-btn-primary {
-            display: inline-flex; align-items: center; gap: 7px;
-            background: var(--green-dark); color: #fff;
-            padding: 10px 22px; border-radius: 8px;
-            font-size: 13px; font-weight: 700; font-family: 'Sarabun', sans-serif;
-            border: none; cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--green-dark);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Sarabun', sans-serif;
+            border: none;
+            cursor: pointer;
             transition: background 0.15s, transform 0.1s;
         }
-        .modal-btn-primary:hover { background: var(--green-mid); }
-        .modal-btn-primary:active { transform: scale(0.97); }
+
+        .modal-btn-primary:hover {
+            background: var(--green-mid);
+        }
+
+        .modal-btn-primary:active {
+            transform: scale(0.97);
+        }
+
         .modal-progress-bar {
             height: 3px;
             background: #e8f4ea;
@@ -440,6 +798,7 @@
             margin: 24px -36px -32px;
             overflow: hidden;
         }
+
         .modal-progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--green-mid), var(--amber));
@@ -448,312 +807,328 @@
             transform-origin: left;
             animation: progress-drain 3s linear forwards;
         }
+
         @keyframes progress-drain {
-            from { transform: scaleX(1); }
-            to   { transform: scaleX(0); }
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
         }
 
         @media (max-width: 860px) {
-            .form-row { grid-template-columns: 1fr; }
-            .img-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .img-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            }
         }
+
         @media (max-width: 480px) {
-            .page { padding: 14px 14px 40px; }
+            .page {
+                padding: 14px 14px 40px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<!-- ═══ NAVBAR ═══ -->
-<nav class="navbar">
-    <a class="nav-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun"></i>
-        ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
-    <div class="nav-dropdown">
-        <div class="nav-dropdown-trigger">
-            <div class="nav-avatar"
-                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+    <!-- ═══ NAVBAR ═══ -->
+    <nav class="navbar">
+        <a class="nav-brand" th:href="@{/}">
+            <i class="fas fa-mountain-sun"></i>
+            ระบบท่องเที่ยวชุมชนชนเผ่า
+        </a>
+        <div class="nav-dropdown">
+            <div class="nav-dropdown-trigger">
+                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
                            ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
                            : 'CM'">CM</div>
-            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-            <i class="fas fa-chevron-down chevron"></i>
-        </div>
-        <div class="dropdown-menu">
-            <div class="dropdown-header">
-                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</div>
-                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+                <span
+                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                <i class="fas fa-chevron-down chevron"></i>
             </div>
-            <a th:href="@{/manager/profile}" class="dropdown-item">
-                <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-            </a>
-            <hr class="dropdown-divider">
-            <a th:href="@{/logout}" class="dropdown-item logout">
-                <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-            </a>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">
+                    <div class="d-name"
+                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
+                        ผู้จัดการชุมชน</div>
+                    <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
+                        manager@community.th</div>
+                </div>
+                <a th:href="@{/manager/profile}" class="dropdown-item">
+                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+                </a>
+                <hr class="dropdown-divider">
+                <a th:href="@{/logout}" class="dropdown-item logout">
+                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══ SUCCESS MODAL ═══ -->
+    <div class="modal-backdrop" id="successModal">
+        <div class="modal-box">
+            <div class="checkmark-wrap">
+                <div class="checkmark-ring"></div>
+                <i class="fas fa-check checkmark-icon"></i>
+            </div>
+            <div class="modal-title">บันทึกทัวร์สำเร็จ!</div>
+            <div class="modal-desc">ทัวร์ของคุณถูกบันทึกเรียบร้อยแล้ว</div>
+            <div class="modal-btn-row">
+            </div>
+            <div class="modal-progress-bar">
+                <div class="modal-progress-fill" id="progressFill"></div>
+            </div>
         </div>
     </div>
-</nav>
 
-<!-- ═══ SUCCESS MODAL ═══ -->
-<div class="modal-backdrop" id="successModal">
-    <div class="modal-box">
-        <div class="checkmark-wrap">
-            <div class="checkmark-ring"></div>
-            <i class="fas fa-check checkmark-icon"></i>
-        </div>
-        <div class="modal-title">บันทึกทัวร์สำเร็จ!</div>
-        <div class="modal-desc">ทัวร์ของคุณถูกบันทึกเรียบร้อยแล้ว</div>
-        <div class="modal-btn-row">
-        </div>
-        <div class="modal-progress-bar">
-            <div class="modal-progress-fill" id="progressFill"></div>
-        </div>
+    <!-- ═══ PAGE ═══ -->
+    <div class="page">
+
+        <a class="back-link" th:href="@{/manager/tours}">
+            <i class="fas fa-arrow-left"></i> ย้อนกลับ
+        </a>
+
+        <div class="page-title">เพิ่มทัวร์</div>
+        <div class="page-subtitle">กรอกข้อมูลให้ครบถ้วนเพื่อเผยแพร่ทัวร์ให้นักท่องเที่ยวจอง</div>
+
+        <div th:if="${errorMessage}" class="alert-error"> <i class="fas fa-circle-exclamation"></i> <span
+                th:text="${errorMessage}"></span></div>
+        <div th:if="${successMessage}" class="alert-success"><i class="fas fa-circle-check"></i> <span
+                th:text="${successMessage}"></span></div>
+
+        <form id="tourForm" th:action="@{/manager/tours/create}" method="post" novalidate>
+
+            <!-- รูปภาพเก็บเป็น JSON array base64 ใน hidden field -->
+            <input type="hidden" name="images" id="imagesInput" />
+
+            <div class="main-layout">
+
+                <!-- ── การ์ด 1: ข้อมูลทัวร์ ── -->
+                <div class="card">
+                    <div class="card-title">ข้อมูลทัวร์</div>
+
+                    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr; margin-bottom:14px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">ชื่อทัวร์ <span class="req">*</span></label>
+                            <input class="form-control" type="text" id="tourmname" name="tourmname"
+                                placeholder="เช่น ทริปดอยอินทนนท์ 1 วัน" th:value="${tour?.tourmname}" />
+                            <div class="field-error" id="err-tourmname">กรุณากรอกชื่อทัวร์</div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">ประเภททัวร์ <span class="req">*</span></label>
+                            <select class="form-control" id="tourtypeSelect" name="tourtypeUi">
+                                <option value="" disabled selected>— เลือกประเภททัวร์ —</option>
+                                <option value="รายวัน">ทัวร์รายวัน (1 วัน ไม่พักค้าง)</option>
+                                <option value="หลายวัน">ทัวร์หลายวัน (พักค้างคืน)</option>
+                            </select>
+                            <div class="field-error" id="err-tourtype">กรุณาเลือกประเภททัวร์</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">สถานะ <span class="req">*</span></label>
+                            <select class="form-control" id="statusSelect" name="status">
+                                <option value="" disabled selected>— เลือกสถานะทัวร์ —</option>
+                                <option value="เปิดจอง" th:selected="${tour?.status == 'เปิดจอง'}">🟢 เปิดจอง</option>
+                                <option value="ปิดรับการจอง" th:selected="${tour?.status == 'ปิดรับการจอง'}">🔴
+                                    ปิดรับการจอง</option>
+                                <option value="เต็ม" th:selected="${tour?.status == 'เต็ม'}">🟡 เต็ม</option>
+                            </select>
+                            <div class="field-error" id="err-status">กรุณาเลือกสถานะทัวร์</div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">รายละเอียดทัวร์ <span class="req">*</span></label>
+                        <textarea class="form-control" id="tourdetail" name="tourdetail"
+                            placeholder="อธิบายไฮไลต์ กิจกรรม และความน่าสนใจ..."
+                            th:text="${tour?.tourdetail}"></textarea>
+                        <div class="field-error" id="err-tourdetail">กรุณากรอกรายละเอียดทัวร์</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เงื่อนไขทัวร์</label>
+                        <textarea class="form-control" id="conditiontour" name="conditiontour" style="min-height:80px;"
+                            placeholder="เช่น ต้องจองล่วงหน้า 1 วัน, สิ่งที่รวม/ไม่รวมในราคา..."
+                            th:text="${tour?.conditiontour}"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">จำนวนวัน <span class="req">*</span></label>
+                            <div class="input-suffix-wrap">
+                                <input class="form-control" type="number" id="numberOfDays" name="numberOfDays"
+                                    placeholder="1" min="1" readonly th:value="${tour?.numberOfDays}" />
+                                <span class="input-suffix">วัน</span>
+                            </div>
+                            <div class="field-error" id="err-numberOfDays">กรุณาระบุจำนวนวัน</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">จำนวนคืน</label>
+                            <div class="input-suffix-wrap">
+                                <input class="form-control" type="number" id="numberOfNights" name="numberOfNights"
+                                    placeholder="0" min="0" readonly th:value="${tour?.numberOfNights}" />
+                                <span class="input-suffix">คืน</span>
+                            </div>
+                            <small style="color:#888;">เลือก "ประเภททัวร์" ด้านบนก่อน
+                                ระบบจะกำหนดช่วงค่าที่กรอกได้ให้อัตโนมัติ</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">ที่นั่งขั้นต่ำ <span class="req">*</span></label>
+                            <div class="input-suffix-wrap">
+                                <input class="form-control" type="number" id="minSeatstour" name="minSeatstour"
+                                    placeholder="2" min="1" th:value="${tour?.minSeatstour}" />
+                                <span class="input-suffix">ท่าน</span>
+                            </div>
+                            <div class="field-error" id="err-minSeatstour">กรุณาระบุจำนวนขั้นต่ำ</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">ที่นั่งสูงสุด <span class="req">*</span></label>
+                            <div class="input-suffix-wrap">
+                                <input class="form-control" type="number" id="maxSeatstour" name="maxSeatstour"
+                                    placeholder="20" min="1" th:value="${tour?.maxSeatstour}" />
+                                <span class="input-suffix">ท่าน</span>
+                            </div>
+                            <div class="field-error" id="err-maxSeatstour">กรุณาระบุจำนวนสูงสุด</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── การ์ด 3: ราคาทัวร์ ── -->
+                <div class="card">
+                    <div class="card-title">ราคาทัวร์ (TOURPRICE)</div>
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">ราคาผู้ใหญ่ <span class="req">*</span></label>
+                            <div class="input-suffix-wrap">
+                                <input class="form-control" type="number" id="adultprice" name="adultprice"
+                                    placeholder="0" min="0" step="0.01" th:value="${tour?.adultprice}" />
+                                <span class="input-suffix">฿</span>
+                            </div>
+                            <div class="field-error" id="err-adultprice">กรุณาระบุราคาผู้ใหญ่</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">ราคาเด็ก <span class="req">*</span></label>
+                            <div class="input-suffix-wrap">
+                                <input class="form-control" type="number" id="childprice" name="childprice"
+                                    placeholder="0" min="0" step="0.01" th:value="${tour?.childprice}" />
+                                <span class="input-suffix">฿</span>
+                            </div>
+                            <div class="field-error" id="err-childprice">กรุณาระบุราคาเด็ก</div>
+                            <div style="font-size:11px;color:var(--text-hint);margin-top:5px;">
+                                กรอก 0 หากราคาเด็กเท่ากับผู้ใหญ่
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── การ์ด 2: รูปภาพ (ย้ายมาก่อนราคา) ── -->
+                <div class="card">
+                    <div class="card-title">รูปภาพทัวร์</div>
+
+                    <div class="img-upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+                        ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+                        ondrop="handleDrop(event)">
+                        <i class="fas fa-images"></i>
+                        <div class="upload-title">ลากและวางรูปภาพที่นี่</div>
+                        <div class="upload-hint">หรือกดปุ่มด้านล่างเพื่อเลือกไฟล์จากเครื่อง</div>
+                        <label class="upload-btn-label"
+                            onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
+                            <i class="fas fa-upload"></i> เลือกรูปภาพ
+                        </label>
+                        <div class="upload-hint" style="margin-top:8px;">jpg · png · webp &nbsp;|&nbsp; สูงสุด 5 รูป
+                        </div>
+                    </div>
+
+                    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple />
+
+                    <div class="img-grid" id="imgGrid"></div>
+                    <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
+                </div>
+
+
+
+            </div>
+
+            <!-- ── ACTION BAR ── -->
+            <div class="action-bar">
+                <a class="btn-cancel" th:href="@{/manager/tours}">
+                    <i class="fas fa-xmark"></i> ยกเลิก
+                </a>
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-floppy-disk"></i> บันทึกทัวร์
+                </button>
+            </div>
+
+        </form>
     </div>
-</div>
 
-<!-- ═══ PAGE ═══ -->
-<div class="page">
+    <script>
+        /* ═══════════════════════════════════════════
+           MULTI-IMAGE UPLOAD
+        ═══════════════════════════════════════════ */
+        const MAX_IMAGES = 5;
+        let imageDataList = []; // [{base64, name}]
+        let primaryIndex = 0;
 
-    <a class="back-link" th:href="@{/manager/tours}">
-        <i class="fas fa-arrow-left"></i> ย้อนกลับ
-    </a>
+        const fileInput = document.getElementById('fileInput');
+        const imgGrid = document.getElementById('imgGrid');
+        const imgCountNote = document.getElementById('imgCountNote');
+        const imagesInput = document.getElementById('imagesInput');
+        const uploadZone = document.getElementById('uploadZone');
 
-    <div class="page-title">เพิ่มทัวร์</div>
-    <div class="page-subtitle">กรอกข้อมูลให้ครบถ้วนเพื่อเผยแพร่ทัวร์ให้นักท่องเที่ยวจอง</div>
+        fileInput.addEventListener('change', function () {
+            addFiles(Array.from(this.files));
+            this.value = '';
+        });
 
-    <div th:if="${errorMessage}"   class="alert-error">  <i class="fas fa-circle-exclamation"></i> <span th:text="${errorMessage}"></span></div>
-    <div th:if="${successMessage}" class="alert-success"><i class="fas fa-circle-check"></i>       <span th:text="${successMessage}"></span></div>
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        }
+        function handleDragLeave(e) {
+            uploadZone.classList.remove('drag-over');
+        }
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            addFiles(Array.from(e.dataTransfer.files));
+        }
 
-    <form id="tourForm" th:action="@{/manager/tours/create}" method="post" novalidate>
+        function addFiles(files) {
+            const allowed = MAX_IMAGES - imageDataList.length;
+            files = files.slice(0, allowed);
+            let loaded = 0;
+            if (files.length === 0) return;
+            files.forEach(file => {
+                if (!file.type.match(/^image\/(jpeg|png|webp)$/)) return;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    imageDataList.push({ base64: e.target.result, name: file.name });
+                    loaded++;
+                    if (loaded === files.length) renderGrid();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
 
-        <!-- รูปภาพเก็บเป็น JSON array base64 ใน hidden field -->
-        <input type="hidden" name="images" id="imagesInput"/>
-
-        <div class="main-layout">
-
-            <!-- ── การ์ด 1: ข้อมูลทัวร์ ── -->
-            <div class="card">
-                <div class="card-title">ข้อมูลทัวร์</div>
-
-                <div class="form-row" style="margin-bottom:14px;">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">ชื่อทัวร์ <span class="req">*</span></label>
-                        <input class="form-control" type="text"
-                               id="tourmname" name="tourmname"
-                               placeholder="เช่น ทริปดอยอินทนนท์ 1 วัน"
-                               th:value="${tour?.tourmname}"/>
-                        <div class="field-error" id="err-tourmname">กรุณากรอกชื่อทัวร์</div>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">สถานะ <span class="req">*</span></label>
-                        <select class="form-control" id="statusSelect" name="status">
-                            <option value="" disabled selected>— เลือกสถานะทัวร์ —</option>
-                            <option value="เปิดจอง"      th:selected="${tour?.status == 'เปิดจอง'}">🟢 เปิดจอง</option>
-                            <option value="ปิดรับการจอง" th:selected="${tour?.status == 'ปิดรับการจอง'}">🔴 ปิดรับการจอง</option>
-                            <option value="เต็ม"         th:selected="${tour?.status == 'เต็ม'}">🟡 เต็ม</option>
-                        </select>
-                        <div class="field-error" id="err-status">กรุณาเลือกสถานะทัวร์</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">รายละเอียดทัวร์ <span class="req">*</span></label>
-                    <textarea class="form-control"
-                              id="tourdetail" name="tourdetail"
-                              placeholder="อธิบายไฮไลต์ กิจกรรม และความน่าสนใจ..."
-                              th:text="${tour?.tourdetail}"></textarea>
-                    <div class="field-error" id="err-tourdetail">กรุณากรอกรายละเอียดทัวร์</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">เงื่อนไขทัวร์</label>
-                    <textarea class="form-control"
-                              id="conditiontour" name="conditiontour"
-                              style="min-height:80px;"
-                              placeholder="เช่น ต้องจองล่วงหน้า 1 วัน, สิ่งที่รวม/ไม่รวมในราคา..."
-                              th:text="${tour?.conditiontour}"></textarea>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">จำนวนวัน <span class="req">*</span></label>
-                        <div class="input-suffix-wrap">
-                            <input class="form-control" type="number"
-                                   id="numberOfDays" name="numberOfDays"
-                                   placeholder="1" min="1"
-                                   th:value="${tour?.numberOfDays}"/>
-                            <span class="input-suffix">วัน</span>
-                        </div>
-                        <div class="field-error" id="err-numberOfDays">กรุณาระบุจำนวนวัน</div>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">จำนวนคืน</label>
-                        <div class="input-suffix-wrap">
-                            <input class="form-control" type="number"
-                                   id="numberOfNights" name="numberOfNights"
-                                   placeholder="0" min="0"
-                                   th:value="${tour?.numberOfNights}"/>
-                            <span class="input-suffix">คืน</span>
-                        </div>
-                        <small style="color:#888;">ถ้าเป็นทัวร์รายวัน (1 วัน) ระบบจะตั้งเป็น 0 คืนให้อัตโนมัติ</small>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">ที่นั่งขั้นต่ำ <span class="req">*</span></label>
-                        <div class="input-suffix-wrap">
-                            <input class="form-control" type="number"
-                                   id="minSeatstour" name="minSeatstour"
-                                   placeholder="2" min="1"
-                                   th:value="${tour?.minSeatstour}"/>
-                            <span class="input-suffix">ท่าน</span>
-                        </div>
-                        <div class="field-error" id="err-minSeatstour">กรุณาระบุจำนวนขั้นต่ำ</div>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">ที่นั่งสูงสุด <span class="req">*</span></label>
-                        <div class="input-suffix-wrap">
-                            <input class="form-control" type="number"
-                                   id="maxSeatstour" name="maxSeatstour"
-                                   placeholder="20" min="1"
-                                   th:value="${tour?.maxSeatstour}"/>
-                            <span class="input-suffix">ท่าน</span>
-                        </div>
-                        <div class="field-error" id="err-maxSeatstour">กรุณาระบุจำนวนสูงสุด</div>
-                    </div>
-                </div>
-            </div>
-
-             <!-- ── การ์ด 3: ราคาทัวร์ ── -->
-            <div class="card">
-                <div class="card-title">ราคาทัวร์ (TOURPRICE)</div>
-                <div class="form-row">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">ราคาผู้ใหญ่ <span class="req">*</span></label>
-                        <div class="input-suffix-wrap">
-                            <input class="form-control" type="number"
-                                   id="adultprice" name="adultprice"
-                                   placeholder="0" min="0" step="0.01"
-                                   th:value="${tour?.adultprice}"/>
-                            <span class="input-suffix">฿</span>
-                        </div>
-                        <div class="field-error" id="err-adultprice">กรุณาระบุราคาผู้ใหญ่</div>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">ราคาเด็ก <span class="req">*</span></label>
-                        <div class="input-suffix-wrap">
-                            <input class="form-control" type="number"
-                                   id="childprice" name="childprice"
-                                   placeholder="0" min="0" step="0.01"
-                                   th:value="${tour?.childprice}"/>
-                            <span class="input-suffix">฿</span>
-                        </div>
-                        <div class="field-error" id="err-childprice">กรุณาระบุราคาเด็ก</div>
-                        <div style="font-size:11px;color:var(--text-hint);margin-top:5px;">
-                            กรอก 0 หากราคาเด็กเท่ากับผู้ใหญ่
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── การ์ด 2: รูปภาพ (ย้ายมาก่อนราคา) ── -->
-            <div class="card">
-                <div class="card-title">รูปภาพทัวร์</div>
-
-                <div class="img-upload-zone" id="uploadZone"
-                     onclick="document.getElementById('fileInput').click()"
-                     ondragover="handleDragOver(event)"
-                     ondragleave="handleDragLeave(event)"
-                     ondrop="handleDrop(event)">
-                    <i class="fas fa-images"></i>
-                    <div class="upload-title">ลากและวางรูปภาพที่นี่</div>
-                    <div class="upload-hint">หรือกดปุ่มด้านล่างเพื่อเลือกไฟล์จากเครื่อง</div>
-                    <label class="upload-btn-label" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
-                        <i class="fas fa-upload"></i> เลือกรูปภาพ
-                    </label>
-                    <div class="upload-hint" style="margin-top:8px;">jpg · png · webp &nbsp;|&nbsp; สูงสุด 5 รูป</div>
-                </div>
-
-                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple/>
-
-                <div class="img-grid" id="imgGrid"></div>
-                <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
-            </div>
-
-           
-
-        </div>
-
-        <!-- ── ACTION BAR ── -->
-        <div class="action-bar">
-            <a class="btn-cancel" th:href="@{/manager/tours}">
-                <i class="fas fa-xmark"></i> ยกเลิก
-            </a>
-            <button type="submit" class="btn-save">
-                <i class="fas fa-floppy-disk"></i> บันทึกทัวร์
-            </button>
-        </div>
-
-    </form>
-</div>
-
-<script>
-/* ═══════════════════════════════════════════
-   MULTI-IMAGE UPLOAD
-═══════════════════════════════════════════ */
-const MAX_IMAGES = 5;
-let imageDataList = []; // [{base64, name}]
-let primaryIndex = 0;
-
-const fileInput   = document.getElementById('fileInput');
-const imgGrid     = document.getElementById('imgGrid');
-const imgCountNote = document.getElementById('imgCountNote');
-const imagesInput = document.getElementById('imagesInput');
-const uploadZone  = document.getElementById('uploadZone');
-
-fileInput.addEventListener('change', function () {
-    addFiles(Array.from(this.files));
-    this.value = '';
-});
-
-function handleDragOver(e) {
-    e.preventDefault();
-    uploadZone.classList.add('drag-over');
-}
-function handleDragLeave(e) {
-    uploadZone.classList.remove('drag-over');
-}
-function handleDrop(e) {
-    e.preventDefault();
-    uploadZone.classList.remove('drag-over');
-    addFiles(Array.from(e.dataTransfer.files));
-}
-
-function addFiles(files) {
-    const allowed = MAX_IMAGES - imageDataList.length;
-    files = files.slice(0, allowed);
-    let loaded = 0;
-    if (files.length === 0) return;
-    files.forEach(file => {
-        if (!file.type.match(/^image\/(jpeg|png|webp)$/)) return;
-        const reader = new FileReader();
-        reader.onload = e => {
-            imageDataList.push({ base64: e.target.result, name: file.name });
-            loaded++;
-            if (loaded === files.length) renderGrid();
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function renderGrid() {
-    imgGrid.innerHTML = '';
-    imageDataList.forEach((img, i) => {
-        const thumb = document.createElement('div');
-        thumb.className = 'img-thumb' + (i === primaryIndex ? ' primary' : '');
-        thumb.innerHTML = `
+        function renderGrid() {
+            imgGrid.innerHTML = '';
+            imageDataList.forEach((img, i) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'img-thumb' + (i === primaryIndex ? ' primary' : '');
+                thumb.innerHTML = `
             <img src="${img.base64}" alt="${img.name}"/>
             <div class="thumb-overlay">
                 <button type="button" class="thumb-btn star-btn" onclick="setPrimary(${i})" title="ตั้งเป็นรูปหลัก">
@@ -765,124 +1140,212 @@ function renderGrid() {
             </div>
             ${i === primaryIndex ? '<div class="primary-badge">หลัก</div>' : ''}
         `;
-        imgGrid.appendChild(thumb);
-    });
+                imgGrid.appendChild(thumb);
+            });
 
-    // update count note
-    if (imageDataList.length > 0) {
-        imgCountNote.style.display = 'block';
-        imgCountNote.textContent = `เลือกแล้ว ${imageDataList.length}/${MAX_IMAGES} รูป · คลิก ⭐ เพื่อตั้งรูปหลัก`;
-    } else {
-        imgCountNote.style.display = 'none';
-    }
+            // update count note
+            if (imageDataList.length > 0) {
+                imgCountNote.style.display = 'block';
+                imgCountNote.textContent = `เลือกแล้ว ${imageDataList.length}/${MAX_IMAGES} รูป · คลิก ⭐ เพื่อตั้งรูปหลัก`;
+            } else {
+                imgCountNote.style.display = 'none';
+            }
 
-    // pack to JSON for hidden input (primary first)
-    const ordered = imageDataList.map((img, i) => ({ base64: img.base64, primary: i === primaryIndex }));
-    imagesInput.value = JSON.stringify(ordered);
-}
+            // pack to JSON for hidden input (primary first)
+            const ordered = imageDataList.map((img, i) => ({ base64: img.base64, primary: i === primaryIndex }));
+            imagesInput.value = JSON.stringify(ordered);
+        }
 
-function setPrimary(index) {
-    primaryIndex = index;
-    renderGrid();
-}
+        function setPrimary(index) {
+            primaryIndex = index;
+            renderGrid();
+        }
 
-function removeImage(index) {
-    imageDataList.splice(index, 1);
-    if (primaryIndex >= imageDataList.length) primaryIndex = 0;
-    renderGrid();
-}
+        function removeImage(index) {
+            imageDataList.splice(index, 1);
+            if (primaryIndex >= imageDataList.length) primaryIndex = 0;
+            renderGrid();
+        }
 
-/* ═══════════════════════════════════════════
-   VALIDATION
-═══════════════════════════════════════════ */
-const REQUIRED = [
-    { id: 'tourmname',    errId: 'err-tourmname',    msg: 'กรุณากรอกชื่อทัวร์' },
-    { id: 'statusSelect', errId: 'err-status',        msg: 'กรุณาเลือกสถานะทัวร์' },
-    { id: 'tourdetail',   errId: 'err-tourdetail',   msg: 'กรุณากรอกรายละเอียดทัวร์' },
-    { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งขั้นต่ำ' },
-    { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งสูงสุด' },
-    { id: 'adultprice',   errId: 'err-adultprice',   msg: 'กรุณาระบุราคาผู้ใหญ่' },
-    { id: 'childprice',   errId: 'err-childprice',   msg: 'กรุณาระบุราคาเด็ก' },
-];
+        /* ═══════════════════════════════════════════
+           TOUR TYPE → DAYS/NIGHTS CONSTRAINT
+           - "รายวัน"  → numberOfDays ล็อก = 1, numberOfNights ล็อก = 0
+           - "หลายวัน" → numberOfDays ต้อง > 1, numberOfNights ต้อง < numberOfDays
+        ═══════════════════════════════════════════ */
+        const tourtypeSelect = document.getElementById('tourtypeSelect');
+        const daysInput = document.getElementById('numberOfDays');
+        const nightsInput = document.getElementById('numberOfNights');
 
-REQUIRED.forEach(f => {
-    const el = document.getElementById(f.id);
-    if (!el) return;
-    const evt = el.tagName === 'SELECT' ? 'change' : 'input';
-    el.addEventListener(evt, () => clearErr(f.id, f.errId));
-});
+        function applyTourTypeRules() {
+            const type = tourtypeSelect.value;
 
-function showErr(id, errId, msg) {
-    document.getElementById(id)?.classList.add('error');
-    const err = document.getElementById(errId);
-    if (err) { err.textContent = msg; err.classList.add('show'); }
-}
-function clearErr(id, errId) {
-    document.getElementById(id)?.classList.remove('error');
-    document.getElementById(errId)?.classList.remove('show');
-}
+            if (type === 'รายวัน') {
+                daysInput.readOnly = true;
+                nightsInput.readOnly = true;
+                daysInput.value = 1;
+                nightsInput.value = 0;
+            } else if (type === 'หลายวัน') {
+                daysInput.readOnly = false;
+                nightsInput.readOnly = false;
+                // ถ้าค่าเดิมเป็น 1/0 (ตกค้างจากโหมดรายวัน) ให้เคลียร์ทิ้งเพื่อบังคับกรอกใหม่
+                if (!daysInput.value || parseInt(daysInput.value) <= 1) daysInput.value = '';
+                if (nightsInput.value === '0' || nightsInput.value === '') nightsInput.value = '';
+            } else {
+                daysInput.readOnly = true;
+                nightsInput.readOnly = true;
+                daysInput.value = '';
+                nightsInput.value = '';
+            }
+            clearErr('numberOfDays', 'err-numberOfDays');
+            clearErr('tourtypeSelect', 'err-tourtype');
+        }
 
-/* ═══════════════════════════════════════════
-   SUCCESS MODAL + COUNTDOWN + REDIRECT
-═══════════════════════════════════════════ */
-function goToList() {
-    window.location.href = '/manager/tours?success=created';
-}
+        tourtypeSelect.addEventListener('change', applyTourTypeRules);
 
-function showSuccessModal() {
-    const modal = document.getElementById('successModal');
-    const fill  = document.getElementById('progressFill');
+        // เผื่อกรณีมีค่าเดิมติดมาจาก server (เช่น validation error แล้ว reload หน้าเดิม)
+        window.addEventListener('DOMContentLoaded', () => {
+            const d = parseInt(daysInput.value);
+            if (d === 1) {
+                tourtypeSelect.value = 'รายวัน';
+                daysInput.readOnly = true;
+                nightsInput.readOnly = true;
+            } else if (d > 1) {
+                tourtypeSelect.value = 'หลายวัน';
+                daysInput.readOnly = false;
+                nightsInput.readOnly = false;
+            }
+        });
 
-    modal.classList.add('show');
+        // ตรวจ "จำนวนคืนต้องน้อยกว่าจำนวนวัน" แบบ real-time ตอนผู้ใช้พิมพ์ (เฉพาะโหมดหลายวัน)
+        nightsInput.addEventListener('input', () => {
+            if (tourtypeSelect.value !== 'หลายวัน') return;
+            const d = parseInt(daysInput.value);
+            const n = parseInt(nightsInput.value);
+            if (!isNaN(d) && !isNaN(n) && n >= d) {
+                showErr('numberOfDays', 'err-numberOfDays', 'จำนวนคืนต้องน้อยกว่าจำนวนวัน');
+            } else {
+                clearErr('numberOfDays', 'err-numberOfDays');
+            }
+        });
+        daysInput.addEventListener('input', () => {
+            if (tourtypeSelect.value !== 'หลายวัน') return;
+            clearErr('numberOfDays', 'err-numberOfDays');
+        });
 
-    fill.style.animation = 'none';
-    fill.offsetHeight;
-    fill.style.animation = 'progress-drain 2s linear forwards';
+        /* ═══════════════════════════════════════════
+           VALIDATION
+        ═══════════════════════════════════════════ */
+        const REQUIRED = [
+            { id: 'tourmname', errId: 'err-tourmname', msg: 'กรุณากรอกชื่อทัวร์' },
+            { id: 'statusSelect', errId: 'err-status', msg: 'กรุณาเลือกสถานะทัวร์' },
+            { id: 'tourtypeSelect', errId: 'err-tourtype', msg: 'กรุณาเลือกประเภททัวร์' },
+            { id: 'tourdetail', errId: 'err-tourdetail', msg: 'กรุณากรอกรายละเอียดทัวร์' },
+            { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งขั้นต่ำ' },
+            { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งสูงสุด' },
+            { id: 'adultprice', errId: 'err-adultprice', msg: 'กรุณาระบุราคาผู้ใหญ่' },
+            { id: 'childprice', errId: 'err-childprice', msg: 'กรุณาระบุราคาเด็ก' },
+        ];
 
-    setTimeout(() => {
-        goToList();
-    }, 2000);
-}
+        REQUIRED.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (!el) return;
+            const evt = el.tagName === 'SELECT' ? 'change' : 'input';
+            el.addEventListener(evt, () => clearErr(f.id, f.errId));
+        });
 
-document.getElementById('tourForm').addEventListener('submit', function (e) {
-    let valid = true;
+        function showErr(id, errId, msg) {
+            document.getElementById(id)?.classList.add('error');
+            const err = document.getElementById(errId);
+            if (err) { err.textContent = msg; err.classList.add('show'); }
+        }
+        function clearErr(id, errId) {
+            document.getElementById(id)?.classList.remove('error');
+            document.getElementById(errId)?.classList.remove('show');
+        }
 
-    REQUIRED.forEach(f => {
-        const el = document.getElementById(f.id);
-        if (!el) return;
-        const empty = el.tagName === 'SELECT' ? el.value === '' : el.value.trim() === '';
-        if (empty) { showErr(f.id, f.errId, f.msg); valid = false; }
-        else        clearErr(f.id, f.errId);
-    });
+        /* ═══════════════════════════════════════════
+           SUCCESS MODAL + COUNTDOWN + REDIRECT
+        ═══════════════════════════════════════════ */
+        function goToList() {
+            window.location.href = '/manager/tours?success=created';
+        }
 
-    const minV = parseInt(document.getElementById('minSeatstour').value);
-    const maxV = parseInt(document.getElementById('maxSeatstour').value);
-    if (!isNaN(minV) && !isNaN(maxV) && minV > maxV) {
-        showErr('maxSeatstour', 'err-maxSeatstour', 'จำนวนสูงสุดต้องมากกว่าหรือเท่ากับขั้นต่ำ');
-        valid = false;
-    }
+        function showSuccessModal() {
+            const modal = document.getElementById('successModal');
+            const fill = document.getElementById('progressFill');
 
-    if (!valid) {
-        e.preventDefault();
-        document.querySelector('.form-control.error')
-            ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-    }
+            modal.classList.add('show');
 
-    e.preventDefault();
+            fill.style.animation = 'none';
+            fill.offsetHeight;
+            fill.style.animation = 'progress-drain 2s linear forwards';
 
-    const formData = new FormData(this);
-    fetch(this.action, {
-        method: 'POST',
-        body: new URLSearchParams(formData)
-    }).then(() => {
-        showSuccessModal();
-    }).catch(() => {
-        showSuccessModal();
-    });
-});
+            setTimeout(() => {
+                goToList();
+            }, 2000);
+        }
 
-</script>
+        document.getElementById('tourForm').addEventListener('submit', function (e) {
+            let valid = true;
+
+            REQUIRED.forEach(f => {
+                const el = document.getElementById(f.id);
+                if (!el) return;
+                const empty = el.tagName === 'SELECT' ? el.value === '' : el.value.trim() === '';
+                if (empty) { showErr(f.id, f.errId, f.msg); valid = false; }
+                else clearErr(f.id, f.errId);
+            });
+
+            const minV = parseInt(document.getElementById('minSeatstour').value);
+            const maxV = parseInt(document.getElementById('maxSeatstour').value);
+            if (!isNaN(minV) && !isNaN(maxV) && minV > maxV) {
+                showErr('maxSeatstour', 'err-maxSeatstour', 'จำนวนสูงสุดต้องมากกว่าหรือเท่ากับขั้นต่ำ');
+                valid = false;
+            }
+
+            // ─── ตรวจสอบความสอดคล้องของประเภททัวร์กับจำนวนวัน/คืน ───
+            if (tourtypeSelect.value === '') {
+                showErr('tourtypeSelect', 'err-tourtype', 'กรุณาเลือกประเภททัวร์');
+                valid = false;
+            } else if (tourtypeSelect.value === 'รายวัน') {
+                if (parseInt(daysInput.value) !== 1 || parseInt(nightsInput.value) !== 0) {
+                    showErr('numberOfDays', 'err-numberOfDays', 'ทัวร์รายวันต้องเป็น 1 วัน 0 คืน');
+                    valid = false;
+                }
+            } else if (tourtypeSelect.value === 'หลายวัน') {
+                const d = parseInt(daysInput.value);
+                const n = parseInt(nightsInput.value);
+                if (isNaN(d) || d <= 1) {
+                    showErr('numberOfDays', 'err-numberOfDays', 'ทัวร์หลายวันต้องมากกว่า 1 วัน');
+                    valid = false;
+                } else if (isNaN(n) || n >= d) {
+                    showErr('numberOfDays', 'err-numberOfDays', 'จำนวนคืนต้องน้อยกว่าจำนวนวัน');
+                    valid = false;
+                }
+            }
+
+            if (!valid) {
+                e.preventDefault();
+                document.querySelector('.form-control.error')
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(() => {
+                showSuccessModal();
+            }).catch(() => {
+                showSuccessModal();
+            });
+        });
+
+    </script>
 
 </body>
+
 </html>

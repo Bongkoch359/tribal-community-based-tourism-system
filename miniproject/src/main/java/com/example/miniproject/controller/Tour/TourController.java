@@ -32,13 +32,15 @@ public class TourController {
 
     private static final String UPLOAD_DIR = "uploads/tours/";
 
-    // ─── บันทึกรูปจาก imagesJson ──────────────────────────────────────────────────
+    // ─── บันทึกรูปจาก imagesJson
+    // ──────────────────────────────────────────────────
     // รับ 3 format:
-    //   1. "__KEEP__"                    → ไม่เปลี่ยนรูป คืน null
-    //   2. "__FILENAMES__:a.jpg||b.jpg"  → รูปเดิมทั้งหมด คืน "a.jpg||b.jpg"
-    //   3. JSON array                    → มีรูปใหม่ บันทึกไฟล์แล้วคืน filenames
+    // 1. "__KEEP__" → ไม่เปลี่ยนรูป คืน null
+    // 2. "__FILENAMES__:a.jpg||b.jpg" → รูปเดิมทั้งหมด คืน "a.jpg||b.jpg"
+    // 3. JSON array → มีรูปใหม่ บันทึกไฟล์แล้วคืน filenames
     private String saveImagesFromBase64(String imagesJson, String tourid) {
-        if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__")) return null;
+        if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__"))
+            return null;
 
         // ── format 2: รูปเดิมทั้งหมด ──
         if (imagesJson.startsWith("__FILENAMES__:")) {
@@ -46,7 +48,8 @@ public class TourController {
         }
 
         // ── format 3: JSON array — ใช้ Jackson ที่มีใน Spring Boot ──
-        if (!imagesJson.trim().startsWith("[")) return null;
+        if (!imagesJson.trim().startsWith("["))
+            return null;
 
         try {
             Path dir = Paths.get(UPLOAD_DIR).toAbsolutePath();
@@ -61,7 +64,10 @@ public class TourController {
 
             for (com.fasterxml.jackson.databind.JsonNode node : arr) {
                 String b64 = node.has("base64") ? node.get("base64").asText() : "";
-                if (b64.isBlank()) { idx++; continue; }
+                if (b64.isBlank()) {
+                    idx++;
+                    continue;
+                }
 
                 // รูปเดิมที่ไม่ได้เปลี่ยน
                 if (b64.startsWith("__OLD__:")) {
@@ -71,7 +77,7 @@ public class TourController {
                 }
 
                 // รูปใหม่
-                String ext  = b64.contains("png") ? "png" : b64.contains("webp") ? "webp" : "jpg";
+                String ext = b64.contains("png") ? "png" : b64.contains("webp") ? "webp" : "jpg";
                 String data = b64.contains(",") ? b64.split(",")[1] : b64;
                 try {
                     byte[] bytes = Base64.getDecoder().decode(data);
@@ -100,7 +106,8 @@ public class TourController {
     @GetMapping
     public String listTours(HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/manager/login";
+        if (manager == null)
+            return "redirect:/manager/login";
 
         model.addAttribute("tours", tourService.getToursByManager(manager));
         model.addAttribute("loggedInManager", manager);
@@ -112,7 +119,8 @@ public class TourController {
     @GetMapping("/create")
     public String showCreateForm(HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/manager/login";
+        if (manager == null)
+            return "redirect:/manager/login";
 
         model.addAttribute("tour", new Tour());
         model.addAttribute("loggedInManager", manager);
@@ -123,22 +131,22 @@ public class TourController {
 
     @PostMapping("/create")
     public String createTour(
-            @RequestParam("tourmname")    String tourmname,
-            @RequestParam("status")       String status,
-            @RequestParam("tourdetail")   String tourdetail,
+            @RequestParam("tourmname") String tourmname,
+            @RequestParam("status") String status,
+            @RequestParam("tourdetail") String tourdetail,
             @RequestParam(value = "conditiontour", required = false) String conditiontour,
             @RequestParam("minSeatstour") Integer minSeatstour,
             @RequestParam("maxSeatstour") Integer maxSeatstour,
-            @RequestParam("adultprice")   Double adultprice,
-            @RequestParam("childprice")   Double childprice,
-            @RequestParam("numberOfDays")   Integer numberOfDays,
+            @RequestParam("adultprice") Double adultprice,
+            @RequestParam("childprice") Double childprice,
+            @RequestParam("numberOfDays") Integer numberOfDays,
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
             @RequestParam(value = "images", required = false) String imagesJson, // ✅ รับ base64 JSON
             HttpSession session,
-            Model model
-    ) {
+            Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "/manager/login";
+        if (manager == null)
+            return "/manager/login";
 
         // ─── Server-side validation ───
         if (tourmname == null || tourmname.isBlank()) {
@@ -170,6 +178,29 @@ public class TourController {
             model.addAttribute("errorMessage", "กรุณาระบุจำนวนวันให้ถูกต้อง (อย่างน้อย 1 วัน)");
             model.addAttribute("loggedInManager", manager);
             return "Tour/addTour";
+        }
+
+        // ✅ เพิ่มใหม่: ตรวจความสอดคล้องของจำนวนวัน/คืน (กันกรณี POST ตรงๆ ข้าม JS)
+        if (numberOfDays == 1) {
+            // ทัวร์รายวัน: คืนต้องเป็น 0 (หรือไม่ส่งมาเลยก็ยอมรับ แล้ว backend จะ set
+            // ให้เป็น 0 อยู่แล้ว)
+            if (numberOfNights != null && numberOfNights != 0) {
+                model.addAttribute("errorMessage", "ทัวร์รายวัน (1 วัน) ต้องมีจำนวนคืนเป็น 0");
+                model.addAttribute("loggedInManager", manager);
+                return "Tour/addTour";
+            }
+        } else {
+            // ทัวร์หลายวัน (numberOfDays > 1): ต้องระบุคืน และคืนต้องน้อยกว่าจำนวนวัน
+            if (numberOfNights == null || numberOfNights < 1) {
+                model.addAttribute("errorMessage", "ทัวร์หลายวันต้องระบุจำนวนคืนอย่างน้อย 1 คืน");
+                model.addAttribute("loggedInManager", manager);
+                return "Tour/addTour";
+            }
+            if (numberOfNights >= numberOfDays) {
+                model.addAttribute("errorMessage", "จำนวนคืนต้องน้อยกว่าจำนวนวัน");
+                model.addAttribute("loggedInManager", manager);
+                return "Tour/addTour";
+            }
         }
 
         // ─── สร้าง entity แล้วบันทึก ───
@@ -208,28 +239,31 @@ public class TourController {
 
     // @GetMapping("/{tourid}")
     // public String tourDetail(@PathVariable("tourid") String tourid,
-    //                          HttpSession session, Model model) {
-    //     Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-    //     if (manager == null) return "redirect:/manager/login";
+    // HttpSession session, Model model) {
+    // Communitymanager manager = (Communitymanager)
+    // session.getAttribute("loggedInManager");
+    // if (manager == null) return "redirect:/manager/login";
 
-    //     Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-    //     if (tour == null) return "redirect:/manager/tours?error=notfound";
+    // Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
+    // if (tour == null) return "redirect:/manager/tours?error=notfound";
 
-    //     model.addAttribute("tour", tour);
-    //     model.addAttribute("loggedInManager", manager);
-    //     return "Tour/tourDetail";
+    // model.addAttribute("tour", tour);
+    // model.addAttribute("loggedInManager", manager);
+    // return "Tour/tourDetail";
     // }
 
     // ─── แสดงฟอร์มแก้ไขทัวร์ ────────────────────────────────────────────────────
 
     @GetMapping("/{tourid}/edit")
     public String showEditForm(@PathVariable("tourid") String tourid,
-                               HttpSession session, Model model) {
+            HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/manager/login";
+        if (manager == null)
+            return "redirect:/manager/login";
 
         Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-        if (tour == null) return "redirect:/manager/tours?error=notfound";
+        if (tour == null)
+            return "redirect:/manager/tours?error=notfound";
 
         if (!tour.getCommunitymanager().getManagerid().equals(manager.getManagerid())) {
             return "redirect:/manager/tours?error=forbidden";
@@ -245,26 +279,27 @@ public class TourController {
     @PostMapping("/{tourid}/edit")
     public String updateTour(
             @PathVariable("tourid") String tourid,
-            @RequestParam("tourmname")    String tourmname,
-            @RequestParam("status")       String status,
-            @RequestParam("tourdetail")   String tourdetail,
+            @RequestParam("tourmname") String tourmname,
+            @RequestParam("status") String status,
+            @RequestParam("tourdetail") String tourdetail,
             @RequestParam(value = "conditiontour", required = false) String conditiontour,
             @RequestParam("minSeatstour") Integer minSeatstour,
             @RequestParam("maxSeatstour") Integer maxSeatstour,
-            @RequestParam("adultprice")   Double adultprice,
-            @RequestParam("childprice")   Double childprice,
-            @RequestParam("numberOfDays")   Integer numberOfDays,
+            @RequestParam("adultprice") Double adultprice,
+            @RequestParam("childprice") Double childprice,
+            @RequestParam("numberOfDays") Integer numberOfDays,
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
             @RequestParam(value = "images", required = false) String imagesJson, // ✅ รับ base64 หรือ __KEEP__
             HttpSession session,
             Model model,
-            RedirectAttributes redirectAttributes
-    ) {
+            RedirectAttributes redirectAttributes) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/manager/login";
+        if (manager == null)
+            return "redirect:/manager/login";
 
         Tour existing = tourService.getTourByIdAny(tourid).orElse(null);
-        if (existing == null) return "redirect:/manager/tours?error=notfound";
+        if (existing == null)
+            return "redirect:/manager/tours?error=notfound";
 
         if (!existing.getCommunitymanager().getManagerid().equals(manager.getManagerid())) {
             return "redirect:/manager/tours?error=forbidden";
@@ -322,15 +357,17 @@ public class TourController {
 
     @GetMapping("/{tourid}/reviews")
     public String tourReviews(@PathVariable("tourid") String tourid,
-                              HttpSession session, Model model) {
+            HttpSession session, Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null) return "redirect:/manager/login";
+        if (manager == null)
+            return "redirect:/manager/login";
 
         Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-        if (tour == null) return "redirect:/manager/tours?error=notfound";
+        if (tour == null)
+            return "redirect:/manager/tours?error=notfound";
 
-        List<Review> reviews            = reviewService.getReviewsByTourId(tourid);
-        double avgRating                = reviewService.getAvgRatingByTourId(tourid);
+        List<Review> reviews = reviewService.getReviewsByTourId(tourid);
+        double avgRating = reviewService.getAvgRatingByTourId(tourid);
         Map<Integer, Long> ratingCounts = reviewService.getRatingCountsByTourId(tourid);
 
         model.addAttribute("tour", tour);

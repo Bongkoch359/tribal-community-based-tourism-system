@@ -527,11 +527,11 @@
                     <td>
                         <span th:if="${tour.tourtype == 'DAILY'}"
                               style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;background:#E3F2FD;color:#1565C0;">
-                            ทัวร์รายวัน
+                            ทัวร์รายวัน<br>(DailyTour)
                         </span>
                         <span th:if="${tour.tourtype == 'MULTIDAY'}"
                               style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;background:#FFF3E0;color:#E65100;">
-                            ทัวร์หลายวัน
+                            ทัวร์หลายวัน<br>(MultidayTour)
                         </span>
                         <span th:if="${tour.tourtype == null}" style="color:#aaa;font-size:12px;">-</span>
                     </td>
