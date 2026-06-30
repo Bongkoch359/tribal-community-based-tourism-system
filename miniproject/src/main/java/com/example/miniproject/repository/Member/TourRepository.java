@@ -49,7 +49,7 @@ Optional<Tour> findByIdWithBookings(@Param("tourid") String tourid);
     long countByStatus(String status);
 
     @Query("SELECT t FROM Tour t LEFT JOIN t.bookingTourDetails d GROUP BY t ORDER BY COUNT(d) DESC")
-    List<Tour> findTopToursByBookingCount(@Param("limit") int limit);
+    List<Tour> findTopToursByBookingCount(org.springframework.data.domain.Pageable pageable);
 
     @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerid ORDER BY t.tourmname ASC")
     List<Tour> findByManagerId(@Param("managerid") String managerid);
@@ -83,7 +83,7 @@ Optional<Tour> findByIdWithBookings(@Param("tourid") String tourid);
 @Query("""
     SELECT t.tourid,
            COALESCE(SUM(
-               CASE WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.CONFIRMED
+               CASE WHEN b.bookingStatus <> com.example.miniproject.entity.enums.BookingStatus.CANCEL
                     THEN d.numofadult + COALESCE(d.numofchild, 0)
                     ELSE 0 END
            ), 0)

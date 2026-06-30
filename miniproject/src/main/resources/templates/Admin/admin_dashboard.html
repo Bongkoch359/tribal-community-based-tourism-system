@@ -7,27 +7,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green-700: #215c35;
-    --green-600: #2d7a4f;
-    --green-500: #3d9e68;
-    --green-100: #d8f3dc;
-    --green-50:  #f0faf4;
-    --amber-700: #a16207;
-    --amber-600: #c27b04;
-    --amber-500: #e8960a;
-    --amber-400: #f5aa1f;
-    --amber-100: #fef3c7;
-    --red-700:   #b91c1c;
-    --red-100:   #fee2e2;
-    --neutral-950: #0c0a09;
-    --neutral-800: #292524;
-    --neutral-700: #44403c;
-    --neutral-600: #57534e;
-    --neutral-500: #78716c;
-    --neutral-400: #a8a29e;
-    --neutral-300: #d6d3d1;
-    --neutral-200: #e7e5e4;
-    --neutral-100: #f5f5f4;
+    /* ── โทนเขียวมะกอกอมเขียว (Olive Green) ── */
+    --teal-900: #263821;
+    --teal-800: #304527;
+    --teal-700: #3c5630;
+    --teal-600: #4a6b3a;
+    --teal-500: #5c8444;
+    --teal-400: #719f51;
+    --teal-100: #e3eed9;
+    --teal-50:  #f1f7ec;
+
+    --gold-700: #92681b;
+    --gold-600: #b3822a;
+    --gold-500: #d4a13b;
+    --gold-400: #e7b94f;
+    --gold-100: #fbedce;
+
+    --red-700:   #b8332e;
+    --red-100:   #fbe3e1;
+
+    --neutral-950: #0a0f0d;
+    --neutral-800: #26302c;
+    --neutral-700: #3d4945;
+    --neutral-600: #5b6864;
+    --neutral-500: #7c8985;
+    --neutral-400: #a4b0ac;
+    --neutral-300: #cdd6d2;
+    --neutral-200: #e4ebe8;
+    --neutral-100: #f4f8f6;
     --white: #ffffff;
   }
 
@@ -45,7 +52,7 @@
 
   /* ── NAVBAR ── */
   .navbar {
-    background: #0a1f12;
+    background: linear-gradient(120deg, var(--teal-600), var(--teal-700));
     height: 100px;
     display: flex;
     align-items: center;
@@ -72,13 +79,14 @@
   .brand-icon {
     width: 48px;
     height: 48px;
-    background: var(--green-500);
+    background: linear-gradient(135deg, var(--teal-400), var(--teal-600));
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(43,171,146,0.35);
   }
 
   .nav-group {
@@ -101,8 +109,8 @@
     white-space: nowrap;
   }
 
-  .nav-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
-  .nav-link.active { background: rgba(255,255,255,0.09); color: #fff; }
+  .nav-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+  .nav-link.active { background: rgba(43,171,146,0.18); color: #fff; }
 
   .nav-divider {
     width: 1px;
@@ -114,36 +122,36 @@
   .admin-area { display: flex; align-items: center; gap: 14px; }
 
   .admin-info { text-align: right; }
-  .admin-name { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 600; line-height: 1.2; }
-  .admin-role { color: rgba(255,255,255,0.3); font-size: 12px; }
+  .admin-name { color: rgba(255,255,255,0.85); font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255,255,255,0.35); font-size: 12px; }
 
   .admin-avatar {
     width: 46px;
     height: 46px;
-    background: var(--amber-700);
+    background: linear-gradient(135deg, var(--gold-500), var(--gold-700));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 18px;
-    color: var(--amber-100);
+    color: var(--gold-100);
     flex-shrink: 0;
   }
 
   .logout-btn {
-    color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.3);
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
     transition: color 0.15s;
     white-space: nowrap;
   }
-  .logout-btn:hover { color: rgba(255,255,255,0.7); }
+  .logout-btn:hover { color: rgba(255,255,255,0.8); }
 
   /* ── CONTENT ── */
   .content {
-    max-width: 1100px;
+    max-width: 1180px;
     margin: 0 auto;
     padding: 40px 24px;
     flex: 1;
@@ -152,8 +160,8 @@
 
   /* WELCOME */
   .welcome-banner {
-    background: #0a1f12;
-    border-radius: 16px;
+    background: linear-gradient(120deg, var(--teal-600) 0%, var(--teal-400) 100%);
+    border-radius: 18px;
     padding: 32px 36px;
     color: #fff;
     margin-bottom: 32px;
@@ -161,26 +169,41 @@
     align-items: center;
     justify-content: space-between;
     gap: 24px;
+    position: relative;
+    overflow: hidden;
   }
 
-  .welcome-text h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
-  .welcome-text p  { font-size: 14px; color: rgba(255,255,255,0.45); }
+  .welcome-banner::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(231,185,79,0.18), transparent 70%);
+    border-radius: 50%;
+  }
 
-  .welcome-stats { display: flex; gap: 12px; flex-shrink: 0; }
+  .welcome-text { position: relative; z-index: 1; }
+  .welcome-text h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .welcome-text p  { font-size: 14px; color: rgba(255,255,255,0.5); }
+
+  .welcome-stats { display: flex; gap: 12px; flex-shrink: 0; position: relative; z-index: 1; }
 
   .welcome-stat {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
     padding: 14px 20px;
     text-align: center;
     min-width: 90px;
+    backdrop-filter: blur(2px);
   }
 
-  .ws-num   { font-size: 26px; font-weight: 700; color: var(--amber-400); line-height: 1; }
-  .ws-label { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+  .ws-num   { font-size: 26px; font-weight: 700; color: var(--gold-400); line-height: 1; }
+  .ws-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
 
-  /* STAT ROW */
+  /* SECTION LABEL */
   .section-label {
     font-size: 12px;
     font-weight: 600;
@@ -188,8 +211,20 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
+  .section-label::before {
+    content: "";
+    width: 4px;
+    height: 14px;
+    background: var(--teal-500);
+    border-radius: 2px;
+  }
+
+  /* STAT ROW */
   .stat-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -197,21 +232,31 @@
     margin-bottom: 28px;
   }
 
+  .stat-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .stat-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
   .stat-card {
     background: var(--white);
     border: 1px solid var(--neutral-200);
     border-radius: 14px;
     padding: 20px 22px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .stat-card:hover {
+    box-shadow: 0 10px 26px rgba(15,82,73,0.08);
+    transform: translateY(-2px);
   }
 
   .stat-label  { font-size: 12px; color: var(--neutral-500); margin-bottom: 8px; font-weight: 500; }
   .stat-number { font-size: 32px; font-weight: 700; color: var(--neutral-800); line-height: 1; }
-  .stat-number.amber { color: var(--amber-600); }
+  .stat-number.teal  { color: var(--teal-600); }
+  .stat-number.gold  { color: var(--gold-600); }
   .stat-number.red   { color: var(--red-700); }
 
   .stat-delta { font-size: 12px; margin-top: 6px; font-weight: 500; }
-  .delta-up   { color: var(--green-600); }
-  .delta-warn { color: var(--amber-600); }
+  .delta-up   { color: var(--teal-600); }
+  .delta-warn { color: var(--gold-600); }
   .delta-red  { color: var(--red-700); }
 
   /* MENU CARDS */
@@ -219,6 +264,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 16px;
+    margin-bottom: 32px;
   }
 
   .menu-card {
@@ -234,8 +280,8 @@
 
   .menu-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.07);
-    border-color: var(--neutral-300);
+    box-shadow: 0 12px 32px rgba(15,82,73,0.1);
+    border-color: var(--teal-400);
   }
 
   .card-icon-wrap {
@@ -249,8 +295,8 @@
     margin-bottom: 16px;
   }
 
-  .icon-green { background: var(--green-50); }
-  .icon-amber { background: var(--amber-100); }
+  .icon-teal { background: var(--teal-50); }
+  .icon-gold { background: var(--gold-100); }
 
   .menu-title { font-size: 17px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px; }
   .menu-desc  { font-size: 14px; color: var(--neutral-500); line-height: 1.6; margin-bottom: 16px; }
@@ -263,12 +309,108 @@
     border-radius: 20px;
   }
 
-  .pill-green { background: var(--green-100); color: var(--green-700); }
-  .pill-amber { background: var(--amber-100); color: var(--amber-700); }
+  .pill-teal { background: var(--teal-100); color: var(--teal-700); }
+  .pill-gold { background: var(--gold-100); color: var(--gold-700); }
+
+  /* PANELS: top tours / lowest rated */
+  .panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--neutral-200);
+    border-radius: 16px;
+    padding: 24px 24px 8px;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .panel-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--neutral-800);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--teal-700);
+    background: var(--teal-50);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .rank-list { list-style: none; }
+
+  .rank-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--neutral-100);
+  }
+
+  .rank-item:last-child { border-bottom: none; }
+
+  .rank-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--teal-50);
+    color: var(--teal-700);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .rank-item:nth-child(1) .rank-num { background: var(--gold-400); color: var(--white); }
+  .rank-item:nth-child(2) .rank-num { background: var(--neutral-300); color: var(--neutral-700); }
+  .rank-item:nth-child(3) .rank-num { background: #cfa173; color: var(--white); }
+
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--neutral-800);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rank-sub { font-size: 12px; color: var(--neutral-500); margin-top: 2px; }
+
+  .rank-value {
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .rank-value.teal { color: var(--teal-600); }
+  .rank-value.warn { color: var(--red-700); }
+
+  .empty-state {
+    text-align: center;
+    color: var(--neutral-400);
+    font-size: 13px;
+    padding: 24px 0;
+  }
 
   /* FOOTER */
   .footer {
-    background: #0a1f12;
+    background: linear-gradient(120deg, var(--teal-700), var(--teal-600));
     border-top: 1px solid rgba(255,255,255,0.08);
     padding: 14px 5%;
     display: flex;
@@ -276,7 +418,7 @@
     justify-content: space-between;
   }
 
-  .footer-text { font-size: 12px; color: rgba(255,255,255,0.25); }
+  .footer-text { font-size: 12px; color: rgba(255,255,255,0.3); }
 
   /* RESPONSIVE */
   @media (max-width: 768px) {
@@ -285,7 +427,9 @@
     .welcome-banner { flex-direction: column; align-items: flex-start; padding: 24px; }
     .welcome-stats { flex-wrap: wrap; }
     .stat-row { grid-template-columns: 1fr 1fr; }
+    .stat-row.cols-4 { grid-template-columns: 1fr 1fr; }
     .stat-row .stat-card:last-child { grid-column: span 2; }
+    .panel-grid { grid-template-columns: 1fr; }
     .footer { flex-direction: column; gap: 4px; text-align: center; }
   }
 </style>
@@ -343,8 +487,8 @@
   </div>
 
   <!-- STAT ROW: HOMESTAY -->
-  <div class="section-label" style="margin-bottom:12px;">สถิติโฮมสเตย์</div>
-  <div class="stat-row" style="margin-bottom:20px;">
+  <div class="section-label">สถิติโฮมสเตย์</div>
+  <div class="stat-row">
     <div class="stat-card">
       <div class="stat-label">โฮมสเตย์ทั้งหมด</div>
       <div class="stat-number" th:text="${homestayTotal}">0</div>
@@ -352,7 +496,7 @@
     </div>
     <div class="stat-card">
       <div class="stat-label">รออนุมัติ</div>
-      <div class="stat-number amber" th:text="${homestayPending}">0</div>
+      <div class="stat-number gold" th:text="${homestayPending}">0</div>
       <div class="stat-delta delta-warn"
            th:text="${homestayPending > 0} ? '⚠ ต้องดำเนินการ' : '✓ ไม่มีรายการค้าง'">
         ต้องดำเนินการ
@@ -366,8 +510,8 @@
   </div>
 
   <!-- STAT ROW: MANAGER -->
-  <div class="section-label" style="margin-bottom:12px;">สถิติผู้จัดการชุมชน</div>
-  <div class="stat-row" style="grid-template-columns: repeat(2, 1fr); margin-bottom:32px;">
+  <div class="section-label">สถิติผู้จัดการชุมชน</div>
+  <div class="stat-row cols-2">
     <div class="stat-card">
       <div class="stat-label">ผู้จัดการทั้งหมด</div>
       <div class="stat-number" th:text="${managerTotal}">0</div>
@@ -375,29 +519,82 @@
     </div>
     <div class="stat-card">
       <div class="stat-label">ใช้งานอยู่</div>
-      <div class="stat-number" th:text="${managerActive}">0</div>
+      <div class="stat-number teal" th:text="${managerActive}">0</div>
       <div class="stat-delta delta-up">สถานะ Active</div>
     </div>
   </div>
 
-  <!-- MENU CARDS -->
-  <div class="section-label">โมดูลการจัดการ</div>
-  <div class="grid">
-    <a href="/admin/manager" class="menu-card">
-      <div class="card-icon-wrap icon-green">👥</div>
-      <div class="menu-title">จัดการผู้จัดการชุมชน</div>
-      <div class="menu-desc">ตรวจสอบบัญชีรายชื่อ สร้างบัญชีใหม่ หรือระงับการเข้าใช้งานของผู้จัดการชุมชนแต่ละพื้นที่</div>
-      <span class="menu-pill pill-green"
-            th:text="${managerTotal} + ' บัญชี'">0 บัญชี</span>
-    </a>
+  <!-- STAT ROW: BOOKING / REVENUE (เพิ่มใหม่) -->
+  <div class="section-label">สถิติการจองและรายได้</div>
+  <div class="stat-row cols-4">
+    <div class="stat-card">
+      <div class="stat-label">รายได้รวม (สำเร็จ)</div>
+      <div class="stat-number teal" th:text="${'฿' + #numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')}">฿0</div>
+      <div class="stat-delta delta-up">เฉพาะการจองที่ยืนยันแล้ว</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">รอดำเนินการ</div>
+      <div class="stat-number gold" th:text="${bookingPending}">0</div>
+      <div class="stat-delta delta-warn">รอตรวจสอบ/ชำระเงิน</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ยืนยันแล้ว</div>
+      <div class="stat-number teal" th:text="${bookingConfirmed}">0</div>
+      <div class="stat-delta delta-up">การจองที่สำเร็จ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ยกเลิก</div>
+      <div class="stat-number red" th:text="${bookingCancel}">0</div>
+      <div class="stat-delta delta-red">การจองที่ถูกยกเลิก</div>
+    </div>
+  </div>
 
-    <a href="/admin/homestay" class="menu-card">
-      <div class="card-icon-wrap icon-amber">🏠</div>
-      <div class="menu-title">จัดการโฮมสเตย์</div>
-      <div class="menu-desc">พิจารณาอนุมัติโฮมสเตย์ที่สมัครเข้าโครงการ หรือจัดการสถานะการให้บริการของโฮมสเตย์ในระบบ</div>
-      <span class="menu-pill pill-amber"
-            th:text="${homestayPending} + ' รอดำเนินการ'">0 รอดำเนินการ</span>
-    </a>
+  <!-- PANELS: TOP TOURS & LOWEST RATED HOMESTAYS (เพิ่มใหม่) -->
+  <div class="section-label">ภาพรวมเชิงลึก</div>
+  <div class="panel-grid">
+
+    <!-- TOP 5 TOUR ยอดจองสูงสุด -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🚐 ทัวร์ยอดนิยม Top 5</div>
+        <span class="panel-badge">ยอดจองสูงสุด</span>
+      </div>
+      <ul class="rank-list" th:if="${topTours != null and !topTours.isEmpty()}">
+        <li class="rank-item" th:each="tour, iter : ${topTours}">
+          <div class="rank-num" th:text="${iter.count}">1</div>
+          <div class="rank-info">
+            <div class="rank-name" th:text="${tour.tourmname}">ชื่อทัวร์</div>
+            <div class="rank-sub" th:text="${tour.status}">สถานะ</div>
+          </div>
+          <div class="rank-value teal" th:text="${tour.bookingTourDetails != null ? tour.bookingTourDetails.size() + ' ครั้ง' : '0 ครั้ง'}">0 ครั้ง</div>
+        </li>
+      </ul>
+      <div class="empty-state" th:if="${topTours == null or topTours.isEmpty()}">ยังไม่มีข้อมูลการจองทัวร์</div>
+    </div>
+
+    <!-- TOP 5 โฮมสเตย์รีวิวต่ำสุด -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">⭐ โฮมสเตย์ที่ควรดูแลเป็นพิเศษ</div>
+        <span class="panel-badge">คะแนนรีวิวต่ำสุด</span>
+      </div>
+      <ul class="rank-list" th:if="${lowestRated != null and !lowestRated.isEmpty()}">
+        <li class="rank-item" th:each="row, iter : ${lowestRated}">
+          <div class="rank-num" th:text="${iter.count}">1</div>
+          <div class="rank-info">
+            <div class="rank-name" th:text="${row[1]}">ชื่อโฮมสเตย์</div>
+            <div class="rank-sub">คะแนนเฉลี่ยจากรีวิวลูกค้า</div>
+          </div>
+          <div class="rank-value warn" th:text="${#numbers.formatDecimal(row[2], 1, 1)} + ' ★'">0.0 ★</div>
+        </li>
+      </ul>
+      <div class="empty-state" th:if="${lowestRated == null or lowestRated.isEmpty()}">ยังไม่มีข้อมูลรีวิว</div>
+    </div>
+
+  </div>
+
+  
+
   </div>
 
 </div>
@@ -407,6 +604,63 @@
   <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
   <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
 </footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script th:inline="javascript">
+  const homestayData = {
+    approved: /*[[${homestayApproved}]]*/ 0,
+    pending:  /*[[${homestayPending}]]*/ 0,
+    rejected: /*[[${homestayRejected}]]*/ 0
+  };
+
+  const bookingData = {
+    confirmed: /*[[${bookingConfirmed}]]*/ 0,
+    pending:   /*[[${bookingPending}]]*/ 0,
+    cancel:    /*[[${bookingCancel}]]*/ 0
+  };
+
+  const chartFont = { family: "'Sarabun', sans-serif", size: 13 };
+
+  new Chart(document.getElementById('homestayStatusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['อนุมัติแล้ว', 'รอพิจารณา', 'ปฏิเสธแล้ว'],
+      datasets: [{
+        data: [homestayData.approved, homestayData.pending, homestayData.rejected],
+        backgroundColor: ['#4a6b3a', '#e7b94f', '#b8332e'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: chartFont, color: '#3d4945', usePointStyle: true } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('bookingStatusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['ยืนยันแล้ว', 'รอดำเนินการ', 'ยกเลิก'],
+      datasets: [{
+        data: [bookingData.confirmed, bookingData.pending, bookingData.cancel],
+        backgroundColor: ['#4a6b3a', '#e7b94f', '#b8332e'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: chartFont, color: '#3d4945', usePointStyle: true } }
+      }
+    }
+  });
+</script>
 
 </body>
 </html>

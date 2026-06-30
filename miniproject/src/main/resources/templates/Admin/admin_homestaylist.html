@@ -7,27 +7,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green-700: #215c35;
-    --green-600: #2d7a4f;
-    --green-500: #3d9e68;
-    --green-100: #d8f3dc;
-    --green-50:  #f0faf4;
-    --amber-700: #a16207;
-    --amber-600: #c27b04;
-    --amber-500: #e8960a;
-    --amber-400: #f5aa1f;
-    --amber-100: #fef3c7;
-    --red-700:   #b91c1c;
-    --red-100:   #fee2e2;
-    --neutral-950: #0c0a09;
-    --neutral-800: #292524;
-    --neutral-700: #44403c;
-    --neutral-600: #57534e;
-    --neutral-500: #78716c;
-    --neutral-400: #a8a29e;
-    --neutral-300: #d6d3d1;
-    --neutral-200: #e7e5e4;
-    --neutral-100: #f5f5f4;
+    --teal-900: #263821;
+    --teal-800: #304527;
+    --teal-700: #3c5630;
+    --teal-600: #4a6b3a;
+    --teal-500: #5c8444;
+    --teal-400: #719f51;
+    --teal-100: #e3eed9;
+    --teal-50:  #f1f7ec;
+
+    --gold-700: #92681b;
+    --gold-600: #b3822a;
+    --gold-500: #d4a13b;
+    --gold-400: #e7b94f;
+    --gold-100: #fbedce;
+
+    --red-700:   #b8332e;
+    --red-100:   #fbe3e1;
+
+    --neutral-800: #26302c;
+    --neutral-700: #3d4945;
+    --neutral-600: #5b6864;
+    --neutral-500: #7c8985;
+    --neutral-400: #a4b0ac;
+    --neutral-300: #cdd6d2;
+    --neutral-200: #e4ebe8;
+    --neutral-100: #f4f8f6;
     --white: #ffffff;
   }
 
@@ -45,7 +50,7 @@
 
   /* ── NAVBAR ── */
   .navbar {
-    background: #0a1f12;
+    background: linear-gradient(120deg, var(--teal-600), var(--teal-700));
     height: 100px;
     display: flex;
     align-items: center;
@@ -72,13 +77,14 @@
   .brand-icon {
     width: 48px;
     height: 48px;
-    background: var(--green-500);
+    background: linear-gradient(135deg, var(--teal-400), var(--teal-600));
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(74,107,58,0.35);
   }
 
   .nav-group {
@@ -88,7 +94,7 @@
   }
 
   .nav-link {
-    color: rgba(255,255,255,0.45);
+    color: rgba(255,255,255,0.5);
     text-decoration: none;
     font-size: 17px;
     font-weight: 500;
@@ -101,45 +107,45 @@
     white-space: nowrap;
   }
 
-  .nav-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
-  .nav-link.active { background: rgba(255,255,255,0.09); color: #fff; }
+  .nav-link:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .nav-link.active { background: rgba(255,255,255,0.12); color: #fff; }
 
   .nav-divider {
     width: 1px;
     height: 36px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.1);
     margin: 0 12px;
   }
 
   .admin-area { display: flex; align-items: center; gap: 14px; }
 
   .admin-info { text-align: right; }
-  .admin-name { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 600; line-height: 1.2; }
-  .admin-role { color: rgba(255,255,255,0.3); font-size: 12px; }
+  .admin-name { color: rgba(255,255,255,0.85); font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255,255,255,0.4); font-size: 12px; }
 
   .admin-avatar {
     width: 46px;
     height: 46px;
-    background: var(--amber-700);
+    background: linear-gradient(135deg, var(--gold-500), var(--gold-700));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 18px;
-    color: var(--amber-100);
+    color: #fff;
     flex-shrink: 0;
   }
 
   .logout-btn {
-    color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.4);
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
     transition: color 0.15s;
     white-space: nowrap;
   }
-  .logout-btn:hover { color: rgba(255,255,255,0.7); }
+  .logout-btn:hover { color: rgba(255,255,255,0.85); }
 
   /* ── CONTENT ── */
   .content {
@@ -181,9 +187,9 @@
   }
 
   .top-menu a.active {
-    background: #0a1f12;
+    background: linear-gradient(120deg, var(--teal-600), var(--teal-700));
     color: #fff;
-    border-color: #0a1f12;
+    border-color: var(--teal-700);
     font-weight: 600;
   }
 
@@ -204,9 +210,9 @@
   }
 
   .filter-pill.active {
-    background: var(--green-600);
+    background: var(--teal-600);
     color: #fff;
-    border-color: var(--green-600);
+    border-color: var(--teal-600);
   }
 
   /* TABLE UI */
@@ -215,16 +221,17 @@
     border-radius: 16px;
     border: 1px solid var(--neutral-200);
     overflow: hidden;
+    box-shadow: 0 6px 20px rgba(60,86,48,0.06);
   }
 
   table { width: 100%; border-collapse: collapse; }
 
   thead th {
     padding: 18px 18px;
-    background: var(--neutral-100);
+    background: var(--teal-100);
     text-align: left;
     border-bottom: 1px solid var(--neutral-200);
-    color: var(--neutral-700);
+    color: var(--teal-700);
     font-weight: 700;
     font-size: 14px;
   }
@@ -236,13 +243,13 @@
     vertical-align: middle;
   }
 
-  tbody tr:hover { background: var(--green-50); }
+  tbody tr:hover { background: var(--teal-50); }
 
   /* BADGES */
-  .badge { padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+  .badge { padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; }
 
-  .pending { background: var(--amber-100); color: var(--amber-700); border: 1px solid #ffeaa7; }
-  .approved-badge { background: var(--green-100); color: var(--green-700); }
+  .pending { background: var(--gold-100); color: var(--gold-700); border: 1px solid var(--gold-400); }
+  .approved-badge { background: var(--teal-100); color: var(--teal-700); }
   .rejected-badge { background: var(--red-100); color: var(--red-700); }
 
   /* ACTION BUTTONS */
@@ -266,8 +273,11 @@
   }
   .btn-detail:hover { background: var(--neutral-200); }
 
-  .btn-approve { background: var(--green-600); color: #fff; }
-  .btn-approve:hover { background: var(--green-700); transform: translateY(-2px); }
+  .btn-approve {
+    background: linear-gradient(120deg, var(--teal-600), var(--teal-700));
+    color: #fff;
+  }
+  .btn-approve:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(60,86,48,0.3); }
 
   .btn-reject {
     background: #fff;
@@ -279,124 +289,25 @@
   .empty { text-align: center; padding: 80px; color: var(--neutral-400); font-size: 16px; }
 
   .owner-name { font-weight: 700; color: var(--neutral-800); }
-  .homestay-name { font-weight: 600; color: var(--green-700); }
+  .homestay-name { font-weight: 600; color: var(--teal-700); }
 
   /* FOOTER */
   .footer {
-    background: #0a1f12;
+    background: linear-gradient(120deg, var(--teal-700), var(--teal-600));
     border-top: 1px solid rgba(255,255,255,0.08);
     padding: 14px 5%;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  .footer-text { font-size: 12px; color: rgba(255,255,255,0.25); }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(12,10,9,0.55);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .modal-overlay.show { display: flex; }
-
-  .modal-box {
-    background: var(--white);
-    border-radius: 16px;
-    max-width: 720px;
-    width: 100%;
-    max-height: 88vh;
-    overflow-y: auto;
-    padding: 32px;
-    position: relative;
-  }
-
-  .modal-close {
-    position: absolute;
-    top: 16px;
-    right: 18px;
-    background: none;
-    border: none;
-    font-size: 26px;
-    cursor: pointer;
-    color: var(--neutral-400);
-    line-height: 1;
-  }
-  .modal-close:hover { color: var(--neutral-700); }
-
-  .modal-section-title {
-    color: var(--green-700);
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 14px;
-  }
-
-  .modal-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px; }
-  .modal-field { flex: 1 1 180px; }
-  .modal-field label {
-    font-size: 12px;
-    color: var(--neutral-500);
-    display: block;
-    margin-bottom: 3px;
-  }
-  .modal-field .value { font-size: 15px; font-weight: 600; color: var(--neutral-800); }
-
-  .modal-divider {
-    margin: 22px 0;
-    border: none;
-    border-top: 1px solid var(--neutral-200);
-  }
-
-  .hs-block {
-    border: 1px solid var(--neutral-200);
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 14px;
-  }
-  .hs-block h3 { color: var(--green-700); font-size: 16px; margin-bottom: 4px; }
-  .hs-block .hs-address { font-size: 13px; color: var(--neutral-500); margin-bottom: 10px; }
-  .hs-desc-box {
-    background: var(--neutral-100);
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 14px;
-    line-height: 1.7;
-    margin-top: 8px;
-  }
-  .hs-images { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-  .hs-images img {
-    width: 130px;
-    height: 95px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid var(--neutral-200);
-  }
-
-  .room-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
-  .room-table th, .room-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--neutral-100);
-    text-align: left;
-  }
-  .room-table th { color: var(--neutral-600); font-weight: 600; background: var(--neutral-100); }
-
-  .modal-action-bar { display: flex; gap: 12px; margin-top: 24px; }
-  .modal-action-bar .btn-action { padding: 12px 28px; font-size: 15px; }
-
-  /* hidden source data */
-  .detail-source { display: none; }
+  .footer-text { font-size: 12px; color: rgba(255,255,255,0.3); }
 
   /* ── CONFIRM MODAL ── */
   .confirm-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(12,10,9,0.55);
+    background: rgba(38,48,41,0.55);
     z-index: 3000;
     align-items: center;
     justify-content: center;
@@ -423,7 +334,7 @@
     font-size: 26px;
     margin: 0 auto 16px;
   }
-  .confirm-icon.approve { background: var(--green-100); color: var(--green-700); }
+  .confirm-icon.approve { background: var(--teal-100); color: var(--teal-700); }
   .confirm-icon.reject  { background: var(--red-100); color: var(--red-700); }
 
   .confirm-title { font-size: 17px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px; }
@@ -451,7 +362,7 @@
   .alert-error {
     background: var(--red-100);
     color: var(--red-700);
-    border: 1px solid #fca5a5;
+    border: 1px solid #f3b3b0;
     border-radius: 10px;
     padding: 14px 18px;
     font-size: 15px;
@@ -505,10 +416,8 @@
   </div>
 
   <div th:if="${errorMessage}" class="alert-error">
-
-  ❌ <span th:text="${errorMessage}"></span>
-
-</div>
+    ❌ <span th:text="${errorMessage}"></span>
+  </div>
 
   <!-- Filter Pills -->
   <div class="filter-group">
@@ -576,10 +485,10 @@
           <td>
             <div class="action-group">
               <!-- ปุ่มดูรายละเอียด -->
-              <button type="button" class="btn-action btn-detail"
-                      th:attr="onclick='openDetailModal(' + ${h.ownerid} + ')'">
+              <a th:href="@{/admin/homestay/detail/{id}(id=${h.ownerid})}"
+                 class="btn-action btn-detail" style="text-decoration:none; display:inline-block;">
                 👁️ ดูรายละเอียด
-              </button>
+              </a>
 
               <!-- ปุ่มอนุมัติ/ปฏิเสธ เฉพาะ pending -->
               <button type="button" th:if="${isPending and !isRejected}"
@@ -607,83 +516,6 @@
     </table>
   </div>
 
-  <!-- HIDDEN DETAIL SOURCE DATA (per owner) -->
-  <div th:each="h : ${homestays}" th:id="'detail-' + ${h.ownerid}" class="detail-source"
-       th:attr="data-ownerid=${h.ownerid},
-                data-pending=${h.verificationstatus == null or !h.verificationstatus}">
-    <div class="d-owner-name" th:text="${h.firstname + ' ' + h.lastname}"></div>
-    <div class="d-ownerid" th:text="${h.ownerid}"></div>
-    <div class="d-email" th:text="${h.email}"></div>
-    <div class="d-phone" th:text="${h.phone}"></div>
-    <div class="d-bank" th:text="${h.bankName}"></div>
-    <div class="d-accname" th:text="${h.accountName}"></div>
-    <div class="d-accnumber" th:text="${h.accountNumber}"></div>
-    <div class="d-branch" th:text="${h.bankBranch}"></div>
-
-    <div th:each="hs : ${h.homestays}" class="d-homestay-block">
-      <div class="d-hs-name" th:text="${hs.homestayname}"></div>
-      <div class="d-hs-address" th:text="${hs.address}"></div>
-      <div class="d-hs-desc" th:text="${hs.description}"></div>
-      <div class="d-hs-images" th:text="${hs.images}"></div>
-
-      <div th:each="rt : ${hs.roomtypes}" class="d-room">
-        <span class="d-room-name" th:text="${rt.typename}"></span>
-        <span class="d-room-bed" th:text="${rt.bedtype}"></span>
-        <span class="d-room-price" th:text="${rt.pricepernight}"></span>
-        <span class="d-room-max" th:text="${rt.maxguest}"></span>
-        <span class="d-room-total" th:text="${rt.totalrooms}"></span>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- DETAIL MODAL -->
-<div id="detailModal" class="modal-overlay">
-  <div class="modal-box">
-    <button type="button" class="modal-close" onclick="closeDetailModal()">×</button>
-
-    <div class="modal-section-title">👤 ข้อมูลเจ้าของ</div>
-    <div class="modal-row">
-      <div class="modal-field">
-        <label>ชื่อ-นามสกุล</label>
-        <div class="value" id="m-owner-name">-</div>
-      </div>
-      <div class="modal-field">
-        <label>อีเมล</label>
-        <div class="value" id="m-email">-</div>
-      </div>
-      <div class="modal-field">
-        <label>เบอร์โทร</label>
-        <div class="value" id="m-phone">-</div>
-      </div>
-    </div>
-    <div class="modal-row">
-      <div class="modal-field">
-        <label>ธนาคาร</label>
-        <div class="value" id="m-bank">-</div>
-      </div>
-      <div class="modal-field">
-        <label>ชื่อบัญชี</label>
-        <div class="value" id="m-accname">-</div>
-      </div>
-      <div class="modal-field">
-        <label>เลขที่บัญชี</label>
-        <div class="value" id="m-accnumber">-</div>
-      </div>
-      <div class="modal-field">
-        <label>สาขา</label>
-        <div class="value" id="m-branch">-</div>
-      </div>
-    </div>
-
-    <hr class="modal-divider">
-
-    <div class="modal-section-title">🏠 ข้อมูลโฮมสเตย์</div>
-    <div id="m-homestay-container"></div>
-
-    <div class="modal-action-bar" id="m-action-bar"></div>
-  </div>
 </div>
 
 <!-- CONFIRM MODAL -->
@@ -748,18 +580,14 @@
     const icon = document.getElementById('confirm-icon');
     const title = document.getElementById('confirm-title');
     const desc = document.getElementById('confirm-desc');
-    const nameEl = document.getElementById('confirm-name');
     const form = document.getElementById('confirm-form');
     const submitBtn = document.getElementById('confirm-submit-btn');
-
-    nameEl.textContent = ownerName;
 
     if (action === 'approve') {
       icon.className = 'confirm-icon approve';
       icon.textContent = '✅';
       title.textContent = 'ยืนยันการอนุมัติ';
       desc.innerHTML = 'คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?';
-      document.getElementById('confirm-name').textContent = ownerName;
       submitBtn.className = 'btn-action btn-approve';
       submitBtn.textContent = 'ยืนยัน';
       form.action = '/admin/homestay/approve/' + ownerId;
@@ -768,12 +596,11 @@
       icon.textContent = '❌';
       title.textContent = 'ยืนยันการปฏิเสธ';
       desc.innerHTML = 'คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?';
-      document.getElementById('confirm-name').textContent = ownerName;
       submitBtn.className = 'btn-action btn-reject';
       submitBtn.textContent = 'ยืนยัน';
       form.action = '/admin/homestay/reject/' + ownerId;
     }
-
+    document.getElementById('confirm-name').textContent = ownerName;
     document.getElementById('confirmModal').classList.add('show');
   }
 
@@ -784,88 +611,6 @@
   // ปิด confirm modal เมื่อคลิกพื้นหลัง
   document.getElementById('confirmModal').addEventListener('click', function (e) {
     if (e.target === this) closeConfirmModal();
-  });
-  function openDetailModal(ownerId) {
-    const src = document.getElementById('detail-' + ownerId);
-    if (!src) return;
-
-    document.getElementById('m-owner-name').textContent = src.querySelector('.d-owner-name').textContent || '-';
-    document.getElementById('m-email').textContent = src.querySelector('.d-email').textContent || '-';
-    document.getElementById('m-phone').textContent = src.querySelector('.d-phone').textContent || '-';
-    document.getElementById('m-bank').textContent = src.querySelector('.d-bank').textContent || '-';
-    document.getElementById('m-accname').textContent = src.querySelector('.d-accname').textContent || '-';
-    document.getElementById('m-accnumber').textContent = src.querySelector('.d-accnumber').textContent || '-';
-    document.getElementById('m-branch').textContent = src.querySelector('.d-branch').textContent || '-';
-
-    const container = document.getElementById('m-homestay-container');
-    container.innerHTML = '';
-
-    const blocks = src.querySelectorAll('.d-homestay-block');
-    if (blocks.length === 0) {
-      container.innerHTML = '<p style="color:var(--neutral-400);">ยังไม่มีข้อมูลโฮมสเตย์</p>';
-    } else {
-      blocks.forEach(block => {
-        const name = block.querySelector('.d-hs-name').textContent;
-        const address = block.querySelector('.d-hs-address').textContent;
-        const desc = block.querySelector('.d-hs-desc').textContent;
-        const images = block.querySelector('.d-hs-images').textContent;
-
-        let roomsHtml = '';
-        block.querySelectorAll('.d-room').forEach(room => {
-          roomsHtml += `<tr>
-            <td>${room.querySelector('.d-room-name').textContent}</td>
-            <td>${room.querySelector('.d-room-bed').textContent}</td>
-            <td>${room.querySelector('.d-room-price').textContent}</td>
-            <td>${room.querySelector('.d-room-max').textContent}</td>
-            <td>${room.querySelector('.d-room-total').textContent}</td>
-          </tr>`;
-        });
-
-        let imagesHtml = '';
-        if (images && images.trim()) {
-          images.split(',').forEach(img => {
-            const url = img.trim();
-            if (url) imagesHtml += `<img src="${url}" alt="homestay image">`;
-          });
-        }
-
-        container.innerHTML += `
-          <div class="hs-block">
-            <h3>${name || '-'}</h3>
-            <div class="hs-address">${address || ''}</div>
-            <div class="hs-desc-box">${desc || 'ไม่มีคำอธิบาย'}</div>
-            <div class="hs-images">${imagesHtml}</div>
-            ${roomsHtml ? `<table class="room-table">
-              <thead><tr><th>ประเภทห้อง</th><th>เตียง</th><th>ราคา/คืน</th><th>รับสูงสุด</th><th>จำนวนห้อง</th></tr></thead>
-              <tbody>${roomsHtml}</tbody>
-            </table>` : ''}
-          </div>`;
-      });
-    }
-
-    // ปุ่มอนุมัติ/ปฏิเสธ — แสดงเฉพาะรายการที่ยังรออนุมัติ
-    const actionBar = document.getElementById('m-action-bar');
-    const isPending = src.dataset.pending === 'true';
-
-    if (isPending) {
-      const ownerName = src.querySelector('.d-owner-name').textContent || '';
-      actionBar.innerHTML = `
-        <button type="button" class="btn-action btn-approve" onclick="openConfirmModal(${ownerId}, 'approve', '${ownerName.replace(/'/g, "\\'")}')">✅ อนุมัติ</button>
-        <button type="button" class="btn-action btn-reject" onclick="openConfirmModal(${ownerId}, 'reject', '${ownerName.replace(/'/g, "\\'")}')">❌ ปฏิเสธ</button>`;
-    } else {
-      actionBar.innerHTML = '';
-    }
-
-    document.getElementById('detailModal').classList.add('show');
-  }
-
-  function closeDetailModal() {
-    document.getElementById('detailModal').classList.remove('show');
-  }
-
-  // ปิด modal เมื่อคลิกพื้นหลัง
-  document.getElementById('detailModal').addEventListener('click', function (e) {
-    if (e.target === this) closeDetailModal();
   });
 </script>
 
