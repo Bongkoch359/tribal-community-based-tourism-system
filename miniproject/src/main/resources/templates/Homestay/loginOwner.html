@@ -24,6 +24,11 @@
 
 <div class="login-wrapper">
     <div class="login-box">
+         <div class="text-center mb-3">
+        <div class="login-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+    </div>
 
         <h4 class="mb-2 text-center fw-bold" style="color:#1e4620;">เข้าสู่ระบบ</h4>
         <h6 class="mb-4 text-center text-muted">ด้วยบัญชีเจ้าของโฮมสเตย์</h6>
@@ -48,6 +53,13 @@
             <button type="submit" class="btn btn-login w-100">
                 เข้าสู่ระบบ
             </button>
+
+            <p class="text-center mt-3 mb-0">
+                ยังไม่มีบัญชี?
+                <a th:href="@{/owner/register}" class="fw-bold" style="color:#1e4620;">
+                    ลงทะเบียนที่นี่
+                </a>
+            </p>
         </form>
 
     </div>

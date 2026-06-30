@@ -2,6 +2,21 @@ body {
             background-color: #f5f0e8;
             font-family: 'Sarabun', sans-serif;
         }
+        .login-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #0d3d30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.login-avatar i {
+    color: #ffffff;
+    font-size: 42px;
+}
 
         .login-wrapper {
             height: calc(100vh - 80px);
