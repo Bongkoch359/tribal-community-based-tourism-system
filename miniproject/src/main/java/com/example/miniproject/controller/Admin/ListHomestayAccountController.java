@@ -204,4 +204,25 @@ public String activateHomestay(@PathVariable Integer id,
 
     return "redirect:/admin/homestay/all";
 }
+
+// GET /admin/homestay/detail/{id} → ดูรายละเอียดคำขอโฮมสเตย์ (read-only)
+@GetMapping("/detail/{id}")
+public String homestayDetail(@PathVariable("id") Integer id,
+                              Model model,
+                              HttpSession session,
+                              RedirectAttributes redirectAttrs) {
+
+    if (session.getAttribute("loggedInAdmin") == null)
+        return "redirect:/admin/login";
+
+    Homestayowner owner = ownerrepository.findById(id).orElse(null);
+
+    if (owner == null) {
+        redirectAttrs.addFlashAttribute("errorMessage", "ไม่พบข้อมูลเจ้าของโฮมสเตย์");
+        return "redirect:/admin/homestay";
+    }
+
+    model.addAttribute("h", owner);
+    return "Admin/admin_homestay_detail";
+}
 }

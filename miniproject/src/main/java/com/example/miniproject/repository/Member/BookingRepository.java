@@ -29,6 +29,13 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     /** ดึงตาม status */
     List<Booking> findByBookingStatus(BookingStatus bookingStatus);
 
+    /** รายได้รวมทั้งระบบ */
+    @Query("SELECT COALESCE(SUM(b.totalamount), 0) FROM Booking b WHERE b.bookingStatus = :status")
+    double sumTotalRevenue(@Param("status") BookingStatus status);
+
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.bookingStatus = :status")
+    long countByBookingStatus(@Param("status") BookingStatus status);
+
 
 @Query("""
     SELECT b FROM Booking b

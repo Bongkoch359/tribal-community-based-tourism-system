@@ -14,6 +14,16 @@ public interface HomestayRepository extends JpaRepository<Homestay, Integer> {
     List<Homestay> findByHomestaynameContainingIgnoreCase(String homestayname);
     List<Homestay> findByAddressContainingIgnoreCase(String address);
 
+    /**top 5 รีวิวต่ำสุดทั้งระบบ */
+    @Query("""
+    SELECT rt.homestay.homestayid, rt.homestay.homestayname, AVG(r.rating)
+    FROM Review r
+    JOIN r.booking b JOIN b.roomDetails rd JOIN rd.roomtype rt
+    GROUP BY rt.homestay.homestayid, rt.homestay.homestayname
+    ORDER BY AVG(r.rating) ASC
+""")
+List<Object[]> findLowestRatedHomestays(org.springframework.data.domain.Pageable pageable);
+
     @Query("SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END " +
            "FROM Homestay h WHERE h.homestayid = :homestayid " +
            "AND h.owner.ownerid = :ownerid")

@@ -7,23 +7,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green-700: #215c35;
-    --green-600: #2d7a4f;
-    --green-500: #3d9e68;
-    --green-100: #d8f3dc;
-    --green-50:  #f0faf4;
-    --amber-700: #a16207;
-    --amber-100: #fef3c7;
-    --red-700:   #b91c1c;
-    --red-100:   #fee2e2;
-    --neutral-800: #292524;
-    --neutral-700: #44403c;
-    --neutral-600: #57534e;
-    --neutral-500: #78716c;
-    --neutral-400: #a8a29e;
-    --neutral-300: #d6d3d1;
-    --neutral-200: #e7e5e4;
-    --neutral-100: #f5f5f4;
+    /* ── โทนเขียวมะกอกอมเขียว (Olive Green) เหมือนหน้า Dashboard/Login ── */
+    --green-900: #263821;
+    --green-800: #304527;
+    --green-700: #3c5630;
+    --green-600: #4a6b3a;
+    --green-500: #5c8444;
+    --green-400: #719f51;
+    --green-100: #e3eed9;
+    --green-50:  #f1f7ec;
+
+    --amber-700: #92681b;
+    --amber-600: #b3822a;
+    --amber-500: #d4a13b;
+    --amber-100: #fbedce;
+
+    --red-700:   #b8332e;
+    --red-100:   #fbe3e1;
+
+    --neutral-800: #26302c;
+    --neutral-700: #3d4945;
+    --neutral-600: #5b6864;
+    --neutral-500: #7c8985;
+    --neutral-400: #a4b0ac;
+    --neutral-300: #cdd6d2;
+    --neutral-200: #e4ebe8;
+    --neutral-100: #f4f8f6;
     --white: #ffffff;
   }
 
@@ -40,7 +49,7 @@
   }
 
   .navbar {
-    background: #0a1f12;
+    background: linear-gradient(120deg, var(--green-600), var(--green-700));
     height: 100px;
     display: flex;
     align-items: center;
@@ -67,13 +76,14 @@
   .brand-icon {
     width: 48px;
     height: 48px;
-    background: var(--green-500);
+    background: linear-gradient(135deg, var(--green-400), var(--green-600));
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(74,107,58,0.35);
   }
 
   .nav-group { display: flex; align-items: center; gap: 6px; }
@@ -92,27 +102,29 @@
     white-space: nowrap;
   }
 
-  .nav-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
-  .nav-link.active { background: rgba(255,255,255,0.09); color: #fff; }
+  .nav-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+  .nav-link.active { background: rgba(255,255,255,0.14); color: #fff; }
 
   .nav-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.08); margin: 0 12px; }
 
   .admin-area { display: flex; align-items: center; gap: 14px; }
   .admin-info { text-align: right; }
-  .admin-name { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 600; line-height: 1.2; }
-  .admin-role { color: rgba(255,255,255,0.3); font-size: 12px; }
+  .admin-name { color: rgba(255,255,255,0.85); font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255,255,255,0.35); font-size: 12px; }
 
   .admin-avatar {
-    width: 46px; height: 46px; background: var(--amber-700); border-radius: 50%;
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, var(--amber-500), var(--amber-700));
+    border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 18px; color: var(--amber-100); flex-shrink: 0;
   }
 
   .logout-btn {
-    color: rgba(255,255,255,0.25); text-decoration: none; font-size: 13px;
+    color: rgba(255,255,255,0.3); text-decoration: none; font-size: 13px;
     font-weight: 500; transition: color 0.15s; white-space: nowrap;
   }
-  .logout-btn:hover { color: rgba(255,255,255,0.7); }
+  .logout-btn:hover { color: rgba(255,255,255,0.8); }
 
   .content { max-width: 850px; margin: 0 auto; padding: 40px 24px; flex: 1; width: 100%; }
 
@@ -155,7 +167,7 @@
     text-align: center;
     font-weight: 500;
   }
-  .message.success { background: var(--green-50); border: 1px solid var(--green-600); color: var(--green-700); }
+  .message.success { background: var(--green-50); border: 1px solid var(--green-500); color: var(--green-700); }
   .message.error { background: var(--red-100); border: 1px solid var(--red-700); color: var(--red-700); }
 
   .section-label {
@@ -204,16 +216,16 @@
   .form-group input:focus {
     border-color: var(--green-600);
     background: var(--white);
-    box-shadow: 0 0 0 4px rgba(45, 122, 79, 0.08);
+    box-shadow: 0 0 0 4px rgba(74, 107, 58, 0.12);
   }
 
   .form-group input.input-error {
-    border-color: #fca5a5;
+    border-color: #f3b3b0;
     background: #fff8f8;
   }
   .form-group input.input-error:focus {
     border-color: var(--red-700);
-    box-shadow: 0 0 0 3px rgba(185,28,28,0.12);
+    box-shadow: 0 0 0 3px rgba(184,51,46,0.12);
   }
 
   .required { color: var(--red-700); margin-left: 4px; }
@@ -243,7 +255,7 @@
   .btn-cancel:hover { background: var(--neutral-100); }
 
   .btn-submit {
-    background: var(--green-600);
+    background: linear-gradient(120deg, var(--green-600), var(--green-700));
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -257,17 +269,21 @@
     gap: 8px;
     transition: all 0.2s;
   }
-  .btn-submit:hover { background: var(--green-700); transform: translateY(-2px); }
+  .btn-submit:hover {
+    background: linear-gradient(120deg, var(--green-700), var(--green-800));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(60,86,48,0.25);
+  }
 
   .footer {
-    background: #0a1f12;
+    background: linear-gradient(120deg, var(--green-700), var(--green-600));
     border-top: 1px solid rgba(255,255,255,0.08);
     padding: 14px 5%;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  .footer-text { font-size: 12px; color: rgba(255,255,255,0.25); }
+  .footer-text { font-size: 12px; color: rgba(255,255,255,0.3); }
 
   @media (max-width: 768px) {
     .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 12px; }

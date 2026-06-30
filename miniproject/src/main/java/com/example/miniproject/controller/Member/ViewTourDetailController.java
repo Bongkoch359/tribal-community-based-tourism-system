@@ -4,6 +4,8 @@ import com.example.miniproject.entity.Review;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.repository.Member.ReviewRepository;
 import com.example.miniproject.repository.Member.TourRepository;
+import com.example.miniproject.service.Member.BookingService;
+import com.example.miniproject.service.Member.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,9 @@ public class ViewTourDetailController {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private TourService tourService;
+
     @GetMapping("/tour/{id}")
     public String viewTourDetail(@PathVariable String id, Model model) {
 
@@ -32,6 +37,7 @@ public class ViewTourDetailController {
             return "redirect:/search";
         }
 
+        tourService.injectBookedSeats(List.of(tour));
         model.addAttribute("tour", tour);
 
         // ── รีวิวของทัวร์นี้ (ดึงจาก DB จริง) ──

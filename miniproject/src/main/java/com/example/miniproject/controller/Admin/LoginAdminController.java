@@ -5,12 +5,18 @@ import java.util.List;
 import org.springframework.ui.Model;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Homestayowner;
+import com.example.miniproject.entity.Tour;
+import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.entity.enums.ManagerStatus;
 import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
+import com.example.miniproject.repository.Homestay.HomestayRepository;
+import com.example.miniproject.repository.Member.BookingRepository;
+import com.example.miniproject.repository.Member.TourRepository;
 import com.example.miniproject.service.Admin.ManagerService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -31,10 +37,20 @@ public class LoginAdminController {
     @Autowired
     private ManagerService managerService;
 
+    // ── เพิ่มใหม่ สำหรับสถิติ dashboard ──
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    @Autowired
+    private TourRepository tourRepository;
+
+    @Autowired
+    private HomestayRepository homestayRepository;
+
     @GetMapping("/")
-public String home() {
-    return "redirect:/search";
-}
+    public String home() {
+        return "redirect:/search";
+    }
 
     // เปิดหน้า login (step 1 open page)
     @GetMapping("/admin/login")
@@ -45,46 +61,66 @@ public String home() {
         return "Admin/admin_login";
     }
 
-// ── แก้ตรงนี้: เพิ่ม Model และดึงข้อมูลจริงจาก DB ──
+    // ── แก้ตรงนี้: เพิ่ม Model และดึงข้อมูลจริงจาก DB ──
     @GetMapping("/admin/dashboard")
     public String dashboard(HttpSession session, Model model) {
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
- 
-        // ข้อมูล Homestay
+
+        // ───────── ข้อมูล Homestay (owner) ─────────
         List<Homestayowner> allOwners = ownerRepository.findAll();
- 
+
         long homestayPending = allOwners.stream()
             .filter(o -> (o.getVerificationstatus() == null || !o.getVerificationstatus())
                       && !"REJECTED".equals(o.getAccountstatus()))
             .count();
- 
+
         long homestayApproved = allOwners.stream()
             .filter(o -> Boolean.TRUE.equals(o.getVerificationstatus()))
             .count();
- 
+
         long homestayRejected = allOwners.stream()
             .filter(o -> "REJECTED".equals(o.getAccountstatus()))
             .count();
- 
-        // ข้อมูล Manager
+
+        // ───────── ข้อมูล Manager ─────────
         List<Communitymanager> managers = managerService.getAll();
         long managerTotal  = managers != null ? managers.size() : 0;
         long managerActive = managers != null ? managers.stream()
             .filter(m -> m.getAccountstatus() == ManagerStatus.ACTIVE)
             .count() : 0;
- 
+
+        // ───────── ข้อมูล Booking / รายได้ (เพิ่มใหม่) ─────────
+        double totalRevenue   = bookingRepository.sumTotalRevenue(BookingStatus.CONFIRMED);
+        long bookingPending   = bookingRepository.countPendingBookings();
+        long bookingConfirmed = bookingRepository.countByBookingStatus(BookingStatus.CONFIRMED);
+        long bookingCancel    = bookingRepository.countByBookingStatus(BookingStatus.CANCEL);
+
+        // ───────── ทัวร์ยอดนิยม Top 5 (เพิ่มใหม่) ─────────
+        List<Tour> topTours = tourRepository.findTopToursByBookingCount(PageRequest.of(0, 5));
+
+        // ───────── โฮมสเตย์รีวิวต่ำสุด Top 5 (เพิ่มใหม่) ─────────
+        List<Object[]> lowestRated = homestayRepository.findLowestRatedHomestays(PageRequest.of(0, 5));
+
+        // ───────── ส่งเข้า Model ─────────
         model.addAttribute("homestayTotal",    allOwners.size());
         model.addAttribute("homestayPending",  homestayPending);
         model.addAttribute("homestayApproved", homestayApproved);
         model.addAttribute("homestayRejected", homestayRejected);
         model.addAttribute("managerTotal",     managerTotal);
         model.addAttribute("managerActive",    managerActive);
- 
+
+        model.addAttribute("totalRevenue",     totalRevenue);
+        model.addAttribute("bookingPending",   bookingPending);
+        model.addAttribute("bookingConfirmed", bookingConfirmed);
+        model.addAttribute("bookingCancel",    bookingCancel);
+
+        model.addAttribute("topTours",    topTours);
+        model.addAttribute("lowestRated", lowestRated);
+
         return "Admin/admin_dashboard";
     }
- 
 
     // step 3-6: validate → loginAdmin() → return T/F
     @PostMapping("/admin/login")
