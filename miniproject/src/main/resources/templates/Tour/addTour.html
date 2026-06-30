@@ -577,6 +577,31 @@
 
                 <div class="form-row">
                     <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">จำนวนวัน <span class="req">*</span></label>
+                        <div class="input-suffix-wrap">
+                            <input class="form-control" type="number"
+                                   id="numberOfDays" name="numberOfDays"
+                                   placeholder="1" min="1"
+                                   th:value="${tour?.numberOfDays}"/>
+                            <span class="input-suffix">วัน</span>
+                        </div>
+                        <div class="field-error" id="err-numberOfDays">กรุณาระบุจำนวนวัน</div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">จำนวนคืน</label>
+                        <div class="input-suffix-wrap">
+                            <input class="form-control" type="number"
+                                   id="numberOfNights" name="numberOfNights"
+                                   placeholder="0" min="0"
+                                   th:value="${tour?.numberOfNights}"/>
+                            <span class="input-suffix">คืน</span>
+                        </div>
+                        <small style="color:#888;">ถ้าเป็นทัวร์รายวัน (1 วัน) ระบบจะตั้งเป็น 0 คืนให้อัตโนมัติ</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom:0;">
                         <label class="form-label">ที่นั่งขั้นต่ำ <span class="req">*</span></label>
                         <div class="input-suffix-wrap">
                             <input class="form-control" type="number"
@@ -610,7 +635,7 @@
                         <div class="input-suffix-wrap">
                             <input class="form-control" type="number"
                                    id="adultprice" name="adultprice"
-                                   placeholder="800" min="0" step="0.01"
+                                   placeholder="0" min="0" step="0.01"
                                    th:value="${tour?.adultprice}"/>
                             <span class="input-suffix">฿</span>
                         </div>
@@ -621,7 +646,7 @@
                         <div class="input-suffix-wrap">
                             <input class="form-control" type="number"
                                    id="childprice" name="childprice"
-                                   placeholder="400" min="0" step="0.01"
+                                   placeholder="0" min="0" step="0.01"
                                    th:value="${tour?.childprice}"/>
                             <span class="input-suffix">฿</span>
                         </div>
@@ -648,7 +673,7 @@
                     <label class="upload-btn-label" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
                         <i class="fas fa-upload"></i> เลือกรูปภาพ
                     </label>
-                    <div class="upload-hint" style="margin-top:8px;">jpg · png · webp &nbsp;|&nbsp; สูงสุด 10 รูป</div>
+                    <div class="upload-hint" style="margin-top:8px;">jpg · png · webp &nbsp;|&nbsp; สูงสุด 5 รูป</div>
                 </div>
 
                 <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple/>
@@ -678,7 +703,7 @@
 /* ═══════════════════════════════════════════
    MULTI-IMAGE UPLOAD
 ═══════════════════════════════════════════ */
-const MAX_IMAGES = 10;
+const MAX_IMAGES = 5;
 let imageDataList = []; // [{base64, name}]
 let primaryIndex = 0;
 

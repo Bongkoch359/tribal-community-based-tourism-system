@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>จัดการห้องพัก</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
+    <style>
         .hs-navbar {
             background: #0d3d30;
             display: flex;
@@ -16,9 +18,10 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
             gap: .5rem;
         }
+
         .hs-navbar-brand {
             display: flex;
             align-items: center;
@@ -30,15 +33,21 @@
             white-space: nowrap;
             margin-right: auto;
         }
-        .hs-navbar-brand i { color: #fff; font-size: 1.2rem; }
+
+        .hs-navbar-brand i {
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
         .hs-nav-links {
             display: flex;
             align-items: center;
             gap: .15rem;
             margin-right: 1.25rem;
         }
+
         .hs-nav-link {
-            color: rgba(255,255,255,.7);
+            color: rgba(255, 255, 255, .7);
             text-decoration: none;
             font-size: .92rem;
             font-weight: 500;
@@ -50,27 +59,48 @@
             gap: .45rem;
             white-space: nowrap;
         }
-        .hs-nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+
+        .hs-nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, .08);
+        }
+
         .hs-nav-link.active {
             color: #fff;
             border-bottom: 3px solid #5ecfb0;
             border-radius: 0;
             padding-bottom: calc(.45rem - 3px);
         }
-        .hs-nav-right { display: flex; align-items: center; }
-        .hs-profile-dropdown { position: relative; display: inline-block; cursor: pointer; }
+
+        .hs-nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .hs-profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
         .hs-profile-trigger {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: .45rem .75rem;
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,.12);
+            border: 1px solid rgba(255, 255, 255, .12);
             transition: background .2s, border-color .2s;
         }
-        .hs-profile-trigger:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.22); }
+
+        .hs-profile-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .22);
+        }
+
         .hs-avatar {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: linear-gradient(135deg, #e08a00, #f5a623);
             color: #fff;
@@ -79,58 +109,148 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 0 2px rgba(255,255,255,.2);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
             flex-shrink: 0;
         }
-        .hs-owner-name { color: #fff; font-size: .9rem; font-weight: 600; display: block; line-height: 1.2; }
-        .hs-owner-role { color: rgba(255,255,255,.55); font-size: .72rem; display: block; line-height: 1; }
-        .hs-chevron { font-size: .7rem; color: rgba(255,255,255,.5); margin-left: 2px; transition: transform .2s; }
-        .hs-profile-dropdown:hover .hs-chevron { transform: rotate(180deg); }
+
+        .hs-owner-name {
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .hs-owner-role {
+            color: rgba(255, 255, 255, .55);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+        }
+
+        .hs-chevron {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .5);
+            margin-left: 2px;
+            transition: transform .2s;
+        }
+
+        .hs-profile-dropdown:hover .hs-chevron {
+            transform: rotate(180deg);
+        }
+
         .hs-dropdown-content {
             display: none;
             position: absolute;
-            right: 0; top: 100%;
+            right: 0;
+            top: 100%;
             background: #fff;
             min-width: 210px;
-            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
             z-index: 1000;
             border-radius: 12px;
             margin-top: 10px;
             padding: 6px 0;
             border: 1px solid #e8e8e8;
         }
+
         .hs-dropdown-content::before {
-            content: ""; position: absolute; top: -10px; left: 0;
-            width: 100%; height: 10px; display: block;
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            display: block;
         }
-        .hs-profile-dropdown:hover .hs-dropdown-content { display: block; }
+
+        .hs-profile-dropdown:hover .hs-dropdown-content {
+            display: block;
+        }
+
         .hs-dropdown-header {
             padding: .75rem 1rem .55rem;
             border-bottom: 1px solid #f0f0f0;
             margin-bottom: 4px;
         }
-        .hs-dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #0d2e24; }
-        .hs-dropdown-header .d-email { font-size: .75rem; color: #6b7c6e; margin-top: 2px; }
-        .hs-dropdown-content a {
-            color: #333; padding: .6rem 1rem;
-            text-decoration: none; display: flex;
-            align-items: center; gap: .65rem;
-            font-size: .88rem; transition: background .15s;
-        }
-        .hs-dropdown-content a i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
-        .hs-dropdown-content a:hover { background: #f0faf7; color: #0d3d30; }
-        .hs-dropdown-content a:hover i { color: #0d3d30; }
-        .hs-dropdown-content hr { margin: 4px 0; border: 0; border-top: 1px solid #f0f0f0; }
-        .hs-dropdown-content a.hs-logout { color: #c0392b; }
-        .hs-dropdown-content a.hs-logout i { color: #c0392b; }
-        .hs-dropdown-content a.hs-logout:hover { background: #fff5f5; }
-        @media (max-width: 768px) {
-            .hs-nav-links { display: none; }
-            .hs-navbar { padding: 0 1rem; }
+
+        .hs-dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: #0d2e24;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { height: 100%; }
+        .hs-dropdown-header .d-email {
+            font-size: .75rem;
+            color: #6b7c6e;
+            margin-top: 2px;
+        }
+
+        .hs-dropdown-content a {
+            color: #333;
+            padding: .6rem 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: .88rem;
+            transition: background .15s;
+        }
+
+        .hs-dropdown-content a i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .hs-dropdown-content a:hover {
+            background: #f0faf7;
+            color: #0d3d30;
+        }
+
+        .hs-dropdown-content a:hover i {
+            color: #0d3d30;
+        }
+
+        .hs-dropdown-content hr {
+            margin: 4px 0;
+            border: 0;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .hs-dropdown-content a.hs-logout {
+            color: #c0392b;
+        }
+
+        .hs-dropdown-content a.hs-logout i {
+            color: #c0392b;
+        }
+
+        .hs-dropdown-content a.hs-logout:hover {
+            background: #fff5f5;
+        }
+
+        @media (max-width: 768px) {
+            .hs-nav-links {
+                display: none;
+            }
+
+            .hs-navbar {
+                padding: 0 1rem;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
         body {
             font-family: 'Sarabun', sans-serif;
             background: #f5f0e8;
@@ -138,6 +258,7 @@
             display: flex;
             flex-direction: column;
         }
+
         .footer {
             margin-top: auto;
             padding: 1rem 2rem;
@@ -145,13 +266,22 @@
             color: #c8f0e4;
             font-size: 0.9rem;
         }
+
         .footer-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .footer a { color: #5ecfb0; text-decoration: none; margin-left: 8px; }
-        .footer a:hover { text-decoration: underline; }
+
+        .footer a {
+            color: #5ecfb0;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
 
         .page {
             max-width: 100%;
@@ -159,25 +289,48 @@
             padding: 32px 40px;
             flex: 1;
         }
+
         .page-header {
-            display: flex; align-items: center;
-            justify-content: space-between; margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
         }
+
         .page-title {
-            font-size: 1.5rem; font-weight: 700; color: #0d2e24;
-            display: flex; align-items: center; gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0d2e24;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .page-title i { color: #1a6b52; }
+
+        .page-title i {
+            color: #1a6b52;
+        }
 
         .btn-add {
-            background: #e07b00; color: #fff;
-            border: none; border-radius: 8px;
-            padding: 10px 20px; font-family: 'Sarabun', sans-serif;
-            font-size: .95rem; font-weight: 600;
-            cursor: pointer; display: flex; align-items: center; gap: 8px;
-            text-decoration: none; transition: background .2s;
+            background: #e07b00;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background .2s;
         }
-        .btn-add:hover { background: #c96e00; color: #fff; }
+
+        .btn-add:hover {
+            background: #c96e00;
+            color: #fff;
+        }
 
         .homestay-selector {
             display: flex;
@@ -187,9 +340,10 @@
             background: #fff;
             padding: 12px 18px;
             border-radius: 10px;
-            box-shadow: 0 1px 6px rgba(0,0,0,.07);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, .07);
             width: fit-content;
         }
+
         .homestay-selector label {
             font-weight: 600;
             color: #0d2e24;
@@ -199,7 +353,11 @@
             align-items: center;
             gap: 6px;
         }
-        .homestay-selector label i { color: #1a6b52; }
+
+        .homestay-selector label i {
+            color: #1a6b52;
+        }
+
         .homestay-selector select {
             padding: 7px 14px;
             border-radius: 8px;
@@ -213,30 +371,62 @@
             transition: border-color .2s;
             min-width: 200px;
         }
+
         .homestay-selector select:hover,
-        .homestay-selector select:focus { border-color: #1a6b52; }
+        .homestay-selector select:focus {
+            border-color: #1a6b52;
+        }
 
         .filter-bar {
-            display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
+
         .filter-btn {
-            padding: 7px 18px; border-radius: 8px; border: 1.5px solid #d0d0d0;
-            background: #fff; font-family: 'Sarabun', sans-serif;
-            font-size: .9rem; cursor: pointer; transition: all .2s;
-            color: #444; font-weight: 500;
-            display: flex; align-items: center; gap: 6px;
+            padding: 7px 18px;
+            border-radius: 8px;
+            border: 1.5px solid #d0d0d0;
+            background: #fff;
+            font-family: 'Sarabun', sans-serif;
+            font-size: .9rem;
+            cursor: pointer;
+            transition: all .2s;
+            color: #444;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
+
         .filter-btn.active {
-            background: #fff8f0; border-color: #e07b00; color: #e07b00; font-weight: 700;
+            background: #fff8f0;
+            border-color: #e07b00;
+            color: #e07b00;
+            font-weight: 700;
         }
-        .filter-btn:hover:not(.active) { border-color: #aaa; }
+
+        .filter-btn:hover:not(.active) {
+            border-color: #aaa;
+        }
 
         .table-card {
-            background: #fff; border-radius: 14px;
-            box-shadow: 0 2px 16px rgba(0,0,0,.07); overflow: hidden;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, .07);
+            overflow: hidden;
         }
-        table { width: 100%; border-collapse: collapse; }
-        .table-card table thead tr { background: #c8f0e4 !important; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-card table thead tr {
+            background: #c8f0e4 !important;
+        }
+
         .table-card table thead th {
             background: #c8f0e4 !important;
             color: #0d3d30 !important;
@@ -245,295 +435,388 @@
             text-align: center;
             vertical-align: middle;
         }
+
         tbody td {
             padding: 18px 16px;
             vertical-align: middle;
             text-align: center;
         }
-        th:first-child, td:first-child { width: 180px; text-align: center; }
-        th:last-child,  td:last-child  { width: 220px; text-align: center; }
+
+        th:first-child,
+        td:first-child {
+            width: 180px;
+            text-align: center;
+        }
+
+        th:last-child,
+        td:last-child {
+            width: 220px;
+            text-align: center;
+        }
 
         .room-img {
-            width: 72px; height: 52px;
-            border-radius: 8px; object-fit: cover;
-            display: block; margin: 0 auto;
+            width: 72px;
+            height: 52px;
+            border-radius: 8px;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
         }
+
         .room-img-placeholder {
-            width: 72px; height: 52px;
-            border-radius: 8px; background: #e0f0eb;
-            display: flex; align-items: center; justify-content: center;
-            color: #aaa; font-size: 1.4rem; margin: 0 auto;
+            width: 72px;
+            height: 52px;
+            border-radius: 8px;
+            background: #e0f0eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 1.4rem;
+            margin: 0 auto;
         }
 
         .type-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 4px 12px; border-radius: 20px;
-            font-size: .85rem; font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: .85rem;
+            font-weight: 600;
         }
-        .badge-house   { background: #fff3e0; color: #e07b00; }
-        .badge-dome    { background: #e3f0ff; color: #2266cc; }
-        .badge-tent    { background: #d8f5ec; color: #1a6b52; }
-        .badge-default { background: #f0f0f0; color: #666; }
+
+        .badge-house {
+            background: #fff3e0;
+            color: #e07b00;
+        }
+
+        .badge-dome {
+            background: #e3f0ff;
+            color: #2266cc;
+        }
+
+        .badge-tent {
+            background: #d8f5ec;
+            color: #1a6b52;
+        }
+
+        .badge-default {
+            background: #f0f0f0;
+            color: #666;
+        }
 
         .status-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 4px 14px; border-radius: 20px;
-            font-size: .85rem; font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: .85rem;
+            font-weight: 600;
         }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .status-available   { background: #d8f5ec; color: #0d5c3e; }
-        .status-available   .status-dot { background: #1a9068; }
-        .status-unavailable { background: #fdecea; color: #c62828; }
-        .status-unavailable .status-dot { background: #e53935; }
 
-        .price-text { font-weight: 700; color: #0d2e24; }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-available {
+            background: #d8f5ec;
+            color: #0d5c3e;
+        }
+
+        .status-available .status-dot {
+            background: #1a9068;
+        }
+
+        .status-unavailable {
+            background: #fdecea;
+            color: #c62828;
+        }
+
+        .status-unavailable .status-dot {
+            background: #e53935;
+        }
+
+        .price-text {
+            font-weight: 700;
+            color: #0d2e24;
+        }
 
         .btn-detail {
-            background: #0d3d30; color: #fff;
-            border: none; border-radius: 7px;
-            padding: 7px 16px; font-family: 'Sarabun', sans-serif;
-            font-size: .88rem; font-weight: 600;
-            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-            text-decoration: none; transition: background .2s; white-space: nowrap;
+            background: #0d3d30;
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 7px 16px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: .88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: background .2s;
+            white-space: nowrap;
         }
-        .btn-detail:hover { background: #1a6b52; color: #fff; }
 
-        .empty-state { text-align: center; padding: 64px 20px; color: #aaa; }
-        .empty-state i { font-size: 3rem; margin-bottom: 16px; display: block; }
-        .empty-state p { font-size: 1rem; }
+        .btn-detail:hover {
+            background: #1a6b52;
+            color: #fff;
+        }
 
-        .room-img-placeholder.hidden { display: none; }
+        .empty-state {
+            text-align: center;
+            padding: 64px 20px;
+            color: #aaa;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        .room-img-placeholder.hidden {
+            display: none;
+        }
+
         .count-chip {
-            background: #d8f5ec; color: #1a6b52;
-            font-size: .78rem; font-weight: 700;
-            padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+            background: #d8f5ec;
+            color: #1a6b52;
+            font-size: .78rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 6px;
         }
     </style>
 </head>
+
 <body>
 
-<!-- ─── NAVBAR ─── -->
-<nav class="hs-navbar">
-    <a class="hs-navbar-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun"></i>
-        ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
-    <div class="hs-nav-links">
-        <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
-        <a class="hs-nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
-        <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
-        <a class="hs-nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
-    </div>
-    <div class="hs-nav-right">
-        <div class="hs-profile-dropdown">
-            <div class="hs-profile-trigger">
-                <div class="hs-avatar"
-                     th:text="${ownername != null and #strings.length(ownername) >= 2}
-                               ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
-                <div>
-                    <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
-                    <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
-                </div>
-                <i class="fas fa-chevron-down hs-chevron"></i>
-            </div>
-            <div class="hs-dropdown-content">
-                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
-                <hr>
-                <a th:href="@{/owner/logout}" class="hs-logout">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<!-- ─── CONTENT ─── -->
-<div class="page">
-
-    <!-- Header -->
-    <div class="page-header">
-        <div class="page-title">
-            <i class="fas fa-door-open"></i>
-            รายการห้องพักทั้งหมด
-            <span class="count-chip" th:text="${rooms.size()} + ' ห้อง'">0 ห้อง</span>
-        </div>
-        <a class="btn-add"
-           th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}">
-            <i class="fas fa-plus"></i> เพิ่มห้องพัก
+    <!-- ─── NAVBAR ─── -->
+    <nav class="hs-navbar">
+        <a class="hs-navbar-brand" th:href="@{/}">
+            <i class="fas fa-mountain-sun"></i>
+            ระบบท่องเที่ยวชุมชนชนเผ่า
         </a>
-    </div>
+        <div class="hs-nav-links">
+            <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
+            <a class="hs-nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
+            <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
+            <a class="hs-nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
+        </div>
+        <div class="hs-nav-right">
+            <div class="hs-profile-dropdown">
+                <div class="hs-profile-trigger">
+                    <div class="hs-avatar" th:text="${ownername != null and #strings.length(ownername) >= 2}
+                               ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
+                    <div>
+                        <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
+                        <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+                    </div>
+                    <i class="fas fa-chevron-down hs-chevron"></i>
+                </div>
+                <div class="hs-dropdown-content">
+                    <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                    <hr>
+                    <a th:href="@{/owner/logout}" class="hs-logout">
+                        <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <!-- ── Homestay Selector ── -->
-    <div class="homestay-selector"
-         th:if="${myHomestays != null and myHomestays.size() > 1}">
-        <label><i class="fas fa-house"></i> โฮมสเตย์ :</label>
-        <select onchange="location.href='/owner/rooms?homestayid='+this.value">
-            <option th:each="hs : ${myHomestays}"
-                    th:value="${hs.homestayid}"
-                    th:text="${hs.homestayname}"
-                    th:selected="${hs.homestayid == homestayid}">
-            </option>
-        </select>
-    </div>
+    <!-- ─── CONTENT ─── -->
+    <div class="page">
 
-    <!-- ── Filter Bar (dynamic) ── -->
-    <div class="filter-bar" id="filterBar">
-        <button class="filter-btn active" onclick="filterRooms('all', this)">
-            ทั้งหมด
-        </button>
-        <!-- ปุ่มกรองประเภทจะถูก generate อัตโนมัติจาก JS -->
-    </div>
-
-    <!-- Table -->
-    <div class="table-card">
-        <table id="roomTable">
-            <thead>
-                <tr>
-                    <th>รูปภาพ</th>
-                    <th>ประเภท</th>
-                    <th>ราคา/คืน</th>
-                    <th>รองรับ</th>
-                    <th>จำนวนห้องทั้งหมด</th>
-                    <th>สถานะ</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="roomBody">
-
-                <tr th:if="${#lists.isEmpty(rooms)}">
-                    <td colspan="7">
-                        <div class="empty-state">
-                            <i class="fas fa-door-open"></i>
-                            <p>ยังไม่มีห้องพักในระบบ</p>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr th:each="room : ${rooms}" th:data-type="${room['typename']}">
-
-                    <td>
-                        <img th:if="${room['firstImageUrl'] != null}"
-                             th:src="${room['firstImageUrl']}"
-                             class="room-img" alt="room"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                        <div class="room-img-placeholder"
-                             th:classappend="${room['firstImageUrl'] != null} ? 'hidden' : ''">
-                            <i class="fas fa-image"></i>
-                        </div>
-                    </td>
-
-                    <td>
-                        <span th:switch="${room['typename']}">
-                            <span th:case="'บ้านพัก'" class="type-badge badge-house">
-                                <i class="fas fa-house"></i>
-                                <span th:text="${room['typename']}"></span>
-                            </span>
-                            <span th:case="'โดม'" class="type-badge badge-dome">
-                                <i class="fas fa-circle-dot"></i>
-                                <span th:text="${room['typename']}"></span>
-                            </span>
-                            <span th:case="'เต็นท์'" class="type-badge badge-tent">
-                                <i class="fas fa-campground"></i>
-                                <span th:text="${room['typename']}"></span>
-                            </span>
-                            <span th:case="*" class="type-badge badge-default"
-                                  th:text="${room['typename']}"></span>
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="price-text"
-                              th:text="${#numbers.formatDecimal(room['pricepernight'],1,'COMMA',0,'POINT')} + ' ฿'">
-                        </span>
-                    </td>
-
-                    <td th:text="${room['maxguest']} + ' คน'"></td>
-                    <td th:text="${room['totalrooms']} + ' ห้อง'"></td>
-
-                    <td>
-                        <span th:switch="${room['status']}">
-                            <span th:case="'เปิดจอง'" class="status-badge status-available">
-                                <span class="status-dot"></span> เปิดจอง
-                            </span>
-                            <span th:case="'ปิดปรับปรุง'" class="status-badge status-unavailable">
-                                <span class="status-dot"></span> ปิดปรับปรุง
-                            </span>
-                            <span th:case="'เต็ม'" class="status-badge status-unavailable">
-                                <span class="status-dot"></span> เต็ม
-                            </span>
-                            <span th:case="*" class="status-badge status-unavailable">
-                                <span class="status-dot"></span> ไม่ว่าง
-                            </span>
-                        </span>
-                    </td>
-
-                    <td>
-                        <a class="btn-detail"
-                           th:href="@{/owner/room/view(roomtypeid=${room['roomtypeid']})}">
-                            <i class="fas fa-eye"></i> ดูรายละเอียด
-                        </a>
-                    </td>
-
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-</div>
-
-<!-- ─── FOOTER ─── -->
-<footer class="footer">
-    <div class="footer-content">
-        <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-        <span class="footer-right">
-            Version 1.0 |
-            <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
-            <a href="#" onclick="openContactModal()">
-                <i class="fas fa-headset"></i> ติดต่อแอดมิน
+        <!-- Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <i class="fas fa-door-open"></i>
+                รายการห้องพักทั้งหมด
+                <span class="count-chip" th:text="${rooms.size()} + ' ห้อง'">0 ห้อง</span>
+            </div>
+            <a class="btn-add" th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}">
+                <i class="fas fa-plus"></i> เพิ่มห้องพัก
             </a>
-        </span>
+        </div>
+
+        <!-- ── Homestay Selector ── -->
+        <div class="homestay-selector" th:if="${myHomestays != null and myHomestays.size() > 1}">
+            <label><i class="fas fa-house"></i> โฮมสเตย์ :</label>
+            <select onchange="location.href='/owner/rooms?homestayid='+this.value">
+                <option th:each="hs : ${myHomestays}" th:value="${hs.homestayid}" th:text="${hs.homestayname}"
+                    th:selected="${hs.homestayid == homestayid}">
+                </option>
+            </select>
+        </div>
+
+        <!-- ── Filter Bar (dynamic) ── -->
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" onclick="filterRooms('all', this)">
+                ทั้งหมด
+            </button>
+            <!-- ปุ่มกรองประเภทจะถูก generate อัตโนมัติจาก JS -->
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <table id="roomTable">
+                <thead>
+                    <tr>
+                        <th>รูปภาพ</th>
+                        <th>ประเภท</th>
+                        <th>ราคา/คืน</th>
+                        <th>รองรับ</th>
+                        <th>จำนวนห้องทั้งหมด</th>
+                        <th>สถานะ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="roomBody">
+
+                    <tr th:if="${#lists.isEmpty(rooms)}">
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fas fa-door-open"></i>
+                                <p>ยังไม่มีห้องพักในระบบ</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:each="room : ${rooms}" th:data-type="${room['typename']}">
+
+                        <td>
+                            <img th:if="${room['firstImageUrl'] != null}" th:src="${room['firstImageUrl']}"
+                                class="room-img" alt="room"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                            <div class="room-img-placeholder"
+                                th:classappend="${room['firstImageUrl'] != null} ? 'hidden' : ''">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span th:switch="${room['typename']}">
+                                <span th:case="'บ้านพัก'" class="type-badge badge-house">
+                                    <i class="fas fa-house"></i>
+                                    <span th:text="${room['typename']}"></span>
+                                </span>
+                                <span th:case="'โดม'" class="type-badge badge-dome">
+                                    <i class="fas fa-circle-dot"></i>
+                                    <span th:text="${room['typename']}"></span>
+                                </span>
+                                <span th:case="'เต็นท์'" class="type-badge badge-tent">
+                                    <i class="fas fa-campground"></i>
+                                    <span th:text="${room['typename']}"></span>
+                                </span>
+                                <span th:case="*" class="type-badge badge-default" th:text="${room['typename']}"></span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="price-text"
+                                th:text="${#numbers.formatDecimal(room['pricepernight'],1,'COMMA',0,'POINT')} + ' ฿'">
+                            </span>
+                        </td>
+
+                        <td th:text="${room['maxguest']} + ' คน'"></td>
+                        <td th:text="${room['totalrooms']} + ' ห้อง'"></td>
+
+                        <td>
+                            <span th:switch="${room['status']}">
+                                <span th:case="'เปิดจอง'" class="status-badge status-available">
+                                    <span class="status-dot"></span> เปิดจอง
+                                </span>
+                                <span th:case="'ปิดปรับปรุง'" class="status-badge status-unavailable">
+                                    <span class="status-dot"></span> ปิดปรับปรุง
+                                </span>
+                                <span th:case="'เต็ม'" class="status-badge status-unavailable">
+                                    <span class="status-dot"></span> เต็ม
+                                </span>
+                                <span th:case="*" class="status-badge status-unavailable">
+                                    <span class="status-dot"></span> ไม่ว่าง
+                                </span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <a class="btn-detail" th:href="@{/owner/room/edit(roomtypeid=${room['roomtypeid']})}">
+                                <i class="fas fa-edit"></i> แก้ไข
+                            </a>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
-</footer>
 
-<script>
-// mapping icon ตามชื่อประเภท — เพิ่มประเภทใหม่ตรง
-const typeIcons = {
-    'บ้านพัก': 'fa-house',
-    'โดม':     'fa-circle-dot',
-    'เต็นท์':  'fa-campground',
-};
+    <!-- ─── FOOTER ─── -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="footer-right">
+                Version 1.0 |
+                <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+                <a href="#" onclick="openContactModal()">
+                    <i class="fas fa-headset"></i> ติดต่อแอดมิน
+                </a>
+            </span>
+        </div>
+    </footer>
 
-function buildFilterButtons() {
-    const rows = document.querySelectorAll('#roomBody tr[data-type]');
-    const seen = new Set();
-    rows.forEach(row => {
-        const t = row.getAttribute('data-type');
-        if (t) seen.add(t);
-    });
+    <script>
+        // mapping icon ตามชื่อประเภท — เพิ่มประเภทใหม่ตรง
+        const typeIcons = {
+            'บ้านพัก': 'fa-house',
+            'โดม': 'fa-circle-dot',
+            'เต็นท์': 'fa-campground',
+        };
 
-    const bar = document.getElementById('filterBar');
-    seen.forEach(type => {
-        const icon = typeIcons[type] || 'fa-tag';   // fallback icon
-        const btn = document.createElement('button');
-        btn.className = 'filter-btn';
-        btn.innerHTML = `<i class="fas ${icon}"></i> ${type}`;
-        btn.onclick = function () { filterRooms(type, this); };
-        bar.appendChild(btn);
-    });
-}
+        function buildFilterButtons() {
+            const rows = document.querySelectorAll('#roomBody tr[data-type]');
+            const seen = new Set();
+            rows.forEach(row => {
+                const t = row.getAttribute('data-type');
+                if (t) seen.add(t);
+            });
 
-function filterRooms(type, btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const rows = document.querySelectorAll('#roomBody tr[data-type]');
-    rows.forEach(row => {
-        const rowType = row.getAttribute('data-type');
-        row.style.display = (type === 'all' || rowType === type) ? '' : 'none';
-    });
-}
+            const bar = document.getElementById('filterBar');
+            seen.forEach(type => {
+                const icon = typeIcons[type] || 'fa-tag';   // fallback icon
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.innerHTML = `<i class="fas ${icon}"></i> ${type}`;
+                btn.onclick = function () { filterRooms(type, this); };
+                bar.appendChild(btn);
+            });
+        }
 
-document.addEventListener('DOMContentLoaded', buildFilterButtons);
-</script>
+        function filterRooms(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const rows = document.querySelectorAll('#roomBody tr[data-type]');
+            rows.forEach(row => {
+                const rowType = row.getAttribute('data-type');
+                row.style.display = (type === 'all' || rowType === type) ? '' : 'none';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', buildFilterButtons);
+    </script>
 
 </body>
+
 </html>

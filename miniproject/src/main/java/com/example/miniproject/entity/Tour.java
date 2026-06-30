@@ -35,6 +35,17 @@ public class Tour {
     @Column(columnDefinition = "LONGTEXT")
     private String images;
 
+    // ===================== เพิ่มใหม่: ประเภททัวร์ / จำนวนวัน / จำนวนคืน =====================
+    @Column(length = 20)
+    private String tourtype; // "DAILY" หรือ "MULTIDAY" — sync อัตโนมัติจาก numberOfDays ทุกครั้งที่บันทึก (ดู @PrePersist/@PreUpdate ด้านล่าง)
+
+    @Column(name = "number_of_days")
+    private Integer numberOfDays; // จำนวนวัน เช่น 1, 3, 5
+
+    @Column(name = "number_of_nights")
+    private Integer numberOfNights; // จำนวนคืน เช่น 0, 2, 4
+    // =======================================================================================
+
     @ManyToOne
     @JoinColumn(name = "managerid")
     private Communitymanager communitymanager;
@@ -86,6 +97,40 @@ public class Tour {
         this.status = status;
     }
 
+    // ===================== เพิ่มใหม่: getter/setter ของฟิลด์ที่เพิ่ม =====================
+    public String getTourtype() { return tourtype; }
+    public void setTourtype(String tourtype) { this.tourtype = tourtype; }
+
+    public Integer getNumberOfDays() { return numberOfDays; }
+    public void setNumberOfDays(Integer numberOfDays) { this.numberOfDays = numberOfDays; }
+
+    public Integer getNumberOfNights() { return numberOfNights; }
+    public void setNumberOfNights(Integer numberOfNights) { this.numberOfNights = numberOfNights; }
+
+    /**
+     * Sync tourtype ให้ตรงกับ numberOfDays เสมอ ก่อน insert/update ลงฐานข้อมูล
+     * ป้องกันกรณีลืม set tourtype เอง หรือ set ผิดไม่ตรงกับ numberOfDays
+     */
+    @PrePersist
+    @PreUpdate
+    public void updateTourtype() {
+        if (numberOfDays != null) {
+            this.tourtype = (numberOfDays == 1) ? "DAILY" : "MULTIDAY";
+            if (numberOfDays == 1 && numberOfNights == null) {
+                this.numberOfNights = 0; // ทัวร์รายวัน = 0 คืน
+            }
+        }
+    }
+
+    /** แสดงผลรูปแบบ "x วัน y คืน" หรือ "1 วัน" ถ้าเป็นทัวร์รายวัน */
+    public String getTourDuration() {
+        if (numberOfDays == null) return null;
+        if (numberOfNights == null || numberOfNights == 0) {
+            return numberOfDays + " วัน";
+        }
+        return numberOfDays + " วัน " + numberOfNights + " คืน";
+    }
+    // =======================================================================================
     @Transient
 private int bookedSeats = 0; // ไม่ map ลง DB
 

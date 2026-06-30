@@ -489,11 +489,12 @@
                 <tr>
                     <th style="width:74px;">รูปภาพ</th>
                     <th>ชื่อทัวร์</th>
+                    <th style="width:130px;">ประเภท</th>
                     <th style="width:140px;">ราคาผู้ใหญ่</th>
                     <th style="width:140px;">ราคาเด็ก</th>
                     <th style="width:130px;">ที่นั่ง</th>
                     <th style="width:140px;">สถานะ</th>
-                    <th style="width:220px;"></th>
+                    <th style="width:220px;">จัดการ</th>
                 </tr>
             </thead>
             <tbody>
@@ -519,6 +520,20 @@
                     <!-- ชื่อทัวร์ -->
                     <td>
                         <div class="tour-name" th:text="${tour.tourmname}">-</div>
+                        <div style="font-size:12px;color:#888;" th:text="${tour.getTourDuration()}">-</div>
+                    </td>
+
+                    <!-- ประเภททัวร์ -->
+                    <td>
+                        <span th:if="${tour.tourtype == 'DAILY'}"
+                              style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;background:#E3F2FD;color:#1565C0;">
+                            ทัวร์รายวัน
+                        </span>
+                        <span th:if="${tour.tourtype == 'MULTIDAY'}"
+                              style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;background:#FFF3E0;color:#E65100;">
+                            ทัวร์หลายวัน
+                        </span>
+                        <span th:if="${tour.tourtype == null}" style="color:#aaa;font-size:12px;">-</span>
                     </td>
 
                     <!-- ราคาผู้ใหญ่ -->
@@ -535,8 +550,9 @@
 
                     <!-- ที่นั่ง min–max -->
                     <td class="seats-cell">
-                        <span class="seats-range"
-                              th:text="${tour.minSeatstour + '–' + tour.maxSeatstour}">-</span> ท่าน
+                        <!--<span class="seats-range"
+                               th:text="${tour.minSeatstour + '–' + tour.maxSeatstour}">-</span> ท่าน -->
+                        <span class="seats-range" th:text="${ tour.maxSeatstour}">-</span> ท่าน
                     </td>
 
                     <!-- สถานะ -->
@@ -552,13 +568,13 @@
 
                     <!-- จัดการ -->
                     <td>
-                        <div class="action-btns">
-                            <a class="btn-view"
-                               th:href="@{/manager/tours/{id}(id=${tour.tourid})}">
-                                <i class="fas fa-eye"></i> ดูรายละเอียด
-                            </a>
-                        </div>
-                    </td>
+    <div class="action-btns">
+        <a class="btn-view"
+           th:href="@{/manager/tours/{id}/edit(id=${tour.tourid})}">
+            <i class="fas fa-pen"></i> แก้ไข
+        </a>
+    </div>
+</td>
                 </tr>
             </tbody>
         </table>

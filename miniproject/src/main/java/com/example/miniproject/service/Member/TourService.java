@@ -106,24 +106,25 @@ public class TourService {
     // อัปเดตทัวร์
     // ─────────────────────────────────────────────────────────
     @Transactional
-    public Tour updateTour(String tourid, Tour updated) {
-        Tour existing = tourRepository.findById(tourid)
-                .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ ID: " + tourid));
+public Tour updateTour(String tourid, Tour updated) {
+    Tour existing = tourRepository.findById(tourid)
+            .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ ID: " + tourid));
 
-        existing.setTourmname(updated.getTourmname());
-        existing.setStatus(updated.getStatus());
-        existing.setTourdetail(updated.getTourdetail());
-        existing.setConditiontour(updated.getConditiontour());
-        existing.setMinSeatstour(updated.getMinSeatstour());
-        existing.setMaxSeatstour(updated.getMaxSeatstour());
-        existing.setAdultprice(updated.getAdultprice());
-        existing.setChildprice(updated.getChildprice());
-        if (updated.getImages() != null && !updated.getImages().isBlank()) {
-            existing.setImages(updated.getImages());
-        }
-        return tourRepository.save(existing);
+    existing.setTourmname(updated.getTourmname());
+    existing.setStatus(updated.getStatus());
+    existing.setTourdetail(updated.getTourdetail());
+    existing.setConditiontour(updated.getConditiontour());
+    existing.setMinSeatstour(updated.getMinSeatstour());
+    existing.setMaxSeatstour(updated.getMaxSeatstour());
+    existing.setAdultprice(updated.getAdultprice());
+    existing.setChildprice(updated.getChildprice());
+    existing.setNumberOfDays(updated.getNumberOfDays());      
+    existing.setNumberOfNights(updated.getNumberOfNights());  
+    if (updated.getImages() != null && !updated.getImages().isBlank()) {
+        existing.setImages(updated.getImages());
     }
-
+    return tourRepository.save(existing);
+}
    
     // ─────────────────────────────────────────────────────────
     // ค้นหาทัวร์ (keyword + จำนวนที่นั่ง)

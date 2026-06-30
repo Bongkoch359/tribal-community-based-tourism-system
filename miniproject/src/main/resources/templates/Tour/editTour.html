@@ -159,7 +159,7 @@
 <!-- ── Page ── -->
 <div class="page">
 
-    <a class="back-link" th:href="@{/manager/tours/{id}(id=${tour.tourid})}">
+    <a class="back-link" th:href="@{/manager/tours}">
         <i class="fas fa-arrow-left"></i> ย้อนกลับ
     </a>
 
@@ -270,6 +270,21 @@
                         <label>ชื่อทัวร์ <span class="req">*</span></label>
                         <input type="text" name="tourmname" th:value="${tour.tourmname}"
                                placeholder="ชื่อทัวร์" required maxlength="200">
+                    </div>
+
+                    <div class="two-col">
+                        <div class="form-group">
+                            <label>จำนวนวัน <span class="req">*</span></label>
+                            <input type="number" name="numberOfDays" min="1"
+                                   th:value="${tour.numberOfDays}" required>
+                            <p class="hint">วัน</p>
+                        </div>
+                        <div class="form-group">
+                            <label>จำนวนคืน</label>
+                            <input type="number" name="numberOfNights" min="0"
+                                   th:value="${tour.numberOfNights}">
+                            <p class="hint">คืน (ทัวร์รายวันระบบจะตั้ง 0 ให้อัตโนมัติ)</p>
+                        </div>
                     </div>
 
                     <div class="two-col">
