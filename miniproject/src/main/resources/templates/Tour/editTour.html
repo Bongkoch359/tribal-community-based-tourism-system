@@ -272,16 +272,34 @@
                                placeholder="ชื่อทัวร์" required maxlength="200">
                     </div>
 
+                    <!-- ★ เพิ่มใหม่: ประเภททัวร์ ★ -->
+                    <div class="form-group">
+                        <label>ประเภททัวร์ <span class="req">*</span></label>
+                        <select id="tourtypeSelect" name="tourtypeUi" required>
+                            <option value="" disabled>— เลือกประเภททัวร์ —</option>
+                            <option value="ทัวร์รายวัน">ทัวร์รายวัน (1 วัน ไม่พักค้าง)</option>
+                            <option value="ทัวร์วัฒนธรรมชนเผ่า">ทัวร์วัฒนธรรมชนเผ่า</option>
+                            <option value="ทัวร์วิถีชีวิต">ทัวร์วิถีชีวิต</option>
+                            <option value="__custom__">อื่นๆ (ระบุชื่อประเภทเอง)</option>
+                        </select>
+                    </div>
+
+                    <!-- ★ เพิ่มใหม่: ช่องระบุชื่อเอง แสดงเฉพาะกรณีเลือก "อื่นๆ" ★ -->
+                    <div class="form-group" id="customTypeGroup" style="display:none;">
+                        <label>ระบุชื่อประเภททัวร์ <span class="req">*</span></label>
+                        <input type="text" id="tourtypeCustom" placeholder="เช่น ทัวร์เกษตรอินทรีย์ 4 วัน 3 คืน">
+                    </div>
+
                     <div class="two-col">
                         <div class="form-group">
                             <label>จำนวนวัน <span class="req">*</span></label>
-                            <input type="number" name="numberOfDays" min="1"
+                            <input type="number" id="numberOfDays" name="numberOfDays" min="1"
                                    th:value="${tour.numberOfDays}" required>
                             <p class="hint">วัน</p>
                         </div>
                         <div class="form-group">
                             <label>จำนวนคืน</label>
-                            <input type="number" name="numberOfNights" min="0"
+                            <input type="number" id="numberOfNights" name="numberOfNights" min="0"
                                    th:value="${tour.numberOfNights}">
                             <p class="hint">คืน (ทัวร์รายวันระบบจะตั้ง 0 ให้อัตโนมัติ)</p>
                         </div>
@@ -443,6 +461,54 @@ function removeImage(index) {
     renderGrid();
 }
 
+/* ═══════════════════════════════════════════
+   TOUR TYPE (เหมือนฟอร์มเพิ่มทัวร์)
+   - "ทัวร์รายวัน" เท่านั้น → ล็อกวัน=1 คืน=0
+   - ประเภทอื่นทั้งหมด → ให้กรอกวัน/คืนเอง
+═══════════════════════════════════════════ */
+const tourtypeSelect  = document.getElementById('tourtypeSelect');
+const daysInput       = document.getElementById('numberOfDays');
+const nightsInput     = document.getElementById('numberOfNights');
+const customTypeGroup = document.getElementById('customTypeGroup');
+const tourtypeCustom  = document.getElementById('tourtypeCustom');
+
+const KNOWN_TYPES = ['ทัวร์รายวัน', 'ทัวร์วัฒนธรรมชนเผ่า', 'ทัวร์วิถีชีวิต'];
+
+function applyTourTypeRules() {
+    const type = tourtypeSelect.value;
+    if (type === 'ทัวร์รายวัน') {
+        customTypeGroup.style.display = 'none';
+        daysInput.readOnly = true;
+        nightsInput.readOnly = true;
+        daysInput.value = 1;
+        nightsInput.value = 0;
+    } else {
+        customTypeGroup.style.display = (type === '__custom__') ? 'block' : 'none';
+        daysInput.readOnly = false;
+        nightsInput.readOnly = false;
+    }
+}
+tourtypeSelect.addEventListener('change', applyTourTypeRules);
+
+// ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
+(function initTourType() {
+    const savedType = /*[[${tour.tourtype}]]*/ '';
+    if (!savedType) return;
+    if (KNOWN_TYPES.includes(savedType)) {
+        tourtypeSelect.value = savedType;
+    } else {
+        tourtypeSelect.value = '__custom__';
+        tourtypeCustom.value = savedType;
+    }
+    // เก็บวัน/คืนเดิมไว้ก่อนเรียก applyTourTypeRules (เผื่อโดนล้างถ้าเป็นทัวร์รายวัน)
+    const d = daysInput.value, n = nightsInput.value;
+    applyTourTypeRules();
+    if (tourtypeSelect.value !== 'ทัวร์รายวัน') {
+        daysInput.value = d;
+        nightsInput.value = n;
+    }
+})();
+
 // ── Validate ──
 document.getElementById('editForm').addEventListener('submit', function (e) {
     const min = parseInt(document.querySelector('[name="minSeatstour"]').value);
@@ -450,7 +516,29 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     if (min > max) {
         e.preventDefault();
         alert('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด');
+        return;
     }
+
+    if (tourtypeSelect.value === '') {
+        e.preventDefault();
+        alert('กรุณาเลือกประเภททัวร์');
+        return;
+    }
+    if (tourtypeSelect.value === '__custom__' && tourtypeCustom.value.trim() === '') {
+        e.preventDefault();
+        alert('กรุณาระบุชื่อประเภททัวร์');
+        return;
+    }
+
+    // ส่งค่า tourtype จริงไปเป็น hidden field เพื่อให้ backend อ่านได้ (select ใช้ name="tourtypeUi" เฉยๆ)
+    const finalTourType = tourtypeSelect.value === '__custom__'
+        ? tourtypeCustom.value.trim()
+        : tourtypeSelect.value;
+    const hidden = document.createElement('input');
+    hidden.type = 'hidden';
+    hidden.name = 'tourtype';
+    hidden.value = finalTourType;
+    this.appendChild(hidden);
 });
 </script>
 

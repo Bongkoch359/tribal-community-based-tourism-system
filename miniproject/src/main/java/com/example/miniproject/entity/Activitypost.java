@@ -32,6 +32,11 @@ public class Activitypost {
     @JoinColumn(name = "managerid")
     private Communitymanager communitymanager;
 
+    // Many post can promote 1 tour (nullable: บางโพสไม่เกี่ยวกับทัวร์ เช่น ข่าวสาร/ประกาศ)
+    @ManyToOne
+    @JoinColumn(name = "tourid",nullable = true)
+    private Tour tour;
+
     public String getActivityid() {
         return activityid;
     }
@@ -95,6 +100,14 @@ public class Activitypost {
 
     public void setStatus(ActivityStatus status) {
         this.status = status;
+    }
+
+    public Tour getTour() {
+        return tour;
+    }
+
+    public void setTour(Tour tour) {
+        this.tour = tour;
     }
 
    

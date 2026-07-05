@@ -2,8 +2,10 @@ package com.example.miniproject.service.Member;
 
 import com.example.miniproject.entity.Activitypost;
 import com.example.miniproject.entity.Communitymanager;
+import com.example.miniproject.entity.Tour;
 import com.example.miniproject.entity.enums.ActivityStatus;
 import com.example.miniproject.repository.Member.ActivitypostRepository;
+import com.example.miniproject.repository.Member.TourRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,9 @@ public class ActivityPostService {
 
     @Autowired
     private ActivitypostRepository activityPostRepository;
+
+    @Autowired
+    private TourRepository tourRepository;
 
     // ─── ดึงโพสต์ทั้งหมด ───
     public List<Activitypost> getAllPosts() {
@@ -36,6 +41,7 @@ public class ActivityPostService {
             String description,
             String status,
             String images,         // base64 หลายรูป คั่นด้วย ||
+            String tourId,         // ไม่บังคับ — ทัวร์ที่โพสนี้โปรโมท
             Communitymanager manager) {
 
         Activitypost post = new Activitypost();
@@ -57,7 +63,18 @@ public class ActivityPostService {
 
         post.setImages(images != null && !images.isBlank() ? images : null);
 
+        post.setTour(resolveTour(tourId));
+
         return activityPostRepository.save(post);
+    }
+
+    // ─── หาทัวร์จาก tourId (คืน null ถ้าไม่ได้เลือก) ───
+    private Tour resolveTour(String tourId) {
+        if (tourId == null || tourId.isBlank()) {
+            return null;
+        }
+        return tourRepository.findById(tourId)
+                .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ที่เลือก (ID: " + tourId + ")"));
     }
 
     // ─── ลบโพสต์ ───
@@ -76,7 +93,8 @@ public class ActivityPostService {
             String location,
             String description,
             String status,
-            String images) {
+            String images,
+            String tourId) {
 
         Activitypost post = activityPostRepository.findById(activityId).orElse(null);
         if (post == null) return null;
@@ -96,6 +114,9 @@ public class ActivityPostService {
         if (images != null && !images.isBlank()) {
             post.setImages(images);
         }
+
+        // อัปเดตทัวร์ที่เชื่อมโยง — ถ้าไม่ได้เลือกทัวร์ ให้ตัดการเชื่อมโยงออก (setTour(null))
+        post.setTour(resolveTour(tourId));
 
         return activityPostRepository.save(post);
     }

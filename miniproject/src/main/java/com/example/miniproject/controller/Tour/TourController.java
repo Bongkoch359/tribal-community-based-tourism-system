@@ -141,7 +141,8 @@ public class TourController {
             @RequestParam("childprice") Double childprice,
             @RequestParam("numberOfDays") Integer numberOfDays,
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
-            @RequestParam(value = "images", required = false) String imagesJson, // ✅ รับ base64 JSON
+            @RequestParam(value = "tourtype", required = false) String tourtype,
+            @RequestParam(value = "images", required = false) String imagesJson, 
             HttpSession session,
             Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
@@ -201,6 +202,17 @@ public class TourController {
                 model.addAttribute("loggedInManager", manager);
                 return "Tour/addTour";
             }
+            // ✅ ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity รองรับแค่ทัวร์รายวัน)
+            if (tourtype == null || tourtype.isBlank()) {
+                model.addAttribute("errorMessage", "กรุณาระบุประเภททัวร์สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
+                model.addAttribute("loggedInManager", manager);
+                return "Tour/addTour";
+            }
+            if (tourtype.trim().length() > 100) {
+                model.addAttribute("errorMessage", "ชื่อประเภททัวร์ต้องไม่เกิน 100 ตัวอักษร");
+                model.addAttribute("loggedInManager", manager);
+                return "Tour/addTour";
+            }
         }
 
         // ─── สร้าง entity แล้วบันทึก ───
@@ -215,7 +227,8 @@ public class TourController {
         tour.setChildprice(childprice);
         tour.setNumberOfDays(numberOfDays);
         tour.setNumberOfNights(numberOfDays == 1 ? 0 : numberOfNights); // ทัวร์รายวันบังคับ 0 คืน
-        // ไม่ต้อง set tourtype เอง — @PrePersist ใน entity จะคำนวณให้อัตโนมัติตอน save
+        // ✅ set tourtype จากฟอร์ม (ใช้เฉพาะทัวร์ >1 วัน) — ทัวร์รายวัน @PrePersist จะ override เป็น "ทัวร์รายวัน" เองอยู่แล้ว
+        tour.setTourtype(tourtype != null && !tourtype.isBlank() ? tourtype.trim() : null);
 
         try {
             Tour saved = tourService.createTour(tour, manager);
@@ -237,20 +250,20 @@ public class TourController {
 
     // ─── แสดงรายละเอียดทัวร์ ─────────────────────────────────────────────────────
 
-    // @GetMapping("/{tourid}")
-    // public String tourDetail(@PathVariable("tourid") String tourid,
-    // HttpSession session, Model model) {
-    // Communitymanager manager = (Communitymanager)
-    // session.getAttribute("loggedInManager");
-    // if (manager == null) return "redirect:/manager/login";
+    @GetMapping("/{tourid}")
+    public String tourDetail(@PathVariable("tourid") String tourid,
+    HttpSession session, Model model) {
+    Communitymanager manager = (Communitymanager)
+    session.getAttribute("loggedInManager");
+    if (manager == null) return "redirect:/manager/login";
 
-    // Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-    // if (tour == null) return "redirect:/manager/tours?error=notfound";
+    Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
+    if (tour == null) return "redirect:/manager/tours?error=notfound";
 
-    // model.addAttribute("tour", tour);
-    // model.addAttribute("loggedInManager", manager);
-    // return "Tour/tourDetail";
-    // }
+    model.addAttribute("tour", tour);
+    model.addAttribute("loggedInManager", manager);
+    return "Tour/tourDetail";
+    }
 
     // ─── แสดงฟอร์มแก้ไขทัวร์ ────────────────────────────────────────────────────
 
@@ -289,6 +302,7 @@ public class TourController {
             @RequestParam("childprice") Double childprice,
             @RequestParam("numberOfDays") Integer numberOfDays,
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
+            @RequestParam(value = "tourtype", required = false) String tourtype,
             @RequestParam(value = "images", required = false) String imagesJson, // ✅ รับ base64 หรือ __KEEP__
             HttpSession session,
             Model model,
@@ -318,6 +332,21 @@ public class TourController {
             model.addAttribute("loggedInManager", manager);
             return "Tour/editTour";
         }
+        // ✅ ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity รองรับแค่ทัวร์รายวัน)
+        if (numberOfDays != null && numberOfDays > 1) {
+            if (tourtype == null || tourtype.isBlank()) {
+                model.addAttribute("errorMessage", "กรุณาระบุประเภททัวร์สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
+                model.addAttribute("tour", existing);
+                model.addAttribute("loggedInManager", manager);
+                return "Tour/editTour";
+            }
+            if (tourtype.trim().length() > 100) {
+                model.addAttribute("errorMessage", "ชื่อประเภททัวร์ต้องไม่เกิน 100 ตัวอักษร");
+                model.addAttribute("tour", existing);
+                model.addAttribute("loggedInManager", manager);
+                return "Tour/editTour";
+            }
+        }
 
         // ─── อัปเดต fields ───
         Tour updated = new Tour();
@@ -331,7 +360,8 @@ public class TourController {
         updated.setChildprice(childprice);
         updated.setNumberOfDays(numberOfDays);
         updated.setNumberOfNights(numberOfDays != null && numberOfDays == 1 ? 0 : numberOfNights);
-        // ไม่ต้อง set tourtype เอง — @PreUpdate ใน entity จะคำนวณให้อัตโนมัติตอน save
+        // ✅ set tourtype จากฟอร์ม (ใช้เฉพาะทัวร์ >1 วัน) — ทัวร์รายวัน @PreUpdate จะ override เป็น "ทัวร์รายวัน" เองอยู่แล้ว
+        updated.setTourtype(tourtype != null && !tourtype.isBlank() ? tourtype.trim() : null);
 
         // ✅ ถ้าเป็น __KEEP__ หรือ null = ไม่ได้เปลี่ยนรูป ให้คงรูปเดิม
         if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__")) {

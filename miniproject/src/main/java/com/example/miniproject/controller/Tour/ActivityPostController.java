@@ -3,6 +3,7 @@ package com.example.miniproject.controller.Tour;
 import com.example.miniproject.entity.Activitypost;
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.service.Member.ActivityPostService;
+import com.example.miniproject.service.Member.TourService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,9 @@ public class ActivityPostController {
 
     @Autowired
     private ActivityPostService activityPostService;
+
+    @Autowired
+    private TourService tourService;
 
     // ─── แสดงรายการโพสต์ ───
     @GetMapping
@@ -61,6 +65,7 @@ public class ActivityPostController {
     }
 
     model.addAttribute("loggedInManager", manager);
+    model.addAttribute("tours", tourService.getToursByManager(manager)); // สำหรับ dropdown เลือกทัวร์ที่จะโปรโมท
     return "Tour/createPost";
 }
 
@@ -72,6 +77,7 @@ public String createPost(
         @RequestParam("description") String description,
         @RequestParam("status")      String status,
         @RequestParam(value = "images", required = false) String images,
+        @RequestParam(value = "tourId", required = false) String tourId,
         HttpSession session,
         Model model) {
 
@@ -79,12 +85,13 @@ public String createPost(
     if (manager == null) return "redirect:/manager/login";
 
     try {
-        activityPostService.createPost(title, location, description, status, images, manager);
-        // ← เปลี่ยนจาก redirect เป็น return หน้าเดิม
+        activityPostService.createPost(title, location, description, status, images, tourId, manager);
         model.addAttribute("loggedInManager", manager);
+        model.addAttribute("tours", tourService.getToursByManager(manager));
         model.addAttribute("successMessage", "บันทึกโพสต์สำเร็จ!");
         return "Tour/createPost";
     } catch (Exception e) {
+        model.addAttribute("tours", tourService.getToursByManager(manager));
         model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
         return "Tour/createPost";
     }
@@ -104,6 +111,7 @@ public String createPost(
 
         model.addAttribute("post", post);
         model.addAttribute("loggedInManager", manager);
+        model.addAttribute("tours", tourService.getToursByManager(manager)); // สำหรับ dropdown เลือกทัวร์ที่จะโปรโมท
         return "Tour/editPost";
     }
 
@@ -116,21 +124,24 @@ public String createPost(
             @RequestParam("description") String description,
             @RequestParam("status")      String status,
             @RequestParam(value = "images", required = false) String images,
+            @RequestParam(value = "tourId", required = false) String tourId,
             HttpSession session,
             Model model) {
 
-        if (session.getAttribute("loggedInManager") == null)
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+        if (manager == null)
             return "redirect:/manager/login";
 
         try {
             Activitypost updated = activityPostService.updatePost(
-                    activityId, title, location, description, status, images);
+                    activityId, title, location, description, status, images, tourId);
             if (updated == null) return "redirect:/manager/posts";
 
             return "redirect:/manager/posts/" + activityId + "?success=updated";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
             model.addAttribute("post", activityPostService.getPostById(activityId));
+            model.addAttribute("tours", tourService.getToursByManager(manager));
             return "Tour/editPost";
         }
     }

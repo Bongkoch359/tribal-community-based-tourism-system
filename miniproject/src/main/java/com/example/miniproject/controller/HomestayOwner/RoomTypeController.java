@@ -29,69 +29,70 @@ public class RoomTypeController {
     private HomestayService homestayService;
 
     /** โฟลเดอร์เก็บรูปห้องพัก (สร้างอัตโนมัติถ้ายังไม่มี) */
-    private static final String ROOM_UPLOAD_DIR =
-            System.getProperty("user.dir") + "/uploads/rooms/";
+    private static final String ROOM_UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/rooms/";
 
     // ─── GET: รายการห้องพักทั้งหมด ───────────────────────────────────────────
-   @GetMapping("/owner/rooms")
-public String listRooms(
-        @RequestParam(value = "homestayid", required = false) Integer homestayid,
-        HttpSession session,
-        Model model) {
+    @GetMapping("/owner/rooms")
+    public String listRooms(
+            @RequestParam(value = "homestayid", required = false) Integer homestayid,
+            HttpSession session,
+            Model model) {
 
-    if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
+        if (session.getAttribute("ownerid") == null)
+            return "redirect:/owner/login";
 
-    String ownername = (String) session.getAttribute("ownername");
-    Integer ownerid  = (Integer) session.getAttribute("ownerid");
+        String ownername = (String) session.getAttribute("ownername");
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
 
-    // ดึงโฮมสเตย์ทั้งหมดของเจ้าของคนนี้
-    List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
+        // ดึงโฮมสเตย์ทั้งหมดของเจ้าของคนนี้
+        List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
 
-    // ถ้าไม่ได้ส่ง homestayid มา → ใช้อันแรกของรายการ
-    if (homestayid == null) {
-        if (!myHomestays.isEmpty()) {
-            homestayid = myHomestays.get(0).getHomestayid();
-        }
-    }
-
-    String homestayname = "";
-    if (homestayid != null) {
-        Homestay hs = homestayService.getHomestayById(homestayid);
-        if (hs != null) homestayname = hs.getHomestayname();
-    }
-
-    List<Roomtype> rooms = (homestayid != null)
-            ? roomTypeService.getRoomTypesByHomestayId(homestayid)
-            : Collections.emptyList();
-
-    List<Map<String, Object>> roomViews = rooms.stream().map(room -> {
-        Map<String, Object> m = new HashMap<>();
-        m.put("roomtypeid",    room.getRoomtypeid());
-        m.put("typename",      room.getTypename());
-        m.put("pricepernight", room.getPricepernight());
-        m.put("maxguest",      room.getMaxguest());
-        m.put("totalrooms",    room.getTotalrooms());
-        m.put("status",        room.getStatus());
-
-        String firstImg = null;
-        String imgs = room.getImages();
-        if (imgs != null && !imgs.isBlank()) {
-            String[] parts = imgs.split(",");
-            if (parts.length > 0 && !parts[0].isBlank()) {
-                firstImg = parts[0].trim();
+        // ถ้าไม่ได้ส่ง homestayid มา → ใช้อันแรกของรายการ
+        if (homestayid == null) {
+            if (!myHomestays.isEmpty()) {
+                homestayid = myHomestays.get(0).getHomestayid();
             }
         }
-        m.put("firstImageUrl", firstImg);
-        return m;
-    }).collect(Collectors.toList());
 
-    model.addAttribute("ownername",    ownername != null ? ownername : "Owner");
-    model.addAttribute("homestayid",   homestayid);
-    model.addAttribute("homestayname", homestayname);
-    model.addAttribute("myHomestays",  myHomestays);   // ← เพิ่ม
-    model.addAttribute("rooms",        roomViews);
-    return "Homestay/listRoom";
-}
+        String homestayname = "";
+        if (homestayid != null) {
+            Homestay hs = homestayService.getHomestayById(homestayid);
+            if (hs != null)
+                homestayname = hs.getHomestayname();
+        }
+
+        List<Roomtype> rooms = (homestayid != null)
+                ? roomTypeService.getRoomTypesByHomestayId(homestayid)
+                : Collections.emptyList();
+
+        List<Map<String, Object>> roomViews = rooms.stream().map(room -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("roomtypeid", room.getRoomtypeid());
+            m.put("typename", room.getTypename());
+            m.put("pricepernight", room.getPricepernight());
+            m.put("maxguest", room.getMaxguest());
+            m.put("totalrooms", room.getTotalrooms());
+            m.put("status", room.getStatus());
+
+            String firstImg = null;
+            String imgs = room.getImages();
+            if (imgs != null && !imgs.isBlank()) {
+                String[] parts = imgs.split(",");
+                if (parts.length > 0 && !parts[0].isBlank()) {
+                    firstImg = parts[0].trim();
+                }
+            }
+            m.put("firstImageUrl", firstImg);
+            return m;
+        }).collect(Collectors.toList());
+
+        model.addAttribute("ownername", ownername != null ? ownername : "Owner");
+        model.addAttribute("homestayid", homestayid);
+        model.addAttribute("homestayname", homestayname);
+        model.addAttribute("myHomestays", myHomestays); // ← เพิ่ม
+        model.addAttribute("rooms", roomViews);
+        return "Homestay/listRoom";
+    }
 
     // ─── GET: ฟอร์มเพิ่มห้องพัก ──────────────────────────────────────────────
     @GetMapping("/addroom")
@@ -101,9 +102,9 @@ public String listRooms(
             @SessionAttribute(name = "ownername", required = false) String ownername,
             Model model) {
 
-        model.addAttribute("homestayid",   homestayid);
+        model.addAttribute("homestayid", homestayid);
         model.addAttribute("homestayname", homestayname);
-        model.addAttribute("ownername",    ownername != null ? ownername : "Owner");
+        model.addAttribute("ownername", ownername != null ? ownername : "Owner");
         model.addAttribute("allFacilities", roomTypeService.getAllFacilities());
         return "Homestay/addRoom";
     }
@@ -112,17 +113,17 @@ public String listRooms(
     @PostMapping(value = "/addroom", consumes = "multipart/form-data")
     @ResponseBody
     public ResponseEntity<?> addRoom(
-            @RequestParam("homestayid")                    Integer homestayid,
-            @RequestParam("typename")                      String typename,
-            @RequestParam("bedtype")                       String bedtype,
-            @RequestParam("pricepernight")                 double pricepernight,
-            @RequestParam("maxguest")                      int maxguest,
-            @RequestParam("totalrooms")                    int totalrooms,
-            @RequestParam(value = "description",    required = false, defaultValue = "") String description,
-            @RequestParam(value = "roomcondition",  required = false, defaultValue = "") String roomcondition,
-            @RequestParam("status")                        String status,
-            @RequestParam(value = "facilitiesIds",  required = false) List<String> facilitiesIds,
-            @RequestParam(value = "images",         required = false) List<MultipartFile> images,
+            @RequestParam("homestayid") Integer homestayid,
+            @RequestParam("typename") String typename,
+            @RequestParam("bedtype") String bedtype,
+            @RequestParam("pricepernight") double pricepernight,
+            @RequestParam("maxguest") int maxguest,
+            @RequestParam("totalrooms") int totalrooms,
+            @RequestParam(value = "description", required = false, defaultValue = "") String description,
+            @RequestParam(value = "roomcondition", required = false, defaultValue = "") String roomcondition,
+            @RequestParam("status") String status,
+            @RequestParam(value = "facilitiesIds", required = false) List<String> facilitiesIds,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
             HttpSession session) {
         try {
             // บันทึกรูปและเก็บ URL path
@@ -157,10 +158,12 @@ public String listRooms(
             HttpSession session,
             Model model) {
 
-        if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
+        if (session.getAttribute("ownerid") == null)
+            return "redirect:/owner/login";
 
         Roomtype room = roomTypeService.getRoomTypeById(roomtypeid);
-        if (room == null) return "redirect:/owner/rooms";
+        if (room == null)
+            return "redirect:/owner/rooms";
 
         List<String> imageList = buildImageList(room.getImages());
 
@@ -170,9 +173,9 @@ public String listRooms(
                         .map(Facilities::getFacilitiesname)
                         .collect(Collectors.toList());
 
-        model.addAttribute("ownername",  orDefault(session, "ownername"));
-        model.addAttribute("room",       room);
-        model.addAttribute("imageList",  imageList);
+        model.addAttribute("ownername", orDefault(session, "ownername"));
+        model.addAttribute("room", room);
+        model.addAttribute("imageList", imageList);
         model.addAttribute("facilities", facilities);
         return "Homestay/viewRoom";
     }
@@ -184,10 +187,12 @@ public String listRooms(
             HttpSession session,
             Model model) {
 
-        if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
+        if (session.getAttribute("ownerid") == null)
+            return "redirect:/owner/login";
 
         Roomtype room = roomTypeService.getRoomTypeById(roomtypeid);
-        if (room == null) return "redirect:/owner/rooms";
+        if (room == null)
+            return "redirect:/owner/rooms";
 
         List<Facilities> allFacilities = roomTypeService.getAllFacilities();
         Set<String> checkedIds = (room.getFacilities() == null)
@@ -198,13 +203,14 @@ public String listRooms(
 
         List<String> imageList = buildImageList(room.getImages());
 
-        model.addAttribute("ownername",     orDefault(session, "ownername"));
-        model.addAttribute("room",          room);
+        model.addAttribute("ownername", orDefault(session, "ownername"));
+        model.addAttribute("room", room);
         model.addAttribute("allFacilities", allFacilities);
-        model.addAttribute("checkedIds",    checkedIds);
-        model.addAttribute("imageList",     imageList);
-        model.addAttribute("homestayid",    room.getHomestay() != null
-                                                ? room.getHomestay().getHomestayid() : null);
+        model.addAttribute("checkedIds", checkedIds);
+        model.addAttribute("imageList", imageList);
+        model.addAttribute("homestayid", room.getHomestay() != null
+                ? room.getHomestay().getHomestayid()
+                : null);
         return "Homestay/editRoom";
     }
 
@@ -212,20 +218,20 @@ public String listRooms(
     @PostMapping(value = "/owner/room/edit", consumes = "multipart/form-data")
     @ResponseBody
     public ResponseEntity<?> updateRoom(
-            @RequestParam("roomtypeid")                    String roomtypeid,
-            @RequestParam("typename")                      String typename,
-            @RequestParam("bedtype")                       String bedtype,
-            @RequestParam("pricepernight")                 double pricepernight,
-            @RequestParam("maxguest")                      int maxguest,
-            @RequestParam("totalrooms")                    int totalrooms,
-            @RequestParam(value = "description",    required = false, defaultValue = "") String description,
-            @RequestParam(value = "roomcondition",  required = false, defaultValue = "") String roomcondition,
-            @RequestParam("status")                        String status,
-            @RequestParam(value = "facilitiesIds",  required = false) List<String> facilitiesIds,
+            @RequestParam("roomtypeid") String roomtypeid,
+            @RequestParam("typename") String typename,
+            @RequestParam("bedtype") String bedtype,
+            @RequestParam("pricepernight") double pricepernight,
+            @RequestParam("maxguest") int maxguest,
+            @RequestParam("totalrooms") int totalrooms,
+            @RequestParam(value = "description", required = false, defaultValue = "") String description,
+            @RequestParam(value = "roomcondition", required = false, defaultValue = "") String roomcondition,
+            @RequestParam("status") String status,
+            @RequestParam(value = "facilitiesIds", required = false) List<String> facilitiesIds,
             // รูปเดิมที่ยังคงไว้ (URL path คั่นด้วย comma)
             @RequestParam(value = "existingImages", required = false, defaultValue = "") String existingImages,
             // รูปใหม่ที่อัปโหลดเพิ่ม
-            @RequestParam(value = "newImages",      required = false) List<MultipartFile> newImages,
+            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
             HttpSession session) {
 
         if (session.getAttribute("ownerid") == null) {
@@ -261,20 +267,23 @@ public String listRooms(
 
     // ─── helper: บันทึกไฟล์รูป → คืน URL paths คั่นด้วย comma ──────────────
     private String saveImages(List<MultipartFile> files) throws IOException {
-        if (files == null || files.isEmpty()) return "";
+        if (files == null || files.isEmpty())
+            return "";
 
         Path uploadDir = Paths.get(ROOM_UPLOAD_DIR);
-        if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
+        if (!Files.exists(uploadDir))
+            Files.createDirectories(uploadDir);
 
         List<String> urls = new ArrayList<>();
         for (MultipartFile file : files) {
-            if (file == null || file.isEmpty()) continue;
+            if (file == null || file.isEmpty())
+                continue;
 
-            String original  = Objects.requireNonNullElse(file.getOriginalFilename(), "img");
-            String ext       = original.contains(".")
+            String original = Objects.requireNonNullElse(file.getOriginalFilename(), "img");
+            String ext = original.contains(".")
                     ? original.substring(original.lastIndexOf('.'))
                     : ".jpg";
-            String filename  = UUID.randomUUID() + ext;
+            String filename = UUID.randomUUID() + ext;
 
             Path dest = uploadDir.resolve(filename);
             file.transferTo(dest.toFile());
@@ -290,13 +299,15 @@ public String listRooms(
         if (existing != null && !existing.isBlank()) {
             for (String p : existing.split(",")) {
                 String t = p.trim();
-                if (!t.isEmpty()) result.add(t);
+                if (!t.isEmpty())
+                    result.add(t);
             }
         }
         if (newPaths != null && !newPaths.isBlank()) {
             for (String p : newPaths.split(",")) {
                 String t = p.trim();
-                if (!t.isEmpty()) result.add(t);
+                if (!t.isEmpty())
+                    result.add(t);
             }
         }
         return String.join(",", result);
@@ -308,7 +319,8 @@ public String listRooms(
         if (imgs != null && !imgs.isBlank()) {
             for (String p : imgs.split(",")) {
                 String t = p.trim();
-                if (!t.isEmpty()) list.add(t);
+                if (!t.isEmpty())
+                    list.add(t);
             }
         }
         return list;

@@ -927,8 +927,10 @@
                             <label class="form-label">ประเภททัวร์ <span class="req">*</span></label>
                             <select class="form-control" id="tourtypeSelect" name="tourtypeUi">
                                 <option value="" disabled selected>— เลือกประเภททัวร์ —</option>
-                                <option value="รายวัน">ทัวร์รายวัน (1 วัน ไม่พักค้าง)</option>
-                                <option value="หลายวัน">ทัวร์หลายวัน (พักค้างคืน)</option>
+                                <option value="ทัวร์รายวัน">ทัวร์รายวัน </option>
+                                <option value="ทัวร์วัฒนธรรมชนเผ่า">ทัวร์เรียนรู้วัฒนธรรมชนเผ่า </option>
+                                <option value="ทัวร์วิถีชีวิต">ทัวร์เรียนรู้วิถีชีวิต</option>
+                                <option value="__custom__">อื่นๆ (ระบุชื่อประเภทเอง)</option>
                             </select>
                             <div class="field-error" id="err-tourtype">กรุณาเลือกประเภททัวร์</div>
                         </div>
@@ -944,6 +946,15 @@
                             <div class="field-error" id="err-status">กรุณาเลือกสถานะทัวร์</div>
                         </div>
 
+                    </div>
+
+                    <div class="form-row" style="margin-bottom:14px;">
+                        <div class="form-group" id="customTypeGroup" style="display:none; margin-bottom:0;">
+                            <label class="form-label">ระบุชื่อประเภททัวร์ <span class="req">*</span></label>
+                            <input class="form-control" type="text" id="tourtypeCustom"
+                                placeholder="เช่น ทัวร์เกษตรอินทรีย์ 4 วัน 3 คืน" />
+                            <div class="field-error" id="err-tourtypeCustom">กรุณาระบุชื่อประเภททัวร์</div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -966,7 +977,7 @@
                             <label class="form-label">จำนวนวัน <span class="req">*</span></label>
                             <div class="input-suffix-wrap">
                                 <input class="form-control" type="number" id="numberOfDays" name="numberOfDays"
-                                    placeholder="1" min="1" readonly th:value="${tour?.numberOfDays}" />
+                                    placeholder="1" min="1" th:value="${tour?.numberOfDays}" />
                                 <span class="input-suffix">วัน</span>
                             </div>
                             <div class="field-error" id="err-numberOfDays">กรุณาระบุจำนวนวัน</div>
@@ -975,11 +986,11 @@
                             <label class="form-label">จำนวนคืน</label>
                             <div class="input-suffix-wrap">
                                 <input class="form-control" type="number" id="numberOfNights" name="numberOfNights"
-                                    placeholder="0" min="0" readonly th:value="${tour?.numberOfNights}" />
+                                    placeholder="0" min="0" th:value="${tour?.numberOfNights}" />
                                 <span class="input-suffix">คืน</span>
                             </div>
-                            <small style="color:#888;">เลือก "ประเภททัวร์" ด้านบนก่อน
-                                ระบบจะกำหนดช่วงค่าที่กรอกได้ให้อัตโนมัติ</small>
+                            <small style="color:#888;">กรอกจำนวนวัน/คืนได้เอง ยกเว้นเลือก "ทัวร์รายวัน" ระบบจะล็อกเป็น 1
+                                วัน 0 คืนให้อัตโนมัติ</small>
                         </div>
                     </div>
 
@@ -1076,8 +1087,8 @@
 
     <script>
         /* ═══════════════════════════════════════════
-           MULTI-IMAGE UPLOAD
-        ═══════════════════════════════════════════ */
+    MULTI-IMAGE UPLOAD
+ ═══════════════════════════════════════════ */
         const MAX_IMAGES = 5;
         let imageDataList = []; // [{base64, name}]
         let primaryIndex = 0;
@@ -1129,17 +1140,17 @@
                 const thumb = document.createElement('div');
                 thumb.className = 'img-thumb' + (i === primaryIndex ? ' primary' : '');
                 thumb.innerHTML = `
-            <img src="${img.base64}" alt="${img.name}"/>
-            <div class="thumb-overlay">
-                <button type="button" class="thumb-btn star-btn" onclick="setPrimary(${i})" title="ตั้งเป็นรูปหลัก">
-                    <i class="fas fa-star"></i>
-                </button>
-                <button type="button" class="thumb-btn del-btn" onclick="removeImage(${i})" title="ลบรูป">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-            ${i === primaryIndex ? '<div class="primary-badge">หลัก</div>' : ''}
-        `;
+    <img src="${img.base64}" alt="${img.name}"/>
+    <div class="thumb-overlay">
+        <button type="button" class="thumb-btn star-btn" onclick="setPrimary(${i})" title="ตั้งเป็นรูปหลัก">
+            <i class="fas fa-star"></i>
+        </button>
+        <button type="button" class="thumb-btn del-btn" onclick="removeImage(${i})" title="ลบรูป">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+    ${i === primaryIndex ? '<div class="primary-badge">หลัก</div>' : ''}
+`;
                 imgGrid.appendChild(thumb);
             });
 
@@ -1168,57 +1179,72 @@
         }
 
         /* ═══════════════════════════════════════════
-           TOUR TYPE → DAYS/NIGHTS CONSTRAINT
-           - "รายวัน"  → numberOfDays ล็อก = 1, numberOfNights ล็อก = 0
-           - "หลายวัน" → numberOfDays ต้อง > 1, numberOfNights ต้อง < numberOfDays
+           TOUR TYPE → DAYS/NIGHTS
+           - "ทัวร์รายวัน" เท่านั้น → numberOfDays ล็อก = 1, numberOfNights ล็อก = 0
+           - ประเภทอื่นๆ ทั้งหมด (ทัวร์วัฒนธรรมชนเผ่า / ทัวร์วิถีชีวิต / อื่นๆ) → ปลดล็อกให้ผู้ใช้กรอกวัน/คืนเอง
+             ไม่มีการเติมค่าแนะนำให้ล่วงหน้า
         ═══════════════════════════════════════════ */
         const tourtypeSelect = document.getElementById('tourtypeSelect');
         const daysInput = document.getElementById('numberOfDays');
         const nightsInput = document.getElementById('numberOfNights');
+        const customTypeGroup = document.getElementById('customTypeGroup');
+        const tourtypeCustom = document.getElementById('tourtypeCustom');
 
         function applyTourTypeRules() {
             const type = tourtypeSelect.value;
 
-            if (type === 'รายวัน') {
+            if (type === 'ทัวร์รายวัน') {
+                customTypeGroup.style.display = 'none';
                 daysInput.readOnly = true;
                 nightsInput.readOnly = true;
                 daysInput.value = 1;
                 nightsInput.value = 0;
-            } else if (type === 'หลายวัน') {
+            } else if (type === '') {
+                customTypeGroup.style.display = 'none';
                 daysInput.readOnly = false;
                 nightsInput.readOnly = false;
-                // ถ้าค่าเดิมเป็น 1/0 (ตกค้างจากโหมดรายวัน) ให้เคลียร์ทิ้งเพื่อบังคับกรอกใหม่
-                if (!daysInput.value || parseInt(daysInput.value) <= 1) daysInput.value = '';
-                if (nightsInput.value === '0' || nightsInput.value === '') nightsInput.value = '';
             } else {
-                daysInput.readOnly = true;
-                nightsInput.readOnly = true;
-                daysInput.value = '';
-                nightsInput.value = '';
+                // ทุกประเภทที่ไม่ใช่ทัวร์รายวัน (รวม __custom__) → ให้ผู้ใช้กรอกวัน/คืนเอง
+                customTypeGroup.style.display = (type === '__custom__') ? 'block' : 'none';
+                daysInput.readOnly = false;
+                nightsInput.readOnly = false;
+                // ถ้าค่าเดิมตกค้างมาจากโหมดทัวร์รายวัน (1/0) ให้เคลียร์เพื่อบังคับกรอกใหม่
+                if (parseInt(daysInput.value) === 1 && parseInt(nightsInput.value) === 0) {
+                    daysInput.value = '';
+                    nightsInput.value = '';
+                }
             }
             clearErr('numberOfDays', 'err-numberOfDays');
             clearErr('tourtypeSelect', 'err-tourtype');
+            clearErr('tourtypeCustom', 'err-tourtypeCustom');
         }
 
         tourtypeSelect.addEventListener('change', applyTourTypeRules);
+        tourtypeCustom.addEventListener('input', () => clearErr('tourtypeCustom', 'err-tourtypeCustom'));
 
-        // เผื่อกรณีมีค่าเดิมติดมาจาก server (เช่น validation error แล้ว reload หน้าเดิม)
+        // เผื่อมีค่าเดิมติดมาจาก server (เช่น validation error แล้ว reload หน้าเดิม / โหมดแก้ไข)
         window.addEventListener('DOMContentLoaded', () => {
-            const d = parseInt(daysInput.value);
-            if (d === 1) {
-                tourtypeSelect.value = 'รายวัน';
-                daysInput.readOnly = true;
-                nightsInput.readOnly = true;
-            } else if (d > 1) {
-                tourtypeSelect.value = 'หลายวัน';
-                daysInput.readOnly = false;
-                nightsInput.readOnly = false;
+            const savedType = /*[[${tour?.tourtype}]]*/ '';
+            if (savedType) {
+                const KNOWN_TYPES = ['ทัวร์รายวัน', 'ทัวร์วัฒนธรรมชนเผ่า', 'ทัวร์วิถีชีวิต'];
+                if (KNOWN_TYPES.includes(savedType)) {
+                    tourtypeSelect.value = savedType;
+                } else {
+                    tourtypeSelect.value = '__custom__';
+                    tourtypeCustom.value = savedType;
+                }
+                const d = parseInt(daysInput.value);
+                const n = parseInt(nightsInput.value);
+                applyTourTypeRules();
+                // คืนค่าวัน/คืนเดิมจาก DB ทับค่าที่ถูกเคลียร์ไปตอน applyTourTypeRules
+                if (!isNaN(d)) daysInput.value = d;
+                if (!isNaN(n)) nightsInput.value = n;
             }
         });
 
-        // ตรวจ "จำนวนคืนต้องน้อยกว่าจำนวนวัน" แบบ real-time ตอนผู้ใช้พิมพ์ (เฉพาะโหมดหลายวัน)
+        // ตรวจ "จำนวนคืนต้องน้อยกว่าจำนวนวัน" แบบ real-time ตอนผู้ใช้พิมพ์ (เฉพาะโหมดที่แก้ไขได้)
         nightsInput.addEventListener('input', () => {
-            if (tourtypeSelect.value !== 'หลายวัน') return;
+            if (tourtypeSelect.value === 'ทัวร์รายวัน') return;
             const d = parseInt(daysInput.value);
             const n = parseInt(nightsInput.value);
             if (!isNaN(d) && !isNaN(n) && n >= d) {
@@ -1228,7 +1254,7 @@
             }
         });
         daysInput.addEventListener('input', () => {
-            if (tourtypeSelect.value !== 'หลายวัน') return;
+            if (tourtypeSelect.value === 'ทัวร์รายวัน') return;
             clearErr('numberOfDays', 'err-numberOfDays');
         });
 
@@ -1307,12 +1333,16 @@
             if (tourtypeSelect.value === '') {
                 showErr('tourtypeSelect', 'err-tourtype', 'กรุณาเลือกประเภททัวร์');
                 valid = false;
-            } else if (tourtypeSelect.value === 'รายวัน') {
+            } else if (tourtypeSelect.value === '__custom__' && tourtypeCustom.value.trim() === '') {
+                showErr('tourtypeCustom', 'err-tourtypeCustom', 'กรุณาระบุชื่อประเภททัวร์');
+                valid = false;
+            } else if (tourtypeSelect.value === 'ทัวร์รายวัน') {
                 if (parseInt(daysInput.value) !== 1 || parseInt(nightsInput.value) !== 0) {
                     showErr('numberOfDays', 'err-numberOfDays', 'ทัวร์รายวันต้องเป็น 1 วัน 0 คืน');
                     valid = false;
                 }
-            } else if (tourtypeSelect.value === 'หลายวัน') {
+            } else {
+                // ทัวร์หลายวันทุกประเภท (รวม __custom__): แค่ต้องมากกว่า 1 วัน และคืน < วัน
                 const d = parseInt(daysInput.value);
                 const n = parseInt(nightsInput.value);
                 if (isNaN(d) || d <= 1) {
@@ -1334,16 +1364,45 @@
             e.preventDefault();
 
             const formData = new FormData(this);
+            const finalTourType = tourtypeSelect.value === '__custom__'
+                ? tourtypeCustom.value.trim()
+                : tourtypeSelect.value;
+            formData.set('tourtype', finalTourType); // field จริงที่ backend/Entity ใช้
+
             fetch(this.action, {
                 method: 'POST',
                 body: new URLSearchParams(formData)
-            }).then(() => {
-                showSuccessModal();
-            }).catch(() => {
-                showSuccessModal();
-            });
-        });
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        // HTTP error จริง (500, 404 ฯลฯ)
+                        return response.text().then(() => {
+                            throw new Error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (status ' + response.status + ')');
+                        });
+                    }
 
+                    // ✅ ตรวจว่า redirect ไปหน้า success จริงหรือไม่
+                    // controller สำเร็จ → "redirect:/manager/tours?success=created" → response.redirected = true
+                    // controller validate ไม่ผ่าน → return "Tour/addTour" ตรงๆ (ไม่ redirect) → response.redirected = false
+                    if (!response.redirected || !response.url.includes('/manager/tours')) {
+                        return response.text().then(html => {
+                            // ดึงข้อความจาก <div class="alert-error">...<span>ข้อความ</span></div>
+                            const match = html.match(/class="alert-error"[\s\S]*?<span[^>]*>([^<]*)<\/span>/);
+                            const msg = match ? match[1].trim() : 'กรุณาตรวจสอบข้อมูลที่กรอกอีกครั้ง';
+                            throw new Error(msg);
+                        });
+                    }
+
+                    return response.text();
+                })
+                .then(() => {
+                    showSuccessModal();
+                })
+                .catch(err => {
+                    console.error('เพิ่มทัวร์ไม่สำเร็จ:', err);
+                    alert('เกิดข้อผิดพลาด: ' + err.message);
+                });
+        });
     </script>
 
 </body>

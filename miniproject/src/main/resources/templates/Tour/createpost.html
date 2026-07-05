@@ -253,6 +253,7 @@
             margin-bottom: 6px;
         }
         .form-label .req { color: #c0392b; margin-left: 2px; }
+        .form-label .opt { color: var(--text-hint); font-weight: 400; margin-left: 4px; font-size: 11px; }
         .form-control {
             width: 100%;
             border: 1.5px solid var(--border);
@@ -275,6 +276,23 @@
             min-height: 110px;
         }
         select.form-control { cursor: pointer; }
+        .form-hint { font-size: 11px; color: var(--text-hint); margin-top: 6px; }
+
+        /* ─── TOUR PREVIEW ─── */
+        .tour-preview {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f3fae8;
+            border: 1px solid var(--green-light);
+            border-radius: var(--radius-sm);
+            font-size: 12.5px;
+            color: var(--green-dark);
+            align-items: center;
+            gap: 8px;
+        }
+        .tour-preview.show { display: flex; }
+        .tour-preview i { font-size: 14px; }
 
         /* ─── ACTION BAR ─── */
         .action-bar {
@@ -560,11 +578,35 @@
                                th:value="${post?.title}" required/>
                     </div>
 
-                    <div class="form-group" style="margin-bottom:0">
+                    <div class="form-group">
                         <label class="form-label">สถานที่ <span class="req">*</span></label>
                         <input class="form-control" type="text" name="location"
                                placeholder="จังหวัด / สถานที่ท่องเที่ยว"
                                th:value="${post?.location}" required/>
+                    </div>
+
+                    <!-- ═══ เชื่อมโพสต์กับทัวร์ ═══ -->
+                    <div class="form-group" style="margin-bottom:0">
+                        <label class="form-label">
+                            เชื่อมกับทัวร์ <span class="opt">(ไม่บังคับ — ใส่ถ้าโพสนี้โปรโมททัวร์)</span>
+                        </label>
+                        <select class="form-control" name="tourId" id="tourSelect">
+                            <option value="">-- ไม่เชื่อมกับทัวร์ (ข่าวสาร/ประกาศทั่วไป) --</option>
+                            <option th:each="t : ${tours}"
+                                    th:value="${t.tourid}"
+                                    th:text="${t.tourmname + ' (' + (t.getTourDuration() ?: '-') + ')'}"
+                                    th:selected="${post?.tour?.tourid == t.tourid}">
+                                ชื่อทัวร์
+                            </option>
+                        </select>
+                        <div class="form-hint">
+                            เมื่อเชื่อมกับทัวร์แล้ว หน้ารายละเอียดโพสต์จะมีปุ่ม "จองทัวร์นี้" ให้ผู้อ่านกดไปยังหน้าทัวร์ได้ทันที
+                        </div>
+                        <!-- แสดง badge เตือนถ้าทัวร์เต็มแล้ว (เผื่อ backend ส่ง tours มาพร้อม remainingSeats) -->
+                        <div class="tour-preview" id="tourPreview">
+                            <i class="fas fa-circle-info"></i>
+                            <span id="tourPreviewText">ทัวร์นี้จะถูกแนบไปกับโพสต์และแสดงปุ่มจองให้ผู้อ่าน</span>
+                        </div>
                     </div>
                 </div>
 
@@ -664,6 +706,20 @@
             imagesInput.value = '';
         }
     });
+
+    // ── แสดง/ซ่อนกล่องคำอธิบายเมื่อเลือกทัวร์ ──
+    const tourSelect  = document.getElementById('tourSelect');
+    const tourPreview = document.getElementById('tourPreview');
+
+    function toggleTourPreview() {
+        if (tourSelect.value) {
+            tourPreview.classList.add('show');
+        } else {
+            tourPreview.classList.remove('show');
+        }
+    }
+    tourSelect.addEventListener('change', toggleTourPreview);
+    toggleTourPreview(); // เผื่อกรณีแก้ไขโพสต์ที่มีทัวร์อยู่แล้ว
 
     // ─── Auto-show modal ถ้ามี successMessage ───
     (function() {
