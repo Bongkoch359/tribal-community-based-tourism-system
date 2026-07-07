@@ -62,7 +62,7 @@
       </svg>
       ข้อมูลชนเผ่า
     </a>
-  
+
   </div>
 
   <div class="nav-divider"></div>
@@ -237,12 +237,19 @@
             </svg>
             <span th:text="${tour.minSeatstour} + ' – ' + ${tour.maxSeatstour} + ' ที่นั่ง'">2 – 15 ที่นั่ง</span>
           </div>
+
+          <!-- ✅ แก้: ประเภททัวร์ + จำนวนวัน/คืนจริง แทนข้อความ hardcode 'ทัวร์วันเดียว (1 วัน)' -->
           <div class="tour-hero-meta-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
             </svg>
-            <span>ทัวร์วันเดียว (1 วัน)</span>
+            <span th:text="${tourTypeDisplay} + ' · ' + ${tour.numberOfDays} + ' วัน'
+                           + (${tour.numberOfNights} != null and ${tour.numberOfNights} > 0
+                               ? ' ' + ${tour.numberOfNights} + ' คืน' : '')">
+              ทัวร์รายวัน · 1 วัน
+            </span>
           </div>
+
           <div class="tour-hero-meta-item" th:if="${tour.communitymanager != null}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -261,23 +268,28 @@
 <div class="stat-strip">
   <div class="stat-strip-inner">
 
-   <div class="stat-strip-item">
-  <div class="stat-strip-icon" style="background:#d8f3dc;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#2d7a4f" stroke-width="2">
-      <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
-    </svg>
-  </div>
-  <div>
-    <div class="stat-strip-label">ที่นั่งคงเหลือ</div>
-    <div class="stat-strip-value"
-         th:text="${tour.remainingSeats} + ' / ' + ${tour.maxSeatstour}"
-         th:style="${tour.full} ? 'color:#dc2626' : 'color:var(--green-800)'">
+    <!-- ✅ แก้: ใช้ seatLevel / availableSeats จาก TourService.getAvailableSeats()
+         แทน tour.remainingSeats / tour.full เดิม — สูตรเดียวกับหน้า booking_tour.html
+         และไม่โชว์เลข x/y อีกต่อไป -->
+    <div class="stat-strip-item">
+      <div class="stat-strip-icon" style="background:#d8f3dc;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2d7a4f" stroke-width="2">
+          <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+        </svg>
+      </div>
+      <div>
+        <div class="stat-strip-label">ที่นั่งคงเหลือ</div>
+        <div class="stat-strip-value"
+             th:text="${seatLevel == 'full'} ? 'เต็มแล้ว' : (${availableSeats} + ' ที่')"
+             th:style="${seatLevel == 'full'} ? 'color:#dc2626' : 'color:var(--green-800)'">
+        </div>
+        <div class="stat-strip-sub"
+             th:text="${seatLevel == 'full'} ? 'ไม่สามารถจองได้' :
+                      (${seatLevel == 'low'} ? 'ใกล้เต็มแล้ว รีบจอง!' : 'ที่นั่งว่าง')">
+        </div>
+      </div>
     </div>
-    <div class="stat-strip-sub"
-         th:text="${tour.full} ? 'เต็มแล้ว' : 'ที่นั่งว่าง'">
-    </div>
-  </div>
-</div>
+
     <div class="stat-strip-item">
       <div class="stat-strip-icon" style="background:#fef3c7;">
         <svg viewBox="0 0 24 24" fill="none" stroke="#c27b04" stroke-width="2">
@@ -341,6 +353,18 @@
         </svg>
         รายละเอียดทัวร์
       </div>
+
+      <!-- ✅ เพิ่ม: badge ประเภททัวร์ -->
+      <div style="margin-bottom:14px;">
+        <span style="display:inline-flex;align-items:center;gap:6px;background:#d8f3dc;color:#215c35;
+                     font-size:12px;font-weight:700;padding:5px 12px;border-radius:100px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;">
+            <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+          </svg>
+          <span th:text="${tourTypeDisplay}">ทัวร์รายวัน</span>
+        </span>
+      </div>
+
       <p class="tour-detail-text" th:text="${tour.tourdetail}">รายละเอียดทัวร์จากฐานข้อมูล</p>
       <div class="info-note" th:if="${tour.conditiontour != null and !tour.conditiontour.isEmpty()}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -506,9 +530,10 @@
       <!-- ล็อกอินแล้ว (เฉพาะ Member) -->
 <th:block th:if="${session.loggedInMember != null}">
 
+  <!-- ✅ แก้: ใช้ seatLevel == 'full' แทน tour.full -->
   <!-- กรณีเต็มแล้ว -->
-  <div th:if="${tour.full}" 
-       class="bk-login-prompt" 
+  <div th:if="${seatLevel == 'full'}"
+       class="bk-login-prompt"
        style="background:#fee2e2;border-color:#fca5a5;">
     <p style="color:#dc2626;font-weight:700;">
       ⚠️ ที่นั่งเต็มแล้ว ไม่สามารถจองได้
@@ -516,8 +541,8 @@
   </div>
 
   <!-- กรณียังมีที่นั่ง -->
-  <button th:if="${!tour.full}" 
-          class="btn-book-now" 
+  <button th:if="${seatLevel != 'full'}"
+          class="btn-book-now"
           onclick="goToBooking()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -525,7 +550,13 @@
     จองทัวร์นี้เลย!
   </button>
 
-  <div class="bk-guarantee" th:if="${!tour.full}">
+  <!-- ✅ เพิ่ม: ข้อความเร่งด่วนเมื่อใกล้เต็ม -->
+  <div th:if="${seatLevel == 'low'}"
+       style="text-align:center;font-size:12px;color:#c27b04;font-weight:700;margin-top:6px;">
+    ⚠️ เหลือเพียง <span th:text="${availableSeats}"></span> ที่ — รีบจองด่วน!
+  </div>
+
+  <div class="bk-guarantee" th:if="${seatLevel != 'full'}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
     </svg>

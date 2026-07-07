@@ -587,10 +587,7 @@ img { display: block; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
       ข้อมูลชนเผ่า
     </a>
-    <a href="/about" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      เกี่ยวกับเรา
-    </a>
+    
   </div>
   <div class="nav-divider"></div>
   <div class="auth-group">
@@ -757,17 +754,16 @@ img { display: block; }
 
             <!-- สถานะที่นั่ง -->
             <div class="seat-status">
-              <span class="seat-badge full" th:if="${availableSeats <= 0}">
-                ❌ ทัวร์รอบนี้เต็มแล้ว ไม่สามารถจองได้
-              </span>
-              <span class="seat-badge low" th:if="${availableSeats > 0 and availableSeats <= 3}">
-                ⚠️ ที่นั่งเหลือน้อย — รีบจองด่วน!
-              </span>
-              <span class="seat-badge open" th:if="${availableSeats > 3}">
-                ✓ ยังมีที่นั่งว่าง
-              </span>
-            </div>
-
+  <span class="seat-badge full" th:if="${seatLevel == 'full'}">
+    ❌ ทัวร์รอบนี้เต็มแล้ว ไม่สามารถจองได้
+  </span>
+  <span class="seat-badge low" th:if="${seatLevel == 'low'}">
+    ⚠️ เหลือเพียง <strong th:text="${availableSeats}"></strong> ที่ — รีบจองด่วน!
+  </span>
+  <span class="seat-badge open" th:if="${seatLevel == 'open'}">
+    ✓ ยังมีที่นั่งว่าง
+  </span>
+</div>
           </div>
         </div>
 
@@ -952,9 +948,9 @@ img { display: block; }
             <span class="val" x-text="pickupType">—</span>
           </div>
           <div class="summary-row">
-            <span>ที่นั่งสูงสุด/รอบ</span>
-            <span class="val" th:text="${tour.maxSeatstour} + ' ท่าน'"></span>
-          </div>
+  <span>รับทั้งหมด</span>
+  <span class="val" th:text="${tour.maxSeatstour} + ' ท่าน'"></span>
+</div>
 
           <hr class="summary-divider">
 

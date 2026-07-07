@@ -30,57 +30,30 @@ public class BookingTourController {
     // GET : หน้าจองทัวร์
     // ════════════════════════════════════════════════════════
     @GetMapping("/booking/tour/{id}")
-    public String bookingPage(
-            @PathVariable("id") String id,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+public String bookingPage(
+        @PathVariable("id") String id,
+        Model model,
+        RedirectAttributes redirectAttributes) {
 
-        Optional<Tour> optionalTour = tourService.getTourByIdWithBookings(id);
+    Optional<Tour> optionalTour = tourService.getTourByIdWithBookings(id);
 
-        // 3.1.1 — ไม่พบทัวร์ → แสดง error ที่หน้า booking ไม่ใช่ redirect ไป /search
-        if (optionalTour.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMsg", "ไม่พบข้อมูลรายการทัวร์");
-            return "redirect:/search";
-        }
-
-        Tour tour = optionalTour.get();
-
-        int bookedSeats = tour.getBookingTourDetails().stream()
-            .filter(td -> td.getBooking() != null
-                   && td.getBooking().getBookingStatus() != BookingStatus.CANCEL)
-            .collect(java.util.stream.Collectors.toMap(
-                td -> td.getBooking().getBookingid(),
-                td -> {
-                    int a = td.getNumofadult() != null ? td.getNumofadult() : 0;
-                    int c = td.getNumofchild() != null ? td.getNumofchild() : 0;
-                    return a + c;
-                },
-                (existing, duplicate) -> existing
-            ))
-            .values().stream()
-            .mapToInt(Integer::intValue)
-            .sum();
-
-        int availableSeats = Math.max(0, tour.getMaxSeatstour() - bookedSeats);
-
-        System.out.println("=== DEBUG ===");
-        System.out.println("maxSeats: " + tour.getMaxSeatstour());
-        System.out.println("bookingDetails size: " + tour.getBookingTourDetails().size());
-        tour.getBookingTourDetails().forEach(td -> {
-            String bid = td.getBooking() != null ? td.getBooking().getBookingid() : "NULL";
-            String status = td.getBooking() != null ? td.getBooking().getBookingStatus().toString() : "NULL";
-            int a = td.getNumofadult() != null ? td.getNumofadult() : 0;
-            int c = td.getNumofchild() != null ? td.getNumofchild() : 0;
-            System.out.println("  -> bookingId=" + bid + " status=" + status + " adult=" + a + " child=" + c);
-        });
-        System.out.println("bookedSeats: " + bookedSeats);
-        System.out.println("availableSeats: " + availableSeats);
-
-        model.addAttribute("tour", tour);
-        model.addAttribute("availableSeats", availableSeats);
-
-        return "Member/booking_tour";
+    // 3.1.1 — ไม่พบทัวร์ → แสดง error ที่หน้า booking ไม่ใช่ redirect ไป /search
+    if (optionalTour.isEmpty()) {
+        redirectAttributes.addFlashAttribute("errorMsg", "ไม่พบข้อมูลรายการทัวร์");
+        return "redirect:/search";
     }
+
+    Tour tour = optionalTour.get();
+
+    int availableSeats = tourService.getAvailableSeats(tour);
+    String seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
+
+    model.addAttribute("tour", tour);
+    model.addAttribute("availableSeats", availableSeats);
+    model.addAttribute("seatLevel", seatLevel);
+
+    return "Member/booking_tour";
+}
 
     // ════════════════════════════════════════════════════════
     // POST : สร้างการจองทัวร์

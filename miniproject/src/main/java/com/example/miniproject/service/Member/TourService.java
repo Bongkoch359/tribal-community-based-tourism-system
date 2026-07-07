@@ -140,4 +140,32 @@ public Tour updateTour(String tourid, Tour updated) {
     public long countActiveTours() {
         return tourRepository.findByStatus("เปิดจอง").size();
     }
+
+    // ─────────────────────────────────────────────────────────
+// คำนวณที่นั่งคงเหลือ — จุดเดียวที่ใช้ทั้งระบบ (single source of truth)
+// ─────────────────────────────────────────────────────────
+public int getAvailableSeats(Tour tour) {
+    if (tour.getMaxSeatstour() == null) {
+        return Integer.MAX_VALUE; // ไม่จำกัดที่นั่ง
+    }
+    Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
+        .stream()
+        .collect(Collectors.toMap(
+            row -> (String) row[0],
+            row -> ((Number) row[1]).intValue()
+        ));
+    int bookedSeats = bookedMap.getOrDefault(tour.getTourid(), 0);
+    return Math.max(0, tour.getMaxSeatstour() - bookedSeats);
+}
+
+// ─────────────────────────────────────────────────────────
+// ระดับสถานะที่นั่ง — ใช้ % แทนเลขตายตัว (รองรับทัวร์เล็ก/ใหญ่เท่ากัน)
+// คืนค่า: "full" | "low" | "open"
+// ─────────────────────────────────────────────────────────
+public String getSeatStatusLevel(Tour tour, int availableSeats) {
+    if (availableSeats <= 0) return "full";
+    if (tour.getMaxSeatstour() == null || tour.getMaxSeatstour() <= 0) return "open";
+    double ratio = (double) availableSeats / tour.getMaxSeatstour();
+    return (ratio <= 0.2) ? "low" : "open"; // เหลือ ≤20% ถือว่าใกล้เต็ม
+}
 }
