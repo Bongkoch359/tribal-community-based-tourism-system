@@ -929,7 +929,7 @@
                                 <option value="" disabled selected>— เลือกประเภททัวร์ —</option>
                                 <option value="ทัวร์รายวัน">ทัวร์รายวัน </option>
                                 <option value="ทัวร์วัฒนธรรมชนเผ่า">ทัวร์เรียนรู้วัฒนธรรมชนเผ่า </option>
-                                <option value="ทัวร์วิถีชีวิต">ทัวร์เรียนรู้วิถีชีวิต</option>
+                                <option value="ทัวร์วิถีชีวิต">ทัวร์เรียนรู้วิถีชีวิตชนเผ่า</option>
                                 <option value="__custom__">อื่นๆ (ระบุชื่อประเภทเอง)</option>
                             </select>
                             <div class="field-error" id="err-tourtype">กรุณาเลือกประเภททัวร์</div>
@@ -1224,7 +1224,7 @@
 
         // เผื่อมีค่าเดิมติดมาจาก server (เช่น validation error แล้ว reload หน้าเดิม / โหมดแก้ไข)
         window.addEventListener('DOMContentLoaded', () => {
-            const savedType = /*[[${tour?.tourtype}]]*/ '';
+            const savedType = /*[[${tour?.tourtype?.typename}]]*/ '';
             if (savedType) {
                 const KNOWN_TYPES = ['ทัวร์รายวัน', 'ทัวร์วัฒนธรรมชนเผ่า', 'ทัวร์วิถีชีวิต'];
                 if (KNOWN_TYPES.includes(savedType)) {

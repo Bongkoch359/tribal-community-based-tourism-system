@@ -37,8 +37,11 @@ public class Tour {
 
     // ===================== เพิ่มใหม่: ประเภททัวร์ / จำนวนวัน / จำนวนคืน
     // =====================
-    @Column(length = 100)
-    private String tourtype; 
+    // เดิม tourtype เป็น String ตรงนี้ ตอนนี้แยกออกไปเป็นคลาส TourType
+    // แล้วผูกด้วย @ManyToOne (หลายทัวร์ ใช้ประเภทเดียวกันได้)
+    @ManyToOne
+    @JoinColumn(name = "typeId")
+    private TourType tourtype;
 
     @Column(name = "number_of_days")
     private Integer numberOfDays; // จำนวนวัน เช่น 1, 3, 5
@@ -157,11 +160,11 @@ public class Tour {
         this.status = status;
     }
 
-    public String getTourtype() {
+    public TourType getTourtype() {
         return tourtype;
     }
 
-    public void setTourtype(String tourtype) {
+    public void setTourtype(TourType tourtype) {
         this.tourtype = tourtype;
     }
 
@@ -190,25 +193,22 @@ public class Tour {
     }
 
     /**
-     * Auto-set tourtype เฉพาะกรณีทัวร์รายวัน (numberOfDays == 1)
-     * ส่วนทัวร์หลายวัน (2 วัน 1 คืน, 3 วัน 2 คืน, ฯลฯ) ต้องกำหนด tourtype เอง
-     * เพราะชื่อประเภทขึ้นกับธีม/เนื้อหาทัวร์ ไม่ใช่แค่จำนวนวัน
+     * หมายเหตุ: เดิมเมธอดนี้ทำหน้าที่ auto-set ค่า tourtype เป็น String "ทัวร์รายวัน"
+     * และตรวจสอบว่าทัวร์หลายวันต้องมี tourtype เอง
+     *
+     * ตอนนี้ tourtype เปลี่ยนเป็นความสัมพันธ์กับ TourType (ต้องหา/สร้าง record
+     * ในตาราง tourtype ผ่าน repository) ซึ่ง entity เรียก repository เองไม่ได้
+     * จึงย้ายส่วนตรวจสอบ/กำหนด TourType ไปทำที่ TourService แทน
+     * (ดูเมธอด resolveTourType(...) ใน TourService)
+     *
+     * ที่ยังเก็บไว้ในนี้คือ logic ง่ายๆ ที่ไม่เกี่ยวกับ DB: ทัวร์รายวัน (1 วัน)
+     * ต้องมีจำนวนคืนเป็น 0 เสมอ
      */
     @PrePersist
     @PreUpdate
     public void updateTourtype() {
-        if (numberOfDays != null) {
-            if (numberOfDays == 1) {
-                this.tourtype = "ทัวร์รายวัน"; 
-                if (numberOfNights == null) {
-                    this.numberOfNights = 0; // ทัวร์รายวัน = 0 คืน
-                }
-            } else if (this.tourtype == null || this.tourtype.isBlank()) {
-                // ป้องกันกรณีลืม set tourtype เองสำหรับทัวร์หลายวัน
-                throw new IllegalStateException(
-                        "กรุณาระบุ tourtype สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
-            }
-            // ถ้า tourtype ถูก set มาแล้วสำหรับทัวร์หลายวัน จะไม่ไป override ทับ
+        if (numberOfDays != null && numberOfDays == 1 && numberOfNights == null) {
+            this.numberOfNights = 0; // ทัวร์รายวัน = 0 คืน
         }
     }
 

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Tour;
+import com.example.miniproject.entity.TourType;
 import com.example.miniproject.repository.Member.TourRepository;
+import com.example.miniproject.repository.Tour.TourTypeRepository;
 
 
 @Service
@@ -19,6 +21,41 @@ public class TourService {
 
     @Autowired
     private TourRepository tourRepository;
+
+    @Autowired
+    private TourTypeRepository tourTypeRepository;
+
+    // ชื่อประเภทที่บังคับใช้กับทัวร์รายวัน (numberOfDays == 1)
+    private static final String DAILY_TOUR_TYPE_NAME = "ทัวร์รายวัน";
+
+    // ─────────────────────────────────────────────────────────
+    // หา TourType จากชื่อ ถ้ายังไม่มีในตาราง tourtype ให้สร้างใหม่ให้เลย
+    // (เดิม logic นี้อยู่ใน Tour.updateTourtype() แบบ String,
+    //  ย้ายมาไว้ที่ service เพราะต้องคุยกับ TourTypeRepository)
+    // ─────────────────────────────────────────────────────────
+    private TourType resolveTourType(String typeNameFromForm, Integer numberOfDays) {
+        String name = (numberOfDays != null && numberOfDays == 1)
+                ? DAILY_TOUR_TYPE_NAME
+                : (typeNameFromForm == null ? null : typeNameFromForm.trim());
+
+        if (name == null || name.isBlank()) {
+            if (numberOfDays != null && numberOfDays > 1) {
+                // ป้องกันกรณีลืม set tourtype เองสำหรับทัวร์หลายวัน (เดิมโยนใน entity)
+                throw new IllegalStateException(
+                        "กรุณาระบุ tourtype สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
+            }
+            return null;
+        }
+
+        return tourTypeRepository.findByTypename(name)
+                .orElseGet(() -> {
+                    TourType t = new TourType();
+                    t.setTypeId("TT" + UUID.randomUUID().toString()
+                            .replace("-", "").substring(0, 8).toUpperCase());
+                    t.setTypename(name);
+                    return tourTypeRepository.save(t);
+                });
+    }
 
     // ─────────────────────────────────────────────────────────
     // ดึงทัวร์ทั้งหมดของ manager คนนั้น (ใช้ใน listTour)
@@ -93,20 +130,35 @@ public class TourService {
     // ─────────────────────────────────────────────────────────
     // สร้างทัวร์ใหม่
     // ─────────────────────────────────────────────────────────
+    // tourTypeName: ชื่อประเภททัวร์ที่รับมาจากฟอร์ม (String) — service จะแปลงเป็น TourType ให้เอง
     @Transactional
-    public Tour createTour(Tour tour, Communitymanager manager) {
+    public Tour createTour(Tour tour, Communitymanager manager, String tourTypeName) {
         String newId = "T" + UUID.randomUUID().toString()
                 .replace("-", "").substring(0, 9).toUpperCase();
         tour.setTourid(newId);
         tour.setCommunitymanager(manager);
+        tour.setTourtype(resolveTourType(tourTypeName, tour.getNumberOfDays()));
         return tourRepository.save(tour);
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // อัปเดตเฉพาะรูปภาพ (ใช้หลัง createTour ตอนบันทึกรูปจาก base64
+    // ไม่ต้องยุ่งกับ tourtype ซ้ำอีกรอบ)
+    // ─────────────────────────────────────────────────────────
+    @Transactional
+    public void updateImages(String tourid, String images) {
+        tourRepository.findById(tourid).ifPresent(t -> {
+            t.setImages(images);
+            tourRepository.save(t);
+        });
     }
 
     // ─────────────────────────────────────────────────────────
     // อัปเดตทัวร์
     // ─────────────────────────────────────────────────────────
+    // tourTypeName: ชื่อประเภททัวร์ที่รับมาจากฟอร์ม (String) — service จะแปลงเป็น TourType ให้เอง
     @Transactional
-public Tour updateTour(String tourid, Tour updated) {
+public Tour updateTour(String tourid, Tour updated, String tourTypeName) {
     Tour existing = tourRepository.findById(tourid)
             .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ ID: " + tourid));
 
@@ -120,6 +172,7 @@ public Tour updateTour(String tourid, Tour updated) {
     existing.setChildprice(updated.getChildprice());
     existing.setNumberOfDays(updated.getNumberOfDays());      
     existing.setNumberOfNights(updated.getNumberOfNights());  
+    existing.setTourtype(resolveTourType(tourTypeName, updated.getNumberOfDays()));
     if (updated.getImages() != null && !updated.getImages().isBlank()) {
         existing.setImages(updated.getImages());
     }

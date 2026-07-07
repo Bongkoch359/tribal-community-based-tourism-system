@@ -227,17 +227,17 @@ public class TourController {
         tour.setChildprice(childprice);
         tour.setNumberOfDays(numberOfDays);
         tour.setNumberOfNights(numberOfDays == 1 ? 0 : numberOfNights); // ทัวร์รายวันบังคับ 0 คืน
-        // ✅ set tourtype จากฟอร์ม (ใช้เฉพาะทัวร์ >1 วัน) — ทัวร์รายวัน @PrePersist จะ override เป็น "ทัวร์รายวัน" เองอยู่แล้ว
-        tour.setTourtype(tourtype != null && !tourtype.isBlank() ? tourtype.trim() : null);
+        // ✅ tourtype ตอนนี้เป็น TourType (entity) — ส่งชื่อ (String) จากฟอร์มให้ service
+        // ไปหา/สร้าง TourType เอง แล้วผูกเข้ากับ tour (ทัวร์รายวัน service จะบังคับเป็น "ทัวร์รายวัน" เองอยู่แล้ว)
 
         try {
-            Tour saved = tourService.createTour(tour, manager);
+            Tour saved = tourService.createTour(tour, manager,
+                    tourtype != null && !tourtype.isBlank() ? tourtype.trim() : null);
 
             // ✅ บันทึกรูปจาก base64 JSON
             String imageNames = saveImagesFromBase64(imagesJson, saved.getTourid());
             if (imageNames != null) {
-                saved.setImages(imageNames);
-                tourService.updateTour(saved.getTourid(), saved);
+                tourService.updateImages(saved.getTourid(), imageNames);
             }
 
             return "redirect:/manager/tours?success=created";
@@ -360,8 +360,8 @@ public class TourController {
         updated.setChildprice(childprice);
         updated.setNumberOfDays(numberOfDays);
         updated.setNumberOfNights(numberOfDays != null && numberOfDays == 1 ? 0 : numberOfNights);
-        // ✅ set tourtype จากฟอร์ม (ใช้เฉพาะทัวร์ >1 วัน) — ทัวร์รายวัน @PreUpdate จะ override เป็น "ทัวร์รายวัน" เองอยู่แล้ว
-        updated.setTourtype(tourtype != null && !tourtype.isBlank() ? tourtype.trim() : null);
+        // ✅ tourtype ตอนนี้เป็น TourType (entity) — ส่งชื่อ (String) จากฟอร์มให้ service
+        // ไปหา/สร้าง TourType เอง แล้วผูกเข้ากับ tour (ทัวร์รายวัน service จะบังคับเป็น "ทัวร์รายวัน" เองอยู่แล้ว)
 
         // ✅ ถ้าเป็น __KEEP__ หรือ null = ไม่ได้เปลี่ยนรูป ให้คงรูปเดิม
         if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__")) {
@@ -372,7 +372,8 @@ public class TourController {
         }
 
         try {
-            tourService.updateTour(tourid, updated);
+            tourService.updateTour(tourid, updated,
+                    tourtype != null && !tourtype.isBlank() ? tourtype.trim() : null);
             redirectAttributes.addFlashAttribute("successMessage", "แก้ไขทัวร์สำเร็จ");
             return "redirect:/manager/tours/" + tourid;
         } catch (Exception e) {
