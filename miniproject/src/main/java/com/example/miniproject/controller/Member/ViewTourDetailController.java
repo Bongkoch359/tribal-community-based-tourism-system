@@ -28,34 +28,42 @@ public class ViewTourDetailController {
     @Autowired
     private TourService tourService;
 
-    @GetMapping("/tour/{id}")
-    public String viewTourDetail(@PathVariable String id, Model model) {
+@GetMapping("/tour/{id}")
+public String viewTourDetail(@PathVariable String id, Model model) {
 
-        Tour tour = tourRepository.findByIdWithBookings(id).orElse(null);
+    Tour tour = tourRepository.findByIdWithBookings(id).orElse(null);
 
-        if (tour == null) {
-            return "redirect:/search";
-        }
-
-        tourService.injectBookedSeats(List.of(tour));
-        model.addAttribute("tour", tour);
-
-        // ── รีวิวของทัวร์นี้ (ดึงจาก DB จริง) ──
-        List<Review> reviews = reviewRepository.findByTourId(id);
-        model.addAttribute("reviews", reviews);
-
-        // ── จำนวนรีวิว ──
-        model.addAttribute("reviewCount", reviews.size());
-
-        // ── คะแนนเฉลี่ย ──
-        Double avg = reviewRepository.avgRatingByTourId(id);
-        model.addAttribute("avgRating", avg != null ? avg : 0.0);
-
-        // ── นับจำนวนรีวิวแต่ละดาว (Map<Integer, Long>) ──
-        Map<Integer, Long> ratingCounts = reviews.stream()
-                .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
-        model.addAttribute("ratingCounts", ratingCounts);
-
-        return "Member/tour_detail";
+    if (tour == null) {
+        return "redirect:/search";
     }
+
+    // ✅ ใช้จุดคำนวณที่นั่งกลางจุดเดียว แทน injectBookedSeats + tour.full/remainingSeats เดิม
+    // (ให้ตรงกับหน้า booking_tour.html ทุกที่)
+    int availableSeats = tourService.getAvailableSeats(tour);
+    String seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
+    model.addAttribute("availableSeats", availableSeats);
+    model.addAttribute("seatLevel", seatLevel);
+    model.addAttribute("tour", tour);
+
+    // ✅ ประเภททัวร์ — กัน null (ข้อมูลเก่าก่อนมี field นี้) ให้มี fallback เสมอ
+    String tourTypeDisplay = (tour.getTourtype() != null && !tour.getTourtype().isBlank())
+            ? tour.getTourtype()
+            : (tour.getNumberOfDays() != null && tour.getNumberOfDays() == 1
+                    ? "ทัวร์รายวัน" : "ไม่ระบุประเภท");
+    model.addAttribute("tourTypeDisplay", tourTypeDisplay);
+
+    // ── รีวิวของทัวร์นี้ ──
+    List<Review> reviews = reviewRepository.findByTourId(id);
+    model.addAttribute("reviews", reviews);
+    model.addAttribute("reviewCount", reviews.size());
+
+    Double avg = reviewRepository.avgRatingByTourId(id);
+    model.addAttribute("avgRating", avg != null ? avg : 0.0);
+
+    Map<Integer, Long> ratingCounts = reviews.stream()
+            .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
+    model.addAttribute("ratingCounts", ratingCounts);
+
+    return "Member/tour_detail";
+}
 }

@@ -29,6 +29,9 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     @Autowired
+    private TourService tourService;
+
+    @Autowired
     private BookingroomdetailRepository bookingroomdetailRepository;
 
     @Autowired
@@ -333,31 +336,15 @@ public class BookingService {
     int totalGuest = adults + childs;
 
     // ── 4. ตรวจขั้นต่ำ / สูงสุด ──────────────────────────
-    if (tour.getMinSeatstour() != null
-            && totalGuest < tour.getMinSeatstour()) {
-
-        throw new IllegalArgumentException(
-                "จำนวนผู้เข้าร่วมขั้นต่ำคือ "
-                        + tour.getMinSeatstour() + " คน");
-    }
-
    
-if (tour.getMaxSeatstour() != null) {
-    int bookedSeats = tour.getBookingTourDetails().stream()
-        .filter(td -> td.getBooking() != null
-                   && td.getBooking().getBookingStatus() != BookingStatus.CANCEL)
-        .mapToInt(td -> {
-            int a = td.getNumofadult() != null ? td.getNumofadult() : 0;
-            int c = td.getNumofchild() != null ? td.getNumofchild() : 0;
-            return a + c;
-        })
-        .sum();
-    int availableSeats = tour.getMaxSeatstour() - bookedSeats;
+
+   if (tour.getMaxSeatstour() != null) {
+    int availableSeats = tourService.getAvailableSeats(tour);
     if (totalGuest > availableSeats) {
-        throw new IllegalArgumentException(
-            "ที่นั่งคงเหลือไม่เพียงพอ (เหลือ " + availableSeats + " ที่นั่ง)");
+        throw new IllegalArgumentException("ที่นั่งคงเหลือไม่เพียงพอ (เหลือ " + availableSeats + " ที่นั่ง)");
     }
 }
+
 
     // ── 5. คำนวณราคา ────────────────────────────────────
     double subtotal =
