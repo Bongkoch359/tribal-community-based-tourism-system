@@ -45,9 +45,12 @@ public String viewTourDetail(@PathVariable String id, Model model) {
     model.addAttribute("seatLevel", seatLevel);
     model.addAttribute("tour", tour);
 
-    // ✅ ประเภททัวร์ — กัน null (ข้อมูลเก่าก่อนมี field นี้) ให้มี fallback เสมอ
-    String tourTypeDisplay = (tour.getTourtype() != null && !tour.getTourtype().isBlank())
-            ? tour.getTourtype()
+    // ✅ ประเภททัวร์ — tourtype ตอนนี้เป็น object (TourType) ไม่ใช่ String แล้ว
+    // ต้องดึง .getTypename() ออกมาก่อน แล้วค่อยกัน null/blank
+    // fallback: ถ้าไม่มี tourtype แต่เป็นทัวร์ 1 วัน -> "ทัวร์รายวัน", นอกนั้น "ไม่ระบุประเภท"
+    String typeName = (tour.getTourtype() != null) ? tour.getTourtype().getTypename() : null;
+    String tourTypeDisplay = (typeName != null && !typeName.isBlank())
+            ? typeName
             : (tour.getNumberOfDays() != null && tour.getNumberOfDays() == 1
                     ? "ทัวร์รายวัน" : "ไม่ระบุประเภท");
     model.addAttribute("tourTypeDisplay", tourTypeDisplay);
