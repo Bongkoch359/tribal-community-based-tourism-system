@@ -272,7 +272,7 @@
                                placeholder="ชื่อทัวร์" required maxlength="200">
                     </div>
 
-                    <!-- ★ เพิ่มใหม่: ประเภททัวร์ ★ -->
+                    <!-- ประเภททัวร์ -->
                     <div class="form-group">
                         <label>ประเภททัวร์ <span class="req">*</span></label>
                         <select id="tourtypeSelect" name="tourtypeUi" required>
@@ -284,7 +284,7 @@
                         </select>
                     </div>
 
-                    <!-- ★ เพิ่มใหม่: ช่องระบุชื่อเอง แสดงเฉพาะกรณีเลือก "อื่นๆ" ★ -->
+                    <!-- ช่องระบุชื่อเอง แสดงเฉพาะกรณีเลือก "อื่นๆ" -->
                     <div class="form-group" id="customTypeGroup" style="display:none;">
                         <label>ระบุชื่อประเภททัวร์ <span class="req">*</span></label>
                         <input type="text" id="tourtypeCustom" placeholder="เช่น ทัวร์เกษตรอินทรีย์ 4 วัน 3 คืน">
@@ -465,6 +465,7 @@ function removeImage(index) {
    TOUR TYPE (เหมือนฟอร์มเพิ่มทัวร์)
    - "ทัวร์รายวัน" เท่านั้น → ล็อกวัน=1 คืน=0
    - ประเภทอื่นทั้งหมด → ให้กรอกวัน/คืนเอง
+   - tourtype ตอนนี้เป็น entity (TourType) → อ่านชื่อผ่าน tour.tourtype.typename
 ═══════════════════════════════════════════ */
 const tourtypeSelect  = document.getElementById('tourtypeSelect');
 const daysInput       = document.getElementById('numberOfDays');
@@ -491,8 +492,9 @@ function applyTourTypeRules() {
 tourtypeSelect.addEventListener('change', applyTourTypeRules);
 
 // ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
+// ✅ tourtype เป็น entity แล้ว ต้องอ่านชื่อผ่าน .typename และกัน null (ทัวร์ที่ยังไม่ผูกประเภท)
 (function initTourType() {
-    const savedType = /*[[${tour.tourtype}]]*/ '';
+    const savedType = /*[[${tour.tourtype != null ? tour.tourtype.typename : ''}]]*/ '';
     if (!savedType) return;
     if (KNOWN_TYPES.includes(savedType)) {
         tourtypeSelect.value = savedType;
