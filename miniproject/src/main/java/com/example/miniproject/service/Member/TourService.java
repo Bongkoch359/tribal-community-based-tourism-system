@@ -71,6 +71,10 @@ public class TourService {
         return tourRepository.findAll();
     }
 
+    public List<TourType> getAllTourTypes() {
+    return tourTypeRepository.findAll();
+}
+
     // ─────────────────────────────────────────────────────────
     // ดึงเฉพาะทัวร์ที่ "เปิดจอง" (สำหรับหน้าค้นหาของผู้ใช้)
     // ─────────────────────────────────────────────────────────

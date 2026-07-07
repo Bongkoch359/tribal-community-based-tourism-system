@@ -39,6 +39,7 @@ public class SearchInfoController {
             @RequestParam(defaultValue = "1")         Integer numGuest,
             @RequestParam(defaultValue = "activity") String  type,
             @RequestParam(required = false)          String  managerId, 
+             @RequestParam(required = false)          String  tourTypeId,
             Model model) {
 
         if (numGuest < 1) {
@@ -61,7 +62,7 @@ public class SearchInfoController {
         if (managerId != null && !managerId.isEmpty()) {
             tours = searchInfoService.getToursByManagerId(managerId); 
         } else {
-            tours = searchInfoService.searchTour(keyword, numGuest, startDate, endDate);
+            tours = searchInfoService.searchTour(keyword, numGuest, startDate, endDate, tourTypeId);
         }
 
         tourService.injectBookedSeats(tours); // ← เพิ่มบรรทัดนี้
@@ -91,6 +92,8 @@ public class SearchInfoController {
         model.addAttribute("endDate",       endDate);
         model.addAttribute("numGuest",      numGuest);
         model.addAttribute("currentType",   type);
+        model.addAttribute("tourTypeId", tourTypeId);
+        model.addAttribute("tourTypes", tourService.getAllTourTypes());
         
         // นับจำนวนนับตามกลุ่มข้อมูลที่ดึงได้จริงของแท็บนั้นๆ
         model.addAttribute("activityCount", activities.size());
@@ -129,6 +132,7 @@ public class SearchInfoController {
         model.addAttribute("actReviewCount",  actReviewCount);
         model.addAttribute("hsRating",        hsRating);
         model.addAttribute("hsReviewCount",   hsReviewCount);
+        
 
         return "Member/member_search";
     }

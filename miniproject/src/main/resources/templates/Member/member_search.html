@@ -271,7 +271,7 @@
             <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
           </svg>
         </div>
-        <div class="stat-text"><strong>12+ ชนเผ่า</strong><span>ในภาคเหนือ</span></div>
+        <div class="stat-text"><strong>7+ ชนเผ่า</strong><span>ในภาคเหนือ</span></div>
       </div>
       <div class="stat-item">
         <div class="stat-icon">
@@ -279,15 +279,10 @@
             <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
         </div>
-        <div class="stat-text"><strong>200+ กิจกรรม</strong><span>ให้เลือกสัมผัส</span></div>
+        <div class="stat-text"><strong>20+ กิจกรรม</strong><span>ให้เลือกสัมผัส</span></div>
       </div>
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-          </svg>
-        </div>
-        <div class="stat-text"><strong>4.9 / 5 คะแนน</strong><span>จากผู้เที่ยว 1,200+</span></div>
+      
+       
       </div>
     </div>
   </div>
@@ -330,6 +325,23 @@
       <input type="date" name="startDate" id="tour-date-input" th:value="${startDate}"/>
       <input type="hidden" name="endDate" id="tour-date-end-input" th:value="${startDate}"/>
     </div>
+
+    <div class="sf" id="tourtype-wrapper" style="display:none;">
+  <div class="sf-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7"/>
+    </svg>
+    ประเภททัวร์
+  </div>
+  <select name="tourTypeId" id="tourtype-select">
+    <option value="">ทุกประเภท</option>
+    <option th:each="tt : ${tourTypes}"
+            th:value="${tt.typeId}"
+            th:text="${tt.typename}"
+            th:selected="${tt.typeId == tourTypeId}"></option>
+  </select>
+</div>
+
 
     <!-- ── วันที่เช็คอิน (Homestay) ── -->
     <div class="sf sf-date" id="checkin-wrapper" style="display:none;">
@@ -436,52 +448,61 @@
         </a>
       </th:block>
 
-      <!-- Tours -->
-      <th:block th:each="t,iterStat : ${tours}" th:if="${iterStat.index < 4}">
-        <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
-          <div class="fcard-img">
-            <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
-                 th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
-                 alt="ภาพทัวร์" loading="lazy"/>
-            <span class="fcard-badge badge-tour">ทัวร์ชุมชน</span>
-            <!-- badge เต็มแล้ว -->
-            <span th:if="${t.full}" class="fcard-badge badge-full">เต็มแล้ว</span>
-            
-          </div>
-          <div class="fcard-body">
-            <div class="fcard-rating">
-              <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#f59e0b;flex-shrink:0;">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              <span th:text="${tourRating[t.tourid]}">-</span>
-              <span class="fcard-reviews" th:text="'(' + ${tourReviewCount[t.tourid]} + ' รีวิว)'"></span>
-            </div>
-            <p class="fcard-name" th:text="${t.tourmname}">ชื่อทัวร์</p>
-            <!-- ที่นั่งคงเหลือ -->
-            <p class="fcard-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 00-8 0v2"/><circle cx="12" cy="7" r="4"/>
-              </svg>
-              <span th:if="${!t.full}"
-                    th:text="'ที่นั่งคงเหลือ ' + ${t.remainingSeats} + ' / ' + ${t.maxSeatstour} + ' คน'">
-              </span>
-              <span th:if="${t.full}" class="seats-full-text">เต็มแล้ว (Fully Booked)</span>
-            </p>
-            <div class="fcard-tags">
-              <span class="fcard-tag fcard-tag-green">พาเที่ยวโดยชาวบ้าน</span>
-            </div>
-            <div class="fcard-footer">
-              <div class="fcard-price-wrap">
-                <span class="fcard-from">ราคา/คน</span>
-                <span class="fcard-price fcard-price-green">
-                  <sup>฿</sup><span th:text="${#numbers.formatDecimal(t.adultprice,0,'COMMA',0,'POINT')}">0</span>
-                </span>
-              </div>
-              <span class="fcard-cta fcard-cta-green">ดูรายละเอียด →</span>
-            </div>
-          </div>
-        </a>
-      </th:block>
+     
+<!-- Tours -->
+<th:block th:each="t,iterStat : ${tours}" th:if="${iterStat.index < 4}">
+  <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
+    <div class="fcard-img">
+      <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
+           th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
+           alt="ภาพทัวร์" loading="lazy"/>
+      <span class="fcard-badge badge-tour">ทัวร์ชุมชน</span>
+      <span th:if="${t.full}" class="fcard-badge badge-full">เต็มแล้ว</span>
+    </div>
+
+    <div class="fcard-body">
+      <div class="fcard-rating">
+        <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#f59e0b;flex-shrink:0;">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        <span th:text="${tourRating[t.tourid]}">-</span>
+        <span class="fcard-reviews" th:text="'(' + ${tourReviewCount[t.tourid]} + ' รีวิว)'"></span>
+      </div>
+
+      <p class="fcard-name" th:text="${t.tourmname}">ชื่อทัวร์</p>
+
+      <div class="tour-meta">
+  <span class="tour-type-tag"
+        th:text="${t.tourtype != null ? t.tourtype.typename : 'ทัวร์ชุมชน'}">
+  </span>
+
+  <span class="tour-duration"
+        th:text="${t.tourDuration}">
+  </span>
+</div>
+
+      <p class="card-desc"
+         th:text="${t.tourdetail != null ?
+                    (#strings.length(t.tourdetail) > 70 ?
+                    #strings.substring(t.tourdetail,0,70) + '...' :
+                    t.tourdetail)
+                    : 'ไม่มีรายละเอียด'}">
+      </p>
+
+      <div class="fcard-footer">
+        <div class="fcard-price-wrap">
+          <span class="fcard-from">เริ่มต้น</span>
+          <span class="fcard-price fcard-price-green">
+            <sup>฿</sup>
+            <span th:text="${#numbers.formatDecimal(t.startingPrice,0,'COMMA',0,'POINT')}">0</span>
+          </span>
+        </div>
+        <span class="fcard-cta fcard-cta-green">ดูรายละเอียด →</span>
+      </div>
+    </div>
+  </a>
+</th:block>
+
 
       <!-- Homestays -->
       <th:block th:each="h,iterStat : ${homestays}" th:if="${iterStat.index < 4}">
@@ -591,68 +612,103 @@
     </div>
   </div>
 
-  <!-- TOUR -->
-  <div class="section-block" data-type="tour" id="block-tour"
-       th:classappend="${currentType == 'tour'} ? 'show' : ''">
+<!-- TOUR -->
+<div class="section-block" data-type="tour" id="block-tour"
+     th:classappend="${currentType == 'tour'} ? 'show' : ''">
 
-    <div class="section-header">
-      <div class="section-header-left">
-        <div class="section-accent"></div>
-        <span class="section-title">ทัวร์ชุมชน</span>
-        <span class="section-count" th:text="${tourCount} + ' รายการ'">0 รายการ</span>
-      </div>
-      <a href="/search?type=tour" class="btn-view-all">
-        ดูทั้งหมด
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-      </a>
+  <div class="section-header">
+    <div class="section-header-left">
+      <div class="section-accent"></div>
+      <span class="section-title">ทัวร์ชุมชน</span>
+      <span class="section-count" th:text="${tourCount} + ' รายการ'">0 รายการ</span>
     </div>
-    <div class="grid">
-      <th:block th:each="t : ${tours}">
-        <div class="card">
-          <div class="fcard-img">
-            <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
-                 th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
-                 alt="ภาพทัวร์" loading="lazy"/>
-            <span class="card-badge badge-tour">ทัวร์ชุมชน</span>
-            <!-- badge เต็มแล้ว -->
-            <span th:if="${t.full}" class="card-badge badge-full" style="top:auto;bottom:12px;">เต็มแล้ว</span>
-           
+
+    <a href="/search?type=tour" class="btn-view-all">
+      ดูทั้งหมด
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="grid">
+
+    <th:block th:each="t : ${tours}">
+
+      <div class="card">
+
+        <div class="fcard-img">
+
+          <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
+               th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
+               alt="ภาพทัวร์"
+               loading="lazy"/>
+
+          <span class="card-badge badge-tour">
+            ทัวร์ชุมชน
+          </span>
+
+          <span th:if="${t.full}"
+                class="card-badge badge-full"
+                style="top:auto;bottom:12px;">
+            เต็มแล้ว
+          </span>
+
+        </div>
+
+        <div class="card-body">
+
+          <p class="card-name"
+             th:text="${t.tourmname}">ชื่อทัวร์</p>
+          <div class="tour-meta">
+            <span class="tour-type-tag"
+                  th:text="${t.tourtype != null ? t.tourtype.typename : 'ทัวร์ชุมชน'}">
+            </span>
+            <span class="tour-duration"
+                  th:text="${t.tourDuration}">
+            </span>
           </div>
-          <div class="card-body">
-            <p class="card-name" th:text="${t.tourmname}">ชื่อทัวร์</p>
-            <!-- ที่นั่งคงเหลือ -->
-            <p class="card-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 00-8 0v2"/><circle cx="12" cy="7" r="4"/>
-              </svg>
-              <span th:if="${!t.full}"
-                    th:text="'ที่นั่งคงเหลือ ' + ${t.remainingSeats} + ' / ' + ${t.maxSeatstour} + ' คน'">
-              </span>
-              <span th:if="${t.full}" class="seats-full-text">เต็มแล้ว (Fully Booked)</span>
-            </p>
-            <div class="card-footer">
-              <div>
-                <div class="card-price-label">ราคา/คน</div>
-                <div class="card-price" style="color:#2d7a4f;">
-                  <sup>฿</sup><span th:text="${#numbers.formatDecimal(t.adultprice,0,'COMMA',0,'POINT')}">0</span>
-                </div>
+          <p class="card-desc"
+             th:text="${t.tourdetail != null ?
+                      (#strings.length(t.tourdetail) > 70 ?
+                      #strings.substring(t.tourdetail,0,70) + '...' :
+                      t.tourdetail)
+                      : 'ไม่มีรายละเอียด'}"></p>
+          <div class="card-footer">
+            <div>
+              <div class="card-price-label">เริ่มต้น</div>
+              <div class="card-price" style="color:#2d7a4f;">
+                <sup>฿</sup>
+                <span th:text="${#numbers.formatDecimal(t.startingPrice,0,'COMMA',0,'POINT')}">0
+                </span>
               </div>
-              <a th:href="@{/tour/{id}(id=${t.tourid})}"
-                 class="btn-book"
-                 th:classappend="${t.full} ? ' btn-disabled'"
-                 th:style="${t.full} ? 'background:#9ca3af;cursor:not-allowed;' : 'background:#2d7a4f;'">
-                <span th:text="${t.full} ? 'เต็มแล้ว' : 'ดูรายละเอียด'">ดูรายละเอียด</span>
-              </a>
+
             </div>
+            <a th:href="@{/tour/{id}(id=${t.tourid})}"
+               class="btn-book"
+               th:classappend="${t.full} ? ' btn-disabled'"
+               th:style="${t.full} ? 'background:#9ca3af;cursor:not-allowed;' : 'background:#2d7a4f;'">
+              <span th:text="${t.full} ? 'เต็มแล้ว' : 'ดูรายละเอียด'">
+                ดูรายละเอียด
+              </span>
+            </a>
           </div>
         </div>
-      </th:block>
-      <div th:if="${#lists.isEmpty(tours)}" class="empty">
-        <div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
-        <h3>ไม่พบข้อมูลทัวร์</h3><p>ลองค้นหาด้วยคำอื่น</p>
       </div>
+    </th:block>
+
+    <div th:if="${#lists.isEmpty(tours)}" class="empty">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+      </div>
+      <h3>ไม่พบข้อมูลทัวร์</h3>
+      <p>ลองค้นหาด้วยคำอื่น</p>
     </div>
   </div>
+</div>
 
   <!-- HOMESTAY -->
   <div class="section-block" data-type="homestay" id="block-homestay"

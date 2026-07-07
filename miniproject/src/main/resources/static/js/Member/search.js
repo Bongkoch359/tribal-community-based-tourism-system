@@ -51,16 +51,19 @@ function switchTab(type) {
   const checkinBox    = document.getElementById('checkin-wrapper');
   const checkoutBox   = document.getElementById('checkout-wrapper');
   const guestWrapper  = document.getElementById('guest-wrapper');
+  const tourTypeBox   = document.getElementById('tourtype-wrapper');
 
   // ซ่อนทั้งหมดก่อน
   if (dateTour)    dateTour.style.display    = 'none';
   if (checkinBox)  checkinBox.style.display  = 'none';
   if (checkoutBox) checkoutBox.style.display = 'none';
   if (guestWrapper)guestWrapper.style.display= 'none';
+  if (tourTypeBox) tourTypeBox.style.display = 'none';
 
   if (type === 'tour') {
     if (dateTour)    dateTour.style.display    = 'flex';
     if (guestWrapper)guestWrapper.style.display= 'flex';
+     if (tourTypeBox) tourTypeBox.style.display = 'flex';
   } else if (type === 'homestay') {
     // แยก 2 กล่องอิสระ
     if (checkinBox)  checkinBox.style.display  = 'flex';

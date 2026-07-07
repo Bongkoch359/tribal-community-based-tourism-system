@@ -245,4 +245,18 @@ public class Tour {
     public boolean isFull() {
         return getRemainingSeats() == 0;
     }
+
+    @Transient
+public Double getStartingPrice() {
+    if (adultprice == null && childprice == null) {
+        return 0.0;
+    }
+    if (adultprice == null) {
+        return childprice;
+    }
+    if (childprice == null) {
+        return adultprice;
+    }
+    return Math.min(adultprice, childprice);
+}
 }

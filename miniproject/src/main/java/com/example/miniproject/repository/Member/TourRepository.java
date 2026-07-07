@@ -54,31 +54,50 @@ Optional<Tour> findByIdWithBookings(@Param("tourid") String tourid);
     @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerid ORDER BY t.tourmname ASC")
     List<Tour> findByManagerId(@Param("managerid") String managerid);
 
-    // ✅ แก้ Logic — นับที่นั่งที่จองแล้วในวันนั้น แล้วเช็คว่าเหลือพอไหม
-    @Query("""
-        SELECT t FROM Tour t
-        WHERE t.status = 'เปิดจอง'
-        AND (:keyword IS NULL
-             OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
-        AND (:guests IS NULL OR :guests <= 1
-             OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
-        AND (:startDate IS NULL OR :endDate IS NULL OR (
-            t.maxSeatstour - (
-                SELECT COALESCE(SUM(d.numofadult + COALESCE(d.numofchild, 0)), 0)
-                FROM Bookingtourdetail d
-                WHERE d.tour = t
-                AND d.startdate BETWEEN :startDate AND :endDate
-            ) >= :guests
-        ))
-        ORDER BY t.tourmname ASC
-    """)
-    List<Tour> searchWithDate(
-        @Param("keyword")   String keyword,
-        @Param("guests")    Integer guests,
-        @Param("startDate") java.sql.Date startDate,
-        @Param("endDate")   java.sql.Date endDate
-    );
+    // ค้นหาแบบไม่มีวันที่ (เพิ่ม filter tourTypeId)
+@Query("""
+    SELECT t FROM Tour t
+    WHERE t.status = 'เปิดจอง'
+    AND (:keyword IS NULL
+         OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
+    AND (:tourTypeId IS NULL
+         OR t.tourtype.typeId = :tourTypeId)
+    AND (:guests IS NULL
+         OR :guests <= 1
+         OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
+    ORDER BY t.tourmname ASC
+""")
+List<Tour> search(@Param("keyword") String keyword,
+                   @Param("guests") Integer guests,
+                   @Param("tourTypeId") String tourTypeId);
 
+// ค้นหาแบบมีวันที่ (เพิ่ม filter tourTypeId)
+@Query("""
+    SELECT t FROM Tour t
+    WHERE t.status = 'เปิดจอง'
+    AND (:keyword IS NULL
+         OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
+    AND (:tourTypeId IS NULL
+         OR t.tourtype.typeId = :tourTypeId)
+    AND (:guests IS NULL OR :guests <= 1
+         OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
+    AND (:startDate IS NULL OR :endDate IS NULL OR (
+        t.maxSeatstour - (
+            SELECT COALESCE(SUM(d.numofadult + COALESCE(d.numofchild, 0)), 0)
+            FROM Bookingtourdetail d
+            WHERE d.tour = t
+            AND d.startdate BETWEEN :startDate AND :endDate
+        ) >= :guests
+    ))
+    ORDER BY t.tourmname ASC
+""")
+List<Tour> searchWithDate(
+    @Param("keyword")    String keyword,
+    @Param("guests")     Integer guests,
+    @Param("startDate")  java.sql.Date startDate,
+    @Param("endDate")    java.sql.Date endDate,
+    @Param("tourTypeId") String tourTypeId
+);
 //คิวรีที่นั่ง
 @Query("""
     SELECT t.tourid,

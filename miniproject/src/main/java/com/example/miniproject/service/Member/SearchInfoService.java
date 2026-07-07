@@ -57,21 +57,20 @@ public List<Activitypost> searchActivity(String keyword) {
     }
 }
 
-   public List<Tour> searchTour(String keyword, Integer numGuest,
-                              String startDate, String endDate) {
+  public List<Tour> searchTour(String keyword, Integer numGuest,
+                              String startDate, String endDate,
+                              String tourTypeId) {
     try {
         String kw = (keyword == null || keyword.isBlank()) ? null : keyword;
+        String tt = (tourTypeId == null || tourTypeId.isBlank()) ? null : tourTypeId;
 
-        // แปลง String → java.sql.Date (null-safe)
         java.sql.Date sd = parseDate(startDate);
         java.sql.Date ed = parseDate(endDate);
 
-        // มีวันที่ → ใช้ query กรองช่วงเวลา
         if (sd != null && ed != null) {
-            return tourRepository.searchWithDate(kw, numGuest, sd, ed);
+            return tourRepository.searchWithDate(kw, numGuest, sd, ed, tt);
         }
-        // ไม่มีวันที่ → ใช้ query เดิม
-        return tourRepository.search(kw, numGuest);
+        return tourRepository.search(kw, numGuest, tt);
 
     } catch (Exception e) {
         return new ArrayList<>();
