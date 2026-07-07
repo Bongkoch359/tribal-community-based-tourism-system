@@ -255,23 +255,23 @@
 
         /* ─── THUMBNAIL ─── */
         .post-thumb {
-            width: 56px;
-            height: 42px;
-            border-radius: 6px;
+            width: 85px;
+            height: 58px;
+            border-radius: 8px;
             object-fit: cover;
             background: #e2ddd4;
             display: block;
         }
         .thumb-placeholder {
-            width: 56px;
-            height: 42px;
-            border-radius: 6px;
+            width: 90px;
+            height: 68px;
+            border-radius: 8px;
             background: #e2ddd4;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .thumb-placeholder svg { width: 18px; height: 18px; opacity: 0.4; }
+        .thumb-placeholder svg { width: 26px; height: 26px; opacity: 0.4; }
 
         /* ─── POST INFO ─── */
         .post-title { font-weight: 500; color: var(--text-main); margin-bottom: 2px; }
@@ -291,7 +291,7 @@
         .badge-gray  { background: var(--gray-light);  color: var(--gray-text);  }
 
         /* ─── ACTION BUTTONS ─── */
-        .action-btns { display: flex; gap: 6px; }
+        .action-btns { display: flex; align-items: center; gap: 8px; }
         .btn-view {
             display: inline-flex;
             align-items: center;
@@ -312,20 +312,43 @@
         .btn-edit {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 6px 14px;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 12px;
+            justify-content: center;
+            gap: 6px;
+            height: 34px;
+            padding: 0 16px;
+            background: var(--green-dark);
+            color: #fff;
+            font-size: 12.5px;
+            font-weight: 600;
             font-family: 'Sarabun', sans-serif;
-            border: 1px solid var(--border);
+            border: none;
             border-radius: var(--radius-sm);
             cursor: pointer;
             text-decoration: none;
+            transition: background 0.15s;
+        }
+        .btn-edit:hover { background: var(--green-mid); }
+        .btn-edit svg { width: 13px; height: 13px; }
+
+        .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            height: 34px;
+            width: 34px;
+            padding: 0;
+            background: transparent;
+            color: var(--red-text);
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            border: 1px solid #f5c6c6;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
             transition: all 0.15s;
         }
-        .btn-edit:hover { border-color: var(--green-dark); color: var(--green-dark); }
-        .btn-edit svg { width: 12px; height: 12px; }
+        .btn-delete:hover { background: var(--red-light); border-color: var(--red-text); }
+        .btn-delete svg { width: 13px; height: 13px; }
 
         /* ─── EMPTY STATE ─── */
         .empty-state {
@@ -373,6 +396,74 @@
         .footer a:hover {
             text-decoration: underline;
         }
+
+        /* ─── MODAL ยืนยันลบ ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(28,28,26,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.15s ease;
+        }
+        .modal-overlay.show { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px 26px 22px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+            animation: popIn 0.18s ease;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .modal-icon {
+            width: 56px; height: 56px;
+            background: var(--red-light);
+            color: var(--red-text);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            margin: 0 auto 16px;
+        }
+        .modal-title {
+            font-size: 16px; font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+        .modal-text {
+            font-size: 13px; color: var(--text-muted);
+            line-height: 1.6; margin-bottom: 22px;
+        }
+        .modal-actions { display: flex; gap: 10px; }
+        .modal-btn-cancel, .modal-btn-confirm {
+            flex: 1;
+            padding: 10px 0;
+            font-size: 13px; font-weight: 600;
+            font-family: 'Sarabun', sans-serif;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: none;
+            transition: background 0.15s;
+        }
+        .modal-btn-cancel {
+            background: var(--gray-light);
+            color: var(--text-muted);
+        }
+        .modal-btn-cancel:hover { background: #dde1e4; }
+        .modal-btn-confirm {
+            background: var(--red-text);
+            color: #fff;
+        }
+        .modal-btn-confirm:hover { background: #8a2424; }
     </style>
 </head>
 <body>
@@ -459,7 +550,7 @@
         <table class="tbl" id="postTable">
             <thead>
                 <tr>
-                    <th style="width:70px">รูปภาพ</th>
+                    <th style="width:110px">รูปภาพ</th>
                     <th>หัวข้อโพสต์</th>
                     <th style="width:160px">สถานที่</th>
                     <th style="width:120px">สถานะ</th>
@@ -493,7 +584,7 @@
                     <!-- หัวข้อ + คำอธิบาย -->
                     <td>
                         <div class="post-title" th:text="${post.title}">-</div>
-                        <div class="post-desc"  th:text="${post.description}">-</div>
+                        <!-- <div class="post-desc"  th:text="${post.description}">-</div> -->
                     </td>
 
                     <!-- สถานที่ -->
@@ -514,15 +605,30 @@
                     <!-- จัดการ -->
                     <td>
                         <div class="action-btns">
-                            <a class="btn-view"
-                               th:href="@{/manager/posts/{id}(id=${post.activityid})}">
+                            <a class="btn-edit"
+                               th:href="@{/manager/posts/{id}/edit(id=${post.activityid})}"
+                               title="แก้ไขโพสต์">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
-                                
+                                แก้ไข
                             </a>
-                            
+
+                            <form th:action="@{/manager/posts/{id}/delete(id=${post.activityid})}"
+                                  method="post"
+                                  class="delete-form"
+                                  style="display:inline;">
+                                <button type="button" class="btn-delete" title="ลบโพสต์" onclick="confirmDelete(this)">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                        <path d="M10 11v6"/>
+                                        <path d="M14 11v6"/>
+                                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
@@ -553,6 +659,21 @@
     </div>
 </footer>
 
+<!-- ═══ MODAL ยืนยันการลบ ═══ -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <div class="modal-icon">
+            <i class="fas fa-trash-can"></i>
+        </div>
+        <div class="modal-title">ยืนยันการลบโพสต์</div>
+        <div class="modal-text">คุณต้องการลบโพสต์นี้ใช่หรือไม่? เมื่อลบแล้วจะไม่สามารถกู้คืนได้</div>
+        <div class="modal-actions">
+            <button type="button" class="modal-btn-cancel" onclick="closeDeleteModal()">ยกเลิก</button>
+            <button type="button" class="modal-btn-confirm" id="modalConfirmBtn">ลบโพสต์</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // ─── Filter tabs ───
     function filterPosts(status, btn) {
@@ -570,6 +691,28 @@
             }
         });
     }
+
+    // ─── Delete confirm modal ───
+    let formToSubmit = null;
+
+    function confirmDelete(btn) {
+        formToSubmit = btn.closest('.delete-form');
+        document.getElementById('deleteModal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('show');
+        formToSubmit = null;
+    }
+
+    document.getElementById('modalConfirmBtn').addEventListener('click', function () {
+        if (formToSubmit) formToSubmit.submit();
+    });
+
+    // ปิด modal เมื่อคลิกนอกกล่อง
+    document.getElementById('deleteModal').addEventListener('click', function (e) {
+        if (e.target === this) closeDeleteModal();
+    });
 </script>
 
 </body>

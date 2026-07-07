@@ -791,13 +791,13 @@
                         <!-- ประเภททัวร์ -->
                         <!-- ประเภททัวร์ -->
                         <td>
-                            <span th:if="${tour.tourtype != null and tour.tourtype == 'ทัวร์รายวัน'}"
+                            <span th:if="${tour.tourtype != null and tour.tourtype.typename == 'ทัวร์รายวัน'}"
                                 style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;background:#E3F2FD;color:#1565C0;">
                                 ทัวร์รายวัน
                             </span>
-                            <span th:if="${tour.tourtype != null and tour.tourtype != 'ทัวร์รายวัน'}"
+                            <span th:if="${tour.tourtype != null and tour.tourtype.typename != 'ทัวร์รายวัน'}"
                                 style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;background:#FFF3E0;color:#E65100;"
-                                th:text="${tour.tourtype}">
+                                th:text="${tour.tourtype.typename}">
                             </span>
                             <span th:if="${tour.tourtype == null}" style="color:#aaa;font-size:12px;">-</span>
                         </td>
