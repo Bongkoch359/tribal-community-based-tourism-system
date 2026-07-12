@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,23 +8,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
-            --green-dark:  #3a7d1e;
-            --green-mid:   #65a30d;
+            --green-dark: #3a7d1e;
+            --green-mid: #65a30d;
             --green-light: #d9f99d;
-            --amber:       #65a30d;
+            --amber: #65a30d;
             --amber-hover: #4d7c0a;
-            --bg-page:     #f3fae8;
-            --bg-card:     #ffffff;
-            --border:      #e2ddd4;
-            --text-main:   #1c1c1a;
-            --text-muted:  #6b6b68;
-            --text-hint:   #9a9a96;
+            --bg-page: #f3fae8;
+            --bg-card: #ffffff;
+            --border: #e2ddd4;
+            --text-main: #1c1c1a;
+            --text-muted: #6b6b68;
+            --text-hint: #9a9a96;
             --radius-card: 12px;
-            --radius-sm:   6px;
-            --shadow-card: 0 1px 3px rgba(0,0,0,0.07);
+            --radius-sm: 6px;
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07);
         }
 
         body {
@@ -45,8 +52,9 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
         }
+
         .nav-brand {
             color: #fff;
             font-size: 1.05rem;
@@ -57,13 +65,22 @@
             text-decoration: none;
             white-space: nowrap;
         }
-        .nav-brand i { color: #fff; font-size: 1.2rem; }
-        .nav-dropdown { position: relative; margin-left: auto; }
+
+        .nav-brand i {
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .nav-dropdown {
+            position: relative;
+            margin-left: auto;
+        }
+
         .nav-dropdown-trigger {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: rgba(255,255,255,.85);
+            color: rgba(255, 255, 255, .85);
             font-size: .92rem;
             font-weight: 500;
             cursor: pointer;
@@ -72,48 +89,130 @@
             transition: background .2s;
             user-select: none;
         }
-        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
-        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
-        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
+
+        .nav-dropdown-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+        }
+
+        .nav-dropdown-trigger .chevron {
+            font-size: .75rem;
+            color: rgba(255, 255, 255, .6);
+            transition: transform .2s;
+        }
+
+        .nav-dropdown:hover .chevron {
+            transform: rotate(180deg);
+        }
+
         .dropdown-menu {
             display: none;
             position: absolute;
-            right: 0; top: calc(100% + 8px);
+            right: 0;
+            top: calc(100% + 8px);
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 8px 28px rgba(0,0,0,.15);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .15);
             border: 1px solid #e8e8e8;
             min-width: 200px;
             padding: 6px 0;
             z-index: 200;
         }
-        .dropdown-menu::before { content:''; position:absolute; top:-10px; left:0; right:0; height:10px; }
-        .nav-dropdown:hover .dropdown-menu { display: block; }
-        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
-        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
-        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
-        .dropdown-item {
-            display: flex; align-items: center; gap: .65rem;
-            padding: .6rem 1rem; font-size: .88rem; color: #333;
-            text-decoration: none; transition: background .15s;
+
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 10px;
         }
-        .dropdown-item i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
-        .dropdown-item:hover { background: #eefcda; color: var(--green-dark); }
-        .dropdown-item:hover i { color: var(--green-dark); }
-        .dropdown-divider { border: none; border-top: 1px solid #f0f0f0; margin: 4px 0; }
-        .dropdown-item.logout { color: #c0392b; }
-        .dropdown-item.logout i { color: #c0392b; }
-        .dropdown-item.logout:hover { background: #fff5f5; }
+
+        .nav-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: .7rem 1rem .5rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+
+        .dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: #1a2e1c;
+        }
+
+        .dropdown-header .d-role {
+            font-size: .78rem;
+            color: #6b7c6e;
+            margin-top: 1px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .6rem 1rem;
+            font-size: .88rem;
+            color: #333;
+            text-decoration: none;
+            transition: background .15s;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .dropdown-item:hover {
+            background: #eefcda;
+            color: var(--green-dark);
+        }
+
+        .dropdown-item:hover i {
+            color: var(--green-dark);
+        }
+
+        .dropdown-divider {
+            border: none;
+            border-top: 1px solid #f0f0f0;
+            margin: 4px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #c0392b;
+        }
+
+        .dropdown-item.logout i {
+            color: #c0392b;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff5f5;
+        }
+
         .nav-avatar {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             background: var(--amber);
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: .85rem; font-weight: 700; color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            font-weight: 700;
+            color: #fff;
         }
 
         /* ─── PAGE ─── */
-        .page { padding: 28px 28px 60px; max-width: 1100px; margin: auto }
+        .page {
+            padding: 28px 28px 60px;
+            max-width: 1100px;
+            margin: auto
+        }
 
         .back-link {
             display: inline-flex;
@@ -125,8 +224,15 @@
             margin-bottom: 16px;
             transition: color 0.15s;
         }
-        .back-link:hover { color: var(--green-dark); }
-        .back-link svg { width: 14px; height: 14px; }
+
+        .back-link:hover {
+            color: var(--green-dark);
+        }
+
+        .back-link svg {
+            width: 14px;
+            height: 14px;
+        }
 
         .page-title {
             font-size: 20px;
@@ -134,6 +240,7 @@
             color: var(--green-dark);
             margin-bottom: 24px;
         }
+
         .page-title span {
             font-weight: 400;
             color: var(--text-muted);
@@ -157,6 +264,7 @@
             padding: 20px;
             box-shadow: var(--shadow-card);
         }
+
         .card-title {
             font-size: 13px;
             font-weight: 600;
@@ -186,8 +294,16 @@
             cursor: pointer;
             transition: border-color 0.15s;
         }
-        .img-preview-area:hover { border-color: var(--green-dark); }
-        .img-preview-area svg { width: 32px; height: 32px; opacity: 0.4; }
+
+        .img-preview-area:hover {
+            border-color: var(--green-dark);
+        }
+
+        .img-preview-area svg {
+            width: 32px;
+            height: 32px;
+            opacity: 0.4;
+        }
 
         /* existing image banner */
         .existing-img-wrap {
@@ -199,10 +315,13 @@
             margin-bottom: 8px;
             border: 1px solid var(--border);
         }
+
         .existing-img-wrap img {
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
         }
+
         .existing-img-label {
             font-size: 11px;
             color: var(--text-hint);
@@ -211,7 +330,10 @@
             align-items: center;
             gap: 4px;
         }
-        .existing-img-label i { font-size: 10px; }
+
+        .existing-img-label i {
+            font-size: 10px;
+        }
 
         /* preview thumbnails */
         .preview-grid {
@@ -220,6 +342,7 @@
             gap: 6px;
             margin-bottom: 12px;
         }
+
         .preview-thumb {
             position: relative;
             aspect-ratio: 1;
@@ -227,19 +350,28 @@
             overflow: hidden;
             border: 1px solid var(--border);
         }
+
         .preview-thumb img {
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
         }
+
         .preview-thumb .remove-btn {
             position: absolute;
-            top: 3px; right: 3px;
-            width: 18px; height: 18px;
-            background: rgba(0,0,0,0.55);
-            border: none; border-radius: 50%;
-            color: #fff; font-size: 10px;
+            top: 3px;
+            right: 3px;
+            width: 18px;
+            height: 18px;
+            background: rgba(0, 0, 0, 0.55);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 10px;
             cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             line-height: 1;
         }
 
@@ -256,19 +388,37 @@
             cursor: pointer;
             transition: background 0.15s;
         }
-        .file-input-label:hover { background: #ece7dc; }
-        input[type="file"] { display: none; }
-        .file-hint { font-size: 11px; color: var(--text-hint); margin-top: 6px; }
 
-        /* ─── STATUS ─── */
-        .status-card { margin-top: 16px; }
+        .file-input-label:hover {
+            background: #ece7dc;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-hint {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 6px;
+        }
 
         /* ─── RIGHT COLUMN ─── */
-        .right-col { display: flex; flex-direction: column; gap: 16px; }
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
         /* ─── FORM FIELDS ─── */
-        .form-group { margin-bottom: 16px; }
-        .form-group:last-child { margin-bottom: 0; }
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
         .form-label {
             display: block;
             font-size: 13px;
@@ -276,8 +426,19 @@
             color: var(--text-main);
             margin-bottom: 6px;
         }
-        .form-label .req { color: #c0392b; margin-left: 2px; }
-        .form-label .opt { color: var(--text-hint); font-weight: 400; margin-left: 4px; font-size: 11px; }
+
+        .form-label .req {
+            color: #c0392b;
+            margin-left: 2px;
+        }
+
+        .form-label .opt {
+            color: var(--text-hint);
+            font-weight: 400;
+            margin-left: 4px;
+            font-size: 11px;
+        }
+
         .form-control {
             width: 100%;
             border: 1.5px solid var(--border);
@@ -290,17 +451,30 @@
             outline: none;
             transition: border-color 0.15s, box-shadow 0.15s;
         }
-        .form-control::placeholder { color: var(--text-hint); }
+
+        .form-control::placeholder {
+            color: var(--text-hint);
+        }
+
         .form-control:focus {
             border-color: var(--green-dark);
-            box-shadow: 0 0 0 3px rgba(26,92,42,0.08);
+            box-shadow: 0 0 0 3px rgba(26, 92, 42, 0.08);
         }
+
         textarea.form-control {
             resize: vertical;
             min-height: 160px;
         }
-        select.form-control { cursor: pointer; }
-        .form-hint { font-size: 11px; color: var(--text-hint); margin-top: 6px; }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .form-hint {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 6px;
+        }
 
         /* ─── TOUR PREVIEW ─── */
         .tour-preview {
@@ -315,8 +489,14 @@
             align-items: center;
             gap: 8px;
         }
-        .tour-preview.show { display: flex; }
-        .tour-preview i { font-size: 14px; }
+
+        .tour-preview.show {
+            display: flex;
+        }
+
+        .tour-preview i {
+            font-size: 14px;
+        }
 
         /* ─── ACTION BAR ─── */
         .action-bar {
@@ -326,6 +506,7 @@
             gap: 10px;
             margin-top: 24px;
         }
+
         .btn-cancel {
             font-size: 13px;
             font-family: 'Sarabun', sans-serif;
@@ -338,7 +519,11 @@
             text-decoration: none;
             transition: background 0.15s;
         }
-        .btn-cancel:hover { background: #f3fae8; }
+
+        .btn-cancel:hover {
+            background: #f3fae8;
+        }
+
         .btn-save {
             font-size: 13px;
             font-family: 'Sarabun', sans-serif;
@@ -354,8 +539,15 @@
             gap: 6px;
             transition: background 0.15s;
         }
-        .btn-save:hover { background: var(--amber-hover); }
-        .btn-save svg { width: 14px; height: 14px; }
+
+        .btn-save:hover {
+            background: var(--amber-hover);
+        }
+
+        .btn-save svg {
+            width: 14px;
+            height: 14px;
+        }
 
         /* ─── ALERT ─── */
         .alert-error {
@@ -367,6 +559,7 @@
             font-size: 13px;
             margin-bottom: 20px;
         }
+
         .alert-success {
             background: var(--green-light);
             border: 1px solid #a3e635;
@@ -393,348 +586,356 @@
             transition: background 0.15s;
             font-family: 'Sarabun', sans-serif;
         }
-        .change-img-btn:hover { background: var(--green-light); }
-        .new-img-section { display: none; }
-        .new-img-section.visible { display: block; }
+
+        .change-img-btn:hover {
+            background: var(--green-light);
+        }
+
+        .new-img-section {
+            display: none;
+        }
+
+        .new-img-section.visible {
+            display: block;
+        }
 
         @media (max-width: 760px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .page { padding: 16px 16px 40px; }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page {
+                padding: 16px 16px 40px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<!-- ═══ NAVBAR ═══ -->
-<nav class="navbar">
-    <a class="nav-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun"></i>
-        ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
+    <!-- ═══ NAVBAR ═══ -->
+    <nav class="navbar">
+        <a class="nav-brand" th:href="@{/}">
+            <i class="fas fa-mountain-sun"></i>
+            ระบบท่องเที่ยวชุมชนชนเผ่า
+        </a>
 
-    <div class="nav-dropdown">
-        <div class="nav-dropdown-trigger">
-            <div class="nav-avatar"
-                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+        <div class="nav-dropdown">
+            <div class="nav-dropdown-trigger">
+                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
                            ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
                            : 'CM'">CM</div>
-            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-            <i class="fas fa-chevron-down chevron"></i>
-        </div>
-        <div class="dropdown-menu">
-            <div class="dropdown-header">
-                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</div>
-                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+                <span
+                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                <i class="fas fa-chevron-down chevron"></i>
             </div>
-            <a th:href="@{/manager/profile}" class="dropdown-item">
-                <i class="fas fa-user-pen"></i>
-                แก้ไขโปรไฟล์
-            </a>
-            <hr class="dropdown-divider">
-            <a th:href="@{/logout}" class="dropdown-item logout">
-                <i class="fas fa-right-from-bracket"></i>
-                ออกจากระบบ
-            </a>
-        </div>
-    </div>
-</nav>
-
-<!-- ═══ PAGE ═══ -->
-<div class="page">
-
-    <a class="back-link" th:href="@{/manager/posts}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15 18 9 12 15 6"/>
-        </svg>
-        ย้อนกลับ
-    </a>
-
-    <div class="page-title">
-        แก้ไขโพสต์ <span>(Edit Activity Post)</span>
-    </div>
-
-    <!-- Alert -->
-    <div th:if="${errorMessage}"   class="alert-error"   th:text="${errorMessage}"></div>
-    <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
-
-    <form th:action="@{/manager/posts/__${post.activityid}__/edit}" method="post" id="postForm">
-
-        <!-- hidden: images base64 (ใหม่) -->
-        <input type="hidden" name="images" id="imagesInput"/>
-
-        <div class="form-grid">
-
-            <!-- ── LEFT: รูปภาพ + สถานะ + ข้อมูล meta ── -->
-            <div>
-
-                <!-- Image card -->
-                <div class="card">
-                    <div class="card-title">รูปภาพโพสต์</div>
-
-                    <!-- รูปเดิม (แสดงเมื่อมีรูป) -->
-                    <div th:if="${post.images != null and !#strings.isEmpty(post.images)}">
-                        <!-- แสดงรูปแรกเป็น preview หลัก -->
-                        <div class="existing-img-wrap">
-                            <img th:src="${#strings.arraySplit(post.images,'\\|\\|')[0]}" alt="รูปโพสต์ปัจจุบัน"/>
-                        </div>
-                        <div class="existing-img-label">
-                            <i class="fas fa-image"></i>
-                            รูปภาพปัจจุบัน (จะคงไว้หากไม่เปลี่ยน)
-                        </div>
-
-                        <!-- ปุ่มเปลี่ยนรูป -->
-                        <button type="button" class="change-img-btn" id="toggleChangeImg" onclick="toggleNewImgSection()">
-                            <i class="fas fa-arrows-rotate"></i>
-                            เปลี่ยนรูปภาพ
-                        </button>
-                    </div>
-
-                    <!-- ถ้าไม่มีรูปเดิม ให้แสดง upload ตรงๆ -->
-                    <div th:if="${post.images == null or #strings.isEmpty(post.images)}"
-                         id="alwaysShowUpload">
-                        <div class="img-preview-area" id="dropZoneNoImg" onclick="document.getElementById('fileInput').click()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                <circle cx="8.5" cy="8.5" r="1.5"/>
-                                <polyline points="21 15 16 10 5 21"/>
-                            </svg>
-                            <span>คลิกเพื่อเลือกรูปภาพ</span>
-                        </div>
-                    </div>
-
-                    <!-- ส่วน upload รูปใหม่ (toggle) -->
-                    <div class="new-img-section" id="newImgSection">
-                        <div class="img-preview-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                <circle cx="8.5" cy="8.5" r="1.5"/>
-                                <polyline points="21 15 16 10 5 21"/>
-                            </svg>
-                            <span>คลิกเพื่อเลือกรูปภาพใหม่</span>
-                        </div>
-                    </div>
-
-                    <!-- Thumbnails preview รูปที่เลือกใหม่ -->
-                    <div class="preview-grid" id="previewGrid"></div>
-
-                    <!-- File input -->
-                    <input type="file" id="fileInput" accept="image/*" multiple/>
-                    <label for="fileInput" class="file-input-label">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="17 8 12 3 7 8"/>
-                            <line x1="12" y1="3" x2="12" y2="15"/>
-                        </svg>
-                        อัปโหลดรูปภาพ
-                    </label>
-                    <div class="file-hint">เลือกได้หลายรูป (jpg, png, webp)</div>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">
+                    <div class="d-name"
+                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
+                        ผู้จัดการชุมชน</div>
+                    <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
+                        manager@community.th</div>
                 </div>
-
-                <!-- Status card -->
-                <div class="card status-card">
-                    <div class="card-title">สถานะโพสต์</div>
-                    <div class="form-group" style="margin-bottom:0">
-                        <select class="form-control" name="status" required>
-                            <option value="DRAFT"
-                                    th:selected="${post.status != null and post.status.name() == 'DRAFT'}">
-                                📝 แบบร่าง
-                            </option>
-                            <option value="PUBLISHED"
-                                    th:selected="${post.status != null and post.status.name() == 'PUBLISHED'}">
-                                📢 เผยแพร่
-                            </option>
-                        </select>
-                    </div>
-                </div>
-
+                <a th:href="@{/manager/profile}" class="dropdown-item">
+                    <i class="fas fa-user-pen"></i>
+                    แก้ไขโปรไฟล์
+                </a>
+                <hr class="dropdown-divider">
+                <a th:href="@{/logout}" class="dropdown-item logout">
+                    <i class="fas fa-right-from-bracket"></i>
+                    ออกจากระบบ
+                </a>
             </div>
+        </div>
+    </nav>
 
-            <!-- ── RIGHT: ข้อมูลโพสต์ + รายละเอียด ── -->
-            <div class="right-col">
+    <!-- ═══ PAGE ═══ -->
+    <div class="page">
 
-                <!-- ข้อมูลหลัก -->
-                <div class="card">
-                    <div class="card-title">ข้อมูลโพสต์</div>
+        <a class="back-link" th:href="@{/manager/posts}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            ย้อนกลับ
+        </a>
 
-                    <div class="form-group">
-                        <label class="form-label">หัวข้อโพสต์ <span class="req">*</span></label>
-                        <input class="form-control" type="text" name="title"
-                               placeholder="เช่น แนะนำแหล่งท่องเที่ยวชุมชนชนเผ่า พร้อมโฮมสเตย์"
-                               th:value="${post.title}" required/>
-                    </div>
+        <div class="page-title">
+            แก้ไขโพสต์ <span>(Edit Activity Post)</span>
+        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">สถานที่ <span class="req">*</span></label>
-                        <input class="form-control" type="text" name="location"
-                               placeholder="จังหวัด / สถานที่ท่องเที่ยว"
-                               th:value="${post.location}" required/>
-                    </div>
+        <!-- Alert -->
+        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
 
-                    <!-- ═══ เชื่อมโพสต์กับทัวร์ ═══ -->
-                    <div class="form-group" style="margin-bottom:0">
-                        <label class="form-label">
-                            เชื่อมกับทัวร์ <span class="opt">(ไม่บังคับ — ใส่ถ้าโพสนี้โปรโมททัวร์)</span>
+        <form th:action="@{/manager/posts/__${post.activityid}__/edit}" method="post" id="postForm">
+
+            <!-- hidden: images base64 (ใหม่) -->
+            <input type="hidden" name="images" id="imagesInput" />
+
+            <div class="form-grid">
+
+                <!-- ── LEFT: รูปภาพ + ข้อมูล meta ── -->
+                <div>
+
+                    <!-- Image card -->
+                    <div class="card">
+                        <div class="card-title">รูปภาพโพสต์</div>
+
+                        <!-- รูปเดิม (แสดงเมื่อมีรูป) -->
+                        <div th:if="${post.images != null and !#strings.isEmpty(post.images)}">
+                            <!-- แสดงรูปแรกเป็น preview หลัก -->
+                            <div class="existing-img-wrap">
+                                <img th:src="${#strings.arraySplit(post.images,'\\|\\|')[0]}" alt="รูปโพสต์ปัจจุบัน" />
+                            </div>
+                            <div class="existing-img-label">
+                                <i class="fas fa-image"></i>
+                                รูปภาพปัจจุบัน (จะคงไว้หากไม่เปลี่ยน)
+                            </div>
+
+                            <!-- ปุ่มเปลี่ยนรูป -->
+                            <button type="button" class="change-img-btn" id="toggleChangeImg"
+                                onclick="toggleNewImgSection()">
+                                <i class="fas fa-arrows-rotate"></i>
+                                เปลี่ยนรูปภาพ
+                            </button>
+                        </div>
+
+                        <!-- ถ้าไม่มีรูปเดิม ให้แสดง upload ตรงๆ -->
+                        <div th:if="${post.images == null or #strings.isEmpty(post.images)}" id="alwaysShowUpload">
+                            <div class="img-preview-area" id="dropZoneNoImg"
+                                onclick="document.getElementById('fileInput').click()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21 15 16 10 5 21" />
+                                </svg>
+                                <span>คลิกเพื่อเลือกรูปภาพ</span>
+                            </div>
+                        </div>
+
+                        <!-- ส่วน upload รูปใหม่ (toggle) -->
+                        <div class="new-img-section" id="newImgSection">
+                            <div class="img-preview-area" id="dropZone"
+                                onclick="document.getElementById('fileInput').click()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21 15 16 10 5 21" />
+                                </svg>
+                                <span>คลิกเพื่อเลือกรูปภาพใหม่</span>
+                            </div>
+                        </div>
+
+                        <!-- Thumbnails preview รูปที่เลือกใหม่ -->
+                        <div class="preview-grid" id="previewGrid"></div>
+
+                        <!-- File input -->
+                        <input type="file" id="fileInput" accept="image/*" multiple />
+                        <label for="fileInput" class="file-input-label">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            อัปโหลดรูปภาพ
                         </label>
-                        <select class="form-control" name="tourId" id="tourSelect">
-                            <option value="">-- ไม่เชื่อมกับทัวร์ (ข่าวสาร/ประกาศทั่วไป) --</option>
-                            <option th:each="t : ${tours}"
-                                    th:value="${t.tourid}"
+                        <div class="file-hint">เลือกได้หลายรูป (jpg, png, webp)</div>
+                    </div>
+
+                </div>
+
+                <!-- ── RIGHT: ข้อมูลโพสต์ + รายละเอียด ── -->
+                <div class="right-col">
+
+                    <!-- ข้อมูลหลัก -->
+                    <div class="card">
+                        <div class="card-title">ข้อมูลโพสต์</div>
+
+                        <div class="form-group">
+                            <label class="form-label">หัวข้อโพสต์ <span class="req">*</span></label>
+                            <input class="form-control" type="text" name="title"
+                                placeholder="เช่น แนะนำแหล่งท่องเที่ยวชุมชนชนเผ่า พร้อมโฮมสเตย์"
+                                th:value="${post.title}" required />
+                        </div>
+
+
+                        <!-- ═══ โพสนี้เป็นของทัวร์อะไร ═══ -->
+                        <div class="form-group" style="margin-bottom:0">
+                            <label class="form-label">
+                                เลือกทัวร์ <span class="opt">(ไม่บังคับ — เว้นว่างไว้ถ้าเป็นข่าวสาร/ประกาศทั่วไป)</span>
+                            </label>
+                            <select class="form-control" name="tourId" id="tourSelect">
+                                <option value="">-- ไม่ระบุทัวร์ (ข่าวสาร/ประกาศทั่วไป) --</option>
+                                <option th:each="t : ${tours}" th:value="${t.tourid}"
                                     th:text="${t.tourmname + ' (' + (t.getTourDuration() ?: '-') + ')'}"
                                     th:selected="${post.tour != null and post.tour.tourid == t.tourid}">
-                                ชื่อทัวร์
-                            </option>
-                        </select>
-                        <div class="form-hint">
-                            เมื่อเชื่อมกับทัวร์แล้ว หน้ารายละเอียดโพสต์จะมีปุ่ม "จองทัวร์นี้" ให้ผู้อ่านกดไปยังหน้าทัวร์ได้ทันที
-                        </div>
-                        <div class="tour-preview" id="tourPreview">
-                            <i class="fas fa-circle-info"></i>
-                            <span>ทัวร์นี้จะถูกแนบไปกับโพสต์และแสดงปุ่มจองให้ผู้อ่าน</span>
+                                    ชื่อทัวร์
+                                </option>
+                            </select>
+                            <!-- <div class="form-hint">
+                            หากเลือกทัวร์ โพสต์นี้จะอยู่ภายใต้ทัวร์ดังกล่าว และผู้ใช้งานสามารถกด "จองทัวร์"
+                                จากหน้าโพสต์ได้
+                        </div> -->
+
+                            <!-- ฟิลด์สถานที่ (แสดงเฉพาะเมื่อเลือกทัวร์) -->
+                            <div class="form-group" id="locationGroup" style="display:none;">
+                                <label class="form-label">สถานที่ <span class="req">*</span></label>
+                                <input class="form-control" type="text" name="location" id="locationInput"
+                                    placeholder="จังหวัด / สถานที่ท่องเที่ยว" th:value="${post.location}" />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- รายละเอียด -->
-                <div class="card">
-                    <div class="card-title">รายละเอียด</div>
-                    <div class="form-group" style="margin-bottom:0">
-                        <textarea class="form-control" name="description"
-                                  placeholder="อธิบายโปรแกรมกิจกรรม จุดเด่น หรือโปรโมชัน..."
-                                  th:text="${post.description}"></textarea>
+                    <!-- รายละเอียด -->
+                    <div class="card">
+                        <div class="card-title">รายละเอียด</div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <textarea class="form-control" name="description"
+                                placeholder="อธิบายโปรแกรมกิจกรรม จุดเด่น หรือโปรโมชัน..."
+                                th:text="${post.description}"></textarea>
+                        </div>
                     </div>
-                </div>
 
+                </div>
             </div>
-        </div>
 
-        <!-- ── ACTION BAR ── -->
-        <div class="action-bar">
-            <a class="btn-cancel" th:href="@{/manager/posts/__${post.activityid}__}">✕ ยกเลิก</a>
-            <button type="submit" class="btn-save">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                    <polyline points="17 21 17 13 7 13 7 21"/>
-                    <polyline points="7 3 7 8 15 8"/>
-                </svg>
-                บันทึกการแก้ไข
-            </button>
-        </div>
+            <!-- ── ACTION BAR ── -->
+            <div class="action-bar">
+                <a class="btn-cancel" th:href="@{/manager/posts/__${post.activityid}__}">✕ ยกเลิก</a>
+                <button type="submit" class="btn-save">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                    </svg>
+                    บันทึกการแก้ไข
+                </button>
+            </div>
 
-    </form>
-</div>
+        </form>
+    </div>
 
-<script>
-    // ── Toggle ส่วน upload รูปใหม่ ──
-    function toggleNewImgSection() {
-        const section = document.getElementById('newImgSection');
-        const btn     = document.getElementById('toggleChangeImg');
-        if (!section) return;
-        const isVisible = section.classList.contains('visible');
-        section.classList.toggle('visible', !isVisible);
-        if (btn) {
-            btn.innerHTML = isVisible
-                ? '<i class="fas fa-arrows-rotate"></i> เปลี่ยนรูปภาพ'
-                : '<i class="fas fa-xmark"></i> ยกเลิกเปลี่ยนรูป';
-        }
-        // ถ้าปิด ให้ล้างรูปที่เลือกไว้
-        if (isVisible) {
-            base64List = [];
-            renderPreviews();
-            updateHiddenInput();
-        }
-    }
-
-    // ── รูปภาพ base64 ──
-    const fileInput   = document.getElementById('fileInput');
-    const previewGrid = document.getElementById('previewGrid');
-    const imagesInput = document.getElementById('imagesInput');
-
-    let base64List = [];
-
-    fileInput.addEventListener('change', function () {
-        const files = Array.from(this.files);
-        files.forEach(file => readAndAdd(file));
-        this.value = '';
-    });
-
-    function readAndAdd(file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const b64 = e.target.result;
-            base64List.push(b64);
-            renderPreviews();
-            updateHiddenInput();
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function renderPreviews() {
-        previewGrid.innerHTML = '';
-
-        // อัปเดต dropZone ถ้ามี
-        const dropZone = document.getElementById('dropZone');
-        if (dropZone) {
-            const svg  = dropZone.querySelector('svg');
-            const span = dropZone.querySelector('span');
-            if (svg)  svg.style.opacity   = base64List.length ? '0' : '0.4';
-            if (span) span.style.display  = base64List.length ? 'none' : '';
-        }
-        const dropZoneNoImg = document.getElementById('dropZoneNoImg');
-        if (dropZoneNoImg) {
-            const svg  = dropZoneNoImg.querySelector('svg');
-            const span = dropZoneNoImg.querySelector('span');
-            if (svg)  svg.style.opacity  = base64List.length ? '0' : '0.4';
-            if (span) span.style.display = base64List.length ? 'none' : '';
+    <script>
+        // ── Toggle ส่วน upload รูปใหม่ ──
+        function toggleNewImgSection() {
+            const section = document.getElementById('newImgSection');
+            const btn = document.getElementById('toggleChangeImg');
+            if (!section) return;
+            const isVisible = section.classList.contains('visible');
+            section.classList.toggle('visible', !isVisible);
+            if (btn) {
+                btn.innerHTML = isVisible
+                    ? '<i class="fas fa-arrows-rotate"></i> เปลี่ยนรูปภาพ'
+                    : '<i class="fas fa-xmark"></i> ยกเลิกเปลี่ยนรูป';
+            }
+            // ถ้าปิด ให้ล้างรูปที่เลือกไว้
+            if (isVisible) {
+                base64List = [];
+                renderPreviews();
+                updateHiddenInput();
+            }
         }
 
-        base64List.forEach((b64, idx) => {
-            const wrap = document.createElement('div');
-            wrap.className = 'preview-thumb';
+        // ── รูปภาพ base64 ──
+        const fileInput = document.getElementById('fileInput');
+        const previewGrid = document.getElementById('previewGrid');
+        const imagesInput = document.getElementById('imagesInput');
 
-            const img = document.createElement('img');
-            img.src = b64;
+        let base64List = [];
 
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'remove-btn';
-            btn.innerHTML = '✕';
-            btn.onclick = () => {
-                base64List.splice(idx, 1);
+        fileInput.addEventListener('change', function () {
+            const files = Array.from(this.files);
+            files.forEach(file => readAndAdd(file));
+            this.value = '';
+        });
+
+        function readAndAdd(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const b64 = e.target.result;
+                base64List.push(b64);
                 renderPreviews();
                 updateHiddenInput();
             };
+            reader.readAsDataURL(file);
+        }
 
-            wrap.appendChild(img);
-            wrap.appendChild(btn);
-            previewGrid.appendChild(wrap);
+        function renderPreviews() {
+            previewGrid.innerHTML = '';
+
+            // อัปเดต dropZone ถ้ามี
+            const dropZone = document.getElementById('dropZone');
+            if (dropZone) {
+                const svg = dropZone.querySelector('svg');
+                const span = dropZone.querySelector('span');
+                if (svg) svg.style.opacity = base64List.length ? '0' : '0.4';
+                if (span) span.style.display = base64List.length ? 'none' : '';
+            }
+            const dropZoneNoImg = document.getElementById('dropZoneNoImg');
+            if (dropZoneNoImg) {
+                const svg = dropZoneNoImg.querySelector('svg');
+                const span = dropZoneNoImg.querySelector('span');
+                if (svg) svg.style.opacity = base64List.length ? '0' : '0.4';
+                if (span) span.style.display = base64List.length ? 'none' : '';
+            }
+
+            base64List.forEach((b64, idx) => {
+                const wrap = document.createElement('div');
+                wrap.className = 'preview-thumb';
+
+                const img = document.createElement('img');
+                img.src = b64;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'remove-btn';
+                btn.innerHTML = '✕';
+                btn.onclick = () => {
+                    base64List.splice(idx, 1);
+                    renderPreviews();
+                    updateHiddenInput();
+                };
+
+                wrap.appendChild(img);
+                wrap.appendChild(btn);
+                previewGrid.appendChild(wrap);
+            });
+        }
+
+        function updateHiddenInput() {
+            imagesInput.value = base64List.join('||');
+        }
+
+        // Validate ก่อน submit
+        document.getElementById('postForm').addEventListener('submit', function () {
+            if (base64List.length === 0) {
+                imagesInput.value = ''; // ส่งค่าว่าง → backend จะ keep รูปเดิม
+            }
         });
-    }
 
-    function updateHiddenInput() {
-        imagesInput.value = base64List.join('||');
-    }
+        // ── แสดง/ซ่อนฟิลด์สถานที่ ตามการเลือกทัวร์ ──
+        // เลือกทัวร์ -> แสดงฟิลด์สถานที่ (บังคับกรอก)
+        // ไม่ระบุทัวร์ (ข่าวสารทั่วไป) -> ซ่อนฟิลด์สถานที่ (ไม่บังคับกรอก)
+        const tourSelect = document.getElementById('tourSelect');
+        const locationGroup = document.getElementById('locationGroup');
+        const locationInput = document.getElementById('locationInput');
 
-    // Validate ก่อน submit
-    document.getElementById('postForm').addEventListener('submit', function () {
-        if (base64List.length === 0) {
-            imagesInput.value = ''; // ส่งค่าว่าง → backend จะ keep รูปเดิม
+        function toggleLocationField() {
+            if (tourSelect.value) {
+                locationGroup.style.display = '';
+                locationInput.setAttribute('required', 'required');
+            } else {
+                locationGroup.style.display = 'none';
+                locationInput.removeAttribute('required');
+                locationInput.value = '';
+            }
         }
-    });
-
-    // ── แสดง/ซ่อนกล่องคำอธิบายเมื่อเลือกทัวร์ ──
-    const tourSelect  = document.getElementById('tourSelect');
-    const tourPreview = document.getElementById('tourPreview');
-
-    function toggleTourPreview() {
-        if (tourSelect.value) {
-            tourPreview.classList.add('show');
-        } else {
-            tourPreview.classList.remove('show');
-        }
-    }
-    tourSelect.addEventListener('change', toggleTourPreview);
-    toggleTourPreview(); // แสดงทันทีถ้าโพสต์นี้เชื่อมกับทัวร์อยู่แล้ว
-</script>
+        tourSelect.addEventListener('change', toggleLocationField);
+        toggleLocationField(); // แสดงทันทีถ้าโพสต์นี้มีทัวร์อยู่แล้ว (ตอนโหลดหน้าแก้ไข)
+    </script>
 
 </body>
+
 </html>

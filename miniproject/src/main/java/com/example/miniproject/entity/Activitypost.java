@@ -2,8 +2,6 @@ package com.example.miniproject.entity;
 import jakarta.persistence.*;
 import java.util.Date;
 
-import com.example.miniproject.entity.enums.ActivityStatus;
-
 @Entity
 @Table(name = "Activitypost")
 public class Activitypost {
@@ -14,7 +12,7 @@ public class Activitypost {
     @Column(length = 100)
     private String title;
     @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT CHARACTER SET utf8mb4")
     private String description;
     @Column(length = 255)
     private String location;
@@ -22,10 +20,7 @@ public class Activitypost {
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String images;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 50)
-    private ActivityStatus status;
+
 
     // Many post belong to 1 manager
     @ManyToOne
@@ -92,14 +87,6 @@ public class Activitypost {
 
     public void setCommunitymanager(Communitymanager communitymanager) {
         this.communitymanager = communitymanager;
-    }
-
-    public ActivityStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ActivityStatus status) {
-        this.status = status;
     }
 
     public Tour getTour() {

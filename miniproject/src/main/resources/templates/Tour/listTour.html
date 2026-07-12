@@ -736,11 +736,7 @@
 
         <!-- Filter Tabs by Status -->
         <div class="filter-tabs">
-            <button class="tab-btn active" onclick="filterTours('ALL', this)" id="tab-all">
-                ทั้งหมด
-                <span class="tab-count" id="count-all">0</span>
-            </button>
-            <button class="tab-btn" onclick="filterTours('เปิดจอง', this)" id="tab-open">
+            <button class="tab-btn active" onclick="filterTours('เปิดจอง', this)" id="tab-open">
                 🟢 เปิดจอง
             </button>
             <button class="tab-btn" onclick="filterTours('ปิดรับการจอง', this)" id="tab-closed">
@@ -902,7 +898,7 @@
 
             rows.forEach(row => {
                 const rowStatus = row.getAttribute('data-status') || '';
-                if (status === 'ALL' || rowStatus === status) {
+                if (rowStatus === status) {
                     row.style.display = '';
                     visible++;
                 } else {
@@ -916,18 +912,10 @@
             }
         }
 
-        /* ═══════════════════════════════════════════
-           COUNT badges — นับจำนวนตามสถานะ
-        ═══════════════════════════════════════════ */
-        function updateCounts() {
-            const rows = document.querySelectorAll('.tour-row');
-            let total = 0;
-            rows.forEach(() => total++);
-            const el = document.getElementById('count-all');
-            if (el) el.textContent = total;
-        }
-
-        updateCounts();
+        // แสดงผลตาม tab เริ่มต้น ("เปิดจอง") ตอนโหลดหน้า
+        document.addEventListener('DOMContentLoaded', function () {
+            filterTours('เปิดจอง', document.getElementById('tab-open'));
+        });
 
         /* ═══════════════════════════════════════════
            AUTO-HIDE SUCCESS BANNER หลัง 3 วินาที

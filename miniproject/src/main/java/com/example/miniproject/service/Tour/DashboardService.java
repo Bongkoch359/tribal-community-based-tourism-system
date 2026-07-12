@@ -63,21 +63,20 @@ public class DashboardService {
                 .collect(Collectors.toList());
     }
 
-    // โพสต์กิจกรรมทั้งหมดที่สถานะ PUBLISHED
-    public List<PostRowDTO> getPublishedPosts() {
-        return activitypostRepository
-                .findByStatusOrderByCreateddateDesc(ActivityStatus.PUBLISHED)
-                .stream()
-                .map(p -> {
-                    PostRowDTO row = new PostRowDTO();
-                    row.setActivityid(p.getActivityid());
-                    row.setTitle(p.getTitle());
-                    row.setLocation(p.getLocation());
-                    row.setStatus(p.getStatus() != null ? p.getStatus().name() : "-");
-                    return row;
-                })
-                .collect(Collectors.toList());
-    }
+// โพสต์กิจกรรมล่าสุด (ไม่กรองสถานะแล้ว
+public List<PostRowDTO> getPublishedPosts() {
+    return activitypostRepository
+            .findAllByOrderByCreateddateDesc()
+            .stream()
+            .map(p -> {
+                PostRowDTO row = new PostRowDTO();
+                row.setActivityid(p.getActivityid());
+                row.setTitle(p.getTitle());
+                row.setLocation(p.getLocation());
+                return row;
+            })
+            .collect(Collectors.toList());
+}
 
     // รายได้รายเดือนของปีปัจจุบัน (12 เดือนครบ แม้บางเดือนเป็น 0)
     public List<MonthlyRevenueDTO> getMonthlyRevenue() {

@@ -3,7 +3,6 @@ package com.example.miniproject.service.Member;
 import com.example.miniproject.entity.Activitypost;
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Tour;
-import com.example.miniproject.entity.enums.ActivityStatus;
 import com.example.miniproject.repository.Member.ActivitypostRepository;
 import com.example.miniproject.repository.Member.TourRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +31,11 @@ public class ActivityPostService {
         return activityPostRepository.findById(activityId).orElse(null);
     }
 
-    
-
     // ─── สร้างโพสต์ใหม่ ───
     public Activitypost createPost(
             String title,
             String location,
             String description,
-            String status,
             String images,         // base64 หลายรูป คั่นด้วย ||
             String tourId,         // ไม่บังคับ — ทัวร์ที่โพสนี้โปรโมท
             Communitymanager manager) {
@@ -54,12 +50,6 @@ public class ActivityPostService {
         post.setDescription(description);
         post.setCreateddate(new Date());
         post.setCommunitymanager(manager);
-
-        try {
-            post.setStatus(ActivityStatus.valueOf(status));
-        } catch (IllegalArgumentException e) {
-            post.setStatus(ActivityStatus.DRAFT);
-        }
 
         post.setImages(images != null && !images.isBlank() ? images : null);
 
@@ -92,7 +82,6 @@ public class ActivityPostService {
             String title,
             String location,
             String description,
-            String status,
             String images,
             String tourId) {
 
@@ -102,12 +91,6 @@ public class ActivityPostService {
         post.setTitle(title);
         post.setLocation(location);
         post.setDescription(description);
-
-        try {
-            post.setStatus(ActivityStatus.valueOf(status));
-        } catch (IllegalArgumentException e) {
-            post.setStatus(ActivityStatus.DRAFT);
-        }
 
         // อัปเดตรูปเฉพาะเมื่อมีรูปใหม่ส่งมา
         // ถ้า images เป็น null หรือว่าง → คงรูปเดิมไว้ (ไม่ overwrite)
@@ -119,11 +102,6 @@ public class ActivityPostService {
         post.setTour(resolveTour(tourId));
 
         return activityPostRepository.save(post);
-    }
-
-    // ─── ดึงโพสต์ตามสถานะ ───
-    public List<Activitypost> getPostsByStatus(ActivityStatus status) {
-        return activityPostRepository.findByStatusOrderByCreateddateDesc(status);
     }
 
     // ─── ดึงโพสต์ของ manager คนนั้น ───

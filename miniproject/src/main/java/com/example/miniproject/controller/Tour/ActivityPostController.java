@@ -75,7 +75,6 @@ public String createPost(
         @RequestParam("title")       String title,
         @RequestParam("location")    String location,
         @RequestParam("description") String description,
-        @RequestParam("status")      String status,
         @RequestParam(value = "images", required = false) String images,
         @RequestParam(value = "tourId", required = false) String tourId,
         HttpSession session,
@@ -85,7 +84,7 @@ public String createPost(
     if (manager == null) return "redirect:/manager/login";
 
     try {
-        activityPostService.createPost(title, location, description, status, images, tourId, manager);
+        activityPostService.createPost(title, location, description, images, tourId, manager);
         model.addAttribute("loggedInManager", manager);
         model.addAttribute("tours", tourService.getToursByManager(manager));
         model.addAttribute("successMessage", "บันทึกโพสต์สำเร็จ!");
@@ -122,7 +121,6 @@ public String createPost(
             @RequestParam("title")       String title,
             @RequestParam("location")    String location,
             @RequestParam("description") String description,
-            @RequestParam("status")      String status,
             @RequestParam(value = "images", required = false) String images,
             @RequestParam(value = "tourId", required = false) String tourId,
             HttpSession session,
@@ -134,7 +132,7 @@ public String createPost(
 
         try {
             Activitypost updated = activityPostService.updatePost(
-                    activityId, title, location, description, status, images, tourId);
+                    activityId, title, location, description, images, tourId);
             if (updated == null) return "redirect:/manager/posts";
 
             return "redirect:/manager/posts/" + activityId + "?success=updated";

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import com.example.miniproject.entity.enums.ActivityStatus;
 import org.springframework.stereotype.Service;
 
 import com.example.miniproject.entity.Activitypost;
@@ -44,13 +43,11 @@ public class SearchInfoService {
 public List<Activitypost> searchActivity(String keyword) {
     try {
         if (keyword == null || keyword.isBlank()) {
-            return activitypostRepository
-                .findByStatusOrderByCreateddateDesc(ActivityStatus.PUBLISHED);
+            return activitypostRepository.findAllByOrderByCreateddateDesc();
         }
         return activitypostRepository
-            .findByTitleContainingIgnoreCaseAndStatusOrLocationContainingIgnoreCaseAndStatus(
-                keyword, ActivityStatus.PUBLISHED,
-                keyword, ActivityStatus.PUBLISHED
+            .findByTitleContainingIgnoreCaseOrLocationContainingIgnoreCaseOrderByCreateddateDesc(
+                keyword, keyword
             );
     } catch (Exception e) {
         return new ArrayList<>();

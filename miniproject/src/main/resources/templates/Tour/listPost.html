@@ -290,6 +290,12 @@
         .badge-amber { background: var(--amber-light); color: var(--amber-text); }
         .badge-gray  { background: var(--gray-light);  color: var(--gray-text);  }
 
+        /* ─── TOUR LINK CELL ─── */
+        .tour-link-cell { display: flex; align-items: center; gap: 6px; }
+        .tour-link-cell i { color: var(--green-mid); font-size: 12px; }
+        .tour-link-name { font-weight: 500; color: var(--green-dark); font-size: 12.5px; }
+        .no-tour { color: var(--text-hint); font-size: 12.5px; }
+
         /* ─── ACTION BUTTONS ─── */
         .action-btns { display: flex; align-items: center; gap: 8px; }
         .btn-view {
@@ -540,9 +546,8 @@
 
     <!-- Filter Tabs -->
     <div class="filter-tabs">
-        <button class="tab-btn active" onclick="filterPosts('ALL', this)">ทั้งหมด</button>
-        <button class="tab-btn" onclick="filterPosts('PUBLISHED', this)">เผยแพร่</button>
-        <button class="tab-btn" onclick="filterPosts('DRAFT', this)">ฉบับร่าง</button>
+        <button class="tab-btn active" onclick="filterPosts('TOUR', this)">โพสต์ทัวร์</button>
+        <button class="tab-btn" onclick="filterPosts('NEWS', this)">ข่าวสารทั่วไป</button>
     </div>
 
     <!-- Table -->
@@ -552,15 +557,15 @@
                 <tr>
                     <th style="width:110px">รูปภาพ</th>
                     <th>หัวข้อโพสต์</th>
-                    <th style="width:160px">สถานที่</th>
-                    <th style="width:120px">สถานะ</th>
+                    <th style="width:190px" id="tourColHeader">ชื่อทัวร์</th>
+                    <th style="width:160px">วันที่โพสต์</th>
                     <th style="width:160px">จัดการ</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- มีข้อมูล -->
                 <tr th:each="post : ${posts}"
-                    th:attr="data-status=${post.status}"
+                    th:attr="data-hastour=${post.tour != null}"
                     class="post-row">
                     <!-- รูปภาพ -->
                     <td>
@@ -581,26 +586,23 @@
                         </th:block>
                     </td>
 
-                    <!-- หัวข้อ + คำอธิบาย -->
+                    <!-- หัวข้อ + ประเภทโพสต์ -->
                     <td>
                         <div class="post-title" th:text="${post.title}">-</div>
-                        <!-- <div class="post-desc"  th:text="${post.description}">-</div> -->
+                        <!-- <span class="badge badge-green" th:if="${post.tour != null}">โพสต์ทัวร์</span>
+                        <span class="badge badge-gray" th:if="${post.tour == null}">ข่าวสารทั่วไป</span> -->
                     </td>
 
-                    <!-- สถานที่ -->
-                    <td th:text="${post.location}">-</td>
-
-                    <!-- สถานะ -->
-                    <td>
-                        <span class="badge"
-                              th:classappend="${post.status != null and post.status.name() == 'PUBLISHED'} ? 'badge-green'
-                                           : (${post.status != null and post.status.name() == 'DRAFT'} ? 'badge-gray'
-                                           : 'badge-amber')"
-                              th:text="${post.status != null and post.status.name() == 'PUBLISHED'} ? 'เผยแพร่'
-                                     : (${post.status != null and post.status.name() == 'DRAFT'} ? 'ฉบับร่าง' : '-')">
-                            -
-                        </span>
+                    <!--    โพสต์อยู่ภายใต้ทัวร์ทัวร์ -->
+                    <td class="tour-col">
+                        <div class="tour-link-cell" th:if="${post.tour != null}">
+                            <i class="fas fa-bus"></i>
+                            <span class="tour-link-name" th:text="${post.tour.tourmname}">ชื่อทัวร์</span>
+                        </div>
                     </td>
+
+                    <!-- วันที่โพสต์ -->
+                    <td th:text="${post.createddate}">-</td>
 
                     <!-- จัดการ -->
                     <td>
@@ -675,22 +677,42 @@
 </div>
 
 <script>
-    // ─── Filter tabs ───
-    function filterPosts(status, btn) {
+    // ─── Filter tabs (ตามทัวร์) ───
+    function toggleTourColumn(type) {
+        // ซ่อนคอลัมน์ "เชื่อมโยงกับทัวร์" ทั้งคอลัมน์เมื่ออยู่แท็บข่าวสารทั่วไป
+        const show = type !== 'NEWS';
+        const header = document.getElementById('tourColHeader');
+        if (header) header.style.display = show ? '' : 'none';
+        document.querySelectorAll('.tour-col').forEach(td => {
+            td.style.display = show ? '' : 'none';
+        });
+    }
+
+    function filterPosts(type, btn) {
         // active tab
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
         // show/hide rows
         document.querySelectorAll('.post-row').forEach(row => {
-            const rowStatus = row.getAttribute('data-status');
-            if (status === 'ALL' || rowStatus === status) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+            const hasTour = row.getAttribute('data-hastour') === 'true';
+            let show = true;
+            if (type === 'TOUR') show = hasTour;
+            else if (type === 'NEWS') show = !hasTour;
+            row.style.display = show ? '' : 'none';
         });
+
+        toggleTourColumn(type);
     }
+
+    // แสดงผลตาม tab เริ่มต้น ("มีทัวร์") ตอนโหลดหน้า
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.post-row').forEach(row => {
+            const hasTour = row.getAttribute('data-hastour') === 'true';
+            row.style.display = hasTour ? '' : 'none';
+        });
+        toggleTourColumn('TOUR');
+    });
 
     // ─── Delete confirm modal ───
     let formToSubmit = null;
