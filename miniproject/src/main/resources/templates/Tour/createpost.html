@@ -20,7 +20,7 @@
             --green-dark: #3a7d1e;
             --green-mid: #65a30d;
             --green-light: #d9f99d;
-            --amber: #65a30d;
+            --amber: #f0a500;
             --amber-hover: #4d7c0a;
             --bg-page: #f3fae8;
             --bg-card: #ffffff;
@@ -849,18 +849,10 @@
                     <!-- ข้อมูลหลัก -->
                     <div class="card">
                         <div class="card-title">ข้อมูลโพสต์</div>
-
-                        <div class="form-group">
-                            <label class="form-label">หัวข้อโพสต์ <span class="req">*</span></label>
-                            <input class="form-control" type="text" name="title"
-                                placeholder="เช่น แนะนำแหล่งท่องเที่ยวชุมชนชนเผ่า..."
-                                th:value="${post?.title}" required />
-                        </div>
-
                         <!-- ═══ โพสนี้เป็นของทัวร์อะไร ═══ -->
                         <div class="form-group" style="margin-bottom:0">
                             <label class="form-label">
-                                    เลือกทัวร์ <span class="opt">(ไม่บังคับ —
+                                เลือกทัวร์ <span class="opt">(ไม่บังคับ —
                                     เว้นว่างไว้ถ้าเป็นข่าวสาร/ประกาศทั่วไป)</span>
                             </label>
                             <select class="form-control" name="tourId" id="tourSelect">
@@ -875,7 +867,7 @@
                                 หากเลือกทัวร์ โพสต์นี้จะอยู่ภายใต้ทัวร์ดังกล่าว และผู้ใช้งานสามารถกด "จองทัวร์"
                                 จากหน้าโพสต์ได้
                             </div> -->
-                            
+
 
                             <!-- ฟิลด์สถานที่ (แสดงเฉพาะเมื่อเลือกทัวร์) -->
                             <div class="form-group" id="locationGroup" style="display:none;">
@@ -884,6 +876,14 @@
                                     placeholder="จังหวัด / สถานที่ท่องเที่ยว" th:value="${post?.location}" />
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="form-label">หัวข้อโพสต์ <span class="req">*</span></label>
+                            <input class="form-control" type="text" name="title"
+                                placeholder="เช่น แนะนำกิจกรรมทัวร์ชุมชนชนเผ่า..." th:value="${post?.title}"
+                                required />
+                        </div>
+
                     </div>
 
                     <!-- รายละเอียด -->
