@@ -56,14 +56,18 @@ public class TourPaymentServiceImpl implements PaymentService {
         if (tourDetails != null && !tourDetails.isEmpty()) {
             Bookingtourdetail detail = tourDetails.get(0);
 
-            // วันเริ่มทัวร์  →  startdate (ทัวร์ไม่มี checkout ใช้ checkIn อย่างเดียว)
-        dto.setCheckIn(detail.getStartdate());
-        if (detail.getStartdate() != null) {
-        Date deadline = Date.valueOf(
-        detail.getStartdate().toLocalDate().minusDays(1)
-    );
-    dto.setPaymentDeadline(deadline);
-}
+            // วันเริ่มทัวร์ → อ่านจาก tourschedule.opendate แทน (ทัวร์ไม่มี checkout ใช้ checkIn อย่างเดียว)
+            Date openDate = detail.getTourschedule() != null
+                    ? detail.getTourschedule().getOpendate()
+                    : null;
+
+            dto.setCheckIn(openDate);
+            if (openDate != null) {
+                Date deadline = Date.valueOf(
+                        openDate.toLocalDate().minusDays(1)
+                );
+                dto.setPaymentDeadline(deadline);
+            }
             dto.setCheckOut(null);
 
             // จำนวนผู้ใหญ่ / เด็ก
@@ -76,35 +80,35 @@ public class TourPaymentServiceImpl implements PaymentService {
                 dto.setRoomTypeName(detail.getTour().getTourmname()); // ใช้ field เดิมเก็บชื่อทัวร์
 
                 // รูปทัวร์
-            if (detail.getTour().getImages() != null&& !detail.getTour().getImages().isEmpty()) {
+                if (detail.getTour().getImages() != null && !detail.getTour().getImages().isEmpty()) {
 
-            String images = detail.getTour().getImages();
+                    String images = detail.getTour().getImages();
 
-    // แยกรูปด้วย ||
-            String[] imageArray = images.split("\\|\\|");
+                    // แยกรูปด้วย ||
+                    String[] imageArray = images.split("\\|\\|");
 
-    // เอารูปแรก
-            String firstImage = imageArray[0].trim();
+                    // เอารูปแรก
+                    String firstImage = imageArray[0].trim();
 
-            dto.setRoomImageUrl("/uploads/tours/" + firstImage);
-}
+                    dto.setRoomImageUrl("/uploads/tours/" + firstImage);
+                }
 
-               
-        // ✅ แก้ใหม่ให้ตรงกับ Communitymanager entity
-        if (detail.getTour().getCommunitymanager() != null) {
-        Communitymanager mgr = detail.getTour().getCommunitymanager();
-    
-        // ชื่อเต็ม = firstname + lastname
-        String fullName = mgr.getFirstname() + " " + mgr.getLastname();
-        dto.setHomestayName(fullName);
-    
-        // Communitymanager ไม่มี address → ใช้ tribe แทน (หรือ set null ถ้าไม่ต้องการแสดง)
-        dto.setHomestayAddress(mgr.getTribe());
 
-         dto.setBankName(mgr.getBankName());
-        dto.setBankAccount(mgr.getAccountNumber());
-       dto.setAccountName(mgr.getAccountName());
-        }
+                // ✅ แก้ใหม่ให้ตรงกับ Communitymanager entity
+                if (detail.getTour().getCommunitymanager() != null) {
+                    Communitymanager mgr = detail.getTour().getCommunitymanager();
+
+                    // ชื่อเต็ม = firstname + lastname
+                    String fullName = mgr.getFirstname() + " " + mgr.getLastname();
+                    dto.setHomestayName(fullName);
+
+                    // Communitymanager ไม่มี address → ใช้ tribe แทน (หรือ set null ถ้าไม่ต้องการแสดง)
+                    dto.setHomestayAddress(mgr.getTribe());
+
+                    dto.setBankName(mgr.getBankName());
+                    dto.setBankAccount(mgr.getAccountNumber());
+                    dto.setAccountName(mgr.getAccountName());
+                }
             }
         }
 

@@ -1,7 +1,6 @@
 package  com.example.miniproject.entity;
 
 import jakarta.persistence.*;
-import java.sql.Date;
 
 @Entity
 @Table(name = "Bookingtourdetail")
@@ -9,9 +8,6 @@ public class Bookingtourdetail {
 
     @EmbeddedId
     private Bookingtourdetailid id;
-
-    @Column(name = "startdate")
-    private Date startdate;
 
     private Integer numofadult;
     private Integer numofchild;
@@ -28,14 +24,19 @@ public class Bookingtourdetail {
     @JoinColumn(name = "tourid", insertable = false, updatable = false)
     private Tour tour;
 
+    // ผูกการจองนี้เข้ากับ "รอบ/วันที่เปิดทัวร์" ที่เลือกไว้ — วันที่จองอ่านได้จาก
+    // tourschedule.getOpendate() โดยตรง
+    @ManyToOne
+    @JoinColumn(name = "scheduleid", nullable = false)
+    private Tourschedule tourschedule;
+
     public Bookingtourdetail() {}
 
     public Bookingtourdetailid getId() { return id; }
     public void setId(Bookingtourdetailid id) { this.id = id; }
 
-    public Date getStartdate() { return startdate; }
-    public void setStartdate(Date startdate) { this.startdate = startdate; }
-
+    public Tourschedule getTourschedule() { return tourschedule; }
+    public void setTourschedule(Tourschedule tourschedule) { this.tourschedule = tourschedule; }
 
     public Integer getNumofadult() {
         return numofadult;
@@ -67,5 +68,4 @@ public class Bookingtourdetail {
         this.tour = tour;
     }
 
-  
 }

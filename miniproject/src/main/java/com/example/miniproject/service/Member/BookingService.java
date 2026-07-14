@@ -382,7 +382,7 @@ public class BookingService {
     detail.setBooking(booking);
     detail.setTour(tour);
 
-    detail.setStartdate(Date.valueOf(startDate));
+   
     detail.setNumofadult(adults);
     detail.setNumofchild(childs);
     detail.setSubtotaltour(subtotal);
@@ -484,7 +484,7 @@ public void editTourBooking(
                     + (childs * tour.getChildprice());
 
     // ── 7. อัปเดต detail ──────────────────────────────
-    detail.setStartdate(Date.valueOf(startDate));
+   
     detail.setNumofadult(adults);
     detail.setNumofchild(childs);
     detail.setSubtotaltour(subtotal);

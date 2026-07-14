@@ -734,16 +734,19 @@
             <span th:text="${successMessage}"></span>
         </div>
 
-        <!-- Filter Tabs by Status -->
+        <!-- Filter Tabs by Status (คำนวณจากสถานะรอบทัวร์ ไม่ใช่สถานะทัวร์โดยตรงแล้ว) -->
         <div class="filter-tabs">
-            <button class="tab-btn active" onclick="filterTours('เปิดจอง', this)" id="tab-open">
-                🟢 เปิดจอง
-            </button>
-            <button class="tab-btn" onclick="filterTours('ปิดรับการจอง', this)" id="tab-closed">
-                🔴 ปิดรับการจอง
+            <button class="tab-btn active" onclick="filterTours('เปิดรับจอง', this)" id="tab-open">
+                🟢 เปิดรับจอง
             </button>
             <button class="tab-btn" onclick="filterTours('เต็ม', this)" id="tab-full">
                 🟡 เต็ม
+            </button>
+            <button class="tab-btn" onclick="filterTours('ปิด', this)" id="tab-closed">
+                🔴 ปิด
+            </button>
+            <button class="tab-btn" onclick="filterTours('ยังไม่เปิดรอบ', this)" id="tab-none">
+                ⚪ ยังไม่เปิดรอบ
             </button>
         </div>
 
@@ -763,7 +766,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="tour : ${tours}" th:attr="data-status=${tour.status}" class="tour-row">
+                    <tr th:each="tour : ${tours}" th:attr="data-status=${tour.overallStatus}" class="tour-row">
 
                         <!-- ─── รูปภาพ: ใช้ data-b64 + JS โหลดทีหลัง หลีกเลี่ยง HTML attribute size limit ─── -->
                         <td>
@@ -819,13 +822,13 @@
                             <span class="seats-range" th:text="${ tour.maxSeatstour}">-</span> ท่าน
                         </td>
 
-                        <!-- สถานะ -->
+                        <!-- สถานะ (คำนวณจากสถานะรอบทัวร์ ไม่ใช่สถานะทัวร์โดยตรงแล้ว) -->
                         <td>
-                            <span class="badge" th:classappend="${tour.status == 'เปิดจอง'} ? 'badge-open'
-                                           : (${tour.status == 'ปิดรับการจอง'} ? 'badge-closed'
-                                           : (${tour.status == 'เต็ม'} ? 'badge-full' : 'badge-other'))">
+                            <span class="badge" th:classappend="${tour.overallStatus == 'เปิดรับจอง'} ? 'badge-open'
+                                           : (${tour.overallStatus == 'เต็ม'} ? 'badge-full'
+                                           : (${tour.overallStatus == 'ปิด'} ? 'badge-closed' : 'badge-other'))">
                                 <span class="badge-dot"></span>
-                                <span th:text="${tour.status}">-</span>
+                                <span th:text="${tour.overallStatus}">-</span>
                             </span>
                         </td>
 
@@ -912,9 +915,9 @@
             }
         }
 
-        // แสดงผลตาม tab เริ่มต้น ("เปิดจอง") ตอนโหลดหน้า
+        // แสดงผลตาม tab เริ่มต้น ("เปิดรับจอง") ตอนโหลดหน้า
         document.addEventListener('DOMContentLoaded', function () {
-            filterTours('เปิดจอง', document.getElementById('tab-open'));
+            filterTours('เปิดรับจอง', document.getElementById('tab-open'));
         });
 
         /* ═══════════════════════════════════════════

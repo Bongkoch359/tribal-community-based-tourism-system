@@ -16,8 +16,8 @@ public class Tour {
     @Column(length = 100)
     private String tourmname;
 
-    @Column(length = 50)
-    private String status;
+    // @Column(length = 50)
+    // private String status;
 
     @Lob
     @Column(columnDefinition = "LONGTEXT")
@@ -31,6 +31,9 @@ public class Tour {
     private Integer maxSeatstour;
     private Double adultprice;
     private Double childprice;
+    @Column(name = "insurance_price")
+    private Double insurancePrice;
+
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String images;
@@ -60,6 +63,21 @@ public class Tour {
     // 1 ทัวร์ ถูกโปรโมทได้หลายโพสกิจกรรม
     @OneToMany(mappedBy = "tour")
     private List<Activitypost> activityPosts = new ArrayList<>();
+
+    // ✅ ใหม่: 1 ทัวร์ เปิดได้หลายรอบ/หลายวันที่ (Tourschedule)
+    @OneToMany(mappedBy = "tour")
+    private List<Tourschedule> tourSchedules = new ArrayList<>();
+
+    @Transient
+    private String overallStatus;
+
+    public String getOverallStatus() {
+        return overallStatus;
+    }
+    // "สถานะสรุป" ของทัวร์ที่คำนวณสดจากรอบทัวร์ทั้งหมด ใช้แค่โชว์บนหน้าเว็บ
+    public void setOverallStatus(String overallStatus) {
+        this.overallStatus = overallStatus;
+    }
 
     public Tour() {
     }
@@ -152,14 +170,6 @@ public class Tour {
         this.bookingTourDetails = bookingTourDetails;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public TourType getTourtype() {
         return tourtype;
     }
@@ -192,18 +202,14 @@ public class Tour {
         this.activityPosts = activityPosts;
     }
 
-    /**
-     * หมายเหตุ: เดิมเมธอดนี้ทำหน้าที่ auto-set ค่า tourtype เป็น String "ทัวร์รายวัน"
-     * และตรวจสอบว่าทัวร์หลายวันต้องมี tourtype เอง
-     *
-     * ตอนนี้ tourtype เปลี่ยนเป็นความสัมพันธ์กับ TourType (ต้องหา/สร้าง record
-     * ในตาราง tourtype ผ่าน repository) ซึ่ง entity เรียก repository เองไม่ได้
-     * จึงย้ายส่วนตรวจสอบ/กำหนด TourType ไปทำที่ TourService แทน
-     * (ดูเมธอด resolveTourType(...) ใน TourService)
-     *
-     * ที่ยังเก็บไว้ในนี้คือ logic ง่ายๆ ที่ไม่เกี่ยวกับ DB: ทัวร์รายวัน (1 วัน)
-     * ต้องมีจำนวนคืนเป็น 0 เสมอ
-     */
+    public List<Tourschedule> getTourSchedules() {
+        return tourSchedules;
+    }
+
+    public void setTourSchedules(List<Tourschedule> tourSchedules) {
+        this.tourSchedules = tourSchedules;
+    }
+
     @PrePersist
     @PreUpdate
     public void updateTourtype() {
@@ -247,16 +253,24 @@ public class Tour {
     }
 
     @Transient
-public Double getStartingPrice() {
-    if (adultprice == null && childprice == null) {
-        return 0.0;
+    public Double getStartingPrice() {
+        if (adultprice == null && childprice == null) {
+            return 0.0;
+        }
+        if (adultprice == null) {
+            return childprice;
+        }
+        if (childprice == null) {
+            return adultprice;
+        }
+        return Math.min(adultprice, childprice);
     }
-    if (adultprice == null) {
-        return childprice;
+
+    public Double getInsurancePrice() {
+        return insurancePrice;
     }
-    if (childprice == null) {
-        return adultprice;
+
+    public void setInsurancePrice(Double insurancePrice) {
+        this.insurancePrice = insurancePrice;
     }
-    return Math.min(adultprice, childprice);
-}
 }

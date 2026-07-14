@@ -30,8 +30,6 @@ public class TourService {
 
     // ─────────────────────────────────────────────────────────
     // หา TourType จากชื่อ ถ้ายังไม่มีในตาราง tourtype ให้สร้างใหม่ให้เลย
-    // (เดิม logic นี้อยู่ใน Tour.updateTourtype() แบบ String,
-    //  ย้ายมาไว้ที่ service เพราะต้องคุยกับ TourTypeRepository)
     // ─────────────────────────────────────────────────────────
     private TourType resolveTourType(String typeNameFromForm, Integer numberOfDays) {
         String name = (numberOfDays != null && numberOfDays == 1)
@@ -40,7 +38,6 @@ public class TourService {
 
         if (name == null || name.isBlank()) {
             if (numberOfDays != null && numberOfDays > 1) {
-                // ป้องกันกรณีลืม set tourtype เองสำหรับทัวร์หลายวัน (เดิมโยนใน entity)
                 throw new IllegalStateException(
                         "กรุณาระบุ tourtype สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
             }
@@ -72,58 +69,60 @@ public class TourService {
     }
 
     public List<TourType> getAllTourTypes() {
-    return tourTypeRepository.findAll();
-}
-
-    // ─────────────────────────────────────────────────────────
-    // ดึงเฉพาะทัวร์ที่ "เปิดจอง" (สำหรับหน้าค้นหาของผู้ใช้)
-    // ─────────────────────────────────────────────────────────
-   public List<Tour> getAllActiveTours() {
-    List<Tour> tours = tourRepository.findByStatus("เปิดจอง");
-
-    // map tourid → bookedSeats
-    Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
-        .stream()
-        .collect(Collectors.toMap(
-            row -> (String) row[0],
-            row -> ((Number) row[1]).intValue()
-        ));
-
-    // inject ค่าเข้า tour แต่ละตัว
-    tours.forEach(t -> {
-        int booked = bookedMap.getOrDefault(t.getTourid(), 0);
-        t.setBookedSeats(booked); // ← เพิ่ม field นี้ใน Tour
-    });
-
-    return tours;
-}
-
-
-// เพิ่ม method นี้
-    public void injectBookedSeats(List<Tour> tours) {
-    Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
-        .stream()
-        .collect(Collectors.toMap(
-            row -> (String) row[0],
-            row -> ((Number) row[1]).intValue()
-        ));
-    tours.forEach(t ->
-        t.setBookedSeats(bookedMap.getOrDefault(t.getTourid(), 0))
-    );
-}
-
-    // ─────────────────────────────────────────────────────────
-    // ดึงทัวร์ตาม ID — เฉพาะที่ยังเปิดอยู่ (สำหรับผู้ใช้ทั่วไป)
-    // ─────────────────────────────────────────────────────────
-    public Optional<Tour> getTourById(String tourid) {
-        return tourRepository.findById(tourid)
-                .filter(t -> "เปิดจอง".equalsIgnoreCase(t.getStatus()));
+        return tourTypeRepository.findAll();
     }
 
-    //ใช้เฉพาะหน้าจองทัวร์ (fetch bookings มาด้วย)
+    // ─────────────────────────────────────────────────────────
+    // ✅ แก้ใหม่: ดึงทัวร์ที่ "จองได้จริง" (สำหรับหน้าค้นหาของผู้ใช้)
+    //    เดิมกรองจาก t.status == 'เปิดจอง' → ตอนนี้กรองจาก repository query
+    //    ที่เช็ค EXISTS Tourschedule status = 'เปิดรับจอง' แทน
+    // ─────────────────────────────────────────────────────────
+    public List<Tour> getAllActiveTours() {
+        List<Tour> tours = tourRepository.search(null, null); // ใช้ query ที่กรองรอบเปิดรับจองอยู่แล้ว
+
+        Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],
+                        row -> ((Number) row[1]).intValue()
+                ));
+
+        tours.forEach(t -> {
+            int booked = bookedMap.getOrDefault(t.getTourid(), 0);
+            t.setBookedSeats(booked);
+        });
+
+        return tours;
+    }
+
+    // เพิ่ม method นี้
+    public void injectBookedSeats(List<Tour> tours) {
+        Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],
+                        row -> ((Number) row[1]).intValue()
+                ));
+        tours.forEach(t ->
+                t.setBookedSeats(bookedMap.getOrDefault(t.getTourid(), 0))
+        );
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // ✅ แก้ใหม่: ดึงทัวร์ตาม ID — เฉพาะที่ "จองได้จริง" (สำหรับผู้ใช้ทั่วไป)
+    //    เดิมกรอง t.getStatus() == "เปิดจอง" → ตัดออก เพราะไม่มี field นี้แล้ว
+    //    ถ้าต้องการกันไม่ให้เข้าดูทัวร์ที่ไม่มีรอบเปิดเลย ให้ใช้ getTourByIdAny()
+    //    แล้วเช็คที่ชั้น controller ว่ามีรอบเปิดอยู่จริงไหมแทน
+    // ─────────────────────────────────────────────────────────
+    public Optional<Tour> getTourById(String tourid) {
+        return tourRepository.findById(tourid);
+    }
+
+    // ใช้เฉพาะหน้าจองทัวร์ (fetch bookings มาด้วย)
     public Optional<Tour> getTourByIdWithBookings(String tourid) {
         return tourRepository.findByIdWithBookings(tourid);
     }
+
     // ─────────────────────────────────────────────────────────
     // ดึงทัวร์ตาม ID — ไม่กรองสถานะ (สำหรับ manager ดูรายละเอียด)
     // ─────────────────────────────────────────────────────────
@@ -134,7 +133,6 @@ public class TourService {
     // ─────────────────────────────────────────────────────────
     // สร้างทัวร์ใหม่
     // ─────────────────────────────────────────────────────────
-    // tourTypeName: ชื่อประเภททัวร์ที่รับมาจากฟอร์ม (String) — service จะแปลงเป็น TourType ให้เอง
     @Transactional
     public Tour createTour(Tour tour, Communitymanager manager, String tourTypeName) {
         String newId = "T" + UUID.randomUUID().toString()
@@ -146,8 +144,7 @@ public class TourService {
     }
 
     // ─────────────────────────────────────────────────────────
-    // อัปเดตเฉพาะรูปภาพ (ใช้หลัง createTour ตอนบันทึกรูปจาก base64
-    // ไม่ต้องยุ่งกับ tourtype ซ้ำอีกรอบ)
+    // อัปเดตเฉพาะรูปภาพ
     // ─────────────────────────────────────────────────────────
     @Transactional
     public void updateImages(String tourid, String images) {
@@ -158,31 +155,29 @@ public class TourService {
     }
 
     // ─────────────────────────────────────────────────────────
-    // อัปเดตทัวร์
+    // ✅ อัปเดตทัวร์ — ตัด existing.setStatus(...) ออก เพราะไม่มี field status แล้ว
     // ─────────────────────────────────────────────────────────
-    // tourTypeName: ชื่อประเภททัวร์ที่รับมาจากฟอร์ม (String) — service จะแปลงเป็น TourType ให้เอง
     @Transactional
-public Tour updateTour(String tourid, Tour updated, String tourTypeName) {
-    Tour existing = tourRepository.findById(tourid)
-            .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ ID: " + tourid));
+    public Tour updateTour(String tourid, Tour updated, String tourTypeName) {
+        Tour existing = tourRepository.findById(tourid)
+                .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ ID: " + tourid));
 
-    existing.setTourmname(updated.getTourmname());
-    existing.setStatus(updated.getStatus());
-    existing.setTourdetail(updated.getTourdetail());
-    existing.setConditiontour(updated.getConditiontour());
-    existing.setMinSeatstour(updated.getMinSeatstour());
-    existing.setMaxSeatstour(updated.getMaxSeatstour());
-    existing.setAdultprice(updated.getAdultprice());
-    existing.setChildprice(updated.getChildprice());
-    existing.setNumberOfDays(updated.getNumberOfDays());      
-    existing.setNumberOfNights(updated.getNumberOfNights());  
-    existing.setTourtype(resolveTourType(tourTypeName, updated.getNumberOfDays()));
-    if (updated.getImages() != null && !updated.getImages().isBlank()) {
-        existing.setImages(updated.getImages());
+        existing.setTourmname(updated.getTourmname());
+        existing.setTourdetail(updated.getTourdetail());
+        existing.setConditiontour(updated.getConditiontour());
+        existing.setMinSeatstour(updated.getMinSeatstour());
+        existing.setMaxSeatstour(updated.getMaxSeatstour());
+        existing.setAdultprice(updated.getAdultprice());
+        existing.setChildprice(updated.getChildprice());
+        existing.setNumberOfDays(updated.getNumberOfDays());
+        existing.setNumberOfNights(updated.getNumberOfNights());
+        existing.setTourtype(resolveTourType(tourTypeName, updated.getNumberOfDays()));
+        if (updated.getImages() != null && !updated.getImages().isBlank()) {
+            existing.setImages(updated.getImages());
+        }
+        return tourRepository.save(existing);
     }
-    return tourRepository.save(existing);
-}
-   
+
     // ─────────────────────────────────────────────────────────
     // ค้นหาทัวร์ (keyword + จำนวนที่นั่ง)
     // ─────────────────────────────────────────────────────────
@@ -192,37 +187,36 @@ public Tour updateTour(String tourid, Tour updated, String tourTypeName) {
     }
 
     // ─────────────────────────────────────────────────────────
-    // นับจำนวนทัวร์ที่เปิดอยู่
+    // ✅ แก้ใหม่: นับจำนวนทัวร์ที่เปิดอยู่ (จองได้จริง) — ใช้ query ใหม่แทน countByStatus
     // ─────────────────────────────────────────────────────────
     public long countActiveTours() {
-        return tourRepository.findByStatus("เปิดจอง").size();
+        return tourRepository.countActivePublished();
     }
 
     // ─────────────────────────────────────────────────────────
-// คำนวณที่นั่งคงเหลือ — จุดเดียวที่ใช้ทั้งระบบ (single source of truth)
-// ─────────────────────────────────────────────────────────
-public int getAvailableSeats(Tour tour) {
-    if (tour.getMaxSeatstour() == null) {
-        return Integer.MAX_VALUE; // ไม่จำกัดที่นั่ง
+    // คำนวณที่นั่งคงเหลือ — จุดเดียวที่ใช้ทั้งระบบ (single source of truth)
+    // ─────────────────────────────────────────────────────────
+    public int getAvailableSeats(Tour tour) {
+        if (tour.getMaxSeatstour() == null) {
+            return Integer.MAX_VALUE;
+        }
+        Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],
+                        row -> ((Number) row[1]).intValue()
+                ));
+        int bookedSeats = bookedMap.getOrDefault(tour.getTourid(), 0);
+        return Math.max(0, tour.getMaxSeatstour() - bookedSeats);
     }
-    Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
-        .stream()
-        .collect(Collectors.toMap(
-            row -> (String) row[0],
-            row -> ((Number) row[1]).intValue()
-        ));
-    int bookedSeats = bookedMap.getOrDefault(tour.getTourid(), 0);
-    return Math.max(0, tour.getMaxSeatstour() - bookedSeats);
-}
 
-// ─────────────────────────────────────────────────────────
-// ระดับสถานะที่นั่ง — ใช้ % แทนเลขตายตัว (รองรับทัวร์เล็ก/ใหญ่เท่ากัน)
-// คืนค่า: "full" | "low" | "open"
-// ─────────────────────────────────────────────────────────
-public String getSeatStatusLevel(Tour tour, int availableSeats) {
-    if (availableSeats <= 0) return "full";
-    if (tour.getMaxSeatstour() == null || tour.getMaxSeatstour() <= 0) return "open";
-    double ratio = (double) availableSeats / tour.getMaxSeatstour();
-    return (ratio <= 0.2) ? "low" : "open"; // เหลือ ≤20% ถือว่าใกล้เต็ม
-}
+    // ─────────────────────────────────────────────────────────
+    // ระดับสถานะที่นั่ง — ใช้ % แทนเลขตายตัว
+    // ─────────────────────────────────────────────────────────
+    public String getSeatStatusLevel(Tour tour, int availableSeats) {
+        if (availableSeats <= 0) return "full";
+        if (tour.getMaxSeatstour() == null || tour.getMaxSeatstour() <= 0) return "open";
+        double ratio = (double) availableSeats / tour.getMaxSeatstour();
+        return (ratio <= 0.2) ? "low" : "open";
+    }
 }

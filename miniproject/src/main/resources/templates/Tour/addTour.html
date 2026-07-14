@@ -915,7 +915,7 @@
                 <div class="card">
                     <div class="card-title">ข้อมูลทัวร์</div>
 
-                    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr; margin-bottom:14px;">
+                    <div class="form-row" style="grid-template-columns:1fr 1fr; margin-bottom:14px;">
                         <div class="form-group" style="margin-bottom:0;">
                             <label class="form-label">ชื่อทัวร์ <span class="req">*</span></label>
                             <input class="form-control" type="text" id="tourmname" name="tourmname"
@@ -934,17 +934,8 @@
                             </select>
                             <div class="field-error" id="err-tourtype">กรุณาเลือกประเภททัวร์</div>
                         </div>
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label class="form-label">สถานะ <span class="req">*</span></label>
-                            <select class="form-control" id="statusSelect" name="status">
-                                <option value="" disabled selected>— เลือกสถานะทัวร์ —</option>
-                                <option value="เปิดจอง" th:selected="${tour?.status == 'เปิดจอง'}">🟢 เปิดจอง</option>
-                                <option value="ปิดรับการจอง" th:selected="${tour?.status == 'ปิดรับการจอง'}">🔴
-                                    ปิดรับการจอง</option>
-                                <option value="เต็ม" th:selected="${tour?.status == 'เต็ม'}">🟡 เต็ม</option>
-                            </select>
-                            <div class="field-error" id="err-status">กรุณาเลือกสถานะทัวร์</div>
-                        </div>
+                        <!-- ✅ ตัดสถานะทัวร์ออกแล้ว: สถานะจะคำนวณจากสถานะ "รอบทัวร์" (วันที่เปิดทัวร์)
+                             ที่หน้าจัดการรอบทัวร์แทน ทัวร์ที่เพิ่งสร้างใหม่ยังไม่มีสถานะจนกว่าจะเพิ่มรอบทัวร์ -->
 
                     </div>
 
@@ -1263,7 +1254,6 @@
         ═══════════════════════════════════════════ */
         const REQUIRED = [
             { id: 'tourmname', errId: 'err-tourmname', msg: 'กรุณากรอกชื่อทัวร์' },
-            { id: 'statusSelect', errId: 'err-status', msg: 'กรุณาเลือกสถานะทัวร์' },
             { id: 'tourtypeSelect', errId: 'err-tourtype', msg: 'กรุณาเลือกประเภททัวร์' },
             { id: 'tourdetail', errId: 'err-tourdetail', msg: 'กรุณากรอกรายละเอียดทัวร์' },
             { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งขั้นต่ำ' },
@@ -1291,12 +1281,10 @@
 
         /* ═══════════════════════════════════════════
            SUCCESS MODAL + COUNTDOWN + REDIRECT
+           ✅ แก้ไข: รับ redirectUrl จริงจาก server มาใช้ตอน redirect
+                     แทนที่จะ hardcode ไปหน้า list เสมอ
         ═══════════════════════════════════════════ */
-        function goToList() {
-            window.location.href = '/manager/tours?success=created';
-        }
-
-        function showSuccessModal() {
+        function showSuccessModal(redirectUrl) {
             const modal = document.getElementById('successModal');
             const fill = document.getElementById('progressFill');
 
@@ -1307,7 +1295,7 @@
             fill.style.animation = 'progress-drain 2s linear forwards';
 
             setTimeout(() => {
-                goToList();
+                window.location.href = redirectUrl;
             }, 2000);
         }
 
@@ -1382,7 +1370,7 @@
                     }
 
                     // ✅ ตรวจว่า redirect ไปหน้า success จริงหรือไม่
-                    // controller สำเร็จ → "redirect:/manager/tours?success=created" → response.redirected = true
+                    // controller สำเร็จ → "redirect:/manager/tours/{id}/schedules?success=created" → response.redirected = true
                     // controller validate ไม่ผ่าน → return "Tour/addTour" ตรงๆ (ไม่ redirect) → response.redirected = false
                     if (!response.redirected || !response.url.includes('/manager/tours')) {
                         return response.text().then(html => {
@@ -1393,10 +1381,12 @@
                         });
                     }
 
-                    return response.text();
+                    // ✅ ส่ง URL ปลายทางจริงที่ browser redirect ไปถึง (เช่น
+                    //    /manager/tours/{tourid}/schedules?success=created) ต่อไปยัง .then ถัดไป
+                    return response.url;
                 })
-                .then(() => {
-                    showSuccessModal();
+                .then((redirectUrl) => {
+                    showSuccessModal(redirectUrl);
                 })
                 .catch(err => {
                     console.error('เพิ่มทัวร์ไม่สำเร็จ:', err);

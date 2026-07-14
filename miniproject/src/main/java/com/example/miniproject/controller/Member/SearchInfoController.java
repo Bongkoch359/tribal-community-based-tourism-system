@@ -68,6 +68,8 @@ public class SearchInfoController {
         tourService.injectBookedSeats(tours); // ← เพิ่มบรรทัดนี้
 
     // ===== DEBUG LOG เพิ่มตรงนี้ =====
+    // ✅ ตัด " | status=" + t.getStatus() ออก เพราะ Tour ไม่มี field status แล้ว
+    //    สถานะ "จองได้ไหม" ตอนนี้อ่านจาก Tourschedule แทน (ดูรายละเอียดใน getSchedulesByTour)
     System.out.println("========== DEBUG SEARCH ==========");
     System.out.println("keyword   : " + keyword);
     System.out.println("type      : " + type);
@@ -76,8 +78,7 @@ public class SearchInfoController {
     System.out.println("endDate   : " + endDate);
     System.out.println("tours     : " + tours.size() + " รายการ");
     tours.forEach(t -> System.out.println("  -> " + t.getTourid() 
-        + " | " + t.getTourmname() 
-        + " | status=" + t.getStatus()));
+        + " | " + t.getTourmname()));
     System.out.println("===================================");
     // ===================================
     

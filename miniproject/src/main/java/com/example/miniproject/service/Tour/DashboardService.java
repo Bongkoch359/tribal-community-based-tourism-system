@@ -8,7 +8,6 @@ import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.TourRepository;
 import com.example.miniproject.repository.Member.ActivitypostRepository;
 import com.example.miniproject.repository.Member.PaymentRepository;
-import com.example.miniproject.entity.enums.ActivityStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +35,6 @@ public class DashboardService {
     // รวมสถิติภาพรวม
     public DashboardStatsDTO getDashboardStats() {
         DashboardStatsDTO dto = new DashboardStatsDTO();
-        dto.setActiveTours(tourRepository.countByStatus("เปิดจอง"));
         dto.setTotalTours(tourRepository.count());
         dto.setTotalRevenue(paymentRepository.sumPaidAmount());
         dto.setPendingBookings(bookingRepository.countPendingBookings());
@@ -63,20 +61,20 @@ public class DashboardService {
                 .collect(Collectors.toList());
     }
 
-// โพสต์กิจกรรมล่าสุด (ไม่กรองสถานะแล้ว
-public List<PostRowDTO> getPublishedPosts() {
-    return activitypostRepository
-            .findAllByOrderByCreateddateDesc()
-            .stream()
-            .map(p -> {
-                PostRowDTO row = new PostRowDTO();
-                row.setActivityid(p.getActivityid());
-                row.setTitle(p.getTitle());
-                row.setLocation(p.getLocation());
-                return row;
-            })
-            .collect(Collectors.toList());
-}
+    // โพสต์กิจกรรมล่าสุด (ไม่กรองสถานะแล้ว)
+    public List<PostRowDTO> getPublishedPosts() {
+        return activitypostRepository
+                .findAllByOrderByCreateddateDesc()
+                .stream()
+                .map(p -> {
+                    PostRowDTO row = new PostRowDTO();
+                    row.setActivityid(p.getActivityid());
+                    row.setTitle(p.getTitle());
+                    row.setLocation(p.getLocation());
+                    return row;
+                })
+                .collect(Collectors.toList());
+    }
 
     // รายได้รายเดือนของปีปัจจุบัน (12 เดือนครบ แม้บางเดือนเป็น 0)
     public List<MonthlyRevenueDTO> getMonthlyRevenue() {
