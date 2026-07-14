@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เพิ่มที่พักใหม่</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/Homestay/add-room.css}" rel="stylesheet">
-    
+
 
     <style>
         .nav-right {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-}
-           /* ── Upload Zone ── */
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ── Upload Zone ── */
         .upload-box {
             border: 2px dashed #b5d6b5;
             border-radius: 12px;
@@ -26,10 +29,13 @@
             transition: border-color .2s, background .2s;
             background: #fafff8;
         }
-        .upload-box:hover, .upload-box.dragover {
+
+        .upload-box:hover,
+        .upload-box.dragover {
             border-color: #2d6a2d;
             background: #f0faf0;
         }
+
         .upload-placeholder {
             display: flex;
             flex-direction: column;
@@ -37,70 +43,112 @@
             gap: 6px;
             color: #555;
         }
-        .upload-placeholder i  { font-size: 2.4rem; color: #2d6a2d; }
-        .upload-placeholder p  { margin: 0; font-weight: 600; }
-        .upload-placeholder small { color: #888; font-size: .82rem; }
-       /* ── Preview Grid ── */
-    #previewGrid {
-    margin-top: 14px;
-    display: none;
-    flex-wrap: wrap;       
-    gap: 10px;
-}
-.preview-card {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    width: 120px;           
-    height: 120px;          
-    flex-shrink: 0;         
-    background: #eee;
-    box-shadow: 0 2px 8px rgba(0,0,0,.1);
-}
-        .preview-card img {
-            width: 100%; height: 100%;
-            object-fit: cover; display: block;
+
+        .upload-placeholder i {
+            font-size: 2.4rem;
+            color: #2d6a2d;
         }
+
+        .upload-placeholder p {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .upload-placeholder small {
+            color: #888;
+            font-size: .82rem;
+        }
+
+        /* ── Preview Grid ── */
+        #previewGrid {
+            margin-top: 14px;
+            display: none;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+            background: #eee;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+        }
+
+        .preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .preview-card .remove-btn {
-            position: absolute; top: 4px; right: 4px;
-            background: rgba(200,0,0,.8); color: #fff;
-            border: none; border-radius: 50%;
-            width: 24px; height: 24px; font-size: 12px;
-            cursor: pointer; display: flex;
-            align-items: center; justify-content: center;
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(200, 0, 0, .8);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background .15s;
         }
-        .preview-card .remove-btn:hover { background: #c00; }
+
+        .preview-card .remove-btn:hover {
+            background: #c00;
+        }
+
         .preview-card .file-size-label {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: rgba(0,0,0,.5); color: #fff;
-            font-size: 10px; text-align: center; padding: 2px 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, .5);
+            color: #fff;
+            font-size: 10px;
+            text-align: center;
+            padding: 2px 0;
         }
 
         /* ── Badge จำนวนรูป ── */
         #imageCountBadge {
             display: none;
-            background: #2d6a2d; color: #fff;
-            font-size: 12px; padding: 2px 10px;
-            border-radius: 20px; margin-left: 8px;
+            background: #2d6a2d;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: 8px;
         }
 
         /* ── Status Dropdown ── */
         .status-select-wrap {
             position: relative;
         }
+
         .status-select-wrap select.form-control {
             appearance: none;
             -webkit-appearance: none;
             padding-right: 36px;
             cursor: pointer;
         }
+
         .status-select-wrap::after {
             content: '\f078';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             position: absolute;
-            right: 12px; top: 50%;
+            right: 12px;
+            top: 50%;
             transform: translateY(-50%);
             color: #888;
             pointer-events: none;
@@ -113,505 +161,615 @@
             user-select: none;
             transition: background .15s, border-color .15s, color .15s;
         }
+
         .facility-chip input[type="checkbox"] {
-            display: none; 
+            display: none;
         }
+
         .facility-chip:has(input:checked) {
             background: #2d6a2d !important;
             border-color: #2d6a2d !important;
             color: #fff !important;
         }
+
         .facility-chip .fac-icon {
             display: inline-block;
         }
+
         /* ═══ SUCCESS MODAL ═══ */
-.modal-backdrop {
-    position: fixed; inset: 0;
-    background: rgba(10,30,12,0.55);
-    backdrop-filter: blur(4px);
-    z-index: 500;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-.modal-backdrop.show { opacity: 1; pointer-events: all; }
-.modal-box {
-    background: #fff; border-radius: 20px;
-    padding: 40px 36px 32px; max-width: 380px; width: 90%;
-    text-align: center;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.22);
-    transform: scale(0.85) translateY(20px);
-    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
-    opacity: 0;
-}
-.modal-backdrop.show .modal-box { transform: scale(1) translateY(0); opacity: 1; }
-.checkmark-wrap {
-    width: 80px; height: 80px;
-    background: linear-gradient(135deg,#1a3d1f,#2d6a35);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-    box-shadow: 0 8px 24px rgba(26,61,31,0.35);
-    position: relative;
-}
-.checkmark-wrap::after {
-    content: ''; position: absolute; inset: -4px;
-    border-radius: 50%; border: 3px solid rgba(26,61,31,0.15);
-}
-.checkmark-ring {
-    position: absolute; inset: -8px; border-radius: 50%;
-    border: 2px solid rgba(26,61,31,0.08);
-    animation: ring-pulse 1.5s ease-out 0.4s both;
-}
-@keyframes ring-pulse {
-    0%   { transform: scale(0.9); opacity: 0; }
-    50%  { opacity: 1; }
-    100% { transform: scale(1.3); opacity: 0; }
-}
-.checkmark-icon {
-    font-size: 36px; color: #fff;
-    animation: pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
-}
-@keyframes pop-in {
-    from { transform: scale(0); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-}
-.modal-title { font-size: 20px; font-weight: 700; color: #2d6a2d; margin-bottom: 8px; }
-.modal-desc  { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 24px; }
-.modal-countdown { font-size: 12px; color: #999; margin-bottom: 20px; }
-.countdown-num {
-    display: inline-block; background: #f3fae8;
-    border: 1.5px solid #ccc; border-radius: 20px;
-    padding: 2px 10px; font-weight: 700; color: #2d6a2d; min-width: 28px;
-}
-.modal-btn-row { display: flex; gap: 10px; justify-content: center; }
-.modal-btn-primary {
-    display: inline-flex; align-items: center; gap: 7px;
-    background: #2d6a2d; color: #fff;
-    padding: 10px 22px; border-radius: 8px;
-    font-size: 13px; font-weight: 700; font-family: 'Sarabun', sans-serif;
-    border: none; cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-}
-.modal-btn-primary:hover { background: #3d8c3d; }
-.modal-btn-primary:active { transform: scale(0.97); }
-.modal-progress-bar {
-    height: 3px; background: #e8f4ea;
-    border-radius: 0 0 20px 20px;
-    margin: 24px -36px -32px; overflow: hidden;
-}
-.modal-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #65a30d, #2d6a2d);
-    border-radius: 3px; width: 100%;
-    transform-origin: left;
-    animation: progress-drain 3s linear forwards;
-}
-@keyframes progress-drain {
-    from { transform: scaleX(1); }
-    to   { transform: scaleX(0); }
-}
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 30, 12, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 36px 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            transform: scale(0.85) translateY(20px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .modal-backdrop.show .modal-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .checkmark-wrap {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #1a3d1f, #2d6a35);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 24px rgba(26, 61, 31, 0.35);
+            position: relative;
+        }
+
+        .checkmark-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 3px solid rgba(26, 61, 31, 0.15);
+        }
+
+        .checkmark-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(26, 61, 31, 0.08);
+            animation: ring-pulse 1.5s ease-out 0.4s both;
+        }
+
+        @keyframes ring-pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .checkmark-icon {
+            font-size: 36px;
+            color: #fff;
+            animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+        }
+
+        @keyframes pop-in {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d6a2d;
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .modal-countdown {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .countdown-num {
+            display: inline-block;
+            background: #f3fae8;
+            border: 1.5px solid #ccc;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-weight: 700;
+            color: #2d6a2d;
+            min-width: 28px;
+        }
+
+        .modal-btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #2d6a2d;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Sarabun', sans-serif;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .modal-btn-primary:hover {
+            background: #3d8c3d;
+        }
+
+        .modal-btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .modal-progress-bar {
+            height: 3px;
+            background: #e8f4ea;
+            border-radius: 0 0 20px 20px;
+            margin: 24px -36px -32px;
+            overflow: hidden;
+        }
+
+        .modal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #65a30d, #2d6a2d);
+            border-radius: 3px;
+            width: 100%;
+            transform-origin: left;
+            animation: progress-drain 3s linear forwards;
+        }
+
+        @keyframes progress-drain {
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<!-- ─── NAVBAR ─── -->
-<nav class="navbar">
-    <a class="navbar-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
-    
-    <div class="nav-right">
-        <div class="profile-dropdown">
-            <div class="profile-trigger">
-                <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
-                <span class="owner-name" th:text="${ownername}">สมชาย ใจดี</span>
-                <i class="fas fa-chevron-down" style="font-size:.8rem; margin-left:5px; color:#fff;"></i>
+    <!-- ─── NAVBAR ─── -->
+    <nav class="navbar">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-mountain-sun me-2"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+        </a>
+
+        <div class="nav-right">
+            <div class="profile-dropdown">
+                <div class="profile-trigger">
+                    <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
+                    <span class="owner-name" th:text="${ownername}">สมชาย ใจดี</span>
+                    <i class="fas fa-chevron-down" style="font-size:.8rem; margin-left:5px; color:#fff;"></i>
+                </div>
+                <div class="dropdown-content">
+                    <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                    <hr>
+                    <a th:href="@{/owner/logout}" class="logout-item">
+                        <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                    </a>
+                </div>
             </div>
-            <div class="dropdown-content">
-                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
-                <hr>
-                <a th:href="@{/owner/logout}" class="logout-item">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
+        </div>
+    </nav>
+    <!-- ═══ SUCCESS MODAL ═══ -->
+    <div class="modal-backdrop" id="successModal">
+        <div class="modal-box">
+            <div class="checkmark-wrap">
+                <div class="checkmark-ring"></div>
+                <i class="fas fa-check checkmark-icon"></i>
+            </div>
+            <div class="modal-title">บันทึกสำเร็จ!</div>
+            <div class="modal-desc">ประเภทที่พักถูกบันทึกเรียบร้อยแล้ว</div>
+
+            <div class="modal-btn-row">
+            </div>
+            <div class="modal-progress-bar">
+                <div class="modal-progress-fill" id="progressFill"></div>
             </div>
         </div>
     </div>
-</nav>
-<!-- ═══ SUCCESS MODAL ═══ -->
-<div class="modal-backdrop" id="successModal">
-    <div class="modal-box">
-        <div class="checkmark-wrap">
-            <div class="checkmark-ring"></div>
-            <i class="fas fa-check checkmark-icon"></i>
-        </div>
-        <div class="modal-title">บันทึกสำเร็จ!</div>
-        <div class="modal-desc">ประเภทที่พักถูกบันทึกเรียบร้อยแล้ว</div>
-        
-        <div class="modal-btn-row">
-        </div>
-        <div class="modal-progress-bar">
-            <div class="modal-progress-fill" id="progressFill"></div>
-        </div>
-    </div>
-</div>
 
-<!-- ─── CONTENT ─── -->
-<div class="page">
+    <!-- ─── CONTENT ─── -->
+    <div class="page">
 
-    <a th:href="@{/owner/rooms(homestayid=${homestayid})}" class="back-btn">
-        <i class="fas fa-chevron-left"></i> ย้อนกลับ
-    </a>
+        <a th:href="@{/owner/rooms(homestayid=${homestayid})}" class="back-btn">
+            <i class="fas fa-chevron-left"></i> ย้อนกลับ
+        </a>
 
-    <div class="page-title">เพิ่มที่พักใหม่</div>
-    <!-- <div class="page-subtitle">
+        <div class="page-title">เพิ่มที่พักใหม่</div>
+        <!-- <div class="page-subtitle">
         สร้างข้อมูลประเภทที่พักใหม่สำหรับ:
         <span class="homestay-tag" th:text="${homestayname}">บ้านระเบียงดาว</span>
     </div> -->
 
-    <form id="addRoomForm" th:action="@{/addroom}" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="homestayid" th:value="${homestayid}">
+        <form id="addRoomForm" th:action="@{/addroom}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="homestayid" th:value="${homestayid}">
 
-        <!-- ─── ส่วนที่ 1: ข้อมูลประเภทที่พัก ─── -->
-        <div class="section-card">
-            <div class="section-head">
-                <i class="fas fa-bed" style="color:#2d6a2d;"></i>
-                <span class="label">ข้อมูลประเภทที่พัก</span>
-                <span class="badge-tag">ROOMTYPE</span>
-            </div>
-            <div class="section-body">
+            <!-- ─── ส่วนที่ 1: ข้อมูลประเภทที่พัก ─── -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="fas fa-bed" style="color:#2d6a2d;"></i>
+                    <span class="label">ข้อมูลประเภทที่พัก</span>
+                    <span class="badge-tag">ROOMTYPE</span>
+                </div>
+                <div class="section-body">
 
-                <div class="form-row-3">
-                    <div class="form-group">
-                        <label class="form-label">ประเภทที่พัก <span class="req">*</span></label>
-                        <select id="typename" name="typename" class="form-control">
-                            <option value="" disabled selected>-- เลือกประเภทที่พัก --</option>
-                            <option value="บ้านพัก">🏡 บ้านพัก</option>
-                            <option value="เต็นท์">⛺ เต็นท์</option>
-                            <option value="กระท่อมไม้ไผ่">🛖 กระท่อมไม้ไผ่</option>
-                        </select>
-                        <span class="field-error" id="typenameError"></span>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">ประเภทเตียง <span class="req">*</span></label>
-                        <select id="bedtype" name="bedtype" class="form-control">
-                            <option value="" disabled selected>-- เลือกประเภทเตียง --</option>
-                            <option value="เตียงเดี่ยว">เตียงเดี่ยว</option>
-                            <option value="เตียงคู่">เตียงคู่</option>
-                            <option value="ฟูกนอนพื้น">ฟูกนอนพื้น</option>
-                        </select>
-                        <span class="field-error" id="bedtypeError"></span>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">ราคาต่อคืน <span class="req">*</span></label>
-                        <div class="input-suffix">
-                            <input type="number" id="pricepernight" name="pricepernight"
-                                   class="form-control" placeholder="0.00" min="1" step="0.01">
-                            <span class="suffix-text">฿</span>
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">ประเภทที่พัก <span class="req">*</span></label>
+                            <select id="typename" name="typename" class="form-control">
+                                <option value="" disabled selected>-- เลือกประเภทที่พัก --</option>
+                                <option value="บ้านพัก">🏡 บ้านพัก</option>
+                                <option value="เต็นท์">⛺ เต็นท์</option>
+                                <option value="กระท่อมไม้ไผ่">🛖 กระท่อมไม้ไผ่</option>
+                            </select>
+                            <span class="field-error" id="typenameError"></span>
                         </div>
-                        <span class="field-error" id="priceError"></span>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">จำนวนผู้เข้าพักสูงสุด <span class="req">*</span></label>
-                        <div class="input-suffix">
-                            <input type="number" id="maxguest" name="maxguest"
-                                   class="form-control" placeholder="2" >
-                            <span class="suffix-text">คน</span>
+                        <div class="form-group">
+                            <label class="form-label">ประเภทเตียง <span class="req">*</span></label>
+                            <select id="bedtype" name="bedtype" class="form-control">
+                                <option value="" disabled selected>-- เลือกประเภทเตียง --</option>
+                                <option value="เตียงเดี่ยว">เตียงเดี่ยว</option>
+                                <option value="เตียงคู่">เตียงคู่</option>
+                                <option value="ฟูกนอนพื้น">ฟูกนอนพื้น</option>
+                            </select>
+                            <span class="field-error" id="bedtypeError"></span>
                         </div>
-                        <span class="field-error" id="maxguestError"></span>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">จำนวนห้องทั้งหมด <span class="req">*</span></label>
-                        <div class="input-suffix">
-                            <input type="number" id="totalrooms" name="totalrooms"
-                                   class="form-control" placeholder="1" >
-                            <span class="suffix-text">ห้อง</span>
+                        <div class="form-group">
+                            <label class="form-label">ราคาต่อคืน <span class="req">*</span></label>
+                            <div class="input-suffix">
+                                <input type="number" id="pricepernight" name="pricepernight" class="form-control"
+                                    placeholder="0.00" min="1" step="0.01">
+                                <span class="suffix-text">฿</span>
+                            </div>
+                            <span class="field-error" id="priceError"></span>
                         </div>
-                        <span class="field-error" id="totalroomsError"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">จำนวนผู้เข้าพักสูงสุด <span class="req">*</span></label>
+                            <div class="input-suffix">
+                                <input type="number" id="maxguest" name="maxguest" class="form-control" placeholder="2">
+                                <span class="suffix-text">คน</span>
+                            </div>
+                            <span class="field-error" id="maxguestError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">จำนวนห้องทั้งหมด <span class="req">*</span></label>
+                            <div class="input-suffix">
+                                <input type="number" id="totalrooms" name="totalrooms" class="form-control"
+                                    placeholder="1">
+                                <span class="suffix-text">ห้อง</span>
+                            </div>
+                            <span class="field-error" id="totalroomsError"></span>
+                        </div>
+                    </div>
+
+                    <!-- คำอธิบาย -->
+                    <div class="form-group">
+                        <label class="form-label">รายละเอียดที่พัก</label>
+                        <textarea id="description" name="description" class="form-control"
+                            placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
+                        <span class="field-error" id="descriptionError"></span>
+                    </div>
+
+                    <!-- เงื่อนไขการเข้าพัก -->
+                    <div class="form-group">
+                        <label class="form-label">เงื่อนไขการเข้าพัก</label>
+                        <textarea id="roomcondition" name="roomcondition" class="form-control"
+                            placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
+                        <span class="field-error" id="roomconditionError"></span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ─── ส่วนที่ 2: สถานะที่พัก  ─── -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="fas fa-toggle-on" style="color:#2d6a2d;"></i>
+                    <span class="label">สถานะที่พัก</span>
+                </div>
+                <div class="section-body">
+                    <div class="form-group" style="max-width: 320px;">
+                        <label class="form-label">สถานะ <span class="req">*</span></label>
+                        <div class="status-select-wrap">
+                            <select id="status" name="status" class="form-control">
+                                <option value="" disabled selected>-- เลือกสถานะ --</option>
+                                <option value="เปิดจอง">🟢 เปิดจอง</option>
+                                <option value="ปิดปรับปรุง">🔧 ปิดปรับปรุง</option>
+                                <option value="เต็ม">🔴 เต็ม</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-
-                <!-- คำอธิบาย -->
-                <div class="form-group">
-                    <label class="form-label">รายละเอียดที่พัก</label>
-                    <textarea id="description" name="description" class="form-control"
-                     placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
-                    <span class="field-error" id="descriptionError"></span>  
-                </div>
-
-                <!-- เงื่อนไขการเข้าพัก -->
-                <div class="form-group">
-                    <label class="form-label">เงื่อนไขการเข้าพัก</label>
-                    <textarea id="roomcondition" name="roomcondition" class="form-control"
-                    placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
-                    <span class="field-error" id="roomconditionError"></span>  
-                </div>
-
             </div>
-        </div>
 
-        <!-- ─── ส่วนที่ 2: สถานะที่พัก  ─── -->
-        <div class="section-card">
-            <div class="section-head">
-                <i class="fas fa-toggle-on" style="color:#2d6a2d;"></i>
-                <span class="label">สถานะที่พัก</span>
-            </div>
-            <div class="section-body">
-                <div class="form-group" style="max-width: 320px;">
-                    <label class="form-label">สถานะ <span class="req">*</span></label>
-                    <div class="status-select-wrap">
-                        <select id="status" name="status" class="form-control">
-                            <option value="" disabled selected>-- เลือกสถานะ --</option>
-                            <option value="เปิดจอง">🟢 เปิดจอง</option>
-                            <option value="ปิดปรับปรุง">🔧 ปิดปรับปรุง</option>
-                            <option value="เต็ม">🔴 เต็ม</option>
-                        </select>
+            <!-- ─── ส่วนที่ 3: สิ่งอำนวยความสะดวก ─── -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="fas fa-star" style="color:#e07b00;"></i>
+                    <span class="label">สิ่งอำนวยความสะดวก</span>
+                    <span class="badge-tag orange">FACILITIES</span>
+
+                </div>
+                <div class="section-body">
+                    <div class="facilities-grid">
+                        <th:block th:each="fac : ${allFacilities}">
+                            <label class="facility-chip">
+                                <input type="checkbox" name="facilitiesIds" th:value="${fac.facilitiesid}">
+                                <span class="fac-icon" th:attr="data-name=${fac.facilitiesname}"></span>
+                                <span th:text="${fac.facilitiesname}">ชื่อสิ่งอำนวยความสะดวก</span>
+                            </label>
+                        </th:block>
                     </div>
+                    <span class="field-error" id="facilitiesError"></span>
                 </div>
             </div>
-        </div>
 
-        <!-- ─── ส่วนที่ 3: สิ่งอำนวยความสะดวก ─── -->
-        <div class="section-card">
-            <div class="section-head">
-                <i class="fas fa-star" style="color:#e07b00;"></i>
-                <span class="label">สิ่งอำนวยความสะดวก</span>
-                <span class="badge-tag orange">FACILITIES</span>
-                
-            </div>
-            <div class="section-body">
-                <div class="facilities-grid">
-                    <th:block th:each="fac : ${allFacilities}">
-                        <label class="facility-chip">
-                            <input type="checkbox" name="facilitiesIds" th:value="${fac.facilitiesid}">
-                            <span class="fac-icon" th:attr="data-name=${fac.facilitiesname}"></span>
-                            <span th:text="${fac.facilitiesname}">ชื่อสิ่งอำนวยความสะดวก</span>
-                        </label>
-                    </th:block>
+            <!-- ─── ส่วนที่ 4: รูปภาพที่พัก ─── -->
+            <div class="section-card">
+                <div class="section-head">
+                    <i class="fas fa-image" style="color:#2d6a2d;"></i>
+                    <span class="label">รูปภาพที่พัก</span>
+                    <span id="imageCountBadge"></span>
                 </div>
-                <span class="field-error" id="facilitiesError"></span>
-            </div>
-        </div>
+                <div class="section-body">
+                    <div class="upload-box" id="dropZone" onclick="document.getElementById('roomImages').click()"
+                        ondragover="handleDragOver(event)" ondragleave="handleDragLeave()" ondrop="handleDrop(event)">
 
-        <!-- ─── ส่วนที่ 4: รูปภาพที่พัก ─── -->
-        <div class="section-card">
-            <div class="section-head">
-                <i class="fas fa-image" style="color:#2d6a2d;"></i>
-                <span class="label">รูปภาพที่พัก</span>
-                <span id="imageCountBadge"></span>
-            </div>
-            <div class="section-body">
-                <div class="upload-box"
-                     id="dropZone"
-                     onclick="document.getElementById('roomImages').click()"
-                     ondragover="handleDragOver(event)"
-                     ondragleave="handleDragLeave()"
-                     ondrop="handleDrop(event)">
+                        <input type="file" id="roomImages" name="images" accept="image/jpeg,image/png,image/webp"
+                            multiple style="display:none;" onchange="handleFileSelect(this.files)">
 
-                    <input type="file"
-                           id="roomImages"
-                           name="images"
-                           accept="image/jpeg,image/png,image/webp"
-                           multiple
-                           style="display:none;"
-                           onchange="handleFileSelect(this.files)">
-
-                    <div class="upload-placeholder" id="uploadPlaceholder">
-                        <i class="fas fa-cloud-arrow-up"></i>
-                        <p>คลิกหรือลากไฟล์มาวางที่นี่</p>
-                        <small>JPG, PNG, WebP — หลายรูปพร้อมกัน ขนาดสูงสุด 5MB/รูป</small>
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                            <p>คลิกหรือลากไฟล์มาวางที่นี่</p>
+                            <small>JPG, PNG, WebP — หลายรูปพร้อมกัน ขนาดสูงสุด 5MB/รูป</small>
+                        </div>
                     </div>
+
+                    <div id="previewGrid"></div>
+                    <span class="field-error" id="imageError"></span>
                 </div>
-
-                <div id="previewGrid"></div>
-                <span class="field-error" id="imageError"></span>
             </div>
-        </div>
 
-        <!-- ─── Action Bar ─── -->
-        <div class="action-bar">
-            <a th:href="@{/owner/rooms(homestayid=${homestayid})}" class="btn-cancel">
-                <i class="fas fa-xmark"></i> ยกเลิก
-            </a>
-            <button type="button" class="btn-save" onclick="submitForm()">
-                <i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก
-            </button>
-        </div>
+            <!-- ─── Action Bar ─── -->
+            <div class="action-bar">
+                <a th:href="@{/owner/rooms(homestayid=${homestayid})}" class="btn-cancel">
+                    <i class="fas fa-xmark"></i> ยกเลิก
+                </a>
+                <button type="button" class="btn-save" onclick="submitForm()">
+                    <i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก
+                </button>
+            </div>
 
-    </form>
-</div>
+        </form>
+    </div>
 
-<script>
-// ─── สิ่งอำนวยความสะดวก: ไอคอน (อ้างอิงชุดเดียวกับหน้าแก้ไข) ──────────────
-const FAC_ICONS = {
-    'wifi': '📶', 'wi-fi': '📶',
-    'แอร์': '❄️', 'เครื่องปรับอากาศ': '❄️',
-    'น้ำอุ่น': '🚿', 'ฝักบัวน้ำอุ่น': '🚿',
-    'พัดลม': '🌀',
-    'ที่จอดรถ': '🚗', 'จอดรถ': '🚗',
-    'ทีวี': '📺', 'tv': '📺',
-    'อาหารเช้า': '🍳',
-};
-function getFacIcon(name) {
-    const key = (name || '').toLowerCase().trim();
-    for (const [k, v] of Object.entries(FAC_ICONS)) {
-        if (key.includes(k)) return v;
-    }
-    return '✨';
-}
-document.querySelectorAll('.fac-icon[data-name]').forEach(el => {
-    el.textContent = getFacIcon(el.dataset.name);
-});
+    <script>
+        // ─── สิ่งอำนวยความสะดวก: ไอคอน (อ้างอิงชุดเดียวกับหน้าแก้ไข) ──────────────
+        const FAC_ICONS = {
+            'wifi': '📶',
+            'wi-fi': '📶',
 
-// ─── ไฟล์รูปที่เลือกไว้ (DataTransfer list) ───────────────────────────────
-let selectedFiles = [];
+            'แอร์': '❄️',
+            'เครื่องปรับอากาศ': '❄️',
 
-// ─── Drag & Drop / Click upload ──────────────────────────────────────────
-function handleDragOver(e)  { e.preventDefault(); document.getElementById('dropZone').classList.add('dragover'); }
-function handleDragLeave()  { document.getElementById('dropZone').classList.remove('dragover'); }
-function handleDrop(e)      { e.preventDefault(); handleDragLeave(); handleFileSelect(e.dataTransfer.files); }
+            'น้ำอุ่น': '🚿',
+            'ฝักบัวน้ำอุ่น': '🚿',
 
-function handleFileSelect(files) {
-    const MAX = 5 * 1024 * 1024; // 5 MB
-    Array.from(files).forEach(file => {
-        if (file.size > MAX) { alert('ไฟล์ ' + file.name + ' ใหญ่เกิน 5 MB'); return; }
-        if (!file.type.startsWith('image/')) return;
-        selectedFiles.push(file);
-        addPreviewCard(file, selectedFiles.length - 1);
-    });
-    updateUI();
-}
+            'พัดลม': '🌀',
 
-function addPreviewCard(file, index) {
-    const grid = document.getElementById('previewGrid');
-    const reader = new FileReader();
-    reader.onload = e => {
-        const card = document.createElement('div');
-        card.className = 'preview-card';
-        card.dataset.index = index;
-        card.innerHTML =
-            `<img src="${e.target.result}" alt="preview">
+            'ที่จอดรถ': '🚗',
+            'จอดรถ': '🚗',
+
+            'ทีวี': '📺',
+            'tv': '📺',
+
+            'อาหารเช้า': '🍳',
+
+            'ชุดชนเผ่าสำหรับถ่ายรูป': '👘'
+        };
+        function getFacIcon(name) {
+            const key = (name || '').toLowerCase().trim();
+            for (const [k, v] of Object.entries(FAC_ICONS)) {
+                if (key.includes(k)) return v;
+            }
+            return '✨';
+        }
+        document.querySelectorAll('.fac-icon[data-name]').forEach(el => {
+            el.textContent = getFacIcon(el.dataset.name);
+        });
+
+        // ─── ไฟล์รูปที่เลือกไว้ (DataTransfer list) ───────────────────────────────
+        let selectedFiles = [];
+
+        // ─── Drag & Drop / Click upload ──────────────────────────────────────────
+        function handleDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('dragover'); }
+        function handleDragLeave() { document.getElementById('dropZone').classList.remove('dragover'); }
+        function handleDrop(e) { e.preventDefault(); handleDragLeave(); handleFileSelect(e.dataTransfer.files); }
+
+        function handleFileSelect(files) {
+            const MAX = 5 * 1024 * 1024; // 5 MB
+            Array.from(files).forEach(file => {
+                if (file.size > MAX) { alert('ไฟล์ ' + file.name + ' ใหญ่เกิน 5 MB'); return; }
+                if (!file.type.startsWith('image/')) return;
+                selectedFiles.push(file);
+                addPreviewCard(file, selectedFiles.length - 1);
+            });
+            updateUI();
+        }
+
+        function addPreviewCard(file, index) {
+            const grid = document.getElementById('previewGrid');
+            const reader = new FileReader();
+            reader.onload = e => {
+                const card = document.createElement('div');
+                card.className = 'preview-card';
+                card.dataset.index = index;
+                card.innerHTML =
+                    `<img src="${e.target.result}" alt="preview">
              <button type="button" class="remove-btn" onclick="removePreview(${index})">✕</button>
-             <span class="file-size-label">${(file.size/1024).toFixed(0)} KB</span>`;
-        grid.appendChild(card);
-    };
-    reader.readAsDataURL(file);
-}
-
-function removePreview(index) {
-    selectedFiles[index] = null; 
-    const card = document.querySelector(`.preview-card[data-index="${index}"]`);
-    if (card) card.remove();
-    updateUI();
-}
-
-function updateUI() {
-    const count = selectedFiles.filter(f => f !== null).length;
-    const badge = document.getElementById('imageCountBadge');
-    const grid  = document.getElementById('previewGrid');
-    if (count > 0) {
-        badge.style.display = 'inline';
-        badge.textContent   = count + ' รูป';
-        grid.style.display  = 'flex';
-    } else {
-        badge.style.display = 'none';
-        grid.style.display  = 'none';
-    }
-}
-
-// ─── Validate ────────────────────────────────────────────────────────────
-function validate() {
-    const fields = [
-        { id: 'typename',      errId: 'typenameError',      label: 'ประเภทที่พัก' },
-        { id: 'bedtype',       errId: 'bedtypeError',       label: 'ประเภทเตียง'  },
-        { id: 'pricepernight', errId: 'priceError',         label: 'ราคาต่อคืน'   },
-        { id: 'maxguest',      errId: 'maxguestError',      label: 'จำนวนผู้เข้าพัก' },
-        { id: 'totalrooms',    errId: 'totalroomsError',    label: 'จำนวนห้อง'    },
-        { id: 'description',   errId: 'descriptionError',   label: 'คำอธิบาย'     },
-        { id: 'roomcondition', errId: 'roomconditionError', label: 'เงื่อนไขการเข้าพัก' },
-        { id: 'status',        errId: 'statusError',        label: 'สถานะ'        },
-    ];
-    let isValid = true;
-    for (const f of fields) {
-        const el    = document.getElementById(f.id);
-        const errEl = document.getElementById(f.errId);
-        if (!el || !el.value || el.value.trim() === '' || el.value === '0') {
-            if (errEl) errEl.textContent = 'กรุณากรอก' + f.label;
-            if (isValid) { el && el.focus(); isValid = false; }
-        } else {
-            if (errEl) errEl.textContent = '';
+             <span class="file-size-label">${(file.size / 1024).toFixed(0)} KB</span>`;
+                grid.appendChild(card);
+            };
+            reader.readAsDataURL(file);
         }
-    }
-    return isValid;
-}
 
-// ─── Submit → multipart/form-data ────────────────────────────────────────
-async function submitForm() {
-    if (!validate()) return;
-
-    const fd = new FormData();
-    fd.append('homestayid',    document.querySelector('input[name="homestayid"]').value);
-    fd.append('typename',      document.getElementById('typename').value);
-    fd.append('bedtype',       document.getElementById('bedtype').value);
-    fd.append('pricepernight', document.getElementById('pricepernight').value);
-    fd.append('maxguest',      document.getElementById('maxguest').value);
-    fd.append('totalrooms',    document.getElementById('totalrooms').value);
-    fd.append('description',   document.getElementById('description').value);
-    fd.append('roomcondition', document.getElementById('roomcondition').value);
-    fd.append('status',        document.getElementById('status').value);
-
-    document.querySelectorAll('input[name="facilitiesIds"]:checked').forEach(cb => {
-        fd.append('facilitiesIds', cb.value);
-    });
-    selectedFiles.filter(f => f !== null).forEach(file => {
-        fd.append('images', file);
-    });
-
-    const btn = document.querySelector('.btn-save');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
-
-    try {
-        const res  = await fetch('/addroom', { method: 'POST', body: fd });
-        const data = await res.json();
-
-        if (data.success) {
-            showSuccessModal();
-        } else {
-            alert('เกิดข้อผิดพลาด: ' + (data.message || ''));
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
+        function removePreview(index) {
+            selectedFiles[index] = null;
+            const card = document.querySelector(`.preview-card[data-index="${index}"]`);
+            if (card) card.remove();
+            updateUI();
         }
-    } catch (err) {
-        alert('ไม่สามารถเชื่อมต่อ server');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
-    }
-}
 
-function goToList() {
-    const homestayid = document.querySelector('input[name="homestayid"]').value;
-    window.location.href = '/owner/rooms?homestayid=' + homestayid;
-}
+        function updateUI() {
+            const count = selectedFiles.filter(f => f !== null).length;
+            const badge = document.getElementById('imageCountBadge');
+            const grid = document.getElementById('previewGrid');
+            if (count > 0) {
+                badge.style.display = 'inline';
+                badge.textContent = count + ' รูป';
+                grid.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+                grid.style.display = 'none';
+            }
+        }
 
-function showSuccessModal() {
-    const modal = document.getElementById('successModal');
-    const fill  = document.getElementById('progressFill');
+        // ─── Validate ────────────────────────────────────────────────────────────
+        function validate() {
+            const fields = [
+                { id: 'typename', errId: 'typenameError', label: 'ประเภทที่พัก' },
+                { id: 'bedtype', errId: 'bedtypeError', label: 'ประเภทเตียง' },
+                { id: 'pricepernight', errId: 'priceError', label: 'ราคาต่อคืน' },
+                { id: 'maxguest', errId: 'maxguestError', label: 'จำนวนผู้เข้าพัก' },
+                { id: 'totalrooms', errId: 'totalroomsError', label: 'จำนวนห้อง' },
+                { id: 'description', errId: 'descriptionError', label: 'คำอธิบาย' },
+                { id: 'roomcondition', errId: 'roomconditionError', label: 'เงื่อนไขการเข้าพัก' },
+                { id: 'status', errId: 'statusError', label: 'สถานะ' },
+            ];
+            let isValid = true;
+            for (const f of fields) {
+                const el = document.getElementById(f.id);
+                const errEl = document.getElementById(f.errId);
+                if (!el || !el.value || el.value.trim() === '' || el.value === '0') {
+                    if (errEl) errEl.textContent = 'กรุณากรอก' + f.label;
+                    if (isValid) { el && el.focus(); isValid = false; }
+                } else {
+                    if (errEl) errEl.textContent = '';
+                }
+            }
+            return isValid;
+        }
 
-    modal.classList.add('show');
+        // ─── Submit → multipart/form-data ────────────────────────────────────────
+        async function submitForm() {
+            if (!validate()) return;
 
-   
-    fill.style.animation = 'none';
-    fill.offsetHeight;
-    fill.style.animation = 'progress-drain 2s linear forwards';
+            const fd = new FormData();
+            fd.append('homestayid', document.querySelector('input[name="homestayid"]').value);
+            fd.append('typename', document.getElementById('typename').value);
+            fd.append('bedtype', document.getElementById('bedtype').value);
+            fd.append('pricepernight', document.getElementById('pricepernight').value);
+            fd.append('maxguest', document.getElementById('maxguest').value);
+            fd.append('totalrooms', document.getElementById('totalrooms').value);
+            fd.append('description', document.getElementById('description').value);
+            fd.append('roomcondition', document.getElementById('roomcondition').value);
+            fd.append('status', document.getElementById('status').value);
 
-    setTimeout(() => {
-        goToList();
-    }, 2000);
-}
-</script>
+            document.querySelectorAll('input[name="facilitiesIds"]:checked').forEach(cb => {
+                fd.append('facilitiesIds', cb.value);
+            });
+            selectedFiles.filter(f => f !== null).forEach(file => {
+                fd.append('images', file);
+            });
+
+            const btn = document.querySelector('.btn-save');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+
+            try {
+                const res = await fetch('/addroom', { method: 'POST', body: fd });
+                const data = await res.json();
+
+                if (data.success) {
+                    showSuccessModal();
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (data.message || ''));
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
+                }
+            } catch (err) {
+                alert('ไม่สามารถเชื่อมต่อ server');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
+            }
+        }
+
+        function goToList() {
+            const homestayid = document.querySelector('input[name="homestayid"]').value;
+            window.location.href = '/owner/rooms?homestayid=' + homestayid;
+        }
+
+        function showSuccessModal() {
+            const modal = document.getElementById('successModal');
+            const fill = document.getElementById('progressFill');
+
+            modal.classList.add('show');
+
+
+            fill.style.animation = 'none';
+            fill.offsetHeight;
+            fill.style.animation = 'progress-drain 2s linear forwards';
+
+            setTimeout(() => {
+                goToList();
+            }, 2000);
+        }
+    </script>
 </body>
+
 </html>
