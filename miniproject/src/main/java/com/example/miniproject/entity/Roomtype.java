@@ -19,7 +19,8 @@ public class Roomtype {
     @Column(length = 100)
     private String bedtype;
 
-    @Column(length = 255)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     private Integer maxguest;

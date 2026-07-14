@@ -661,12 +661,9 @@
             </select>
         </div>
 
-        <!-- ── Filter Bar (dynamic) ── -->
+        <!-- ── Filter Bar (dynamic, ตามสถานะ) ── -->
         <div class="filter-bar" id="filterBar">
-            <!-- <button class="filter-btn active" onclick="filterRooms('all', this)">
-                ทั้งหมด
-            </button> -->
-            <!-- ปุ่มกรองประเภทจะถูก generate อัตโนมัติจาก JS -->
+            <!-- ปุ่มกรองสถานะจะถูก generate อัตโนมัติจาก JS (ไม่มีปุ่ม "ทั้งหมด") -->
         </div>
 
         <!-- Table -->
@@ -694,7 +691,7 @@
                         </td>
                     </tr>
 
-                    <tr th:each="room : ${rooms}" th:data-type="${room['typename']}">
+                    <tr th:each="room : ${rooms}" th:data-status="${room['status']}">
 
                         <td>
                             <img th:if="${room['firstImageUrl'] != null}" th:src="${room['firstImageUrl']}"
@@ -778,40 +775,70 @@
     </footer>
 
     <script>
-        // mapping icon ตามชื่อประเภท — เพิ่มประเภทใหม่ตรง
-        const typeIcons = {
-            'บ้านพัก': 'fa-house',
-            'โดม': 'fa-circle-dot',
-            'เต็นท์': 'fa-campground',
+        // mapping icon ตามสถานะ — เพิ่มสถานะใหม่ตรงนี้ได้เลย
+        const statusIcons = {
+            'เปิดจอง': 'fa-circle-check',
+            'ปิดปรับปรุง': 'fa-screwdriver-wrench',
+            'เต็ม': 'fa-ban',
         };
 
         function buildFilterButtons() {
-            const rows = document.querySelectorAll('#roomBody tr[data-type]');
-            const seen = new Set();
-            rows.forEach(row => {
-                const t = row.getAttribute('data-type');
-                if (t) seen.add(t);
-            });
+            // แสดงปุ่มกรองครบทุกสถานะที่มีในระบบเสมอ ไม่ว่าจะมีห้องพักสถานะนั้นอยู่จริงหรือไม่
+            const statusList = Object.keys(statusIcons);
 
             const bar = document.getElementById('filterBar');
-            seen.forEach(type => {
-                const icon = typeIcons[type] || 'fa-tag';   // fallback icon
+            bar.innerHTML = '';
+
+            statusList.forEach((status, idx) => {
+                const icon = statusIcons[status] || 'fa-circle';   // fallback icon
                 const btn = document.createElement('button');
-                btn.className = 'filter-btn';
-                btn.innerHTML = `<i class="fas ${icon}"></i> ${type}`;
-                btn.onclick = function () { filterRooms(type, this); };
+                btn.className = 'filter-btn' + (idx === 0 ? ' active' : '');
+                btn.innerHTML = `<i class="fas ${icon}"></i> ${status}`;
+                btn.onclick = function () { filterRooms(status, this); };
                 bar.appendChild(btn);
             });
+
+            // แสดงห้องพักตามสถานะแรกเป็นค่าเริ่มต้นตอนโหลดหน้า
+            if (statusList.length > 0) {
+                filterByStatus(statusList[0]);
+            }
         }
 
-        function filterRooms(type, btn) {
+        function filterByStatus(status) {
+            const rows = document.querySelectorAll('#roomBody tr[data-status]');
+            let visibleCount = 0;
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                const match = rowStatus === status;
+                row.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            // ลบข้อความแจ้งเตือนเดิม (ถ้ามี) ก่อนเสมอ
+            const oldNotice = document.getElementById('noStatusRow');
+            if (oldNotice) oldNotice.remove();
+
+            // ถ้าไม่มีห้องพักในสถานะที่เลือก ให้ขึ้นข้อความแจ้งเตือน
+            if (visibleCount === 0) {
+                const tbody = document.getElementById('roomBody');
+                const tr = document.createElement('tr');
+                tr.id = 'noStatusRow';
+                tr.innerHTML = `
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fas fa-door-open"></i>
+                            <p>ไม่มีห้องพักในสถานะ "${status}"</p>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function filterRooms(status, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            const rows = document.querySelectorAll('#roomBody tr[data-type]');
-            rows.forEach(row => {
-                const rowType = row.getAttribute('data-type');
-                row.style.display = (type === 'all' || rowType === type) ? '' : 'none';
-            });
+            filterByStatus(status);
         }
 
         document.addEventListener('DOMContentLoaded', buildFilterButtons);

@@ -121,8 +121,8 @@
             border-color: #2d6a2d !important;
             color: #fff !important;
         }
-        .facility-chip:has(input:checked) i {
-            color: #fff !important;
+        .facility-chip .fac-icon {
+            display: inline-block;
         }
         /* ═══ SUCCESS MODAL ═══ */
 .modal-backdrop {
@@ -286,9 +286,9 @@
                         <label class="form-label">ประเภทที่พัก <span class="req">*</span></label>
                         <select id="typename" name="typename" class="form-control">
                             <option value="" disabled selected>-- เลือกประเภทที่พัก --</option>
-                            <option value="บ้านพัก">🏠 บ้านพัก</option>
+                            <option value="บ้านพัก">🏡 บ้านพัก</option>
                             <option value="เต็นท์">⛺ เต็นท์</option>
-                            <option value="โดม">🔵 โดม</option>
+                            <option value="กระท่อมไม้ไผ่">🛖 กระท่อมไม้ไผ่</option>
                         </select>
                         <span class="field-error" id="typenameError"></span>
                     </div>
@@ -296,9 +296,9 @@
                         <label class="form-label">ประเภทเตียง <span class="req">*</span></label>
                         <select id="bedtype" name="bedtype" class="form-control">
                             <option value="" disabled selected>-- เลือกประเภทเตียง --</option>
-                            <option value="เตียงเดี่ยว">🛏 เตียงเดี่ยว</option>
-                            <option value="เตียงคู่">🛏 เตียงคู่</option>
-                            <option value="ฟูกนอนพื้น">🛌 ฟูกนอนพื้น</option>
+                            <option value="เตียงเดี่ยว">เตียงเดี่ยว</option>
+                            <option value="เตียงคู่">เตียงคู่</option>
+                            <option value="ฟูกนอนพื้น">ฟูกนอนพื้น</option>
                         </select>
                         <span class="field-error" id="bedtypeError"></span>
                     </div>
@@ -336,7 +336,7 @@
 
                 <!-- คำอธิบาย -->
                 <div class="form-group">
-                    <label class="form-label">คำอธิบาย</label>
+                    <label class="form-label">รายละเอียดที่พัก</label>
                     <textarea id="description" name="description" class="form-control"
                      placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
                     <span class="field-error" id="descriptionError"></span>  
@@ -365,7 +365,7 @@
                     <div class="status-select-wrap">
                         <select id="status" name="status" class="form-control">
                             <option value="" disabled selected>-- เลือกสถานะ --</option>
-                            <option value="เปิดจอง">✅ เปิดจอง</option>
+                            <option value="เปิดจอง">🟢 เปิดจอง</option>
                             <option value="ปิดปรับปรุง">🔧 ปิดปรับปรุง</option>
                             <option value="เต็ม">🔴 เต็ม</option>
                         </select>
@@ -384,26 +384,13 @@
             </div>
             <div class="section-body">
                 <div class="facilities-grid">
-                    <label class="facility-chip">
-                        <input type="checkbox" name="facilitiesIds" value="F001">
-                        <i class="fas fa-wifi"></i> Wi-Fi
-                    </label>
-                    <label class="facility-chip">
-                        <input type="checkbox" name="facilitiesIds" value="F002">
-                        <i class="fas fa-wind"></i> แอร์
-                    </label>
-                    <label class="facility-chip">
-                        <input type="checkbox" name="facilitiesIds" value="F003">
-                        <i class="fas fa-shower"></i> น้ำอุ่น
-                    </label>
-                    <label class="facility-chip">
-                        <input type="checkbox" name="facilitiesIds" value="F004">
-                        <i class="fas fa-tv"></i> พัดลม
-                    </label>
-                    <label class="facility-chip">
-                        <input type="checkbox" name="facilitiesIds" value="F005">
-                        <i class="fas fa-car"></i> ที่จอดรถ
-                    </label>
+                    <th:block th:each="fac : ${allFacilities}">
+                        <label class="facility-chip">
+                            <input type="checkbox" name="facilitiesIds" th:value="${fac.facilitiesid}">
+                            <span class="fac-icon" th:attr="data-name=${fac.facilitiesname}"></span>
+                            <span th:text="${fac.facilitiesname}">ชื่อสิ่งอำนวยความสะดวก</span>
+                        </label>
+                    </th:block>
                 </div>
                 <span class="field-error" id="facilitiesError"></span>
             </div>
@@ -458,6 +445,27 @@
 </div>
 
 <script>
+// ─── สิ่งอำนวยความสะดวก: ไอคอน (อ้างอิงชุดเดียวกับหน้าแก้ไข) ──────────────
+const FAC_ICONS = {
+    'wifi': '📶', 'wi-fi': '📶',
+    'แอร์': '❄️', 'เครื่องปรับอากาศ': '❄️',
+    'น้ำอุ่น': '🚿', 'ฝักบัวน้ำอุ่น': '🚿',
+    'พัดลม': '🌀',
+    'ที่จอดรถ': '🚗', 'จอดรถ': '🚗',
+    'ทีวี': '📺', 'tv': '📺',
+    'อาหารเช้า': '🍳',
+};
+function getFacIcon(name) {
+    const key = (name || '').toLowerCase().trim();
+    for (const [k, v] of Object.entries(FAC_ICONS)) {
+        if (key.includes(k)) return v;
+    }
+    return '✨';
+}
+document.querySelectorAll('.fac-icon[data-name]').forEach(el => {
+    el.textContent = getFacIcon(el.dataset.name);
+});
+
 // ─── ไฟล์รูปที่เลือกไว้ (DataTransfer list) ───────────────────────────────
 let selectedFiles = [];
 
