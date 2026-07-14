@@ -39,12 +39,20 @@ public class TourScheduleService {
     // เพิ่มรอบ/วันที่เปิดทัวร์ใหม่ให้ทัวร์หนึ่งๆ
     // ─────────────────────────────────────────────────────────
     @Transactional
-    public Tourschedule createSchedule(Tour tour, Date opendate) {
+    public Tourschedule createSchedule(Tour tour, Date opendate, Date enddate) {
         Tourschedule schedule = new Tourschedule();
         schedule.setScheduleid("SCH" + UUID.randomUUID().toString()
                 .replace("-", "").substring(0, 9).toUpperCase());
         schedule.setTour(tour);
         schedule.setOpendate(opendate);
+
+        // ✅ Logic สำหรับทัวร์รายวัน: ถ้าจำนวนวันคือ 1 ให้ enddate = opendate เสมอ
+        if (tour.getNumberOfDays() != null && tour.getNumberOfDays() == 1) {
+            schedule.setEnddate(opendate);
+        } else {
+            schedule.setEnddate(enddate);
+        }
+
         schedule.setStatus("เปิดรับจอง");
         return tourScheduleRepository.save(schedule);
     }

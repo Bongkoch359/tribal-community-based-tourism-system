@@ -22,6 +22,9 @@ public class Tourschedule {
     @Column(name = "opendate", nullable = false)
     private Date opendate;
 
+    @Column(name = "enddate", nullable = false)
+private Date enddate;
+
     // ค่าที่ใช้: "เปิดรับจอง" | "เต็ม" | "ปิด"
     @Column(length = 20)
     private String status;
@@ -31,6 +34,7 @@ public class Tourschedule {
 
     public Tourschedule() {
     }
+    
 
     public String getScheduleid() {
         return scheduleid;
@@ -88,5 +92,15 @@ public class Tourschedule {
                     return adult + child;
                 })
                 .sum();
+    }
+
+
+    public Date getEnddate() {
+        return enddate;
+    }
+
+
+    public void setEnddate(Date enddate) {
+        this.enddate = enddate;
     }
 }

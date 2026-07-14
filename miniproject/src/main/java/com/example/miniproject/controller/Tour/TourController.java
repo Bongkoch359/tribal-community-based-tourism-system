@@ -38,23 +38,26 @@ public class TourController {
 
     private static final String UPLOAD_DIR = "uploads/tours/";
 
-    // ─── คำนวณสถานะรวมของทัวร์จากสถานะของ "รอบทัวร์" (Tourschedule) ───────────────
+    // ─── คำนวณสถานะรวมของทัวร์จากสถานะของ "รอบทัวร์" (Tourschedule)
+    // ───────────────
     // ตัดฟิลด์ status ออกจาก Tour แล้ว ให้คำนวณสดจากรอบทัวร์แทน:
-    // - มีอย่างน้อย 1 รอบ "เปิดรับจอง"  → เปิดรับจอง
+    // - มีอย่างน้อย 1 รอบ "เปิดรับจอง" → เปิดรับจอง
     // - ไม่มีรอบเปิดรับจอง แต่มีรอบ "เต็ม" → เต็ม
-    // - มีรอบแต่ทุกรอบถูกปิดหมด          → ปิด
-    // - ยังไม่มีรอบทัวร์เลย               → ยังไม่เปิดรอบ
+    // - มีรอบแต่ทุกรอบถูกปิดหมด → ปิด
+    // - ยังไม่มีรอบทัวร์เลย → ยังไม่เปิดรอบ
     private String computeOverallStatus(List<Tourschedule> schedules) {
         if (schedules == null || schedules.isEmpty()) {
             return "ยังไม่เปิดรอบ";
         }
         boolean hasOpen = schedules.stream()
                 .anyMatch(s -> "เปิดรับจอง".equals(s.getStatus()));
-        if (hasOpen) return "เปิดรับจอง";
+        if (hasOpen)
+            return "เปิดรับจอง";
 
         boolean hasFull = schedules.stream()
                 .anyMatch(s -> "เต็ม".equals(s.getStatus()));
-        if (hasFull) return "เต็ม";
+        if (hasFull)
+            return "เต็ม";
 
         return "ปิด";
     }
@@ -137,7 +140,8 @@ public class TourController {
             return "redirect:/manager/login";
 
         List<Tour> tours = tourService.getToursByManager(manager);
-        // ✅ ไม่มีฟิลด์ status ใน Tour แล้ว → คำนวณสถานะรวมจากรอบทัวร์ (Tourschedule) สดๆ ให้แต่ละทัวร์
+        // ✅ ไม่มีฟิลด์ status ใน Tour แล้ว → คำนวณสถานะรวมจากรอบทัวร์ (Tourschedule)
+        // สดๆ ให้แต่ละทัวร์
         for (Tour t : tours) {
             t.setOverallStatus(computeOverallStatus(tourScheduleService.getSchedulesByTour(t.getTourid())));
         }
@@ -174,7 +178,7 @@ public class TourController {
             @RequestParam("numberOfDays") Integer numberOfDays,
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
             @RequestParam(value = "tourtype", required = false) String tourtype,
-            @RequestParam(value = "images", required = false) String imagesJson, 
+            @RequestParam(value = "images", required = false) String imagesJson,
             HttpSession session,
             Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
@@ -234,9 +238,11 @@ public class TourController {
                 model.addAttribute("loggedInManager", manager);
                 return "Tour/addTour";
             }
-            // ✅ ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity รองรับแค่ทัวร์รายวัน)
+            // ✅ ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity
+            // รองรับแค่ทัวร์รายวัน)
             if (tourtype == null || tourtype.isBlank()) {
-                model.addAttribute("errorMessage", "กรุณาระบุประเภททัวร์สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
+                model.addAttribute("errorMessage",
+                        "กรุณาระบุประเภททัวร์สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
                 model.addAttribute("loggedInManager", manager);
                 return "Tour/addTour";
             }
@@ -258,10 +264,14 @@ public class TourController {
         tour.setChildprice(childprice);
         tour.setNumberOfDays(numberOfDays);
         tour.setNumberOfNights(numberOfDays == 1 ? 0 : numberOfNights); // ทัวร์รายวันบังคับ 0 คืน
-        // ✅ tourtype ตอนนี้เป็น TourType (entity) — ส่งชื่อ (String) จากฟอร์มให้ service
-        // ไปหา/สร้าง TourType เอง แล้วผูกเข้ากับ tour (ทัวร์รายวัน service จะบังคับเป็น "ทัวร์รายวัน" เองอยู่แล้ว)
-        // ✅ ตัดฟิลด์ status ออกแล้ว — สถานะทัวร์ตอนนี้คำนวณจากสถานะรอบทัวร์ (Tourschedule) แทน
-        //    ทัวร์ที่เพิ่งสร้างใหม่ยังไม่มีรอบทัวร์ จึงยังไม่มีสถานะจนกว่าจะไปเพิ่มวันที่เปิดทัวร์
+        // ✅ tourtype ตอนนี้เป็น TourType (entity) — ส่งชื่อ (String) จากฟอร์มให้
+        // service
+        // ไปหา/สร้าง TourType เอง แล้วผูกเข้ากับ tour (ทัวร์รายวัน service จะบังคับเป็น
+        // "ทัวร์รายวัน" เองอยู่แล้ว)
+        // ✅ ตัดฟิลด์ status ออกแล้ว — สถานะทัวร์ตอนนี้คำนวณจากสถานะรอบทัวร์
+        // (Tourschedule) แทน
+        // ทัวร์ที่เพิ่งสร้างใหม่ยังไม่มีรอบทัวร์
+        // จึงยังไม่มีสถานะจนกว่าจะไปเพิ่มวันที่เปิดทัวร์
 
         try {
             Tour saved = tourService.createTour(tour, manager,
@@ -285,26 +295,28 @@ public class TourController {
 
     @GetMapping("/{tourid}")
     public String tourDetail(@PathVariable("tourid") String tourid,
-    HttpSession session, Model model) {
-    Communitymanager manager = (Communitymanager)
-    session.getAttribute("loggedInManager");
-    if (manager == null) return "redirect:/manager/login";
+            HttpSession session, Model model) {
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+        if (manager == null)
+            return "redirect:/manager/login";
 
-    Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-    if (tour == null) return "redirect:/manager/tours?error=notfound";
+        Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
+        if (tour == null)
+            return "redirect:/manager/tours?error=notfound";
 
-    List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
-    Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
-    tour.setOverallStatus(computeOverallStatus(schedules));
+        List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
+        Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
+        tour.setOverallStatus(computeOverallStatus(schedules));
 
-    model.addAttribute("tour", tour);
-    model.addAttribute("schedules", schedules);
-    model.addAttribute("bookedSeatsMap", bookedMap);
-    model.addAttribute("loggedInManager", manager);
-    return "Tour/tourDetail";
+        model.addAttribute("tour", tour);
+        model.addAttribute("schedules", schedules);
+        model.addAttribute("bookedSeatsMap", bookedMap);
+        model.addAttribute("loggedInManager", manager);
+        return "Tour/tourDetail";
     }
 
-    // ─── แสดงหน้าจัดการรอบทัวร์ (แยกต่างหากจากหน้าแก้ไขข้อมูลทัวร์) ──────────────────
+    // ─── แสดงหน้าจัดการรอบทัวร์ (แยกต่างหากจากหน้าแก้ไขข้อมูลทัวร์)
+    // ──────────────────
 
     @GetMapping("/{tourid}/schedules")
     public String manageSchedules(@PathVariable("tourid") String tourid,
@@ -340,8 +352,10 @@ public class TourController {
     @PostMapping("/{tourid}/schedules")
     public String addSchedule(@PathVariable("tourid") String tourid,
             @RequestParam("opendate") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate opendate,
+            @RequestParam("enddate") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate enddate,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
+
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
         if (manager == null)
             return "redirect:/manager/login";
@@ -351,7 +365,15 @@ public class TourController {
             return "redirect:/manager/tours?error=forbidden";
         }
 
-        tourScheduleService.createSchedule(tour, Date.valueOf(opendate));
+        // ตรวจสอบความถูกต้องของวันที่ (Validation)
+        if (enddate.isBefore(opendate)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "วันที่จบทัวร์ต้องไม่ก่อนหน้าวันที่เริ่มทัวร์");
+            return "redirect:/manager/tours/" + tourid + "/schedules";
+        }
+
+        // ส่ง enddate เข้าไปใน Service
+        tourScheduleService.createSchedule(tour, Date.valueOf(opendate), Date.valueOf(enddate));
+
         redirectAttributes.addFlashAttribute("successMessage", "เพิ่มวันที่เปิดทัวร์สำเร็จ");
         return "redirect:/manager/tours/" + tourid + "/schedules";
     }
@@ -378,7 +400,8 @@ public class TourController {
         return "redirect:/manager/tours/" + tourid + "/schedules";
     }
 
-    // ─── ลบวันที่เปิดทัวร์ (เฉพาะรอบที่ยังไม่มีคนจอง) ───────────────────────────────
+    // ─── ลบวันที่เปิดทัวร์ (เฉพาะรอบที่ยังไม่มีคนจอง)
+    // ───────────────────────────────
 
     @PostMapping("/{tourid}/schedules/{scheduleid}/delete")
     public String deleteSchedule(@PathVariable("tourid") String tourid,
@@ -480,10 +503,12 @@ public class TourController {
             model.addAttribute("loggedInManager", manager);
             return "Tour/editTour";
         }
-        // ✅ ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity รองรับแค่ทัวร์รายวัน)
+        // ✅ ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity
+        // รองรับแค่ทัวร์รายวัน)
         if (numberOfDays != null && numberOfDays > 1) {
             if (tourtype == null || tourtype.isBlank()) {
-                model.addAttribute("errorMessage", "กรุณาระบุประเภททัวร์สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
+                model.addAttribute("errorMessage",
+                        "กรุณาระบุประเภททัวร์สำหรับทัวร์ที่มากกว่า 1 วัน (เช่น ทัวร์วัฒนธรรมชนเผ่า, ทัวร์วิถีชีวิต)");
                 model.addAttribute("tour", existing);
                 model.addAttribute("schedules", tourScheduleService.getSchedulesByTour(tourid));
                 model.addAttribute("bookedSeatsMap", tourScheduleService.getBookedSeatsMap(tourid));
@@ -511,8 +536,8 @@ public class TourController {
         updated.setChildprice(childprice);
         updated.setNumberOfDays(numberOfDays);
         updated.setNumberOfNights(numberOfDays != null && numberOfDays == 1 ? 0 : numberOfNights);
-        // ✅ ตัดฟิลด์ status ออกแล้ว — สถานะทัวร์คำนวณจากสถานะรอบทัวร์ (Tourschedule) เสมอ ไม่ต้องรับ/บันทึกจากฟอร์มนี้อีกต่อไป
-       
+        // ✅ ตัดฟิลด์ status ออกแล้ว — สถานะทัวร์คำนวณจากสถานะรอบทัวร์ (Tourschedule)
+        // เสมอ ไม่ต้องรับ/บันทึกจากฟอร์มนี้อีกต่อไป
 
         // ✅ ถ้าเป็น __KEEP__ หรือ null = ไม่ได้เปลี่ยนรูป ให้คงรูปเดิม
         if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__")) {
