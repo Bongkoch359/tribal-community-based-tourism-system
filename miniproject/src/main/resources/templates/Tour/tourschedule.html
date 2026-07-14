@@ -288,6 +288,14 @@
             margin-top: 2px;
         }
 
+        /* เพิ่มโค้ดส่วนนี้เพื่อลดขนาดตัวหนังสือ */
+        .tour-summary .item .value.value-small {
+            font-size: 14px;
+            /* ปรับขนาดให้เล็กตามต้องการ เช่น 13px หรือ 14px */
+            font-weight: 600;
+            /* ปรับความหนาให้พอดี ไม่หนาเกินไป */
+        }
+
         /* ── Form elements ── */
         .form-group {
             margin-bottom: 14px;
@@ -512,7 +520,6 @@
         <div class="page-header">
             <div>
                 <div class="page-title">จัดการรอบทัวร์</div>
-                <div class="page-subtitle" th:text="${tour.tourmname}">ชื่อทัวร์</div>
             </div>
         </div>
 
@@ -531,22 +538,31 @@
             <div class="tour-summary">
                 <div class="item">
                     <div class="label">รหัสทัวร์</div>
-                    <div class="value" th:text="${tour.tourid}">-</div>
+                    <div class="value value-small" th:text="${tour.tourid}">-</div>
+                </div>
+                <div class="item">
+                    <div class="label">ชื่อทัวร์</div>
+                    <div class="value value-small" th:text="${tour.tourmname}">-</div>
+                </div>
+                <div class="item">
+                    <div class="label">ประเภททัวร์</div>
+                    <div class="value value-small"
+                        th:text="${tour.tourtype != null} ? ${tour.tourtype.typename} : 'ไม่ได้ระบุ'">-</div>
                 </div>
                 <div class="item">
                     <div class="label">ที่นั่งสูงสุดต่อรอบ</div>
-                    <div class="value" th:text="${tour.maxSeatstour}">-</div>
+                    <div class="value value-small" th:text="${tour.maxSeatstour}">-</div>
                 </div>
                 <div class="item">
                     <div class="label">จำนวนรอบทั้งหมด</div>
-                    <div class="value" th:text="${schedules != null} ? ${schedules.size()} : 0">0</div>
+                    <div class="value value-small" th:text="${schedules != null} ? ${schedules.size()} : 0">0</div>
                 </div>
             </div>
         </div>
 
         <!-- เพิ่มวันที่เปิดทัวร์ใหม่ -->
         <div class="card">
-            <div class="card-title">เพิ่มวันที่เปิดทัวร์ใหม่</div>
+            <div class="card-title">➕เพิ่มรอบทัวร์</div>
             <form th:action="@{/manager/tours/{id}/schedules(id=${tour.tourid})}" method="post"
                 class="schedule-add-form">
                 <div class="form-group">
@@ -625,35 +641,35 @@
             </p>
         </div>
     </div>
-<script>
-    // ดึงค่าจำนวนวันจากตัวแปรทัวร์ที่ส่งมาจาก Controller
-    const tourNumberOfDays = /*[[${tour.numberOfDays}]]*/ 1; 
+    <script>
+        // ดึงค่าจำนวนวันจากตัวแปรทัวร์ที่ส่งมาจาก Controller
+        const tourNumberOfDays = /*[[${tour.numberOfDays}]]*/ 1;
 
-    function syncDates() {
-        const opendateInput = document.querySelector('input[name="opendate"]');
-        const enddateInput = document.querySelector('input[name="enddate"]');
-        
-        if (!opendateInput.value) return;
+        function syncDates() {
+            const opendateInput = document.querySelector('input[name="opendate"]');
+            const enddateInput = document.querySelector('input[name="enddate"]');
 
-        // ถ้าทัวร์นี้เป็นทัวร์รายวัน (numberOfDays == 1) ให้เซตวันที่จบเท่ากับวันที่เริ่ม
-        if (tourNumberOfDays === 1) {
-            enddateInput.value = opendateInput.value;
+            if (!opendateInput.value) return;
+
+            // ถ้าทัวร์นี้เป็นทัวร์รายวัน (numberOfDays == 1) ให้เซตวันที่จบเท่ากับวันที่เริ่ม
+            if (tourNumberOfDays === 1) {
+                enddateInput.value = opendateInput.value;
+            }
         }
-    }
 
-    // Event Listener เมื่อมีการเปลี่ยนวันที่เริ่ม
-    document.querySelector('input[name="opendate"]').addEventListener('change', syncDates);
+        // Event Listener เมื่อมีการเปลี่ยนวันที่เริ่ม
+        document.querySelector('input[name="opendate"]').addEventListener('change', syncDates);
 
-    // ปิดการแก้ไขช่องวันที่จบถ้าเป็นทัวร์รายวัน
-    document.addEventListener('DOMContentLoaded', () => {
-        const enddateInput = document.querySelector('input[name="enddate"]');
-        if (tourNumberOfDays === 1) {
-            enddateInput.readOnly = true;
-            enddateInput.style.backgroundColor = "#f3fae8"; // ให้ดูเหมือนถูกล็อก
-            enddateInput.title = "ทัวร์รายวัน: วันที่จบจะถูกตั้งค่าให้อัตโนมัติ";
-        }
-    });
-</script>
+        // ปิดการแก้ไขช่องวันที่จบถ้าเป็นทัวร์รายวัน
+        document.addEventListener('DOMContentLoaded', () => {
+            const enddateInput = document.querySelector('input[name="enddate"]');
+            if (tourNumberOfDays === 1) {
+                enddateInput.readOnly = true;
+                enddateInput.style.backgroundColor = "#f3fae8"; // ให้ดูเหมือนถูกล็อก
+                enddateInput.title = "ทัวร์รายวัน: วันที่จบจะถูกตั้งค่าให้อัตโนมัติ";
+            }
+        });
+    </script>
 
 </body>
 
