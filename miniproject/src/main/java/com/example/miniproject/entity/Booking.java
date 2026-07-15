@@ -38,6 +38,18 @@ public class Booking {
     @Column(name = "pickuplocation",length = 255)
     private String pickuplocation;
 	private	Double totalamount;
+
+	// ── ประกัน (checkbox เดียว ครอบคลุมทุกคนในการจอง) ──
+@Column(name = "want_insurance")
+private Boolean wantInsurance = false;
+
+@Column(name = "insurance_fee_per_person")
+private Double insuranceFeePerPerson;   // เก็บราคา ณ วันที่จอง กันราคาเปลี่ยนทีหลัง
+
+@Column(name = "subtotal_insurance")
+private Double subtotalInsurance;       // = insuranceFeePerPerson * numofguest (ถ้าติ๊ก)
+
+
     // relationship
     @ManyToOne
     @JoinColumn(name = "memberid")
@@ -194,5 +206,14 @@ public class Booking {
 		this.isBookerGoing = isBookerGoing;
 	}
 	
+
+	public Boolean getWantInsurance() { return wantInsurance; }
+public void setWantInsurance(Boolean wantInsurance) { this.wantInsurance = wantInsurance; }
+
+public Double getInsuranceFeePerPerson() { return insuranceFeePerPerson; }
+public void setInsuranceFeePerPerson(Double insuranceFeePerPerson) { this.insuranceFeePerPerson = insuranceFeePerPerson; }
+
+public Double getSubtotalInsurance() { return subtotalInsurance; }
+public void setSubtotalInsurance(Double subtotalInsurance) { this.subtotalInsurance = subtotalInsurance; }
 
 }

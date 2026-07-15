@@ -520,6 +520,7 @@
         <div class="page-header">
             <div>
                 <div class="page-title">จัดการรอบทัวร์</div>
+                <div class="page-subtitle" th:text="${tour.tourmname}">ชื่อทัวร์</div>
             </div>
         </div>
 
@@ -578,6 +579,7 @@
                         <button type="submit" class="btn btn-save">
                             <i class="fas fa-plus"></i> เพิ่มวันที่
                         </button>
+                    </div>
                     </div>
             </form>
         </div>
@@ -641,7 +643,7 @@
             </p>
         </div>
     </div>
-    <script>
+    <script th:inline="javascript">
         // ดึงค่าจำนวนวันจากตัวแปรทัวร์ที่ส่งมาจาก Controller
         const tourNumberOfDays = /*[[${tour.numberOfDays}]]*/ 1;
 

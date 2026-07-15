@@ -51,6 +51,7 @@ public String bookingPage(
     model.addAttribute("tour", tour);
     model.addAttribute("availableSeats", availableSeats);
     model.addAttribute("seatLevel", seatLevel);
+    model.addAttribute("insurancePrice", BookingService.INSURANCE_PRICE_PER_PERSON);
 
     return "Member/booking_tour";
 }
@@ -59,47 +60,47 @@ public String bookingPage(
     // POST : สร้างการจองทัวร์
     // ════════════════════════════════════════════════════════
     @PostMapping("/booking/tour/create")
-    public String createBooking(
-            @RequestParam("tourid") String tourId,
-            @RequestParam("tourdate") String tourDate,
-            @RequestParam("adult") Integer adult,
-            @RequestParam(value = "children", defaultValue = "0") Integer children,
-            @RequestParam(value = "note", required = false) String note,
-            @RequestParam(value = "isBookerGoing", defaultValue = "true") Boolean isBookerGoing,
-            @RequestParam(value = "pickuptype", defaultValue = "จุดรับส่วนกลาง") String pickuptype,
-            @RequestParam(value = "pickuplocation", required = false) String pickuplocation,
-            @RequestParam(value = "guestFirstname", required = false) List<String> guestFirstnames,
-            @RequestParam(value = "guestLastname",  required = false) List<String> guestLastnames,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+public String createBooking(
+        @RequestParam("tourid") String tourId,
+        @RequestParam("tourdate") String tourDate,
+        @RequestParam("adult") Integer adult,
+        @RequestParam(value = "children", defaultValue = "0") Integer children,
+        @RequestParam(value = "note", required = false) String note,
+        @RequestParam(value = "isBookerGoing", defaultValue = "true") Boolean isBookerGoing,
+        @RequestParam(value = "pickuptype", defaultValue = "จุดรับส่วนกลาง") String pickuptype,
+        @RequestParam(value = "pickuplocation", required = false) String pickuplocation,
+        @RequestParam(value = "wantinsurance", defaultValue = "false") Boolean wantInsurance,   // ✅ เพิ่ม
+        @RequestParam(value = "guestFirstname", required = false) List<String> guestFirstnames,
+        @RequestParam(value = "guestLastname",  required = false) List<String> guestLastnames,
+        @RequestParam(value = "guestIdcard",    required = false) List<String> guestIdcards,   // ✅ เพิ่ม
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
 
-        Member member = (Member) session.getAttribute("loggedInMember");
+    Member member = (Member) session.getAttribute("loggedInMember");
 
-        if (member == null) {
-            return "redirect:/member/login";
-        }
-
-        try {
-            String bookingId = bookingService.createTourBooking(
-                member, tourId, tourDate, adult, children, note,
-                isBookerGoing, pickuptype, pickuplocation,
-                guestFirstnames, guestLastnames);
-
-            return "redirect:/member/bookings/detail/" + bookingId;
-
-        } catch (IllegalArgumentException e) {
-            // 6.1 — ข้อมูลไม่ถูกต้องจาก server (เช่น วันย้อนหลัง, ที่นั่งไม่พอ)
-            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
-            return "redirect:/booking/tour/" + tourId;
-
-        } catch (Exception e) {
-            // 8.1.1 — บันทึกไม่สำเร็จ → ข้อความตรงตาม spec
-            redirectAttributes.addFlashAttribute(
-                    "errorMsg",
-                    "ไม่สามารถบันทึกข้อมูลการจองได้ กรุณาลองใหม่อีกครั้ง");
-            return "redirect:/booking/tour/" + tourId;
-        }
+    if (member == null) {
+        return "redirect:/member/login";
     }
+
+    try {
+        String bookingId = bookingService.createTourBooking(
+            member, tourId, tourDate, adult, children, note,
+            isBookerGoing, pickuptype, pickuplocation,
+            wantInsurance, guestFirstnames, guestLastnames, guestIdcards);  // ✅ เพิ่ม 2 ตัว
+
+        return "redirect:/member/bookings/detail/" + bookingId;
+
+    } catch (IllegalArgumentException e) {
+        redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+        return "redirect:/booking/tour/" + tourId;
+
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute(
+                "errorMsg",
+                "ไม่สามารถบันทึกข้อมูลการจองได้ กรุณาลองใหม่อีกครั้ง");
+        return "redirect:/booking/tour/" + tourId;
+    }
+}
 
     // ════════════════════════════════════════════════════════
     // POST : แก้ไขการจองทัวร์

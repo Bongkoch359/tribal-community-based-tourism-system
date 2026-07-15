@@ -287,9 +287,32 @@ img { display: block; }
   transition: color .15s, border-color .15s; margin-bottom: -2px;
 }
 .tab-btn svg { width: 19px; height: 19px; flex-shrink: 0; }
-.tab-btn:hover { color: var(--green-700); }
-.tab-btn.active { color: var(--green-800); border-bottom-color: var(--green-600); }
-.tab-btn.active svg { color: var(--green-600); }
+/* สีเริ่มต้นตอน hover (ใช้กลางๆ ก่อนรู้ว่าเป็นแท็บไหน) */
+.tab-btn:hover { color: var(--neutral-700); }
+
+/* กิจกรรม → สีอำพัน */
+.tab-btn[data-tab="activity"]:hover { color: var(--amber-600); }
+.tab-btn[data-tab="activity"].active {
+  color: var(--amber-600);
+  border-bottom-color: var(--amber-500);
+}
+.tab-btn[data-tab="activity"].active svg { color: var(--amber-500); }
+
+/* ทัวร์ชุมชน → สีม่วง */
+.tab-btn[data-tab="tour"]:hover { color: var(--purple-700); }
+.tab-btn[data-tab="tour"].active {
+  color: var(--purple-700);
+  border-bottom-color: var(--purple-700);
+}
+.tab-btn[data-tab="tour"].active svg { color: var(--purple-700); }
+
+/* โฮมสเตย์ → สีฟ้า */
+.tab-btn[data-tab="homestay"]:hover { color: var(--blue-700); }
+.tab-btn[data-tab="homestay"].active {
+  color: var(--blue-700);
+  border-bottom-color: var(--blue-700);
+}
+.tab-btn[data-tab="homestay"].active svg { color: var(--blue-700); }
 
 /* ============================================================
    HERO

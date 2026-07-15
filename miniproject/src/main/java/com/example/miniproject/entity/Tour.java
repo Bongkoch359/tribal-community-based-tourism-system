@@ -31,8 +31,7 @@ public class Tour {
     private Integer maxSeatstour;
     private Double adultprice;
     private Double childprice;
-    @Column(name = "insurance_price")
-    private Double insurancePrice;
+
 
     @Lob
     @Column(columnDefinition = "LONGTEXT")
@@ -229,28 +228,7 @@ public class Tour {
     }
 
     // =======================================================================================
-    @Transient
-    private int bookedSeats = 0; // ไม่ map ลง DB
 
-    public int getBookedSeats() {
-        return bookedSeats;
-    }
-
-    public void setBookedSeats(int bookedSeats) {
-        this.bookedSeats = bookedSeats;
-    }
-
-    @Transient
-    public int getRemainingSeats() {
-        if (maxSeatstour == null)
-            return 0;
-        return Math.max(0, maxSeatstour - bookedSeats);
-    }
-
-    @Transient
-    public boolean isFull() {
-        return getRemainingSeats() == 0;
-    }
 
     @Transient
     public Double getStartingPrice() {
@@ -266,11 +244,5 @@ public class Tour {
         return Math.min(adultprice, childprice);
     }
 
-    public Double getInsurancePrice() {
-        return insurancePrice;
-    }
-
-    public void setInsurancePrice(Double insurancePrice) {
-        this.insurancePrice = insurancePrice;
-    }
+ 
 }

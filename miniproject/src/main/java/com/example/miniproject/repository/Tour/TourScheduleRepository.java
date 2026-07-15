@@ -14,6 +14,7 @@ public interface TourScheduleRepository extends JpaRepository<Tourschedule, Stri
     // ดึงรอบทั้งหมดของทัวร์หนึ่งๆ เรียงตามวันที่ (ใช้โชว์ list ในหน้า tourdetail ฝั่ง member)
     List<Tourschedule> findByTourTouridOrderByOpendateAsc(String tourid);
 
+
     // ดึงเฉพาะรอบที่ "เปิดรับจอง" และยังไม่ผ่านวันที่มาแล้ว (สำหรับหน้าจองของ member)
     @Query("""
         SELECT s FROM Tourschedule s

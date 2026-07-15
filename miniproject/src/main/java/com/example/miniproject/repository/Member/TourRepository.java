@@ -83,34 +83,43 @@ public interface TourRepository extends JpaRepository<Tour, String> {
                        @Param("tourTypeId") String tourTypeId);
 
     // ค้นหาแบบมีวันที่ (เพิ่ม filter tourTypeId)
-    @Query("""
-        SELECT t FROM Tour t
-        WHERE EXISTS (
-            SELECT 1 FROM Tourschedule s
-            WHERE s.tour = t AND s.status = 'เปิดรับจอง'
-        )
-        AND (:keyword IS NULL
-             OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
-        AND (:tourTypeId IS NULL
-             OR t.tourtype.typeId = :tourTypeId)
-        AND (:guests IS NULL OR :guests <= 1
-             OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
-        AND (:startDate IS NULL OR :endDate IS NULL OR (
-            (SELECT COALESCE(SUM(d.numofadult + COALESCE(d.numofchild, 0)), 0)
-             FROM Bookingtourdetail d
-             WHERE d.tour = t
-             AND d.tourschedule.opendate BETWEEN :startDate AND :endDate)
-            <= t.maxSeatstour - :guests
-        ))
-        ORDER BY t.tourmname ASC
-    """)
-    List<Tour> searchWithDate(
-        @Param("keyword")    String keyword,
-        @Param("guests")     Integer guests,
-        @Param("startDate")  java.sql.Date startDate,
-        @Param("endDate")    java.sql.Date endDate,
-        @Param("tourTypeId") String tourTypeId
-    );
+   @Query("""
+    SELECT DISTINCT t FROM Tour t
+    WHERE (:keyword IS NULL
+           OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
+      AND (:tourTypeId IS NULL
+           OR t.tourtype.typeId = :tourTypeId)
+      AND (:guests IS NULL OR :guests <= 1
+           OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
+      AND EXISTS (
+          SELECT 1 FROM Tourschedule s
+          WHERE s.tour = t
+            AND s.status = 'เปิดรับจอง'
+            AND s.opendate BETWEEN :startDate AND :endDate
+            AND (
+                :guests IS NULL OR :guests <= 1
+                OR (
+                    t.maxSeatstour - (
+                        SELECT COALESCE(SUM(
+                            CASE WHEN d.booking.bookingStatus <> com.example.miniproject.entity.enums.BookingStatus.CANCEL
+                                 THEN d.numofadult + COALESCE(d.numofchild, 0)
+                                 ELSE 0 END
+                        ), 0)
+                        FROM Bookingtourdetail d
+                        WHERE d.tourschedule = s
+                    )
+                ) >= :guests
+            )
+      )
+    ORDER BY t.tourmname ASC
+""")
+List<Tour> searchWithDate(
+    @Param("keyword")    String keyword,
+    @Param("guests")     Integer guests,
+    @Param("startDate")  java.sql.Date startDate,
+    @Param("endDate")    java.sql.Date endDate,
+    @Param("tourTypeId") String tourTypeId
+);
 
     // คิวรีที่นั่ง
     @Query("""

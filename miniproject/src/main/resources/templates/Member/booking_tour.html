@@ -27,6 +27,7 @@
   --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px;
   --navbar-h: 100px;
 }
+[x-cloak] { display: none !important; }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
@@ -181,10 +182,11 @@ img { display: block; }
 
 /* FORM */
 .form-left { display: flex; flex-direction: column; gap: 20px; }
-.form-card {
-  background: var(--white); border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm); border-top: 4px solid var(--amber-500);
-  overflow: hidden;
+.form-card{
+    background:#fffdf8;
+    border:1px solid #f3e6c8;
+    border-top:4px solid #e8960a;
+    border-radius:18px;
 }
 .form-card.green-top { border-top-color: var(--green-600); }
 .form-card-body { padding: 24px 26px; }
@@ -364,6 +366,66 @@ img { display: block; }
 .booker-self-card .name { font-size: 14px; font-weight: 700; color: var(--green-800); }
 .booker-self-card .note { font-size: 12px; color: var(--green-600); margin-top: 1px; }
 
+/* ══════ INSURANCE CARD ══════ */
+.insurance-card {
+  border: 1.5px solid var(--blue-100);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-top: 16px;
+  background: linear-gradient(135deg, #eff8ff 0%, var(--blue-100) 100%);
+  transition: border-color .2s, box-shadow .2s;
+}
+.insurance-card.is-active {
+  border-color: var(--blue-700);
+  box-shadow: 0 4px 16px rgba(3,105,161,0.12);
+}
+.insurance-card-top {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 18px; cursor: pointer;
+}
+.insurance-icon-badge {
+  width: 44px; height: 44px; border-radius: var(--r-md); flex-shrink: 0;
+  background: var(--blue-700); display: flex; align-items: center; justify-content: center;
+  font-size: 21px; box-shadow: 0 4px 10px rgba(3,105,161,0.25);
+}
+.insurance-card-body { flex: 1; min-width: 0; }
+.insurance-card-title-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+}
+.insurance-card-title { font-size: 15px; font-weight: 800; color: var(--blue-700); }
+.insurance-price-tag {
+  font-size: 13px; font-weight: 800; color: white; background: var(--amber-500);
+  border-radius: 100px; padding: 3px 12px; white-space: nowrap; flex-shrink: 0;
+}
+.insurance-card-desc { font-size: 13px; color: var(--blue-700); opacity: .8; margin-top: 4px; line-height: 1.5; }
+
+/* toggle switch แทน checkbox ธรรมดา */
+.insurance-toggle-switch {
+  position: relative; width: 46px; height: 26px; flex-shrink: 0; margin-top: 2px;
+}
+.insurance-toggle-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
+.toggle-track {
+  position: absolute; inset: 0; background: var(--neutral-300); border-radius: 100px;
+  transition: background .2s;
+}
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+  background: white; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform .2s;
+}
+.insurance-toggle-switch input:checked ~ .toggle-track { background: var(--blue-700); }
+.insurance-toggle-switch input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+.insurance-card-expand {
+  border-top: 1px solid rgba(3,105,161,0.15);
+  padding: 14px 18px 16px; background: rgba(255,255,255,0.5);
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; color: var(--blue-700); font-weight: 600;
+}
+
+.insurance-guest-idcard { margin-top: 10px; }
+.idcard-hint { font-size: 11px; color: var(--neutral-400); margin-top: 3px; }
+
 /* SIDEBAR */
 .sidebar-card {
   background: var(--white); border-radius: var(--r-xl); box-shadow: var(--shadow-md);
@@ -431,6 +493,7 @@ img { display: block; }
       const ADULT_PRICE     = /*[[${tour.adultprice}]]*/ 850;
       const CHILD_PRICE     = /*[[${tour.childprice}]]*/ 500;
       const AVAILABLE_SEATS = /*[[${availableSeats}]]*/ 0;
+      const INSURANCE_PRICE = /*[[${insurancePrice}]]*/ 100;
     </script>
 
     <!-- Alpine ต้องโหลดก่อน Alpine.data() จึงใช้ script ธรรมดา (ไม่ defer) -->
@@ -444,15 +507,19 @@ img { display: block; }
         Alpine.data('bookingForm', () => ({
             adultPrice: ADULT_PRICE,
             childPrice: CHILD_PRICE,
+            insurancePrice: INSURANCE_PRICE,
             numOfAdult: 1,
             numOfChild: 0,
             isBookingForOther: false,
+            wantInsurance: false,
             submitted: false,
             fieldErrors: {},
             pickupType: 'จุดรับส่วนกลาง',
 
             get numOfGuest() { return this.numOfAdult + this.numOfChild; },
-            get subtotal() { return (this.numOfAdult * this.adultPrice) + (this.numOfChild * this.childPrice); },
+            get hasInsuranceOption() { return this.insurancePrice !== null && this.insurancePrice !== undefined; },
+            get insuranceSubtotal() { return this.wantInsurance ? (this.numOfGuest * this.insurancePrice) : 0; },
+            get subtotal() { return (this.numOfAdult * this.adultPrice) + (this.numOfChild * this.childPrice) + this.insuranceSubtotal; },
             get guestListForOther() {
                 return Array.from({ length: this.numOfGuest }, (_, i) => i + 1);
             },
@@ -512,6 +579,28 @@ img { display: block; }
 
                 if (guestError) {
                     errors['guests'] = 'กรุณากรอกชื่อ-นามสกุลผู้เดินทางให้ครบถ้วน';
+                }
+
+                // 4. เลขบัตรประชาชน (เฉพาะกรณีทำประกัน)
+                if (this.hasInsuranceOption && this.wantInsurance) {
+                    const idcardInputs = document.querySelectorAll('input[name="guestIdcard"]');
+                    let idcardError = false;
+
+                    idcardInputs.forEach(inp => {
+                        const val = inp.value.trim();
+                        if (!/^[0-9]{13}$/.test(val)) {
+                            inp.classList.add('is-invalid');
+                            inp.classList.remove('is-valid');
+                            idcardError = true;
+                        } else {
+                            inp.classList.remove('is-invalid');
+                            inp.classList.add('is-valid');
+                        }
+                    });
+
+                    if (idcardError) {
+                        errors['idcards'] = 'กรุณากรอกเลขบัตรประชาชน 13 หลักให้ครบทุกท่านเพื่อทำประกัน';
+                    }
                 }
 
                 return errors;
@@ -700,21 +789,34 @@ img { display: block; }
                 </div>
               </div>
 
-              <div class="form-group">
-                <label class="form-label">ประเภทจุดรับ</label>
-                <select name="pickuptype" x-model="pickupType" class="form-select">
-                  <option value="จุดรับส่วนกลาง">📍 จุดรับส่วนกลาง</option>
-                  <option value="โรงแรม/ที่พัก">🏨 โรงแรม/ที่พัก</option>
-                </select>
-              </div>
+            <div class="form-group full">
+  <label class="form-label">ประเภทจุดรับ</label>
+  <div class="radio-group" style="margin-top:0;">
+    <label class="radio-option" :class="{ 'radio-selected': pickupType === 'จุดรับส่วนกลาง' }">
+      <input type="radio" name="pickuptype" value="จุดรับส่วนกลาง" x-model="pickupType">
+      <span>📍 นัดพบที่จุดรวมพล (ไม่มีค่าใช้จ่ายเพิ่มเติม)</span>
+    </label>
+    <label class="radio-option" :class="{ 'radio-selected': pickupType === 'โรงแรม/ที่พัก' }">
+      <input type="radio" name="pickuptype" value="โรงแรม/ที่พัก" x-model="pickupType">
+      <span>🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก (เฉพาะในเขตจังหวัดเชียงใหม่)</span>
+    </label>
+  </div>
+</div>
 
-              <div class="form-group full">
-                <label class="form-label">สถานที่รับ</label>
-                <input type="text" name="pickuplocation"
-                       placeholder="เช่น ชื่อโรงแรม หรือจุดนัดหมาย" class="form-input">
-              </div>
+<!-- กรณีให้ทัวร์ไปรับที่โรงแรม -->
+<div class="form-group full" x-show="pickupType === 'โรงแรม/ที่พัก'" x-cloak>
+  <label class="form-label">ชื่อ/ที่อยู่โรงแรม-ที่พัก <span class="req">*</span></label>
+  <input type="text" name="pickuplocation" x-model="pickupLocation"
+         placeholder="เช่น โรงแรม ดุสิต ดีทู เชียงใหม่, อ.เมือง จ.เชียงใหม่"
+         class="form-input"
+         :class="{ 'is-invalid': submitted && fieldErrors['pickuplocation'] }">
+  <div class="field-error" x-show="submitted && fieldErrors['pickuplocation']">
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+    <span x-text="fieldErrors['pickuplocation']"></span>
+  </div>
+  <div class="idcard-hint">⚠️ บริการรับส่งถึงที่พัก รองรับเฉพาะที่พักในเขตจังหวัดเชียงใหม่เท่านั้น กรุณาระบุคำว่า "เชียงใหม่" ในที่อยู่</div>
+</div>
             </div>
-
             <div class="time-notice">
               ⏰ เวลานัดพบ <strong>06:30 น.</strong> — กรุณาพร้อมก่อน 10 นาที
             </div>
@@ -750,6 +852,38 @@ img { display: block; }
             <div class="field-error" style="margin-top: 8px;" x-show="submitted && fieldErrors['numOfGuest']">
               <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
               <span x-text="fieldErrors['numOfGuest']"></span>
+            </div>
+
+            <!-- ── การ์ดประกันการเดินทาง ── -->
+            <div class="insurance-card" :class="{ 'is-active': wantInsurance }" x-show="hasInsuranceOption" x-cloak>
+              <label class="insurance-card-top">
+                <div class="insurance-icon-badge">🛡️</div>
+                <div class="insurance-card-body">
+                  <div class="insurance-card-title-row">
+                    <span class="insurance-card-title">ประกันการเดินทาง</span>
+                    <span class="insurance-price-tag" x-text="Number(insurancePrice).toLocaleString('th-TH') + ' ฿ / ท่าน'"></span>
+                  </div>
+                  <div class="insurance-card-desc">
+                    คุ้มครองอุบัติเหตุระหว่างการเดินทาง ครอบคลุมค่ารักษาพยาบาลกรณีฉุกเฉิน
+                    เลือกซื้อได้ตามจำนวนผู้เดินทางทุกท่าน
+                  </div>
+                </div>
+                <div class="insurance-toggle-switch">
+                  <input type="checkbox" name="wantinsurance" value="true" x-model="wantInsurance">
+                  <div class="toggle-track"></div>
+                  <div class="toggle-thumb"></div>
+                </div>
+              </label>
+
+              <div class="insurance-card-expand" x-show="wantInsurance" x-cloak>
+                📋 กรอกเลขบัตรประชาชน 13 หลักของผู้เดินทางทุกท่านในฟอร์มด้านล่าง เพื่อออกกรมธรรม์ประกัน
+              </div>
+            </div>
+
+            <!-- error เลขบัตรประชาชน (ระดับ section ที่ 1) -->
+            <div class="field-error" style="margin-top: 8px;" x-show="submitted && fieldErrors['idcards']">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              <span x-text="fieldErrors['idcards']"></span>
             </div>
 
             <!-- สถานะที่นั่ง -->
@@ -839,6 +973,16 @@ img { display: block; }
                     <div class="note">ผู้จอง — ใช้ชื่อจากโปรไฟล์</div>
                   </div>
                 </div>
+
+                <!-- เลขบัตรของผู้จองเอง (ต้องมาก่อนแขกคนอื่นเสมอ เพื่อให้ guestIdcard ตัวแรก
+                     ที่ส่งไป backend ตรงกับผู้จอง — ดู idcardOffset ใน BookingService) -->
+                <div class="form-group insurance-guest-idcard" x-show="wantInsurance" style="margin-bottom:14px;">
+                  <label class="form-label">เลขบัตรประชาชนของผู้จอง (สำหรับทำประกัน) <span class="req">*</span></label>
+                  <input type="text" name="guestIdcard" placeholder="กรอกเลข 13 หลัก"
+                         maxlength="13" inputmode="numeric" pattern="[0-9]{13}" class="form-input">
+                  <div class="idcard-hint">ใช้สำหรับออกกรมธรรม์ประกันการเดินทางเท่านั้น</div>
+                </div>
+
                 <div class="guest-list">
                   <template x-for="i in guestListSelf" :key="i">
                     <div class="guest-card">
@@ -858,6 +1002,12 @@ img { display: block; }
                           <label class="form-label">นามสกุล <span class="req">*</span></label>
                           <input type="text" name="guestLastname" placeholder="นามสกุล" class="form-input" required>
                         </div>
+                      </div>
+                      <div class="form-group insurance-guest-idcard" x-show="wantInsurance">
+                        <label class="form-label">เลขบัตรประชาชน (สำหรับทำประกัน) <span class="req">*</span></label>
+                        <input type="text" name="guestIdcard" placeholder="กรอกเลข 13 หลัก"
+                               maxlength="13" inputmode="numeric" pattern="[0-9]{13}" class="form-input">
+                        <div class="idcard-hint">ใช้สำหรับออกกรมธรรม์ประกันการเดินทางเท่านั้น</div>
                       </div>
                     </div>
                   </template>
@@ -895,6 +1045,12 @@ img { display: block; }
                           <label class="form-label">นามสกุล <span class="req">*</span></label>
                           <input type="text" name="guestLastname" placeholder="นามสกุล" class="form-input" required>
                         </div>
+                      </div>
+                      <div class="form-group insurance-guest-idcard" x-show="wantInsurance">
+                        <label class="form-label">เลขบัตรประชาชน (สำหรับทำประกัน) <span class="req">*</span></label>
+                        <input type="text" name="guestIdcard" placeholder="กรอกเลข 13 หลัก"
+                               maxlength="13" inputmode="numeric" pattern="[0-9]{13}" class="form-input">
+                        <div class="idcard-hint">ใช้สำหรับออกกรมธรรม์ประกันการเดินทางเท่านั้น</div>
                       </div>
                     </div>
                   </template>
@@ -934,7 +1090,7 @@ img { display: block; }
           <div class="tour-name" th:text="${tour.tourmname}">ชื่อทัวร์</div>
           <div class="tour-meta" style="margin-bottom:14px;">
             📍 ชุมชนชนเผ่าแผนกการท่องเที่ยว
-            <span class="tour-status-badge" th:text="${tour.status}">เปิดรับจอง</span>
+          
           </div>
 
           <hr class="summary-divider">
@@ -961,6 +1117,10 @@ img { display: block; }
           <div class="summary-row price-row" x-show="numOfChild > 0">
             <span x-text="'เด็ก × ' + numOfChild + ' ท่าน'"></span>
             <span class="val" x-text="(numOfChild * childPrice).toLocaleString('th-TH') + ' ฿'"></span>
+          </div>
+          <div class="summary-row price-row" x-show="wantInsurance">
+            <span x-text="'ประกันการเดินทาง × ' + numOfGuest + ' ท่าน'"></span>
+            <span class="val" x-text="insuranceSubtotal.toLocaleString('th-TH') + ' ฿'"></span>
           </div>
 
           <div class="summary-total">

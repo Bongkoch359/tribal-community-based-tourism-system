@@ -80,32 +80,13 @@ public class TourService {
     public List<Tour> getAllActiveTours() {
         List<Tour> tours = tourRepository.search(null, null); // ใช้ query ที่กรองรอบเปิดรับจองอยู่แล้ว
 
-        Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
-                .stream()
-                .collect(Collectors.toMap(
-                        row -> (String) row[0],
-                        row -> ((Number) row[1]).intValue()
-                ));
-
-        tours.forEach(t -> {
-            int booked = bookedMap.getOrDefault(t.getTourid(), 0);
-            t.setBookedSeats(booked);
-        });
 
         return tours;
     }
 
     // เพิ่ม method นี้
     public void injectBookedSeats(List<Tour> tours) {
-        Map<String, Integer> bookedMap = tourRepository.findBookedSeatsAll()
-                .stream()
-                .collect(Collectors.toMap(
-                        row -> (String) row[0],
-                        row -> ((Number) row[1]).intValue()
-                ));
-        tours.forEach(t ->
-                t.setBookedSeats(bookedMap.getOrDefault(t.getTourid(), 0))
-        );
+        
     }
 
     // ─────────────────────────────────────────────────────────

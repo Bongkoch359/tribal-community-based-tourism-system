@@ -311,8 +311,8 @@
              autocomplete="off"/>
     </div>
 
-    <!-- ── วันที่เดินทาง (Tour: วันเดียว) ── -->
-    <div class="sf sf-date" id="date-tour-wrapper" style="display:none;">
+    <!-- ── วันที่เริ่มเดินทาง (Tour) ── -->
+    <div class="sf sf-date" id="date-tour-start-wrapper" style="display:none;">
       <div class="sf-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -320,10 +320,23 @@
           <line x1="8" y1="2" x2="8" y2="6"/>
           <line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
-        วันที่เดินทาง
+        วันที่เริ่มเดินทาง
       </div>
       <input type="date" name="startDate" id="tour-date-input" th:value="${startDate}"/>
-      <input type="hidden" name="endDate" id="tour-date-end-input" th:value="${startDate}"/>
+    </div>
+
+    <!-- ── วันที่สิ้นสุด (Tour) ── -->
+    <div class="sf sf-date" id="date-tour-end-wrapper" style="display:none;">
+      <div class="sf-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        วันที่สิ้นสุด
+      </div>
+      <input type="date" name="endDate" id="tour-date-end-input" th:value="${endDate}"/>
     </div>
 
     <div class="sf" id="tourtype-wrapper" style="display:none;">
@@ -457,7 +470,6 @@
            th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
            alt="ภาพทัวร์" loading="lazy"/>
       <span class="fcard-badge badge-tour">ทัวร์ชุมชน</span>
-      <span th:if="${t.full}" class="fcard-badge badge-full">เต็มแล้ว</span>
     </div>
 
     <div class="fcard-body">
@@ -648,12 +660,6 @@
             ทัวร์ชุมชน
           </span>
 
-          <span th:if="${t.full}"
-                class="card-badge badge-full"
-                style="top:auto;bottom:12px;">
-            เต็มแล้ว
-          </span>
-
         </div>
 
         <div class="card-body">
@@ -686,11 +692,8 @@
             </div>
             <a th:href="@{/tour/{id}(id=${t.tourid})}"
                class="btn-book"
-               th:classappend="${t.full} ? ' btn-disabled'"
-               th:style="${t.full} ? 'background:#9ca3af;cursor:not-allowed;' : 'background:#2d7a4f;'">
-              <span th:text="${t.full} ? 'เต็มแล้ว' : 'ดูรายละเอียด'">
-                ดูรายละเอียด
-              </span>
+               style="background:#2d7a4f;">
+              ดูรายละเอียด
             </a>
           </div>
         </div>

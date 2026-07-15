@@ -46,6 +46,8 @@ public class BookingService {
     @Autowired
     private BookingtourdetailRepository bookingtourdetailRepository;
 
+    public static final double INSURANCE_PRICE_PER_PERSON = 100.0;
+
     // ════════════════════════════════════════════════════════
     //  GET / FIND
     // ════════════════════════════════════════════════════════
@@ -175,7 +177,7 @@ public class BookingService {
     //  EDIT HOMESTAY BOOKING
     // ════════════════════════════════════════════════════════
 
-    
+
     @Transactional
     public void editHomestayBooking(
             String bookingId,
@@ -188,40 +190,40 @@ public class BookingService {
             String note,
             String guestFirstname,   // ← เพิ่ม
             String guestLastname) {  // ← เพิ่ม
- 
+
         // ── 1. ดึง Booking ─────────────────────────────────────
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
- 
+
         // ── 2. ตรวจสิทธิ์ ──────────────────────────────────────
         if (!booking.getMember().getMemberid().equals(memberId))
             throw new IllegalArgumentException("ไม่มีสิทธิ์แก้ไขการจองนี้");
- 
+
         // ── 3. ตรวจสถานะ (แก้ได้เฉพาะ PENDING / WAITING_APPROVAL) ──
         BookingStatus status = booking.getBookingStatus();
         if (status != BookingStatus.PENDING && status != BookingStatus.WAITING_APPROVAL)
             throw new IllegalStateException("ไม่สามารถแก้ไขข้อมูลการจองห้องพักได้ กรุณาลองใหม่อีกครั้ง");
- 
+
         // ── 4. Validate dates ───────────────────────────────────
         LocalDate dateIn  = LocalDate.parse(checkin);
         LocalDate dateOut = LocalDate.parse(checkout);
         if (!dateOut.isAfter(dateIn))
             throw new IllegalArgumentException("วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน");
- 
+
         // ── 5. ดึง Bookingroomdetail ────────────────────────────
         if (booking.getRoomDetails() == null || booking.getRoomDetails().isEmpty())
             throw new RuntimeException("ไม่พบรายละเอียดห้องพักของการจองนี้");
- 
+
         Bookingroomdetail detail   = booking.getRoomDetails().get(0);
         Roomtype          roomtype = detail.getRoomtype();
- 
+
         // ── 6. คำนวณราคาใหม่ ───────────────────────────────────
         int    rooms    = (numofrooms  != null && numofrooms  > 0) ? numofrooms  : 1;
         int    adults   = (numofAdults != null && numofAdults > 0) ? numofAdults : 1;
         int    children = (numofChildren != null)                  ? numofChildren : 0;
         long   nights   = ChronoUnit.DAYS.between(dateIn, dateOut);
         double subtotal = roomtype.getPricepernight() * nights * rooms;
- 
+
         // ── 7. อัปเดต Bookingroomdetail ────────────────────────
         detail.setCheckindate(Date.valueOf(dateIn));
         detail.setCheckoutdate(Date.valueOf(dateOut));
@@ -230,17 +232,17 @@ public class BookingService {
         detail.setNumofChcldren(children);
         detail.setSubtotalroom(subtotal);
         bookingroomdetailRepository.save(detail);
- 
+
         // ── 8. อัปเดต Booking หลัก ─────────────────────────────
         booking.setNumofguest(adults + children);
         booking.setNote(note);
         booking.setTotalamount(subtotal);
         bookingRepository.save(booking);
- 
+
         // ── 9. อัปเดตชื่อ Guest (กรณีจองให้ผู้อื่น) ───────────
         if (Boolean.FALSE.equals(booking.getIsBookerGoing())
                 && guestFirstname != null && !guestFirstname.isBlank()) {
- 
+
             Set<Guest> guests = booking.getGuests();
             if (guests != null && !guests.isEmpty()) {
                 // แก้ guest รายแรก
@@ -302,283 +304,345 @@ public class BookingService {
     }
 
 
-    //ทัวร์
+    // ════════════════════════════════════════════════════════
+    //  CREATE TOUR BOOKING
+    // ════════════════════════════════════════════════════════
 
     @Transactional
     public String createTourBooking(
-        Member member,
-        String tourId,
-        String tourDate,
-        Integer adult,
-        Integer children,
-        String note,
-        Boolean isBookerGoing,
-        String pickuptype,           // ✅ เพิ่ม
-        String pickuplocation,       // ✅ เพิ่ม
-        List<String> guestFirstnames,
-        List<String> guestLastnames) {
+            Member member,
+            String tourId,
+            String tourDate,
+            Integer adult,
+            Integer children,
+            String note,
+            Boolean isBookerGoing,
+            String pickuptype,
+            String pickuplocation,
+            Boolean wantInsurance,                 // ✅ เพิ่ม
+            List<String> guestFirstnames,
+            List<String> guestLastnames,
+            List<String> guestIdcards) {           // ✅ เพิ่ม
 
-    // ── 1. Validate date ──────────────────────────────────
-    LocalDate startDate = LocalDate.parse(tourDate);
+        // ── 1. Validate date ──────────────────────────────────
+        LocalDate startDate = LocalDate.parse(tourDate);
+        if (startDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("ไม่สามารถเลือกวันย้อนหลังได้");
+        }
 
-    if (startDate.isBefore(LocalDate.now())) {
-        throw new IllegalArgumentException("ไม่สามารถเลือกวันย้อนหลังได้");
+        // ── 2. ดึง Tour ───────────────────────────────────────
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบทัวร์"));
+
+        // ── 3. คำนวณจำนวนคน ─────────────────────────────────
+        int adults = (adult != null && adult > 0) ? adult : 1;
+        int childs = (children != null) ? children : 0;
+        int totalGuest = adults + childs;
+
+        // ── 4. ตรวจที่นั่ง ───────────────────────────────────
+        if (tour.getMaxSeatstour() != null) {
+            int availableSeats = tourService.getAvailableSeats(tour);
+            if (totalGuest > availableSeats) {
+                throw new IllegalArgumentException("ที่นั่งคงเหลือไม่เพียงพอ (เหลือ " + availableSeats + " ที่นั่ง)");
+            }
+        }
+
+        // ── 4.5 Validate เลขบัตรประชาชน ถ้าต้องการทำประกัน ──
+        // หมายเหตุ: ถ้าผู้จองไปเองด้วย (isBookerGoing == true) ต้องกรอกเลขบัตรของ
+        // ผู้จองเองมาเป็นตัวแรกใน guestIdcards ด้วย (ฝั่ง HTML วางช่องผู้จองไว้ก่อนแขกคนอื่นเสมอ)
+        // ดังนั้นจำนวนเลขบัตรที่ต้องมี = totalGuest เท่ากันไม่ว่าจะไปเองหรือจองให้คนอื่น
+        boolean insurance = Boolean.TRUE.equals(wantInsurance);
+        if (insurance) {
+           
+            if (guestIdcards == null || guestIdcards.size() < totalGuest) {
+                throw new IllegalArgumentException("กรุณากรอกเลขบัตรประชาชนให้ครบทุกท่านเพื่อทำประกัน");
+            }
+            for (String idcard : guestIdcards) {
+                if (idcard == null || idcard.trim().length() != 13) {
+                    throw new IllegalArgumentException("เลขบัตรประชาชนต้องมี 13 หลัก กรุณากรอกให้ครบทุกท่าน");
+                }
+            }
+        }
+        // ── 4.6 Validate จุดรับ (กรณีให้ทัวร์ไปรับที่โรงแรม ต้องอยู่ในเชียงใหม่เท่านั้น) ──
+if ("โรงแรม/ที่พัก".equals(pickuptype)) {
+    if (pickuplocation == null || pickuplocation.trim().isEmpty()) {
+        throw new IllegalArgumentException("กรุณาระบุชื่อโรงแรม/ที่พักสำหรับรับ");
     }
-
-    // ── 2. ดึง Tour ───────────────────────────────────────
-    Tour tour = tourRepository.findById(tourId)
-            .orElseThrow(() -> new RuntimeException("ไม่พบทัวร์"));
-
-    // ── 3. คำนวณจำนวนคน ─────────────────────────────────
-    int adults = (adult != null && adult > 0) ? adult : 1;
-    int childs = (children != null) ? children : 0;
-
-    int totalGuest = adults + childs;
-
-    // ── 4. ตรวจขั้นต่ำ / สูงสุด ──────────────────────────
-   
-
-   if (tour.getMaxSeatstour() != null) {
-    int availableSeats = tourService.getAvailableSeats(tour);
-    if (totalGuest > availableSeats) {
-        throw new IllegalArgumentException("ที่นั่งคงเหลือไม่เพียงพอ (เหลือ " + availableSeats + " ที่นั่ง)");
+    if (!pickuplocation.contains("เชียงใหม่")) {
+        throw new IllegalArgumentException("บริการรับที่พักรองรับเฉพาะในเขตจังหวัดเชียงใหม่เท่านั้น");
     }
 }
 
 
-    // ── 5. คำนวณราคา ────────────────────────────────────
-    double subtotal =
-            (adults * tour.getAdultprice())
-                    + (childs * tour.getChildprice());
+        // ── 5. คำนวณราคา ────────────────────────────────────
+        double tourSubtotal = (adults * tour.getAdultprice()) + (childs * tour.getChildprice());
 
-    // ── 6. สร้าง Booking ─────────────────────────────────
-    Booking booking = new Booking();
+double insuranceFeePerPerson = insurance ? INSURANCE_PRICE_PER_PERSON : 0.0;
+double subtotalInsurance = insurance ? (insuranceFeePerPerson * totalGuest) : 0.0;
 
-    booking.setBookingid(generateBookingId());
-    booking.setMember(member);
-    booking.setBookingType(BookingType.TOUR);
-    booking.setBookingStatus(BookingStatus.PENDING);
-    booking.setBookingdate(new Date(System.currentTimeMillis()));
-    booking.setNumofguest(totalGuest);
-    booking.setNote(note);
-    booking.setIsBookerGoing(
-            isBookerGoing != null ? isBookerGoing : true);
-    booking.setTotalamount(subtotal);
-    booking.setPickuptype(pickuptype);
-    booking.setPickuplocation(pickuplocation);
-    bookingRepository.save(booking);
+double grandTotal = tourSubtotal + subtotalInsurance;
 
-    // ── 7. สร้าง Bookingtourdetail ──────────────────────
-    Bookingtourdetailid detailId =
-            new Bookingtourdetailid();
+        // ── 6. สร้าง Booking ─────────────────────────────────
+        Booking booking = new Booking();
+        booking.setBookingid(generateBookingId());
+        booking.setMember(member);
+        booking.setBookingType(BookingType.TOUR);
+        booking.setBookingStatus(BookingStatus.PENDING);
+        booking.setBookingdate(new Date(System.currentTimeMillis()));
+        booking.setNumofguest(totalGuest);
+        booking.setNote(note);
+        booking.setIsBookerGoing(isBookerGoing != null ? isBookerGoing : true);
+        booking.setTotalamount(grandTotal);
+        booking.setPickuptype(pickuptype);
+        booking.setPickuplocation(pickuplocation);
+        booking.setWantInsurance(insurance);
+        booking.setInsuranceFeePerPerson(insuranceFeePerPerson);
+        booking.setSubtotalInsurance(subtotalInsurance);
+        bookingRepository.save(booking);
 
-    detailId.setBookingid(booking.getBookingid());
-    detailId.settourid(tour.getTourid());
+        // ── 7. สร้าง Bookingtourdetail ──────────────────────
+        Bookingtourdetailid detailId = new Bookingtourdetailid();
+        detailId.setBookingid(booking.getBookingid());
+        detailId.settourid(tour.getTourid());
 
-    Bookingtourdetail detail =
-            new Bookingtourdetail();
+        Bookingtourdetail detail = new Bookingtourdetail();
+        detail.setId(detailId);
+        detail.setBooking(booking);
+        detail.setTour(tour);
+       
+        detail.setNumofadult(adults);
+        detail.setNumofchild(childs);
+        detail.setSubtotaltour(tourSubtotal);   // ค่าทัวร์ล้วนๆ ไม่รวมประกัน
 
-    detail.setId(detailId);
-    detail.setBooking(booking);
-    detail.setTour(tour);
+        bookingtourdetailRepository.save(detail);
 
-   
-    detail.setNumofadult(adults);
-    detail.setNumofchild(childs);
-    detail.setSubtotaltour(subtotal);
+        // ── 8. Guest ─────────────────────────────────────────
+        // ถ้าผู้จองไปเองและทำประกัน → ต้องเก็บเลขบัตรของผู้จองไว้ด้วย
+        // เนื่องจากไม่มีที่เก็บเลขบัตรใน Member/Booking เราจึงสร้าง Guest
+        // record แทนตัวผู้จองขึ้นมาเก็บชื่อ-นามสกุล-เลขบัตรของผู้จองเอง
+        // (ฝั่ง HTML ส่ง guestIdcard ตัวแรกมาเป็นของผู้จองเสมอ เมื่อ isBookerGoing = true)
+        int idcardOffset = 0;
 
-    bookingtourdetailRepository.save(detail);
+        if (Boolean.TRUE.equals(isBookerGoing) && insurance
+                && guestIdcards != null && !guestIdcards.isEmpty()) {
 
-    // ── 8. Guest ─────────────────────────────────────────
-    if (guestFirstnames != null && !guestFirstnames.isEmpty()) {
-        for (int i = 0; i < guestFirstnames.size(); i++) {
-            String fname = guestFirstnames.get(i);
-            if (fname == null || fname.isBlank()) continue;
+            Guest bookerGuest = new Guest();
+            bookerGuest.setGuestid(generateGuestId());
+            bookerGuest.setFirstname(member.getFirstname());
+            bookerGuest.setLastname(member.getLastname());
+            bookerGuest.setIdcardnumber(guestIdcards.get(0).trim());
+            bookerGuest.setBooking(booking);
+            guestRepository.save(bookerGuest);
 
-            String lname = (guestLastnames != null && i < guestLastnames.size())
-                    ? guestLastnames.get(i) : "";
+            idcardOffset = 1; // เลขบัตรตัวถัดไปเป็นของแขกคนอื่น (ไม่ใช่ผู้จอง)
+        }
 
-            Guest guest = new Guest();
-            guest.setGuestid(generateGuestId());
-            guest.setFirstname(fname.trim());
-            guest.setLastname(lname.trim());
-            guest.setBooking(booking);
-            guestRepository.save(guest);
+        if (guestFirstnames != null && !guestFirstnames.isEmpty()) {
+            for (int i = 0; i < guestFirstnames.size(); i++) {
+                String fname = guestFirstnames.get(i);
+                if (fname == null || fname.isBlank()) continue;
+
+                String lname = (guestLastnames != null && i < guestLastnames.size())
+                        ? guestLastnames.get(i) : "";
+
+                Guest guest = new Guest();
+                guest.setGuestid(generateGuestId());
+                guest.setFirstname(fname.trim());
+                guest.setLastname(lname.trim());
+
+                // เพิ่ม idcard ถ้ามีการทำประกัน (offset เลื่อนเลขบัตรของผู้จองออกไปแล้ว)
+                int idcardIndex = i + idcardOffset;
+                if (insurance && guestIdcards != null && idcardIndex < guestIdcards.size()) {
+                    guest.setIdcardnumber(guestIdcards.get(idcardIndex).trim());
+                }
+
+                guest.setBooking(booking);
+                guestRepository.save(guest);
+            }
+        }
+
+        return booking.getBookingid();
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  EDIT TOUR BOOKING
+    // ════════════════════════════════════════════════════════
+
+    @Transactional
+    public void editTourBooking(
+            String bookingId,
+            String memberId,
+            String tourDate,
+            Integer adult,
+            Integer children,
+            String note,
+            String guestFirstname,
+            String guestLastname) {
+
+        // ── 1. ดึง Booking ──────────────────────────────────
+        Booking booking = bookingRepository
+                .findByIdWithDetails(bookingId)
+                .orElseThrow(() ->
+                        new RuntimeException("ไม่พบการจอง"));
+
+        // ── 2. ตรวจสิทธิ์ ───────────────────────────────────
+        if (!booking.getMember().getMemberid()
+                .equals(memberId)) {
+
+            throw new IllegalArgumentException(
+                    "ไม่มีสิทธิ์แก้ไขการจองนี้");
+        }
+
+        // ── 3. ตรวจสถานะ ───────────────────────────────────
+        BookingStatus status = booking.getBookingStatus();
+
+        if (status != BookingStatus.PENDING
+                && status != BookingStatus.WAITING_APPROVAL) {
+
+            throw new IllegalStateException(
+                    "ไม่สามารถแก้ไขการจองได้");
+        }
+
+        // ── 4. ดึง Tour Detail ─────────────────────────────
+        if (booking.getTourDetails() == null
+                || booking.getTourDetails().isEmpty()) {
+
+            throw new RuntimeException(
+                    "ไม่พบรายละเอียดทัวร์");
+        }
+
+        Bookingtourdetail detail =
+                booking.getTourDetails().get(0);
+
+        Tour tour = detail.getTour();
+
+        // ── 5. Validate date ───────────────────────────────
+        LocalDate startDate = LocalDate.parse(tourDate);
+
+        if (startDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "ไม่สามารถเลือกวันย้อนหลังได้");
+        }
+
+        // ── 6. คำนวณใหม่ ──────────────────────────────────
+        int adults =
+                (adult != null && adult > 0) ? adult : 1;
+
+        int childs =
+                (children != null) ? children : 0;
+
+        int totalGuest = adults + childs;
+
+        double subtotal =
+                (adults * tour.getAdultprice())
+                        + (childs * tour.getChildprice());
+
+        // ── 6.5 ยอดประกันเดิม (ถ้ามี) — คงค่าตามที่จองไว้ตอนแรก
+        //        แล้วปรับสัดส่วนตามจำนวนคนใหม่ ถ้าเคยติ๊กประกันไว้
+        double subtotalInsurance = 0.0;
+        if (Boolean.TRUE.equals(booking.getWantInsurance())
+                && booking.getInsuranceFeePerPerson() != null) {
+            subtotalInsurance = booking.getInsuranceFeePerPerson() * totalGuest;
+        }
+        double grandTotal = subtotal + subtotalInsurance;
+
+        // ── 7. อัปเดต detail ──────────────────────────────
+       
+        detail.setNumofadult(adults);
+        detail.setNumofchild(childs);
+        detail.setSubtotaltour(subtotal);
+
+        bookingtourdetailRepository.save(detail);
+
+        // ── 8. อัปเดต booking ─────────────────────────────
+        booking.setNumofguest(totalGuest);
+        booking.setNote(note);
+        booking.setTotalamount(grandTotal);
+        booking.setSubtotalInsurance(subtotalInsurance);
+
+        bookingRepository.save(booking);
+
+        // ── 9. Guest ──────────────────────────────────────
+        if (Boolean.FALSE.equals(booking.getIsBookerGoing())
+                && guestFirstname != null
+                && !guestFirstname.isBlank()) {
+
+            Set<Guest> guests = booking.getGuests();
+
+            if (guests != null && !guests.isEmpty()) {
+
+                Guest g = guests.iterator().next();
+
+                g.setFirstname(guestFirstname.trim());
+
+                g.setLastname(
+                        guestLastname != null
+                                ? guestLastname.trim()
+                                : "");
+
+                guestRepository.save(g);
+
+            } else {
+
+                Guest g = new Guest();
+
+                g.setGuestid(generateGuestId());
+
+                g.setFirstname(guestFirstname.trim());
+
+                g.setLastname(
+                        guestLastname != null
+                                ? guestLastname.trim()
+                                : "");
+
+                g.setBooking(booking);
+
+                guestRepository.save(g);
+            }
         }
     }
 
-    return booking.getBookingid();
-}
+    // ════════════════════════════════════════════════════════
+    //  CANCEL TOUR BOOKING
+    // ════════════════════════════════════════════════════════
 
-// ════════════════════════════════════════════════════════
-//  EDIT TOUR BOOKING
-// ════════════════════════════════════════════════════════
+    @Transactional
+    public void cancelTourBooking(
+            String bookingId,
+            String memberId) {
 
-@Transactional
-public void editTourBooking(
-        String bookingId,
-        String memberId,
-        String tourDate,
-        Integer adult,
-        Integer children,
-        String note,
-        String guestFirstname,
-        String guestLastname) {
+        Booking booking = bookingRepository
+                .findByIdWithDetails(bookingId)
+                .orElseThrow(() ->
+                        new RuntimeException("ไม่พบการจอง"));
 
-    // ── 1. ดึง Booking ──────────────────────────────────
-    Booking booking = bookingRepository
-            .findByIdWithDetails(bookingId)
-            .orElseThrow(() ->
-                    new RuntimeException("ไม่พบการจอง"));
+        // ตรวจสิทธิ์
+        if (!booking.getMember().getMemberid()
+                .equals(memberId)) {
 
-    // ── 2. ตรวจสิทธิ์ ───────────────────────────────────
-    if (!booking.getMember().getMemberid()
-            .equals(memberId)) {
-
-        throw new IllegalArgumentException(
-                "ไม่มีสิทธิ์แก้ไขการจองนี้");
-    }
-
-    // ── 3. ตรวจสถานะ ───────────────────────────────────
-    BookingStatus status = booking.getBookingStatus();
-
-    if (status != BookingStatus.PENDING
-            && status != BookingStatus.WAITING_APPROVAL) {
-
-        throw new IllegalStateException(
-                "ไม่สามารถแก้ไขการจองได้");
-    }
-
-    // ── 4. ดึง Tour Detail ─────────────────────────────
-    if (booking.getTourDetails() == null
-            || booking.getTourDetails().isEmpty()) {
-
-        throw new RuntimeException(
-                "ไม่พบรายละเอียดทัวร์");
-    }
-
-    Bookingtourdetail detail =
-            booking.getTourDetails().get(0);
-
-    Tour tour = detail.getTour();
-
-    // ── 5. Validate date ───────────────────────────────
-    LocalDate startDate = LocalDate.parse(tourDate);
-
-    if (startDate.isBefore(LocalDate.now())) {
-        throw new IllegalArgumentException(
-                "ไม่สามารถเลือกวันย้อนหลังได้");
-    }
-
-    // ── 6. คำนวณใหม่ ──────────────────────────────────
-    int adults =
-            (adult != null && adult > 0) ? adult : 1;
-
-    int childs =
-            (children != null) ? children : 0;
-
-    int totalGuest = adults + childs;
-
-    double subtotal =
-            (adults * tour.getAdultprice())
-                    + (childs * tour.getChildprice());
-
-    // ── 7. อัปเดต detail ──────────────────────────────
-   
-    detail.setNumofadult(adults);
-    detail.setNumofchild(childs);
-    detail.setSubtotaltour(subtotal);
-
-    bookingtourdetailRepository.save(detail);
-
-    // ── 8. อัปเดต booking ─────────────────────────────
-    booking.setNumofguest(totalGuest);
-    booking.setNote(note);
-    booking.setTotalamount(subtotal);
-
-    bookingRepository.save(booking);
-
-    // ── 9. Guest ──────────────────────────────────────
-    if (Boolean.FALSE.equals(booking.getIsBookerGoing())
-            && guestFirstname != null
-            && !guestFirstname.isBlank()) {
-
-        Set<Guest> guests = booking.getGuests();
-
-        if (guests != null && !guests.isEmpty()) {
-
-            Guest g = guests.iterator().next();
-
-            g.setFirstname(guestFirstname.trim());
-
-            g.setLastname(
-                    guestLastname != null
-                            ? guestLastname.trim()
-                            : "");
-
-            guestRepository.save(g);
-
-        } else {
-
-            Guest g = new Guest();
-
-            g.setGuestid(generateGuestId());
-
-            g.setFirstname(guestFirstname.trim());
-
-            g.setLastname(
-                    guestLastname != null
-                            ? guestLastname.trim()
-                            : "");
-
-            g.setBooking(booking);
-
-            guestRepository.save(g);
+            throw new IllegalArgumentException(
+                    "ไม่มีสิทธิ์ยกเลิกการจองนี้");
         }
+
+        // ตรวจสถานะ
+        BookingStatus status =
+                booking.getBookingStatus();
+
+        if (status == BookingStatus.CONFIRMED) {
+
+            throw new IllegalStateException(
+                    "ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้");
+        }
+
+        if (status == BookingStatus.CANCEL) {
+
+            throw new IllegalStateException(
+                    "การจองนี้ถูกยกเลิกไปแล้ว");
+        }
+
+        booking.setBookingStatus(BookingStatus.CANCEL);
+
+        bookingRepository.save(booking);
     }
-}
-
-// ════════════════════════════════════════════════════════
-//  CANCEL TOUR BOOKING
-// ════════════════════════════════════════════════════════
-
-@Transactional
-public void cancelTourBooking(
-        String bookingId,
-        String memberId) {
-
-    Booking booking = bookingRepository
-            .findByIdWithDetails(bookingId)
-            .orElseThrow(() ->
-                    new RuntimeException("ไม่พบการจอง"));
-
-    // ตรวจสิทธิ์
-    if (!booking.getMember().getMemberid()
-            .equals(memberId)) {
-
-        throw new IllegalArgumentException(
-                "ไม่มีสิทธิ์ยกเลิกการจองนี้");
-    }
-
-    // ตรวจสถานะ
-    BookingStatus status =
-            booking.getBookingStatus();
-
-    if (status == BookingStatus.CONFIRMED) {
-
-        throw new IllegalStateException(
-                "ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้");
-    }
-
-    if (status == BookingStatus.CANCEL) {
-
-        throw new IllegalStateException(
-                "การจองนี้ถูกยกเลิกไปแล้ว");
-    }
-
-    booking.setBookingStatus(BookingStatus.CANCEL);
-
-    bookingRepository.save(booking);
-}
 
 }

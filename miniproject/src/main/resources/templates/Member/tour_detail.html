@@ -7,6 +7,81 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/Member/tour_detail.css}" href="../static/css/Member/tour_detail.css">
 
+  <!-- ✅ เพิ่ม: สไตล์สำหรับ "ตารางรอบทัวร์" และ "ปฏิทิน modal เลือกวันเดินทาง"
+       (แยกไว้ในนี้เพื่อไม่ต้องแก้ไฟล์ tour_detail.css ภายนอกที่ไม่มีให้) -->
+  <style>
+    /* ===== ตารางรอบทัวร์ ===== */
+.tour-schedule-table-wrap{overflow-x:auto;border:1px solid #e5e7eb;border-radius:12px;}
+.tour-schedule-table{width:100%;border-collapse:collapse;font-size:13px;}
+.tour-schedule-table thead tr{background:#f3fbf5;}
+.tour-schedule-table th{text-align:left;font-size:11px;text-transform:uppercase;color:#2d7a4f;
+  padding:12px 14px;letter-spacing:.05em;font-weight:700;border-bottom:1.5px solid #d8f3dc;}
+.tour-schedule-table td{padding:12px 14px;border-bottom:1px solid #f0f0f0;vertical-align:middle;color:#374151;}
+.tour-schedule-table tbody tr{transition:background .15s;}
+.tour-schedule-table tbody tr:hover{background:#fafdf9;}
+.tour-schedule-table tbody tr:nth-child(even){background:#fbfefc;}
+.tour-schedule-table tbody tr:nth-child(even):hover{background:#f3fbf5;}
+.tour-schedule-table tr:last-child td{border-bottom:none;}
+.tour-schedule-table tr:first-child td{padding-top:14px;}
+    .ts-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;}
+    .ts-badge.ts-open{background:#d8f3dc;color:#215c35;}
+    .ts-badge.ts-low{background:#fef3c7;color:#92400e;}
+    .ts-badge.ts-full{background:#fee2e2;color:#dc2626;}
+    .ts-badge.ts-closed{background:#f0f0f0;color:#6b7280;}
+    .ts-badge.ts-past{background:#f0f0f0;color:#9ca3af;}
+    .ts-select-btn{padding:5px 12px;border-radius:6px;border:1px solid #2d7a4f;background:#fff;color:#2d7a4f;
+      font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .ts-select-btn:hover{background:#d8f3dc;}
+    .ts-select-btn:disabled{opacity:.4;cursor:not-allowed;border-color:#d1d5db;color:#9ca3af;}
+    .ts-select-btn:disabled:hover{background:#fff;}
+    .tour-schedule-empty{font-size:13px;color:#6b7280;padding:8px 0;}
+
+    /* ===== ปุ่มเลือกวันที่ (แทน input date เดิม) ===== */
+    .bk-date-picker-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;background:#fff;
+      font-family:'Sarabun',sans-serif;font-size:14px;color:#1c1c1a;cursor:pointer;text-align:left;}
+    .bk-date-picker-btn:hover{border-color:#2d7a4f;}
+    .bk-date-picker-btn.has-date{color:#215c35;font-weight:600;border-color:#2d7a4f;background:#f3fbf5;}
+    .bk-date-picker-btn svg{width:18px;height:18px;flex-shrink:0;color:#6b7280;}
+
+    /* ===== ปฏิทิน Modal ===== */
+    .cal-modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,20,.55);z-index:1000;
+      align-items:center;justify-content:center;padding:16px;}
+    .cal-modal-overlay.open{display:flex;}
+    .cal-modal{background:#fff;border-radius:16px;width:100%;max-width:380px;padding:20px;
+      box-shadow:0 20px 60px rgba(0,0,0,.3);font-family:'Sarabun',sans-serif;}
+    .cal-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .cal-modal-title{font-size:15px;font-weight:700;color:#1c1c1a;}
+    .cal-nav-group{display:flex;align-items:center;gap:8px;}
+    .cal-nav-btn{width:30px;height:30px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;
+      cursor:pointer;font-size:16px;color:#374151;display:flex;align-items:center;justify-content:center;}
+    .cal-nav-btn:hover{background:#f3fae8;}
+    .cal-close-btn{width:30px;height:30px;border-radius:8px;border:none;background:transparent;
+      font-size:20px;color:#9ca3af;cursor:pointer;line-height:1;}
+    .cal-close-btn:hover{color:#374151;}
+    .cal-legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;font-size:11px;color:#4b5563;}
+    .cal-legend-item{display:flex;align-items:center;gap:5px;}
+    .cal-dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+    .cal-dot.dot-green{background:#2d7a4f;}
+    .cal-dot.dot-amber{background:#c27b04;}
+    .cal-dot.dot-red{background:#dc2626;}
+    .cal-dot.dot-gray{background:#d1d5db;}
+    .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;
+      color:#9ca3af;font-weight:700;margin-bottom:4px;}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+    .cal-day{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;
+      justify-content:center;font-size:12px;position:relative;border:1.5px solid transparent;}
+    .cal-day.empty{visibility:hidden;}
+    .cal-day .dnum{font-weight:600;}
+    .cal-day .dseats{font-size:9px;margin-top:1px;}
+    .cal-day.st-available{background:#eafaf0;color:#215c35;cursor:pointer;}
+    .cal-day.st-available:hover{border-color:#2d7a4f;}
+    .cal-day.st-low{background:#fef8e8;color:#92400e;cursor:pointer;}
+    .cal-day.st-low:hover{border-color:#c27b04;}
+    .cal-day.st-full,.cal-day.st-closed{background:#fdecea;color:#dc2626;opacity:.75;cursor:not-allowed;}
+    .cal-day.st-none,.cal-day.st-past{background:transparent;color:#d1d5db;cursor:not-allowed;}
+    .cal-day.selected{border-color:#215c35;box-shadow:0 0 0 2px rgba(45,122,79,.25);}
+  </style>
 </head>
 <body>
 <!-- ══════════════════════════════════════════
@@ -225,9 +300,7 @@
             <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
           </svg>
           ทัวร์ชุมชน
-          <span th:if="${tour.status != null}"
-                th:text="${tour.status}"
-                th:class="${tour.status == 'เปิดให้จอง'} ? 'tour-status-badge status-open' : 'tour-status-badge status-closed'"></span>
+
         </div>
         <h1 class="tour-hero-title" th:text="${tour.tourmname}">ชื่อทัวร์</h1>
         <div class="tour-hero-meta">
@@ -238,7 +311,6 @@
             <span th:text="${tour.minSeatstour} + ' – ' + ${tour.maxSeatstour} + ' ที่นั่ง'">2 – 15 ที่นั่ง</span>
           </div>
 
-          <!-- ✅ แก้: ประเภททัวร์ + จำนวนวัน/คืนจริง แทนข้อความ hardcode 'ทัวร์วันเดียว (1 วัน)' -->
           <div class="tour-hero-meta-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
@@ -268,9 +340,6 @@
 <div class="stat-strip">
   <div class="stat-strip-inner">
 
-    <!-- ✅ แก้: ใช้ seatLevel / availableSeats จาก TourService.getAvailableSeats()
-         แทน tour.remainingSeats / tour.full เดิม — สูตรเดียวกับหน้า booking_tour.html
-         และไม่โชว์เลข x/y อีกต่อไป -->
     <div class="stat-strip-item">
       <div class="stat-strip-icon" style="background:#d8f3dc;">
         <svg viewBox="0 0 24 24" fill="none" stroke="#2d7a4f" stroke-width="2">
@@ -290,20 +359,6 @@
       </div>
     </div>
 
-    <div class="stat-strip-item">
-      <div class="stat-strip-icon" style="background:#fef3c7;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#c27b04" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-        </svg>
-      </div>
-      <div>
-        <div class="stat-strip-label">สถานะทัวร์</div>
-        <div class="stat-strip-value"
-     th:text="${tour.status != null} ? ${tour.status} : 'ไม่ระบุ'"
-     th:style="${tour.status == 'เปิดจอง'} ? 'color:var(--green-700)' : 'color:#dc2626'">
-</div>
-      </div>
-    </div>
     <div class="stat-strip-item">
       <div class="stat-strip-icon" style="background:#d8f3dc;">
         <svg viewBox="0 0 24 24" fill="none" stroke="#2d7a4f" stroke-width="2">
@@ -354,7 +409,6 @@
         รายละเอียดทัวร์
       </div>
 
-      <!-- ✅ เพิ่ม: badge ประเภททัวร์ -->
       <div style="margin-bottom:14px;">
         <span style="display:inline-flex;align-items:center;gap:6px;background:#d8f3dc;color:#215c35;
                      font-size:12px;font-weight:700;padding:5px 12px;border-radius:100px;">
@@ -372,6 +426,59 @@
         </svg>
         <span><strong>เงื่อนไข: </strong><span th:text="${tour.conditiontour}">เงื่อนไขการเข้าร่วม</span></span>
       </div>
+    </div>
+
+    <!-- ✅ เพิ่ม: ตารางรอบทัวร์ ตามข้อมูลหลังบ้าน (Tourschedule) -->
+    <div class="detail-card">
+      <div class="detail-card-title">
+        <div class="accent-line"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        ตารางรอบทัวร์ที่เปิดให้จอง
+      </div>
+
+     <div class="tour-schedule-table-wrap" th:if="${schedules != null and !schedules.isEmpty()}">
+  <table class="tour-schedule-table">
+    <thead>
+      <tr>
+        <th>ช่วงวันที่ทัวร์</th>
+        <th>ที่นั่งคงเหลือ</th>
+        <th>สถานะ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="s : ${schedules}"
+          th:with="maxSeats=${tour.maxSeatstour != null ? tour.maxSeatstour : 0},
+                   booked=${bookedSeatsMap != null ? (bookedSeatsMap.get(s.scheduleid) ?: 0) : 0},
+                   avail=${maxSeats - booked > 0 ? maxSeats - booked : 0},
+                   isPast=${s.opendate.toLocalDate().isBefore(T(java.time.LocalDate).now())},
+                   isOpen=${s.status == 'เปิดรับจอง'},
+                   level=${isPast} ? 'past' : (${!isOpen} ? 'closed' : (${avail <= 0} ? 'full' : (${avail <= (maxSeats * 0.2)} ? 'low' : 'open')))">
+        <td>
+          <span th:text="${#dates.format(s.opendate, 'dd/MM/yyyy')}"></span>
+          <span th:if="${s.enddate != null and !s.enddate.equals(s.opendate)}" style="color:#9ca3af;">
+            - <span th:text="${#dates.format(s.enddate, 'dd/MM/yyyy')}"></span>
+          </span>
+        </td>
+        <td th:text="${avail} + ' / ' + ${maxSeats}">-</td>
+        <td>
+          <span class="ts-badge" th:classappend="'ts-' + ${level}"
+                th:text="${level == 'past'} ? 'ผ่านมาแล้ว' :
+                         (${level == 'closed'} ? 'ปิดรับจอง' :
+                         (${level == 'full'} ? 'เต็มแล้ว' :
+                         (${level == 'low'} ? 'ใกล้เต็ม' : 'เปิดรับจอง')))">
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+      <p class="tour-schedule-empty" th:if="${schedules == null or schedules.isEmpty()}">
+        ยังไม่มีรอบทัวร์ที่เปิดให้จองในขณะนี้
+      </p>
     </div>
 
     <div class="detail-card">
@@ -476,22 +583,31 @@
 
         <div class="bk-divider"></div>
 
+        <!-- ✅ แก้: เปลี่ยน input date ธรรมดา เป็นปุ่มเปิดปฏิทิน modal ที่โชว์วันจองได้/ไม่ได้ตามรอบทัวร์จริง -->
         <div class="bk-field">
-  <div class="bk-label">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="3" y="4" width="18" height="18" rx="2"/>
-      <line x1="16" y1="2" x2="16" y2="6"/>
-      <line x1="8" y1="2" x2="8" y2="6"/>
-      <line x1="3" y1="10" x2="21" y2="10"/>
-    </svg>
-    วันที่เดินทาง
-  </div>
-  <input type="date" class="bk-input" id="tourDate"
-         th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
-  <small style="color:#6b7280;font-size:0.8rem;margin-top:4px;display:block;">
-    * กรุณาเลือกวันที่ต้องการเดินทาง
-  </small>
-</div>
+          <div class="bk-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            วันที่เดินทาง
+          </div>
+          <button type="button" class="bk-date-picker-btn" id="openCalendarBtn" onclick="openCalendarModal()">
+            <span id="selectedDateLabel">เลือกวันที่เดินทาง</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </button>
+          <input type="hidden" id="tourDate" value="">
+          <small style="color:#6b7280;font-size:0.8rem;margin-top:4px;display:block;">
+            * ปฏิทินจะแสดงวันที่จองได้ / ไม่ได้ตามรอบทัวร์จริง
+          </small>
+        </div>
 
         <div class="bk-divider"></div>
 
@@ -525,8 +641,6 @@
       <!-- ล็อกอินแล้ว (เฉพาะ Member) -->
 <th:block th:if="${session.loggedInMember != null}">
 
-  <!-- ✅ แก้: ใช้ seatLevel == 'full' แทน tour.full -->
-  <!-- กรณีเต็มแล้ว -->
   <div th:if="${seatLevel == 'full'}"
        class="bk-login-prompt"
        style="background:#fee2e2;border-color:#fca5a5;">
@@ -535,7 +649,6 @@
     </p>
   </div>
 
-  <!-- กรณียังมีที่นั่ง -->
   <button th:if="${seatLevel != 'full'}"
           class="btn-book-now"
           onclick="goToBooking()">
@@ -545,7 +658,6 @@
     จองทัวร์นี้เลย!
   </button>
 
-  <!-- ✅ เพิ่ม: ข้อความเร่งด่วนเมื่อใกล้เต็ม -->
   <div th:if="${seatLevel == 'low'}"
        style="text-align:center;font-size:12px;color:#c27b04;font-weight:700;margin-top:6px;">
     ⚠️ เหลือเพียง <span th:text="${availableSeats}"></span> ที่ — รีบจองด่วน!
@@ -573,6 +685,32 @@
   </div><!-- /booking-sidebar -->
 
 </div><!-- /tour-layout -->
+
+<!-- ══════════════════════════════════════════
+     CALENDAR MODAL (เพิ่มใหม่) — เลือกวันเดินทาง พร้อมสถานะที่นั่งของแต่ละวัน
+══════════════════════════════════════════ -->
+<div class="cal-modal-overlay" id="calendarModalOverlay" onclick="if(event.target===this) closeCalendarModal()">
+  <div class="cal-modal">
+    <div class="cal-modal-header">
+      <div class="cal-modal-title" id="calendarMonthLabel">-</div>
+      <div class="cal-nav-group">
+        <button type="button" class="cal-nav-btn" onclick="changeCalendarMonth(-1)">‹</button>
+        <button type="button" class="cal-nav-btn" onclick="changeCalendarMonth(1)">›</button>
+        <button type="button" class="cal-close-btn" onclick="closeCalendarModal()">&times;</button>
+      </div>
+    </div>
+    <div class="cal-legend">
+      <span class="cal-legend-item"><i class="cal-dot dot-green"></i>ว่าง</span>
+      <span class="cal-legend-item"><i class="cal-dot dot-amber"></i>ใกล้เต็ม</span>
+      <span class="cal-legend-item"><i class="cal-dot dot-red"></i>เต็ม/ปิด</span>
+      <span class="cal-legend-item"><i class="cal-dot dot-gray"></i>ไม่มีรอบ</span>
+    </div>
+    <div class="cal-weekdays">
+      <span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span>
+    </div>
+    <div class="cal-grid" id="calendarGrid"></div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════════
      FOOTER
@@ -619,6 +757,13 @@
   </div>
 </footer>
 
+<!-- ✅ เพิ่ม: ข้อมูลรอบทัวร์ (ต่อวัน) จากฝั่งเซิร์ฟเวอร์ สำหรับวาดปฏิทิน -->
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  var scheduleCalendarData = /*[[${scheduleCalendarJson}]]*/ [];
+  /*]]>*/
+</script>
+
 <script>
   function toggleUserMenu() {
     const w = document.getElementById('userMenuWrapper');
@@ -628,6 +773,93 @@
     const w = document.getElementById('userMenuWrapper');
     if (w && !w.contains(e.target)) w.classList.remove('open');
   });
+
+  // ✅ เพิ่ม: ปฏิทินเลือกวันเดินทาง — โชว์สถานะจริงของแต่ละวันจากรอบทัวร์ (Tourschedule)
+  var scheduleByDate = {};
+  (scheduleCalendarData || []).forEach(function (item) {
+    scheduleByDate[item.date] = item;
+  });
+
+  var calendarCursor = new Date();
+  calendarCursor.setDate(1);
+  var selectedDate = null;
+
+  var THAI_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+  function toISO(y, m, d) { return y + '-' + pad2(m + 1) + '-' + pad2(d); }
+
+  function openCalendarModal() {
+    document.getElementById('calendarModalOverlay').classList.add('open');
+    renderCalendar();
+  }
+  function closeCalendarModal() {
+    document.getElementById('calendarModalOverlay').classList.remove('open');
+  }
+  function changeCalendarMonth(delta) {
+    calendarCursor.setMonth(calendarCursor.getMonth() + delta);
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    var y = calendarCursor.getFullYear(), m = calendarCursor.getMonth();
+    document.getElementById('calendarMonthLabel').textContent = THAI_MONTHS[m] + ' ' + (y + 543);
+    var grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+
+    var firstDay = new Date(y, m, 1).getDay();
+    var daysInMonth = new Date(y, m + 1, 0).getDate();
+
+    for (var i = 0; i < firstDay; i++) {
+      var empty = document.createElement('div');
+      empty.className = 'cal-day empty';
+      grid.appendChild(empty);
+    }
+
+    for (var d = 1; d <= daysInMonth; d++) {
+      var iso = toISO(y, m, d);
+      var info = scheduleByDate[iso];
+      var status = info ? info.status : 'none';
+
+      var cell = document.createElement('div');
+      cell.className = 'cal-day st-' + status;
+      if (selectedDate === iso) cell.classList.add('selected');
+
+      var num = document.createElement('div');
+      num.className = 'dnum';
+      num.textContent = d;
+      cell.appendChild(num);
+
+      if (info && (status === 'available' || status === 'low')) {
+        var seats = document.createElement('div');
+        seats.className = 'dseats';
+        seats.textContent = info.availableSeats + ' ที่';
+        cell.appendChild(seats);
+        cell.addEventListener('click', (function (dateVal) {
+          return function () { selectScheduleDate(dateVal); };
+        })(iso));
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  // ✅ เพิ่ม: ใช้ร่วมกันทั้งจากปฏิทิน modal และจากตารางรอบทัวร์
+  function selectScheduleDate(iso) {
+    var info = scheduleByDate[iso];
+    if (!info || (info.status !== 'available' && info.status !== 'low')) {
+      alert('วันที่นี้ไม่สามารถจองได้');
+      return;
+    }
+    selectedDate = iso;
+    document.getElementById('tourDate').value = iso;
+
+    var parts = iso.split('-');
+    var label = parts[2] + '/' + parts[1] + '/' + (parseInt(parts[0], 10) + 543);
+    document.getElementById('selectedDateLabel').textContent = label + ' (' + info.availableSeats + ' ที่นั่งว่าง)';
+    document.getElementById('openCalendarBtn').classList.add('has-date');
+    closeCalendarModal();
+  }
 
   function goToBooking() {
     const date = document.getElementById('tourDate').value;

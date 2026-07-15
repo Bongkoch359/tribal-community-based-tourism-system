@@ -11,6 +11,9 @@ public class Guest {
     private String firstname;
 	 @Column(length = 100)
     private String lastname;
+	
+	 @Column(name = "idcard_number", length = 20)
+	private String idcardnumber;   // required เฉพาะตอน booking.hasInsurance = true
     
     @ManyToOne
     @JoinColumn(name="bookingid")
@@ -43,5 +46,10 @@ public class Guest {
 		this.booking = booking;
 	}
 	
-
+	public String getIdcardnumber() {
+		return idcardnumber;
+	}
+	 public void setIdcardnumber(String idcardnumber) {
+		 this.idcardnumber = idcardnumber;
+	 }
 }

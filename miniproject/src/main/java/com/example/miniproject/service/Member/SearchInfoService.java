@@ -53,8 +53,7 @@ public List<Activitypost> searchActivity(String keyword) {
         return new ArrayList<>();
     }
 }
-
-  public List<Tour> searchTour(String keyword, Integer numGuest,
+public List<Tour> searchTour(String keyword, Integer numGuest,
                               String startDate, String endDate,
                               String tourTypeId) {
     try {
@@ -70,6 +69,7 @@ public List<Activitypost> searchActivity(String keyword) {
         return tourRepository.search(kw, numGuest, tt);
 
     } catch (Exception e) {
+        e.printStackTrace(); // ← เพิ่มบรรทัดนี้ชั่วคราว จะได้เห็น error จริงใน console
         return new ArrayList<>();
     }
 }
