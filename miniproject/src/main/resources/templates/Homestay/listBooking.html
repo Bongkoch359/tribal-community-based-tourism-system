@@ -136,7 +136,6 @@
         font-weight: 600; color: #0d3d30; border-bottom: 2px solid #a8ddd0;
         white-space: nowrap;
     }
-    thead th:last-child { text-align: center; }
     tbody td {
         padding: 16px; vertical-align: middle;
         border-top: 1px solid #f0ede5; font-size: .9rem; color: #0d2e24;
@@ -189,69 +188,16 @@
         gap: 5px; text-decoration: none; transition: background .2s; white-space: nowrap;
     }
     .btn-view:hover { background: #1a6b52; color: #fff; }
-    .btn-confirm {
-        background: #1a6b52; color: #fff; border: none; border-radius: 7px;
-        padding: 6px 14px; font-family: 'Sarabun', sans-serif; font-size: .85rem;
-        font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;
-        gap: 5px; transition: background .2s; white-space: nowrap;
-    }
-    .btn-confirm:hover { background: #0d3d30; }
-    .btn-cancel-booking {
-        background: #fff0f0; color: #c0392b; border: 1.5px solid #f5c6cb;
-        border-radius: 7px; padding: 6px 12px; font-family: 'Sarabun', sans-serif;
-        font-size: .85rem; font-weight: 600; cursor: pointer; display: inline-flex;
-        align-items: center; gap: 5px; transition: all .2s; white-space: nowrap;
-    }
-    .btn-cancel-booking:hover { background: #fde8e8; border-color: #e07070; }
 
     /* ─── EMPTY STATE ─── */
     .empty-state { text-align: center; padding: 60px 20px; color: #aaa; }
     .empty-state i { font-size: 2.8rem; margin-bottom: 12px; display: block; }
     .empty-state p { font-size: 1rem; }
 
-    /* ─── TOAST ─── */
-    .toast {
-        position: fixed; bottom: 28px; right: 28px; z-index: 9999;
-        background: #0d3d30; color: #fff; padding: 14px 22px;
-        border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,.2);
-        font-size: .95rem; font-weight: 500; display: flex; align-items: center; gap: 10px;
-        transform: translateY(80px); opacity: 0; transition: all .35s ease;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.error { background: #a93226; }
-
-    /* ─── MODAL ─── */
-    .modal-overlay {
-        display: none; position: fixed; inset: 0;
-        background: rgba(0,0,0,.45); z-index: 2000;
-        align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-        background: #fff; border-radius: 16px; padding: 32px;
-        max-width: 420px; width: 90%; box-shadow: 0 8px 40px rgba(0,0,0,.2);
-    }
-    .modal-box h3 { font-size: 1.15rem; font-weight: 700; color: #0d3d30; margin-bottom: 12px; }
-    .modal-box p  { font-size: .95rem; color: #555; margin-bottom: 24px; line-height: 1.6; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-    .btn-modal-cancel {
-        background: #f0f0f0; color: #444; border: none; border-radius: 8px;
-        padding: 9px 20px; font-family: 'Sarabun', sans-serif;
-        font-size: .9rem; font-weight: 600; cursor: pointer;
-    }
-    .btn-modal-cancel:hover { background: #e0e0e0; }
-    .btn-modal-confirm-green {
-        background: #1a6b52; color: #fff; border: none; border-radius: 8px;
-        padding: 9px 20px; font-family: 'Sarabun', sans-serif;
-        font-size: .9rem; font-weight: 600; cursor: pointer;
-    }
-    .btn-modal-confirm-green:hover { background: #0d3d30; }
-    .btn-modal-confirm-red {
-        background: #c0392b; color: #fff; border: none; border-radius: 8px;
-        padding: 9px 20px; font-family: 'Sarabun', sans-serif;
-        font-size: .9rem; font-weight: 600; cursor: pointer;
-    }
-    .btn-modal-confirm-red:hover { background: #a93226; }
+    /* ─── NO RESULTS (client-side filter) ─── */
+    .no-filter-results { display: none; text-align: center; padding: 60px 20px; color: #aaa; }
+    .no-filter-results i { font-size: 2.8rem; margin-bottom: 12px; display: block; }
+    .no-filter-results p { font-size: 1rem; }
 
     /* ─── FOOTER ─── */
     .footer { margin-top: auto; padding: 1rem 2rem; background: #0d3d30; color: #c8f0e4; font-size: .9rem; }
@@ -319,37 +265,23 @@
         </select>
     </div>
 
-    <!-- Stat Strip / Filter Tabs -->
+    <!-- Stat Strip / Filter Tabs (client-side filter, no page reload) -->
     <div class="stat-strip">
-        <a class="stat-pill"
-           th:classappend="${activeStatus == ''} ? ' active' : ''"
-           th:href="@{/owner/bookings(homestayid=${homestayid})}">
-            <div>
-                <div class="pill-label">ทั้งหมด</div>
-                <div class="pill-count" th:text="${countAll}">0</div>
-            </div>
-        </a>
-        <a class="stat-pill pill-waiting"
-           th:classappend="${activeStatus == 'WAITING_APPROVAL'} ? ' active' : ''"
-           th:href="@{/owner/bookings(homestayid=${homestayid}, status='WAITING_APPROVAL')}">
+        <a class="stat-pill pill-waiting" href="javascript:void(0)" onclick="filterBookings('WAITING_APPROVAL', this)">
             <i class="fas fa-clock" style="color:#e07b00;font-size:1.1rem;"></i>
             <div>
                 <div class="pill-label">รอตรวจสอบ</div>
                 <div class="pill-count" th:text="${countWaiting}">0</div>
             </div>
         </a>
-        <a class="stat-pill pill-confirmed"
-           th:classappend="${activeStatus == 'CONFIRMED'} ? ' active' : ''"
-           th:href="@{/owner/bookings(homestayid=${homestayid}, status='CONFIRMED')}">
+        <a class="stat-pill pill-confirmed" href="javascript:void(0)" onclick="filterBookings('CONFIRMED', this)">
             <i class="fas fa-circle-check" style="color:#1a6b52;font-size:1.1rem;"></i>
             <div>
                 <div class="pill-label">ยืนยันแล้ว</div>
                 <div class="pill-count" th:text="${countConfirmed}">0</div>
             </div>
         </a>
-        <a class="stat-pill pill-cancel"
-           th:classappend="${activeStatus == 'CANCEL'} ? ' active' : ''"
-           th:href="@{/owner/bookings(homestayid=${homestayid}, status='CANCEL')}">
+        <a class="stat-pill pill-cancel" href="javascript:void(0)" onclick="filterBookings('CANCEL', this)">
             <i class="fas fa-circle-xmark" style="color:#c0392b;font-size:1.1rem;"></i>
             <div>
                 <div class="pill-label">ยกเลิก</div>
@@ -372,9 +304,9 @@
                     <th style="text-align:center;">จัดการ</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="bookingsTbody">
 
-                <!-- Empty -->
+                <!-- Empty (no data at all from server) -->
                 <tr th:if="${#lists.isEmpty(bookings)}">
                     <td colspan="7">
                         <div class="empty-state">
@@ -385,7 +317,8 @@
                 </tr>
 
                 <!-- Rows -->
-                <tr th:each="b : ${bookings}">
+                <tr th:each="b : ${bookings}"
+                    th:attr="data-status=${b['bookingStatus']}">
                     <!-- Booking ID -->
                     <td style="font-family:monospace;font-size:.85rem;color:#666;"
                         th:text="${b['bookingid']}">BK001</td>
@@ -436,61 +369,25 @@
                     <!-- จัดการ -->
                     <td>
                         <div class="btn-actions">
-                            <!-- ดูรายละเอียด -->
                             <a class="btn-view"
                                th:href="@{/owner/bookings/detail(bookingid=${b['bookingid']})}">
                                 <i class="fas fa-eye"></i> ดูรายละเอียด
                             </a>
-                            <!-- ยืนยัน (แสดงเฉพาะ WAITING_APPROVAL) -->
-                            <button th:if="${b['bookingStatus'] == 'WAITING_APPROVAL'}"
-                                    class="btn-confirm"
-                                    th:onclick="'openConfirmModal(\'' + ${b['bookingid']} + '\')'">
-                                <i class="fas fa-check"></i> ยืนยัน
-                            </button>
-                            <!-- ยกเลิก (แสดงเฉพาะ PENDING หรือ WAITING_APPROVAL) -->
-                            <button th:if="${b['bookingStatus'] == 'PENDING' or b['bookingStatus'] == 'WAITING_APPROVAL'}"
-                                    class="btn-cancel-booking"
-                                    th:onclick="'openCancelModal(\'' + ${b['bookingid']} + '\')'">
-                                <i class="fas fa-xmark"></i>
-                            </button>
                         </div>
                     </td>
                 </tr>
 
             </tbody>
         </table>
-    </div>
 
-</div>
-
-<!-- ─── MODAL: ยืนยันการจอง ─── -->
-<div class="modal-overlay" id="confirmModal">
-    <div class="modal-box">
-        <h3><i class="fas fa-circle-check" style="color:#1a6b52;"></i> ยืนยันการจอง</h3>
-        <p>คุณต้องการ <strong>ยืนยัน</strong> การจองนี้ใช่หรือไม่?<br>
-           เมื่อยืนยันแล้วสถานะจะเปลี่ยนเป็น <strong>"ยืนยันแล้ว"</strong></p>
-        <div class="modal-actions">
-            <button class="btn-modal-cancel"         onclick="closeModal('confirmModal')">ยกเลิก</button>
-            <button class="btn-modal-confirm-green"  onclick="doConfirm()"><i class="fas fa-check"></i> ยืนยัน</button>
+        <!-- shown by JS when a filter has zero matching rows -->
+        <div class="no-filter-results" id="noFilterResults">
+            <i class="fas fa-calendar-xmark"></i>
+            <p>ไม่พบรายการที่ตรงกับสถานะที่เลือก</p>
         </div>
     </div>
-</div>
 
-<!-- ─── MODAL: ยกเลิกการจอง ─── -->
-<div class="modal-overlay" id="cancelModal">
-    <div class="modal-box">
-        <h3><i class="fas fa-circle-xmark" style="color:#c0392b;"></i> ยกเลิกการจอง</h3>
-        <p>คุณต้องการ <strong>ยกเลิก</strong> การจองนี้ใช่หรือไม่?<br>
-           การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
-        <div class="modal-actions">
-            <button class="btn-modal-cancel"        onclick="closeModal('cancelModal')">ปิด</button>
-            <button class="btn-modal-confirm-red"   onclick="doCancel()"><i class="fas fa-xmark"></i> ยืนยันการยกเลิก</button>
-        </div>
-    </div>
 </div>
-
-<!-- ─── TOAST ─── -->
-<div class="toast" id="toast"></div>
 
 <!-- ─── FOOTER ─── -->
 <footer class="footer">
@@ -504,6 +401,36 @@
     const HOMESTAY_ID = /*[[${homestayid}]]*/ 0;
 
     let pendingBookingId = null;
+    let currentFilter = null; // null = แสดงทั้งหมด
+
+    // ── Status filter (client-side, ไม่ reload หน้า) ──────
+    function filterBookings(status, el) {
+        const rows  = document.querySelectorAll('#bookingsTbody tr[data-status]');
+        const pills = document.querySelectorAll('.stat-pill');
+        const noResults = document.getElementById('noFilterResults');
+
+        // กดสถานะเดิมซ้ำ = ยกเลิกฟิลเตอร์ กลับไปแสดงทั้งหมด
+        if (currentFilter === status) {
+            currentFilter = null;
+            pills.forEach(p => p.classList.remove('active'));
+            rows.forEach(r => r.style.display = '');
+            noResults.style.display = 'none';
+            return;
+        }
+
+        currentFilter = status;
+        pills.forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
+
+        let visibleCount = 0;
+        rows.forEach(r => {
+            const match = r.dataset.status === status;
+            r.style.display = match ? '' : 'none';
+            if (match) visibleCount++;
+        });
+
+        noResults.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
+    }
 
     // ── Modal helpers ──────────────────────────────────────
     function openConfirmModal(bookingId) {
@@ -559,6 +486,30 @@
         el.addEventListener('click', e => {
             if (e.target === el) el.classList.remove('open');
         });
+    });
+
+    // ── Default filter on page load ─────────────────────────
+    // เปิดหน้ามาให้ขึ้น "รอตรวจสอบ" ก่อนเสมอ ถ้าไม่มีรายการรอตรวจสอบ
+    // ให้ไปแสดงสถานะแรกที่มีข้อมูลอยู่แทน (ยืนยันแล้ว > ยกเลิก)
+    document.addEventListener('DOMContentLoaded', () => {
+        const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
+        if (rows.length === 0) return; // ไม่มีข้อมูลเลย ไม่ต้องทำอะไร
+
+        const priorityOrder = ['WAITING_APPROVAL', 'CONFIRMED', 'CANCEL'];
+        const pillMap = {
+            'WAITING_APPROVAL': document.querySelector('.stat-pill.pill-waiting'),
+            'CONFIRMED':        document.querySelector('.stat-pill.pill-confirmed'),
+            'CANCEL':           document.querySelector('.stat-pill.pill-cancel')
+        };
+
+        for (const status of priorityOrder) {
+            const hasAny = Array.from(rows).some(r => r.dataset.status === status);
+            if (hasAny) {
+                // currentFilter ยังเป็น null ตอนนี้ filterBookings จะ apply ให้เลย
+                filterBookings(status, pillMap[status]);
+                break;
+            }
+        }
     });
 </script>
 

@@ -38,7 +38,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 
 
 @Query("""
-    SELECT b FROM Booking b
+    SELECT DISTINCT b FROM Booking b
     LEFT JOIN FETCH b.member
     LEFT JOIN FETCH b.roomDetails rd
     LEFT JOIN FETCH rd.roomtype rt
@@ -56,13 +56,6 @@ Optional<Booking> findByIdWithDetails(@Param("id") String id);
 long countByRoomHomestayIdAndStatus(
     @Param("homestayId") Integer homestayId,
     @Param("status") BookingStatus status);
-
-    // // นับจำนวนการจองเฉพาะของ manager
-    // long countByCommunitymanager_Managerid(String managerid);
-
-    // // ดึงการจอง 5 รายการล่าสุดเฉพาะของ manager
-    // @Query("SELECT b FROM Booking b WHERE b.communitymanager.managerid = :managerId ORDER BY b.bookingdate DESC")
-    // List<Booking> findTopByManager(@Param("managerId") String managerId, Pageable pageable);
  
  
     /** รายได้รวมของ homestay (เฉพาะ CONFIRMED) */

@@ -734,7 +734,7 @@
             <span th:text="${successMessage}"></span>
         </div>
 
-        <!-- Filter Tabs by Status (คำนวณจากสถานะรอบทัวร์ ไม่ใช่สถานะทัวร์โดยตรงแล้ว) -->
+        <!-- Filter Tabs by Status (คำนวณจากสถานะรอบทัวร์ ) -->
         <div class="filter-tabs">
             <button class="tab-btn active" onclick="filterTours('เปิดรับจอง', this)" id="tab-open">
                 🟢 เปิดรับจอง
@@ -745,9 +745,9 @@
             <button class="tab-btn" onclick="filterTours('ปิด', this)" id="tab-closed">
                 🔴 ปิด
             </button>
-            <button class="tab-btn" onclick="filterTours('ยังไม่เปิดรอบ', this)" id="tab-none">
+            <!-- <button class="tab-btn" onclick="filterTours('ยังไม่เปิดรอบ', this)" id="tab-none">
                 ⚪ ยังไม่เปิดรอบ
-            </button>
+            </button> -->
         </div>
 
         <!-- Table -->

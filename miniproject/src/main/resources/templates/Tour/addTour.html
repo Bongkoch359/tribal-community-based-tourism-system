@@ -378,6 +378,77 @@
             display: block;
         }
 
+        /* ─── SCHEDULE (รอบทัวร์) PREVIEW ─── */
+        .schedule-preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 14px;
+        }
+
+        .schedule-preview-table th {
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 10px;
+            letter-spacing: .04em;
+        }
+
+        .schedule-preview-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .schedule-preview-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .schedule-del-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--red);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .schedule-del-btn:hover {
+            background: #fdecea;
+        }
+
+        .schedule-empty-note {
+            font-size: 12px;
+            color: var(--text-hint);
+            margin-top: 12px;
+        }
+
+        .schedule-status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .schedule-status-badge.st-open {
+            background: var(--green-light);
+            color: var(--green-dark);
+        }
+
+        .schedule-status-badge.st-closed {
+            background: #f0f0f0;
+            color: var(--text-muted);
+        }
+
         /* ─── MULTI-IMAGE UPLOAD ─── */
         .img-upload-zone {
             border: 2px dashed var(--border);
@@ -818,6 +889,44 @@
             }
         }
 
+        /* ─── MODE TOGGLE (เพิ่มทีละรอบ / เพิ่มทั้งช่วง) ─── */
+        .mode-toggle-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .mode-toggle-btn {
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 600;
+            padding: 8px 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .mode-toggle-btn.active {
+            background: var(--green-dark);
+            color: #fff;
+        }
+
+        .mode-toggle-btn:not(.active) {
+            background: #e9e9e6;
+            color: #555;
+        }
+
+        .range-hint {
+            font-size: 12px;
+            color: var(--text-hint);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
         @media (max-width: 860px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -934,7 +1043,7 @@
                             </select>
                             <div class="field-error" id="err-tourtype">กรุณาเลือกประเภททัวร์</div>
                         </div>
-                       
+
 
                     </div>
 
@@ -1005,7 +1114,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- ── การ์ด 3: ราคาทัวร์ ── -->
                 <div class="card">
                     <div class="card-title">ราคาทัวร์ (TOURPRICE)</div>
@@ -1033,6 +1141,102 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ── การ์ด: รอบทัวร์ (วันที่เปิดทัวร์) ── -->
+                <div class="card">
+                    <div class="card-title">รอบทัวร์ (วันที่เปิดทัวร์) <span class="req">*</span></div>
+                    <div style="font-size:12px;color:var(--text-hint);margin-bottom:14px;">
+                        เพิ่มอย่างน้อย 1 รอบ เพื่อให้นักท่องเที่ยวเห็นวันที่เปิดจองได้ทันทีหลังบันทึกทัวร์
+                    </div>
+
+                    <!-- ── สลับโหมด: เพิ่มทีละรอบ / เพิ่มทั้งช่วง (เปิดทุกวัน) ── -->
+                    <div class="mode-toggle-row">
+                        <button type="button" class="mode-toggle-btn active" id="modeSingleBtn">
+                            <i class="fas fa-calendar-day"></i> เพิ่มรอบทัวร์
+                        </button>
+                        <button type="button" class="mode-toggle-btn" id="modeRangeBtn">
+                            <i class="fas fa-calendar-week"></i> เปิดทุกวัน
+                        </button>
+                    </div>
+
+                    <!-- ── โหมด 1: เพิ่มทีละรอบ ── -->
+                    <div id="singleAddMode">
+                         <div class="range-hint">
+                           กำหนดรอบเดินทางเป็นช่วงวัน เช่น 10 ก.ค. - 11 ก.ค
+                         
+                        </div>
+                        <div class="form-row" style="align-items:flex-end; grid-template-columns:1fr 1fr 150px;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">วันที่เริ่ม</label>
+                                <input class="form-control" type="date" id="scheduleOpenDate">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">วันที่สิ้นสุด</label>
+                                <input class="form-control" type="date" id="scheduleEndDate">
+                                <small id="scheduleEndHint" style="color:#888; display:none;">ทัวร์รายวัน:
+                                    วันที่สิ้นสุดจะเท่ากับวันที่เริ่มโดยอัตโนมัติ</small>
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">สถานะ</label>
+                                <select class="form-control" id="scheduleStatus">
+                                    <option value="เปิดรับจอง" selected>เปิดรับจอง</option>
+                                    <option value="ปิด">ปิด</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button" class="upload-btn-label" id="addScheduleBtn" style="border:none;">
+                            <i class="fas fa-plus"></i> เพิ่มรอบทัวร์
+                        </button>
+                    </div>
+
+                    <!-- ── โหมด 2: เพิ่มทั้งช่วง (เปิดทุกวัน) ── -->
+                    <div id="rangeAddMode" style="display:none;">
+                        <div class="range-hint">
+                            ระบุช่วงวันที่ที่ต้องการเปิดให้จองได้ทุกวัน ระบบจะสร้างรอบทัวร์ให้อัตโนมัติทีละวันตลอดทั้งช่วง
+                         
+                        </div>
+                        <div class="form-row" style="align-items:flex-end; grid-template-columns:1fr 1fr 150px;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">วันที่เริ่ม</label>
+                                <input class="form-control" type="date" id="rangeStartDate">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">วันที่สิ้นสุด</label>
+                                <input class="form-control" type="date" id="rangeEndDate">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">สถานะ</label>
+                                <select class="form-control" id="rangeStatus">
+                                    <option value="เปิดรับจอง" selected>เปิดรับจอง</option>
+                                    <option value="ปิด">ปิด</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button" class="upload-btn-label" id="addScheduleRangeBtn" style="border:none;">
+                               <i class="fas fa-plus"></i> เพิ่มรอบทัวร์
+                        </button>
+                    </div>
+
+                    <div class="field-error" id="err-schedules">กรุณาเพิ่มอย่างน้อย 1 รอบทัวร์ (วันที่เปิดทัวร์)</div>
+
+                    <table class="schedule-preview-table" id="scheduleTable" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th>ช่วงวันที่ทัวร์</th>
+                                <th style="width:110px;">สถานะ</th>
+                                <th style="width:60px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTableBody"></tbody>
+                    </table>
+                    <p class="schedule-empty-note" id="scheduleEmptyNote">ยังไม่มีรอบทัวร์ที่เพิ่ม</p>
+
+                    <input type="hidden" name="schedules" id="schedulesInput" />
+                </div>
+
+
 
                 <!-- ── การ์ด 2: รูปภาพ (ย้ายมาก่อนราคา) ── -->
                 <div class="card">
@@ -1075,324 +1279,7 @@
         </form>
     </div>
 
-    <script>
-        /* ═══════════════════════════════════════════
-    MULTI-IMAGE UPLOAD
- ═══════════════════════════════════════════ */
-        const MAX_IMAGES = 5;
-        let imageDataList = []; // [{base64, name}]
-        let primaryIndex = 0;
-
-        const fileInput = document.getElementById('fileInput');
-        const imgGrid = document.getElementById('imgGrid');
-        const imgCountNote = document.getElementById('imgCountNote');
-        const imagesInput = document.getElementById('imagesInput');
-        const uploadZone = document.getElementById('uploadZone');
-
-        fileInput.addEventListener('change', function () {
-            addFiles(Array.from(this.files));
-            this.value = '';
-        });
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            uploadZone.classList.add('drag-over');
-        }
-        function handleDragLeave(e) {
-            uploadZone.classList.remove('drag-over');
-        }
-        function handleDrop(e) {
-            e.preventDefault();
-            uploadZone.classList.remove('drag-over');
-            addFiles(Array.from(e.dataTransfer.files));
-        }
-
-        function addFiles(files) {
-            const allowed = MAX_IMAGES - imageDataList.length;
-            files = files.slice(0, allowed);
-            let loaded = 0;
-            if (files.length === 0) return;
-            files.forEach(file => {
-                if (!file.type.match(/^image\/(jpeg|png|webp)$/)) return;
-                const reader = new FileReader();
-                reader.onload = e => {
-                    imageDataList.push({ base64: e.target.result, name: file.name });
-                    loaded++;
-                    if (loaded === files.length) renderGrid();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function renderGrid() {
-            imgGrid.innerHTML = '';
-            imageDataList.forEach((img, i) => {
-                const thumb = document.createElement('div');
-                thumb.className = 'img-thumb' + (i === primaryIndex ? ' primary' : '');
-                thumb.innerHTML = `
-    <img src="${img.base64}" alt="${img.name}"/>
-    <div class="thumb-overlay">
-        <button type="button" class="thumb-btn star-btn" onclick="setPrimary(${i})" title="ตั้งเป็นรูปหลัก">
-            <i class="fas fa-star"></i>
-        </button>
-        <button type="button" class="thumb-btn del-btn" onclick="removeImage(${i})" title="ลบรูป">
-            <i class="fas fa-trash"></i>
-        </button>
-    </div>
-    ${i === primaryIndex ? '<div class="primary-badge">หลัก</div>' : ''}
-`;
-                imgGrid.appendChild(thumb);
-            });
-
-            // update count note
-            if (imageDataList.length > 0) {
-                imgCountNote.style.display = 'block';
-                imgCountNote.textContent = `เลือกแล้ว ${imageDataList.length}/${MAX_IMAGES} รูป · คลิก ⭐ เพื่อตั้งรูปหลัก`;
-            } else {
-                imgCountNote.style.display = 'none';
-            }
-
-            // pack to JSON for hidden input (primary first)
-            const ordered = imageDataList.map((img, i) => ({ base64: img.base64, primary: i === primaryIndex }));
-            imagesInput.value = JSON.stringify(ordered);
-        }
-
-        function setPrimary(index) {
-            primaryIndex = index;
-            renderGrid();
-        }
-
-        function removeImage(index) {
-            imageDataList.splice(index, 1);
-            if (primaryIndex >= imageDataList.length) primaryIndex = 0;
-            renderGrid();
-        }
-
-        /* ═══════════════════════════════════════════
-           TOUR TYPE → DAYS/NIGHTS
-           - "ทัวร์รายวัน" เท่านั้น → numberOfDays ล็อก = 1, numberOfNights ล็อก = 0
-           - ประเภทอื่นๆ ทั้งหมด (ทัวร์วัฒนธรรมชนเผ่า / ทัวร์วิถีชีวิต / อื่นๆ) → ปลดล็อกให้ผู้ใช้กรอกวัน/คืนเอง
-             ไม่มีการเติมค่าแนะนำให้ล่วงหน้า
-        ═══════════════════════════════════════════ */
-        const tourtypeSelect = document.getElementById('tourtypeSelect');
-        const daysInput = document.getElementById('numberOfDays');
-        const nightsInput = document.getElementById('numberOfNights');
-        const customTypeGroup = document.getElementById('customTypeGroup');
-        const tourtypeCustom = document.getElementById('tourtypeCustom');
-
-        function applyTourTypeRules() {
-            const type = tourtypeSelect.value;
-
-            if (type === 'ทัวร์รายวัน') {
-                customTypeGroup.style.display = 'none';
-                daysInput.readOnly = true;
-                nightsInput.readOnly = true;
-                daysInput.value = 1;
-                nightsInput.value = 0;
-            } else if (type === '') {
-                customTypeGroup.style.display = 'none';
-                daysInput.readOnly = false;
-                nightsInput.readOnly = false;
-            } else {
-                // ทุกประเภทที่ไม่ใช่ทัวร์รายวัน (รวม __custom__) → ให้ผู้ใช้กรอกวัน/คืนเอง
-                customTypeGroup.style.display = (type === '__custom__') ? 'block' : 'none';
-                daysInput.readOnly = false;
-                nightsInput.readOnly = false;
-                // ถ้าค่าเดิมตกค้างมาจากโหมดทัวร์รายวัน (1/0) ให้เคลียร์เพื่อบังคับกรอกใหม่
-                if (parseInt(daysInput.value) === 1 && parseInt(nightsInput.value) === 0) {
-                    daysInput.value = '';
-                    nightsInput.value = '';
-                }
-            }
-            clearErr('numberOfDays', 'err-numberOfDays');
-            clearErr('tourtypeSelect', 'err-tourtype');
-            clearErr('tourtypeCustom', 'err-tourtypeCustom');
-        }
-
-        tourtypeSelect.addEventListener('change', applyTourTypeRules);
-        tourtypeCustom.addEventListener('input', () => clearErr('tourtypeCustom', 'err-tourtypeCustom'));
-
-        // เผื่อมีค่าเดิมติดมาจาก server (เช่น validation error แล้ว reload หน้าเดิม / โหมดแก้ไข)
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedType = /*[[${tour?.tourtype?.typename}]]*/ '';
-            if (savedType) {
-                const KNOWN_TYPES = ['ทัวร์รายวัน', 'ทัวร์วัฒนธรรมชนเผ่า', 'ทัวร์วิถีชีวิต'];
-                if (KNOWN_TYPES.includes(savedType)) {
-                    tourtypeSelect.value = savedType;
-                } else {
-                    tourtypeSelect.value = '__custom__';
-                    tourtypeCustom.value = savedType;
-                }
-                const d = parseInt(daysInput.value);
-                const n = parseInt(nightsInput.value);
-                applyTourTypeRules();
-                // คืนค่าวัน/คืนเดิมจาก DB ทับค่าที่ถูกเคลียร์ไปตอน applyTourTypeRules
-                if (!isNaN(d)) daysInput.value = d;
-                if (!isNaN(n)) nightsInput.value = n;
-            }
-        });
-
-        // ตรวจ "จำนวนคืนต้องน้อยกว่าจำนวนวัน" แบบ real-time ตอนผู้ใช้พิมพ์ (เฉพาะโหมดที่แก้ไขได้)
-        nightsInput.addEventListener('input', () => {
-            if (tourtypeSelect.value === 'ทัวร์รายวัน') return;
-            const d = parseInt(daysInput.value);
-            const n = parseInt(nightsInput.value);
-            if (!isNaN(d) && !isNaN(n) && n >= d) {
-                showErr('numberOfDays', 'err-numberOfDays', 'จำนวนคืนต้องน้อยกว่าจำนวนวัน');
-            } else {
-                clearErr('numberOfDays', 'err-numberOfDays');
-            }
-        });
-        daysInput.addEventListener('input', () => {
-            if (tourtypeSelect.value === 'ทัวร์รายวัน') return;
-            clearErr('numberOfDays', 'err-numberOfDays');
-        });
-
-        /* ═══════════════════════════════════════════
-           VALIDATION
-        ═══════════════════════════════════════════ */
-        const REQUIRED = [
-            { id: 'tourmname', errId: 'err-tourmname', msg: 'กรุณากรอกชื่อทัวร์' },
-            { id: 'tourtypeSelect', errId: 'err-tourtype', msg: 'กรุณาเลือกประเภททัวร์' },
-            { id: 'tourdetail', errId: 'err-tourdetail', msg: 'กรุณากรอกรายละเอียดทัวร์' },
-            { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งขั้นต่ำ' },
-            { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งสูงสุด' },
-            { id: 'adultprice', errId: 'err-adultprice', msg: 'กรุณาระบุราคาผู้ใหญ่' },
-            { id: 'childprice', errId: 'err-childprice', msg: 'กรุณาระบุราคาเด็ก' },
-        ];
-
-        REQUIRED.forEach(f => {
-            const el = document.getElementById(f.id);
-            if (!el) return;
-            const evt = el.tagName === 'SELECT' ? 'change' : 'input';
-            el.addEventListener(evt, () => clearErr(f.id, f.errId));
-        });
-
-        function showErr(id, errId, msg) {
-            document.getElementById(id)?.classList.add('error');
-            const err = document.getElementById(errId);
-            if (err) { err.textContent = msg; err.classList.add('show'); }
-        }
-        function clearErr(id, errId) {
-            document.getElementById(id)?.classList.remove('error');
-            document.getElementById(errId)?.classList.remove('show');
-        }
-
-        /* ═══════════════════════════════════════════
-           SUCCESS MODAL + COUNTDOWN + REDIRECT
-           ✅ แก้ไข: รับ redirectUrl จริงจาก server มาใช้ตอน redirect
-                     แทนที่จะ hardcode ไปหน้า list เสมอ
-        ═══════════════════════════════════════════ */
-        function showSuccessModal(redirectUrl) {
-            const modal = document.getElementById('successModal');
-            const fill = document.getElementById('progressFill');
-
-            modal.classList.add('show');
-
-            fill.style.animation = 'none';
-            fill.offsetHeight;
-            fill.style.animation = 'progress-drain 2s linear forwards';
-
-            setTimeout(() => {
-                window.location.href = redirectUrl;
-            }, 2000);
-        }
-
-        document.getElementById('tourForm').addEventListener('submit', function (e) {
-            let valid = true;
-
-            REQUIRED.forEach(f => {
-                const el = document.getElementById(f.id);
-                if (!el) return;
-                const empty = el.tagName === 'SELECT' ? el.value === '' : el.value.trim() === '';
-                if (empty) { showErr(f.id, f.errId, f.msg); valid = false; }
-                else clearErr(f.id, f.errId);
-            });
-
-            const minV = parseInt(document.getElementById('minSeatstour').value);
-            const maxV = parseInt(document.getElementById('maxSeatstour').value);
-            if (!isNaN(minV) && !isNaN(maxV) && minV > maxV) {
-                showErr('maxSeatstour', 'err-maxSeatstour', 'จำนวนสูงสุดต้องมากกว่าหรือเท่ากับขั้นต่ำ');
-                valid = false;
-            }
-
-            // ─── ตรวจสอบความสอดคล้องของประเภททัวร์กับจำนวนวัน/คืน ───
-            if (tourtypeSelect.value === '') {
-                showErr('tourtypeSelect', 'err-tourtype', 'กรุณาเลือกประเภททัวร์');
-                valid = false;
-            } else if (tourtypeSelect.value === '__custom__' && tourtypeCustom.value.trim() === '') {
-                showErr('tourtypeCustom', 'err-tourtypeCustom', 'กรุณาระบุชื่อประเภททัวร์');
-                valid = false;
-            } else if (tourtypeSelect.value === 'ทัวร์รายวัน') {
-                if (parseInt(daysInput.value) !== 1 || parseInt(nightsInput.value) !== 0) {
-                    showErr('numberOfDays', 'err-numberOfDays', 'ทัวร์รายวันต้องเป็น 1 วัน 0 คืน');
-                    valid = false;
-                }
-            } else {
-                // ทัวร์หลายวันทุกประเภท (รวม __custom__): แค่ต้องมากกว่า 1 วัน และคืน < วัน
-                const d = parseInt(daysInput.value);
-                const n = parseInt(nightsInput.value);
-                if (isNaN(d) || d <= 1) {
-                    showErr('numberOfDays', 'err-numberOfDays', 'ทัวร์หลายวันต้องมากกว่า 1 วัน');
-                    valid = false;
-                } else if (isNaN(n) || n >= d) {
-                    showErr('numberOfDays', 'err-numberOfDays', 'จำนวนคืนต้องน้อยกว่าจำนวนวัน');
-                    valid = false;
-                }
-            }
-
-            if (!valid) {
-                e.preventDefault();
-                document.querySelector('.form-control.error')
-                    ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const finalTourType = tourtypeSelect.value === '__custom__'
-                ? tourtypeCustom.value.trim()
-                : tourtypeSelect.value;
-            formData.set('tourtype', finalTourType); // field จริงที่ backend/Entity ใช้
-
-            fetch(this.action, {
-                method: 'POST',
-                body: new URLSearchParams(formData)
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        // HTTP error จริง (500, 404 ฯลฯ)
-                        return response.text().then(() => {
-                            throw new Error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (status ' + response.status + ')');
-                        });
-                    }
-
-                    // ✅ ตรวจว่า redirect ไปหน้า success จริงหรือไม่
-                    // controller สำเร็จ → "redirect:/manager/tours/{id}/schedules?success=created" → response.redirected = true
-                    // controller validate ไม่ผ่าน → return "Tour/addTour" ตรงๆ (ไม่ redirect) → response.redirected = false
-                    if (!response.redirected || !response.url.includes('/manager/tours')) {
-                        return response.text().then(html => {
-                            // ดึงข้อความจาก <div class="alert-error">...<span>ข้อความ</span></div>
-                            const match = html.match(/class="alert-error"[\s\S]*?<span[^>]*>([^<]*)<\/span>/);
-                            const msg = match ? match[1].trim() : 'กรุณาตรวจสอบข้อมูลที่กรอกอีกครั้ง';
-                            throw new Error(msg);
-                        });
-                    }
-
-                    // ✅ ส่ง URL ปลายทางจริงที่ browser redirect ไปถึง (เช่น
-                    //    /manager/tours/{tourid}/schedules?success=created) ต่อไปยัง .then ถัดไป
-                    return response.url;
-                })
-                .then((redirectUrl) => {
-                    showSuccessModal(redirectUrl);
-                })
-                .catch(err => {
-                    console.error('เพิ่มทัวร์ไม่สำเร็จ:', err);
-                    alert('เกิดข้อผิดพลาด: ' + err.message);
-                });
-        });
-    </script>
+  <script th:src="@{/js/Tour/addtour.js}"></script>
 
 </body>
 
