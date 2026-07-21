@@ -64,9 +64,6 @@ public interface TourScheduleRepository extends JpaRepository<Tourschedule, Stri
 int countBookedSeatsBySchedule(@Param("scheduleid") String scheduleid);
 
 
-@Lock(LockModeType.PESSIMISTIC_WRITE)
-@Query("SELECT s FROM Tourschedule s WHERE s.scheduleid = :scheduleid")
-Optional<Tourschedule> findByIdForUpdate(@Param("scheduleid") String scheduleid);
 
 
 }

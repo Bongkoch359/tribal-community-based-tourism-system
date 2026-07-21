@@ -307,11 +307,6 @@ private TourScheduleRepository tourScheduleRepository;
         return "GS" + String.format("%08d", count);
     }
 
-
-    // ════════════════════════════════════════════════════════
-    //  CREATE TOUR BOOKING
-    // ════════════════════════════════════════════════════════
-
     // ════════════════════════════════════════════════════════
     //  CREATE TOUR BOOKING
     // ════════════════════════════════════════════════════════
@@ -338,26 +333,19 @@ private TourScheduleRepository tourScheduleRepository;
             throw new IllegalArgumentException("ไม่สามารถเลือกวันย้อนหลังได้");
         }
 
-        // ── 2. ดึง Tour (ไม่ต้องล็อก แค่ใช้ราคา/max seats) ──
-        Tour tour = tourRepository.findById(tourId)
-                .orElseThrow(() -> new RuntimeException("ไม่พบทัวร์"));
+        // ── 2. ดึง Tour ─────────────────────────────────────
+Tour tour = tourRepository.findById(tourId)
+        .orElseThrow(() -> new RuntimeException("ไม่พบทัวร์"));
 
-        // ── 2.5 ดึง schedule ของวันที่เลือก (ยังไม่ล็อก) ──
-        Tourschedule scheduleRef = tourScheduleRepository
-                .findByTourTouridAndOpendate(tourId, java.sql.Date.valueOf(startDate))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
+// ── 2.5 ดึง schedule ของวันที่เลือก ───────────────
+Tourschedule schedule = tourScheduleRepository
+        .findByTourTouridAndOpendate(tourId, java.sql.Date.valueOf(startDate))
+        .orElseThrow(() -> new IllegalArgumentException(
+                "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
 
-        // 🔒 ล็อกแถว schedule นี้ไว้ทันที — คนอื่นที่จองรอบเดียวกันพร้อมกัน
-        // จะต้องรอคิว จนกว่า transaction นี้ commit/rollback ก่อน
-        // ถึงจะอ่านจำนวนที่นั่งที่อัปเดตแล้วได้ (กันที่นั่งเกิน)
-        Tourschedule schedule = tourScheduleRepository
-                .findByIdForUpdate(scheduleRef.getScheduleid())
-                .orElseThrow(() -> new IllegalArgumentException("ไม่พบรอบทัวร์"));
-
-        if (!"เปิดรับจอง".equals(schedule.getStatus())) {
-            throw new IllegalArgumentException("รอบทัวร์วันที่เลือกไม่เปิดรับจองแล้ว");
-        }
+if (!"เปิดรับจอง".equals(schedule.getStatus())) {
+    throw new IllegalArgumentException("รอบทัวร์วันที่เลือกไม่เปิดรับจองแล้ว");
+}
 
         // ── 3. คำนวณจำนวนคน ─────────────────────────────────
         int adults = (adult != null && adult > 0) ? adult : 1;
@@ -580,18 +568,14 @@ private TourScheduleRepository tourScheduleRepository;
                             "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
 
             // 🔒 ล็อกรอบใหม่ไว้ ก่อนเช็คที่นั่ง กันคนอื่นแย่งที่พร้อมกัน
-            newSchedule = tourScheduleRepository
-                    .findByIdForUpdate(newScheduleRef.getScheduleid())
-                    .orElseThrow(() -> new IllegalArgumentException("ไม่พบรอบทัวร์"));
+            newSchedule = newScheduleRef;
 
             if (!"เปิดรับจอง".equals(newSchedule.getStatus())) {
                 throw new IllegalArgumentException("รอบทัวร์วันที่เลือกไม่เปิดรับจองแล้ว");
             }
         } else {
             // วันเดิม ไม่ได้เปลี่ยนรอบ — ยังล็อกไว้เพราะจำนวนคนอาจเปลี่ยน
-            newSchedule = tourScheduleRepository
-                    .findByIdForUpdate(oldSchedule.getScheduleid())
-                    .orElseThrow(() -> new IllegalArgumentException("ไม่พบรอบทัวร์"));
+            newSchedule = oldSchedule;
         }
 
         // ── 6. คำนวณใหม่ ──────────────────────────────────
