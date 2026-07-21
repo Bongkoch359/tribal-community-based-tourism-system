@@ -2,8 +2,10 @@ package com.example.miniproject.controller.Member;
 
 import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Member;
+import com.example.miniproject.entity.Tourschedule;
 import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.entity.enums.BookingType;
+import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.service.Member.BookingService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -22,6 +25,10 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+
+    // ⬇️ NEW: ใช้ดึงรอบทัวร์ที่เปิดรับจอง สำหรับ dropdown เลือกวันในหน้าแก้ไขการจอง
+    @Autowired
+    private TourScheduleRepository tourScheduleRepository;
 
     /**
      * GET /member/booking/list?type=TOUR&status=PENDING
@@ -115,6 +122,21 @@ public class BookingController {
 
         // จองทัวร์
         else if (booking.getBookingType() == BookingType.TOUR) {
+
+            // ⬇️ NEW: ดึงรอบทัวร์ (schedule) ที่เปิดรับจองอยู่ตอนนี้ ของทัวร์ตัวนี้
+            //         ส่งเข้า view เป็น "schedules" เพื่อให้ dropdown วันออกเดินทาง
+            //         ในหน้าแก้ไขการจอง (detail_bookingtour.html) มีตัวเลือกให้เลือก
+            //         เหมือนกับที่หน้าจองใหม่ (BookingTourController.bookingPage) ทำไว้
+            if (booking.getTourDetails() != null && !booking.getTourDetails().isEmpty()
+                    && booking.getTourDetails().get(0).getTour() != null) {
+
+                String tourId = booking.getTourDetails().get(0).getTour().getTourid();
+
+                List<Tourschedule> schedules = tourScheduleRepository
+                        .findBookableSchedules(tourId, java.sql.Date.valueOf(LocalDate.now()));
+
+                model.addAttribute("schedules", schedules);
+            }
 
             return "Member/detail_bookingtour";
         }

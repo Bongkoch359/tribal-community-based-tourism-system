@@ -39,17 +39,22 @@
      NAVBAR
 ══════════════════════════════════════════ -->
 <nav class="navbar">
-  <a href="/search" class="navbar-brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24" fill="white">
-        <path d="M3 17l6-8 4 5 3-3 5 6H3z"/>
-      </svg>
-    </div>
-    <div class="brand-name">
-      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-      <span class="brand-name-line2">Tribal Community Tourism</span>
-    </div>
-  </a>
+    <a href="/search" class="navbar-brand">
+
+        <div class="brand-logo">
+            <img th:src="@{/images/logo3.png}" alt="Logo">
+
+        </div>
+
+        <div class="brand-name">
+            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="brand-name-line2">
+                Tribal Community-Based Tourism System
+            </span>
+        </div>
+
+    </a>
+
 
   <div class="nav-links">
     <a href="/search" class="nav-link">
@@ -64,7 +69,7 @@
       </svg>
       ข้อมูลชนเผ่า
     </a>
-    <!-- "เกี่ยวกับเรา" ถูกลบออกตามที่ขอ -->
+    
   </div>
 
   <div class="nav-divider"></div>
@@ -249,12 +254,53 @@
      HERO
 ══════════════════════════════════════════ -->
 <div class="hero">
-  <img class="hero-bg-img"
-       th:src="@{/images/search12.jpg}"
-       src="../static/images/search12.jpg"
-       onerror="this.style.display='none'"
-       alt="ชนเผ่าบนดอย"/>
+  <!-- เพิ่ม/ลดรูปในสไลด์ได้โดยคัดลอกบล็อก .hero-slide แล้วเปลี่ยน th:src -->
+  <div class="hero-slider" id="heroSlider">
+    <div class="hero-slide active">
+      <img class="hero-bg-img"
+           th:src="@{/images/banner2.png}"
+           src="../static/images/banner2.png"
+           onerror="this.style.display='none'"
+           alt="ชนเผ่าบนดอย"/>
+    </div>
+    <div class="hero-slide">
+      <img class="hero-bg-img"
+           th:src="@{/images/search12.jpg}"
+           src="../static/images/search12.jpg"
+           onerror="this.style.display='none'"
+           alt="วิถีชีวิตชุมชน"/>
+    </div>
+    <div class="hero-slide">
+      <img class="hero-bg-img"
+           th:src="@{/images/activity2.png}"
+           src="../static/images/activity2.png"
+           onerror="this.style.display='none'"
+           alt="กิจกรรมชุมชน"/>
+    </div>
+    <div class="hero-slide">
+      <img class="hero-bg-img"
+           th:src="@{/images/tour2.png}"
+           src="../static/images/tour2.png"
+           onerror="this.style.display='none'"
+           alt="โฮมสเตย์และธรรมชาติ"/>
+    </div>
+    <div class="hero-slide">
+      <img class="hero-bg-img"
+           th:src="@{/images/homestay.png}"
+           src="../static/images/homestay.png"
+           onerror="this.style.display='none'"
+           alt="วัฒนธรรมชนเผ่า"/>
+    </div>
+  </div>
   <div class="hero-overlay"></div>
+
+  <button class="hero-arrow hero-arrow-prev" type="button" onclick="heroSlide(-1)" aria-label="รูปก่อนหน้า">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <button class="hero-arrow hero-arrow-next" type="button" onclick="heroSlide(1)" aria-label="รูปถัดไป">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+
   <div class="hero-inner">
     <div class="hero-badge">
       <span class="pulse-dot"></span>
@@ -263,6 +309,12 @@
     <div class="hero-text">
       <h1>สัมผัสวิถีชีวิต<br><span class="hl">ชนเผ่าบนดอยสูง</span></h1>
       <p>จองที่พักและกิจกรรมท่องเที่ยวชุมชน เรียนรู้วัฒนธรรมจากชาวบ้านโดยตรง</p>
+    </div>
+    <div class="hero-cta-row">
+      <a href="#featuredAll" class="btn-hero-cta">
+        ค้นหาประสบการณ์ของคุณ
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
     </div>
     <div class="hero-stats">
       <div class="stat-item">
@@ -281,12 +333,12 @@
         </div>
         <div class="stat-text"><strong>20+ กิจกรรม</strong><span>ให้เลือกสัมผัส</span></div>
       </div>
-      
-       
-      </div>
     </div>
   </div>
+
+  <div class="hero-dots" id="heroDots"></div>
 </div>
+
 
 <!-- ══════════════════════════════════════════
      SEARCH BOX
@@ -366,7 +418,7 @@
           <line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
         วันที่เช็คอิน <span class="sf-label-en">(Check-in)</span>
-      
+
       </div>
       <input type="date" name="startDate" id="checkin-input" th:value="${startDate}"/>
     </div>
@@ -413,6 +465,45 @@
 </div>
 
 <!-- ══════════════════════════════════════════
+     WHY US STRIP
+══════════════════════════════════════════ -->
+<div class="why-us">
+  <div class="why-us-inner">
+    <div class="section-eyebrow"><span class="eyebrow-line"></span>ทำไมต้องเที่ยวกับเรา<span class="eyebrow-line"></span></div>
+    <div class="why-us-grid">
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3C7 8 4 11.5 4 15a8 8 0 0016 0c0-3.5-3-7-8-12z"/></svg>
+        </div>
+        <strong>ท่องเที่ยวอย่างยั่งยืน</strong>
+        <span>เราสนับสนุนการท่องเที่ยวที่ไม่ทำลายสิ่งแวดล้อม</span>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <strong>ชุมชนแท้ 100%</strong>
+        <span>เรียนรู้จากคนในชุมชนได้ประสบการณ์จริง</span>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        </div>
+        <strong>โฮมสเตย์มาตรฐาน</strong>
+        <span>ที่พักสะอาด ปลอดภัย วิวสวย บรรยากาศดี</span>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <strong>ปลอดภัย ลุ่นใจ</strong>
+        <span>มาตรฐานความปลอดภัยดูแลทุกการเดินทาง</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
      CONTENT
 ══════════════════════════════════════════ -->
 <div class="content">
@@ -426,6 +517,7 @@
 
     <div class="featured-all-header">
       <div>
+        <div class="section-eyebrow section-eyebrow-left"><span class="eyebrow-line"></span>Explore Experience</div>
         <h2 class="featured-all-title">รายการแนะนำสำหรับคุณ</h2>
         <p class="featured-all-sub">กิจกรรม ทัวร์ชุมชน และโฮมสเตย์ยอดนิยมในเชียงใหม่</p>
       </div>
@@ -443,7 +535,7 @@
                  onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop'"
                  alt="" loading="lazy"/>
             <span class="fcard-badge badge-activity">กิจกรรม</span>
-           
+
           </div>
           <div class="fcard-body">
             <p class="fcard-name" th:text="${a.title}">ชื่อกิจกรรม</p>
@@ -461,7 +553,7 @@
         </a>
       </th:block>
 
-     
+
 <!-- Tours -->
 <th:block th:each="t,iterStat : ${tours}" th:if="${iterStat.index < 4}">
   <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
@@ -524,7 +616,7 @@
                  th:src="@{{path}(path=${imgs[0]})}"
                  alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="fcard-badge badge-homestay">โฮมสเตย์</span>
-            
+
           </div>
           <div class="fcard-body">
             <div class="fcard-rating">
@@ -583,7 +675,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </a>
     </div>
-   
+
     <div class="grid">
       <th:block th:each="a : ${activities}">
         <div class="card">
@@ -593,7 +685,7 @@
                  onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=380&fit=crop'"
                  alt="" loading="lazy"/>
             <span class="card-badge badge-activity">กิจกรรม</span>
-            
+
           </div>
           <div class="card-body">
             <p class="card-name" th:text="${a.title}">ชื่อกิจกรรม</p>
@@ -736,7 +828,7 @@
                  th:src="@{{path}(path=${imgs[0]})}"
                  alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="card-badge badge-homestay">โฮมสเตย์</span>
-           
+
           </div>
           <div class="card-body">
             <p class="card-name" th:text="${h.homestayname}">ชื่อโฮมสเตย์</p>

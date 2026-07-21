@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Tour;
 
+
 public interface TourRepository extends JpaRepository<Tour, String> {
 
     List<Tour> findByTourmnameContainingIgnoreCase(String tourmname);
@@ -147,4 +148,8 @@ List<Tour> searchWithDate(
         )
     """)
     long countActivePublished();
+
+    
 }
+
+

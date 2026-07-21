@@ -14,6 +14,8 @@
     --green-main:#2d7a4f;
     --green-light:#d8f3dc;
     --green-accent:#52b788;
+    --green-200:#a7e3c3;
+    --green-50:#f0faf4;
     --orange:#e8960a;
     --orange-light:#fff8ed;
     --red:#e53935;
@@ -270,6 +272,32 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
     border-radius:8px; padding:4px 10px; font-size:.82rem; font-weight:700;
 }
 
+/* ── PICKUP RADIO GROUP (เหมือนหน้าจองใหม่) ── */
+.radio-group { display:flex; flex-direction:column; gap:8px; margin-top:2px; }
+.radio-group-label { font-size:.75rem; color:var(--gray-600); font-weight:600; margin-bottom:2px; }
+.radio-option {
+    display:flex; align-items:center; gap:10px; padding:10px 14px;
+    border:1.5px solid var(--gray-200); border-radius:10px;
+    cursor:pointer; transition:border-color .14s, background .14s;
+    font-size:.86rem; color:var(--gray-600); background:#fff;
+}
+.radio-option:hover { border-color:var(--green-accent); background:var(--green-50); }
+.radio-option.radio-selected { border-color:var(--green-main); background:var(--green-50); color:var(--green-dark); font-weight:700; }
+.radio-option input[type="radio"] { accent-color:var(--green-main); width:16px; height:16px; flex-shrink:0; }
+
+.meetingpoint-box {
+    background:var(--green-50); border:1px solid var(--green-200);
+    border-radius:10px; padding:10px 14px; font-size:.82rem;
+    color:var(--green-dark); line-height:1.6;
+}
+.meetingpoint-box strong { color:var(--green-dark); }
+.meetingpoint-box a { color:var(--blue); text-decoration:underline; font-weight:600; }
+
+.pickup-hint {
+    font-size:.76rem; color:var(--gray-600); margin-top:2px;
+    display:flex; align-items:flex-start; gap:5px; line-height:1.5;
+}
+
 /* ── GUEST LIST ── */
 .guest-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--gray-100); }
 .guest-row:last-child { border-bottom:none; padding-bottom:0; }
@@ -356,6 +384,41 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 .img-preview-wrap { margin-top:8px; display:none; }
 .img-preview-wrap img { max-width:100%; border-radius:10px; border:1.5px solid var(--gray-200); }
 
+/* ── INSURANCE SECTION (ใหม่) ── */
+.insurance-info-card {
+    border:1.5px solid var(--blue-light);
+    border-radius:var(--radius-lg);
+    overflow:hidden;
+    background:linear-gradient(135deg,#eff8ff 0%, var(--blue-light) 100%);
+}
+.insurance-info-top {
+    display:flex; align-items:flex-start; gap:14px; padding:16px 20px;
+}
+.insurance-info-icon {
+    width:44px; height:44px; border-radius:10px; flex-shrink:0;
+    background:var(--blue); display:flex; align-items:center; justify-content:center;
+    font-size:21px; box-shadow:0 4px 10px rgba(3,105,161,.25);
+}
+.insurance-info-body { flex:1; min-width:0; }
+.insurance-info-title-row { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.insurance-info-title { font-size:.95rem; font-weight:800; color:var(--blue); }
+.insurance-info-badge {
+    font-size:.78rem; font-weight:800; border-radius:20px; padding:4px 12px; white-space:nowrap;
+}
+.insurance-info-badge.included { background:var(--green-main); color:#fff; }
+.insurance-info-badge.excluded { background:var(--gray-200); color:var(--gray-600); }
+.insurance-info-desc { font-size:.82rem; color:var(--blue); opacity:.85; margin-top:4px; line-height:1.5; }
+.insurance-info-list { border-top:1px solid rgba(3,105,161,.15); background:rgba(255,255,255,.55); padding:8px 20px 14px; }
+.insurance-guest-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px dashed rgba(3,105,161,.15); font-size:.85rem; }
+.insurance-guest-row:last-child { border-bottom:none; }
+.insurance-guest-name { font-weight:700; color:var(--gray-800); }
+.insurance-guest-id { font-family:monospace; letter-spacing:.5px; color:var(--blue); font-weight:700; }
+.insurance-total-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 20px; border-top:1px solid rgba(3,105,161,.15);
+    background:rgba(255,255,255,.65); font-size:.88rem; font-weight:800; color:var(--blue);
+}
+
 /* ── RESPONSIVE ── */
 @media(max-width:900px) {
     .detail-layout { grid-template-columns:1fr; }
@@ -417,7 +480,7 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
             ข้อมูลชนเผ่า
         </a>
-        
+
     </div>
 
     <div class="nav-divider"></div>
@@ -532,43 +595,89 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
                         <div class="divider"></div>
 
                         <div class="detail-grid">
-                            <!-- วันออกเดินทาง ✏️ -->
-                            <div class="detail-item editable">
-                                <div class="detail-label">วันออกเดินทาง</div>
+                            <!-- วันออกเดินทาง ✏️ : เลือกจากรอบทัวร์ (schedule) ที่เปิดจองจริงเท่านั้น
+                                 ต้องให้ controller ของหน้านี้ส่ง model attribute "schedules"
+                                 (List<Tourschedule> ของ detail.tour.tourid ที่เปิดรับจอง)
+                                 เหมือนกับที่ BookingTourController#bookingPage ทำไว้ตอน create -->
+                            <div class="detail-item editable" style="grid-column:1/-1;">
+                                <div class="detail-label">วันออกเดินทาง (เลือกรอบที่เปิดจอง)</div>
                                 <div class="detail-value view-val"
-                                     th:text="${detail.startdate != null ? #dates.format(detail.startdate,'dd MMMM yyyy') : '-'}">-</div>
+                                     th:text="${detail.tourschedule != null and detail.tourschedule.opendate != null ? #dates.format(detail.tourschedule.opendate,'dd MMMM yyyy') + (detail.tourschedule.enddate != null ? ' - ' + #dates.format(detail.tourschedule.enddate,'dd MMMM yyyy') : '') : '-'}">-</div>
+
                                 <div class="inline-field">
-                                    <input class="inline-input" type="date" name="tourdate"
-                                           th:value="${detail.startdate != null ? #dates.format(detail.startdate,'yyyy-MM-dd') : ''}"
-                                           required>
+                                    <select class="inline-select" name="tourdate" id="tourdate-input" required
+                                            th:disabled="${schedules == null or schedules.isEmpty()}">
+
+                                        <!-- รอบที่เปิดจองอยู่ตอนนี้ -->
+                                        <option th:each="s : ${schedules}"
+                                                th:value="${#dates.format(s.opendate,'yyyy-MM-dd')}"
+                                                th:text="${#dates.format(s.opendate,'dd/MM/yyyy')} + ' - ' + ${#dates.format(s.enddate,'dd/MM/yyyy')}"
+                                                th:selected="${detail.tourschedule != null and s.scheduleid == detail.tourschedule.scheduleid}">
+                                        </option>
+
+                                        <!-- เผื่อรอบเดิมของการจองนี้ไม่ได้อยู่ในลิสต์ที่เปิดจองแล้ว (เช่นปิดรับจองไปแล้ว)
+                                             ให้แสดงรอบเดิมไว้เป็นตัวเลือกเสมอ กันไม่ให้ select ว่างหรือเด้งไปรอบอื่นโดยไม่ตั้งใจ -->
+                                        <option th:if="${detail.tourschedule != null and (schedules == null or !#lists.contains(schedules.![scheduleid], detail.tourschedule.scheduleid))}"
+                                                th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
+                                                th:text="${#dates.format(detail.tourschedule.opendate,'dd/MM/yyyy')} + ' - ' + ${#dates.format(detail.tourschedule.enddate,'dd/MM/yyyy')} + ' (รอบปัจจุบันของการจองนี้)'"
+                                                selected="selected">
+                                        </option>
+                                    </select>
+
+                                    <div class="pickup-hint" th:if="${schedules == null or schedules.isEmpty()}">
+                                        ⚠️ ขณะนี้ไม่มีรอบทัวร์อื่นที่เปิดรับจอง จะยังคงใช้รอบเดิมของการจองนี้
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- จุดรับ ✏️ -->
-                            <div class="detail-item editable">
+                            <!-- ประเภทจุดรับ ✏️ : radio group เหมือนหน้าจองใหม่ -->
+                            <div class="detail-item editable" style="grid-column:1/-1;">
                                 <div class="detail-label">ประเภทจุดรับ</div>
                                 <div class="detail-value view-val">
                                     <span class="pickup-badge" th:text="${booking.pickuptype != null ? booking.pickuptype : '-'}">-</span>
                                 </div>
+
                                 <div class="inline-field">
-                                    <select class="inline-select" name="pickuptype">
-                                        <option value="จุดรับส่วนกลาง"
-                                                th:selected="${booking.pickuptype == 'จุดรับส่วนกลาง'}">📍 จุดรับส่วนกลาง</option>
-                                        <option value="โรงแรม/ที่พัก"
-                                                th:selected="${booking.pickuptype == 'โรงแรม/ที่พัก'}">🏨 โรงแรม/ที่พัก</option>
-                                    </select>
+                                    <div class="radio-group">
+                                        <label class="radio-option" id="pickupOptCentral"
+                                               th:classappend="${booking.pickuptype == 'จุดรับส่วนกลาง'} ? ' radio-selected' : ''"
+                                               onclick="selectPickupType('จุดรับส่วนกลาง')">
+                                            <input type="radio" name="pickuptype" value="จุดรับส่วนกลาง"
+                                                   th:checked="${booking.pickuptype == 'จุดรับส่วนกลาง'}">
+                                            <span>📍 นัดพบที่จุดรวมพล (ไม่มีค่าใช้จ่ายเพิ่มเติม)</span>
+                                        </label>
+
+                                        <!-- ⬇️ TODO: แก้ที่อยู่ตรงนี้ให้เป็นจุดนัดพบจริงของบริษัท (เหมือนหน้าจองใหม่) -->
+                                        <div class="meetingpoint-box" id="meetingPointBox"
+                                             th:style="${booking.pickuptype == 'จุดรับส่วนกลาง'} ? '' : 'display:none;'">
+                                            📍 <strong>จุดนัดพบ:</strong> [ใส่ชื่อสถานที่/ที่อยู่จุดรวมพลจริงตรงนี้ เช่น "ลานจอดรถหน้าสำนักงานบริษัท เลขที่ ... ถ. ... อ.เมือง จ.เชียงใหม่"]<br>
+                                            🗺️ <a href="#" target="_blank">ดูแผนที่ / Google Maps</a>
+                                        </div>
+
+                                        <label class="radio-option" id="pickupOptHotel"
+                                               th:classappend="${booking.pickuptype == 'โรงแรม/ที่พัก'} ? ' radio-selected' : ''"
+                                               onclick="selectPickupType('โรงแรม/ที่พัก')">
+                                            <input type="radio" name="pickuptype" value="โรงแรม/ที่พัก"
+                                                   th:checked="${booking.pickuptype == 'โรงแรม/ที่พัก'}">
+                                            <span>🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก (เฉพาะในเขตจังหวัดเชียงใหม่)</span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- สถานที่รับ ✏️ -->
-                            <div class="detail-item editable" style="grid-column:1/-1;">
+                            <!-- สถานที่รับ ✏️ : โชว์เฉพาะกรณีเลือก "โรงแรม/ที่พัก" -->
+                            <div class="detail-item editable" id="pickupLocationField" style="grid-column:1/-1;">
                                 <div class="detail-label">สถานที่รับ</div>
                                 <div class="detail-value view-val"
                                      th:text="${booking.pickuplocation != null and !booking.pickuplocation.isEmpty() ? booking.pickuplocation : '-'}">-</div>
-                                <div class="inline-field">
-                                    <input class="inline-input" type="text" name="pickuplocation"
-                                           placeholder="เช่น ชื่อโรงแรม หรือจุดนัดหมาย"
+                                <div class="inline-field" id="pickupLocationInline"
+                                     th:style="${booking.pickuptype == 'โรงแรม/ที่พัก'} ? '' : 'display:none;'">
+                                    <input class="inline-input" type="text" name="pickuplocation" id="pickuplocation-input"
+                                           placeholder="เช่น โรงแรม ดุสิต ดีทู เชียงใหม่, อ.เมือง จ.เชียงใหม่"
                                            th:value="${booking.pickuplocation != null ? booking.pickuplocation : ''}">
+                                    <div class="pickup-hint">
+                                        ⚠️ บริการรับส่งถึงที่พัก รองรับเฉพาะที่พักในเขตจังหวัดเชียงใหม่เท่านั้น กรุณาระบุคำว่า "เชียงใหม่" ในที่อยู่
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -681,7 +790,7 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 
             <!-- SECTION 3 : รายชื่อผู้เดินทาง -->
             <div class="card" id="guestCard">
-                <div class="edit-banner">✏️ กำลังแก้ไข — แก้ชื่อผู้เดินทางได้ที่นี่</div>
+                <div class="edit-banner">✏️ กำลังแก้ไข — แก้ชื่อผู้เดินทางได้ที่นี่ (ยกเว้นผู้จอง แก้ที่หน้าโปรไฟล์)</div>
                 <div class="section-header">
                     <div class="section-header-left">
                         <div class="section-num">3</div>
@@ -692,54 +801,100 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
                 </div>
                 <div class="section-body">
 
-                    <!-- ผู้จองไปเอง -->
-                    <div th:if="${booking.isBookerGoing}">
+                    <div th:if="${booking.guests != null and !booking.guests.isEmpty()}"
+                         th:each="g : ${booking.guests}"
+                         th:with="isBooker=${booking.isBookerGoing and g.firstname == booking.member.firstname and g.lastname == booking.member.lastname}">
                         <div class="guest-row">
-                            <div class="guest-avatar">🙋</div>
-                            <div>
-                                <div class="guest-name"
-                                     th:text="${(booking.member != null ? booking.member.firstname : '') + ' ' + (booking.member != null ? booking.member.lastname : '')}">-</div>
-                                <div class="guest-role">ผู้จอง (แก้ไขชื่อได้ในหน้าโปรไฟล์)</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- จองให้ผู้อื่น: แสดง + inline edit -->
-                    <div th:if="${!booking.isBookerGoing}">
-                        <div th:if="${booking.guests != null}" th:each="g,iter : ${booking.guests}">
-                            <div class="guest-row">
-                                <div class="guest-avatar">👤</div>
-                                <div style="flex:1;">
-                                    <!-- view mode -->
-                                    <div class="view-val">
+                            <div class="guest-avatar" th:text="${isBooker ? '🙋' : '👤'}">👤</div>
+                            <div style="flex:1;">
+                                <!-- view mode -->
+                                <div class="view-val" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                                    <div>
                                         <div class="guest-name"
                                              th:text="${(g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '')}">-</div>
-                                        <div class="guest-role">ผู้เดินทาง</div>
+                                        <div class="guest-role"
+                                             th:text="${isBooker ? 'ผู้จอง (แก้ไขชื่อได้ในหน้าโปรไฟล์) · เดินทางด้วยตนเอง' : 'ผู้เดินทาง'}">-</div>
                                     </div>
-                                    <!-- inline edit -->
-                                    <div class="inline-field">
-                                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                                            <div>
-                                                <div class="detail-label">ชื่อจริง</div>
-                                                <input class="inline-input" type="text" name="guestFirstname"
-                                                       th:value="${g.firstname}" placeholder="ชื่อ">
-                                            </div>
-                                            <div>
-                                                <div class="detail-label">นามสกุล</div>
-                                                <input class="inline-input" type="text" name="guestLastname"
-                                                       th:value="${g.lastname}" placeholder="นามสกุล">
-                                            </div>
+                                    <span class="info-chip chip-blue" th:if="${booking.wantInsurance}"
+                                          th:text="${'🛡️ ' + (g.idcardnumber != null and g.idcardnumber.length() == 13 ? #strings.substring(g.idcardnumber,0,1) + '-XXXX-XXXX-' + #strings.substring(g.idcardnumber,9,13) : 'ทำประกันแล้ว')}"></span>
+                                </div>
+                                <!-- inline edit: แก้ได้เฉพาะ guest ที่ไม่ใช่ผู้จอง -->
+                                <div class="inline-field" th:if="${!isBooker}">
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                        <div>
+                                            <div class="detail-label">ชื่อจริง</div>
+                                            <input class="inline-input" type="text" name="guestFirstname"
+                                                   th:value="${g.firstname}" placeholder="ชื่อ">
+                                        </div>
+                                        <div>
+                                            <div class="detail-label">นามสกุล</div>
+                                            <input class="inline-input" type="text" name="guestLastname"
+                                                   th:value="${g.lastname}" placeholder="นามสกุล">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <p class="guest-empty"
-                           th:if="${booking.guests == null or booking.guests.isEmpty()}">
-                            ไม่มีรายชื่อผู้เดินทาง
-                        </p>
                     </div>
 
+                    <p class="guest-empty"
+                       th:if="${booking.guests == null or booking.guests.isEmpty()}">
+                        ไม่มีรายชื่อผู้เดินทาง
+                    </p>
+
+                </div>
+            </div>
+
+            <!-- SECTION 5 : ประกันการเดินทาง -->
+            <!-- อ้างอิงฟิลด์จาก entity Booking จริง: wantInsurance (Boolean),
+                 insuranceFeePerPerson (Double, ราคา/ท่าน), subtotalInsurance (Double, ยอดรวมประกัน)
+                 หมายเหตุ: ผู้จองที่ไปเองก็ถูกสร้างเป็น Guest record ด้วยตั้งแต่ตอน createTourBooking
+                 (ดู BookingService) จึงอยู่ใน booking.guests แล้ว ไม่ต้องแยกแสดงซ้ำอีกก้อนนึง
+                 ใช้ isBooker (เทียบชื่อ-นามสกุลกับ booking.member) เพื่อรู้ว่าแถวไหนคือผู้จอง -->
+            <div class="card" style="margin-bottom:16px;overflow:visible;" th:if="${detail != null}">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <div class="section-num">5</div>
+                        ประกันการเดินทาง
+                    </div>
+                </div>
+                <div class="section-body" style="padding-top:0;">
+                    <div class="insurance-info-card">
+                        <div class="insurance-info-top">
+                            <div class="insurance-info-icon">🛡️</div>
+                            <div class="insurance-info-body">
+                                <div class="insurance-info-title-row">
+                                    <span class="insurance-info-title">ประกันอุบัติเหตุการเดินทาง</span>
+                                    <span class="insurance-info-badge included" th:if="${booking.wantInsurance}">✅ รวมในการจองแล้ว</span>
+                                    <span class="insurance-info-badge excluded" th:if="${!booking.wantInsurance}">ไม่ได้ทำประกัน</span>
+                                </div>
+                                <div class="insurance-info-desc">
+                                    คุ้มครองอุบัติเหตุระหว่างการเดินทาง ครอบคลุมค่ารักษาพยาบาลกรณีฉุกเฉิน
+                                    สำหรับผู้เดินทางทุกท่านตามรายชื่อด้านล่าง
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- รายชื่อผู้เอาประกัน พร้อมเลขบัตรประชาชน (แสดงแบบปิดบางส่วนเพื่อความปลอดภัยของข้อมูล) -->
+                        <!-- loop เดียว: booking.guests รวมผู้จองอยู่แล้ว (ถ้า isBookerGoing + wantInsurance) -->
+                        <div class="insurance-info-list" th:if="${booking.wantInsurance}">
+                            <div class="insurance-guest-row"
+                                 th:if="${booking.guests != null}"
+                                 th:each="g : ${booking.guests}"
+                                 th:with="isBooker=${booking.isBookerGoing and g.firstname == booking.member.firstname and g.lastname == booking.member.lastname}">
+                                <span class="insurance-guest-name"
+                                      th:text="${(isBooker ? '🙋 ' : '👤 ') + (g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '') + (isBooker ? ' (ผู้จอง)' : '')}"></span>
+                                <span class="insurance-guest-id"
+                                      th:text="${g.idcardnumber != null and g.idcardnumber.length() == 13 ? #strings.substring(g.idcardnumber,0,1) + '-XXXX-XXXX-' + #strings.substring(g.idcardnumber,9,13) : 'ไม่ระบุ'}"></span>
+                            </div>
+                        </div>
+
+                        <div class="insurance-total-row" th:if="${booking.wantInsurance}">
+                            <span>ค่าประกันรวม (<span th:text="${booking.numofguest != null ? booking.numofguest : 0}"></span> ท่าน
+                                &times; <span th:text="${booking.insuranceFeePerPerson != null ? #numbers.formatDecimal(booking.insuranceFeePerPerson,0,'COMMA',0,'POINT') : '0'}"></span> ฿/ท่าน)</span>
+                            <span>฿ <span th:text="${booking.subtotalInsurance != null ? #numbers.formatDecimal(booking.subtotalInsurance,0,'COMMA',0,'POINT') : '0'}"></span></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -801,14 +956,14 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
                     <div class="tour-meta-sb">
                         📍 ชุมชนชนเผ่าแผนกการท่องเที่ยว
                         <span class="info-chip chip-green"
-                              th:text="${detail != null and detail.tour != null ? detail.tour.status : ''}"></span>
+                              th:text="${detail != null and detail.tour != null and detail.tour.overallStatus != null ? detail.tour.overallStatus : ''}"></span>
                     </div>
 
                     <div class="summary-divider"></div>
 
                     <div class="sum-row">
                         <span class="lbl">วันออกเดินทาง</span>
-                        <span class="val" th:text="${detail != null and detail.startdate != null ? #dates.format(detail.startdate,'dd/MM/yyyy') : '-'}">-</span>
+                        <span class="val" th:text="${detail != null and detail.tourschedule.opendate != null ? #dates.format(detail.tourschedule.opendate,'dd/MM/yyyy') : '-'}">-</span>
                     </div>
                     <div class="sum-row">
                         <span class="lbl">ผู้ใหญ่</span>
@@ -823,6 +978,14 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
                     <div class="sum-row">
                         <span class="lbl">จุดรับ</span>
                         <span class="val" th:text="${booking.pickuptype != null ? booking.pickuptype : '-'}">-</span>
+                    </div>
+                    <div class="sum-row">
+                        <span class="lbl">ผู้จอง</span>
+                        <span class="val" th:text="${booking.isBookerGoing ? 'เดินทางด้วยตนเอง' : 'จองให้ผู้อื่น'}">-</span>
+                    </div>
+                    <div class="sum-row" th:if="${booking.wantInsurance}">
+                        <span class="lbl">ประกันการเดินทาง</span>
+                        <span class="val">฿ <span th:text="${booking.subtotalInsurance != null ? #numbers.formatDecimal(booking.subtotalInsurance,0,'COMMA',0,'POINT') : '0'}"></span></span>
                     </div>
 
                     <div class="price-box">
@@ -932,6 +1095,33 @@ function exitEdit(btn) {
     editing = false;
     setEditCards(false);
     if (btn) { btn.innerHTML = '✏️ แก้ไขการจอง'; btn.classList.remove('editing'); }
+}
+
+/* ════ Pickup Type Radio (เหมือนหน้าจองใหม่) ════ */
+function selectPickupType(type) {
+    const centralOpt = document.getElementById('pickupOptCentral');
+    const hotelOpt    = document.getElementById('pickupOptHotel');
+    const meetingBox  = document.getElementById('meetingPointBox');
+    const locInline   = document.getElementById('pickupLocationInline');
+    const locInput    = document.getElementById('pickuplocation-input');
+
+    const isCentral = type === 'จุดรับส่วนกลาง';
+
+    // toggle radio input checked state
+    document.querySelectorAll('input[name="pickuptype"]').forEach(function(r) {
+        r.checked = (r.value === type);
+    });
+
+    // toggle selected style
+    if (centralOpt) centralOpt.classList.toggle('radio-selected', isCentral);
+    if (hotelOpt)    hotelOpt.classList.toggle('radio-selected', !isCentral);
+
+    // toggle meeting point box / hotel location field
+    if (meetingBox) meetingBox.style.display = isCentral ? '' : 'none';
+    if (locInline)  locInline.style.display  = isCentral ? 'none' : '';
+
+    // เคลียร์ค่าที่อยู่โรงแรมถ้าสลับกลับไปจุดรวมพล เพื่อไม่ให้ค่าค้างไปตอน submit
+    if (isCentral && locInput) locInput.value = '';
 }
 
 /* ════ Review Modal ════ */

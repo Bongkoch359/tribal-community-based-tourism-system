@@ -232,30 +232,25 @@ img { display: block; }
 .form-textarea { resize: vertical; min-height: 88px; }
 
 /* ── VALIDATION STYLES ── */
-/* field มี error */
 .form-input.is-invalid,
 .form-select.is-invalid {
   border-color: var(--red-600) !important;
   background: var(--red-50) !important;
   box-shadow: 0 0 0 3px rgba(220,38,38,0.10);
 }
-/* field ผ่านแล้ว */
 .form-input.is-valid {
   border-color: var(--green-500);
   background: var(--green-50);
 }
-/* ข้อความ error ใต้ field */
 .field-error {
   display: flex; align-items: center; gap: 5px;
   font-size: 12px; color: var(--red-700); font-weight: 600;
   margin-top: 3px; line-height: 1.4;
 }
 .field-error svg { width: 13px; height: 13px; flex-shrink: 0; }
-/* ซ่อนตอนไม่มี error */
 .field-error:empty { display: none; }
 
 /* ── VALIDATION BANNER ── */
-/* แสดงด้านบนของ form ตอน submit แล้วไม่ผ่าน */
 .validation-banner {
   display: none;
   background: var(--red-50);
@@ -337,6 +332,15 @@ img { display: block; }
 .radio-option.radio-selected { border-color: var(--green-500); background: var(--green-50); color: var(--green-800); font-weight: 600; }
 .radio-option input[type="radio"] { accent-color: var(--green-700); width: 16px; height: 16px; }
 
+/* meeting point detail box แสดงเมื่อเลือกจุดรวมพลส่วนกลาง */
+.meetingpoint-box {
+  background: var(--green-50); border: 1px solid var(--green-200);
+  border-radius: var(--r-md); padding: 10px 14px; font-size: 13px;
+  color: var(--green-800); margin-top: 8px; line-height: 1.6;
+}
+.meetingpoint-box strong { color: var(--green-800); }
+.meetingpoint-box a { color: var(--blue-700); text-decoration: underline; font-weight: 600; }
+
 /* GUEST CARDS */
 .guest-list { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
 .guest-card {
@@ -374,14 +378,12 @@ img { display: block; }
   margin-top: 16px;
   background: linear-gradient(135deg, #eff8ff 0%, var(--blue-100) 100%);
   transition: border-color .2s, box-shadow .2s;
-}
-.insurance-card.is-active {
   border-color: var(--blue-700);
   box-shadow: 0 4px 16px rgba(3,105,161,0.12);
 }
 .insurance-card-top {
   display: flex; align-items: flex-start; gap: 14px;
-  padding: 16px 18px; cursor: pointer;
+  padding: 16px 18px;
 }
 .insurance-icon-badge {
   width: 44px; height: 44px; border-radius: var(--r-md); flex-shrink: 0;
@@ -399,22 +401,14 @@ img { display: block; }
 }
 .insurance-card-desc { font-size: 13px; color: var(--blue-700); opacity: .8; margin-top: 4px; line-height: 1.5; }
 
-/* toggle switch แทน checkbox ธรรมดา */
-.insurance-toggle-switch {
-  position: relative; width: 46px; height: 26px; flex-shrink: 0; margin-top: 2px;
+/* บังคับรวมประกัน — badge แทน toggle switch (กดปิดไม่ได้) */
+.insurance-included-badge {
+  flex-shrink: 0; margin-top: 2px;
+  background: var(--green-600); color: white;
+  font-size: 12px; font-weight: 800;
+  border-radius: 100px; padding: 6px 14px;
+  display: flex; align-items: center; gap: 5px; white-space: nowrap;
 }
-.insurance-toggle-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
-.toggle-track {
-  position: absolute; inset: 0; background: var(--neutral-300); border-radius: 100px;
-  transition: background .2s;
-}
-.toggle-thumb {
-  position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
-  background: white; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-  transition: transform .2s;
-}
-.insurance-toggle-switch input:checked ~ .toggle-track { background: var(--blue-700); }
-.insurance-toggle-switch input:checked ~ .toggle-thumb { transform: translateX(20px); }
 
 .insurance-card-expand {
   border-top: 1px solid rgba(3,105,161,0.15);
@@ -472,6 +466,12 @@ img { display: block; }
   background: var(--neutral-300); color: var(--neutral-500);
   box-shadow: none; cursor: not-allowed; transform: none;
 }
+.btn-confirm .spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2.5px solid rgba(255,255,255,0.4); border-top-color: #fff;
+  animation: spin 0.7s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 .no-fee-note {
   text-align: center; font-size: 12px; color: var(--green-700); font-weight: 600;
   margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;
@@ -500,9 +500,6 @@ img { display: block; }
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <script>
-    // ลงทะเบียน Alpine component ก่อน Alpine init
-    // วิธีนี้แก้ปัญหา Thymeleaf parse x-data attribute ไม่ได้
-    // เพราะ logic ทั้งหมดอยู่ใน <script> ไม่ใช่ใน HTML attribute
     document.addEventListener('alpine:init', () => {
         Alpine.data('bookingForm', () => ({
             adultPrice: ADULT_PRICE,
@@ -511,10 +508,12 @@ img { display: block; }
             numOfAdult: 1,
             numOfChild: 0,
             isBookingForOther: false,
-            wantInsurance: false,
+            wantInsurance: true,
             submitted: false,
+            submitting: false,   // ⬅️ NEW: กันกดจองซ้ำ / โชว์สถานะกำลังบันทึก
             fieldErrors: {},
             pickupType: 'จุดรับส่วนกลาง',
+            pickupLocation: '',
 
             get numOfGuest() { return this.numOfAdult + this.numOfChild; },
             get hasInsuranceOption() { return this.insurancePrice !== null && this.insurancePrice !== undefined; },
@@ -551,6 +550,15 @@ img { display: block; }
                     errors['numOfGuest'] = 'กรุณาระบุจำนวนผู้เดินทางอย่างน้อย 1 ท่าน';
                 }
 
+                // 2.5 ที่อยู่โรงแรม (กรณีเลือกให้ไปรับ)
+                if (this.pickupType === 'โรงแรม/ที่พัก') {
+                    if (!this.pickupLocation || !this.pickupLocation.trim()) {
+                        errors['pickuplocation'] = 'กรุณาระบุชื่อ/ที่อยู่โรงแรมที่พัก';
+                    } else if (!this.pickupLocation.includes('เชียงใหม่')) {
+                        errors['pickuplocation'] = 'บริการรับที่พักรองรับเฉพาะในเขตจังหวัดเชียงใหม่เท่านั้น';
+                    }
+                }
+
                 // 3. ชื่อผู้เดินทาง
                 const guestFirstInputs = document.querySelectorAll('input[name="guestFirstname"]');
                 const guestLastInputs  = document.querySelectorAll('input[name="guestLastname"]');
@@ -581,7 +589,7 @@ img { display: block; }
                     errors['guests'] = 'กรุณากรอกชื่อ-นามสกุลผู้เดินทางให้ครบถ้วน';
                 }
 
-                // 4. เลขบัตรประชาชน (เฉพาะกรณีทำประกัน)
+                // 4. เลขบัตรประชาชน (ประกันภาคบังคับ ต้องกรอกทุกครั้ง)
                 if (this.hasInsuranceOption && this.wantInsurance) {
                     const idcardInputs = document.querySelectorAll('input[name="guestIdcard"]');
                     let idcardError = false;
@@ -607,10 +615,12 @@ img { display: block; }
             },
 
             handleSubmit() {
+                // ⬇️ NEW: กันกดซ้ำ — ถ้ากำลังส่งฟอร์มอยู่แล้วไม่ต้องทำอะไรต่อ
+                if (this.submitting) return;
+
                 this.submitted = true;
                 this.fieldErrors = this.validate();
 
-                // อัปเดต class ของ tourdate input
                 const dateInp = document.getElementById('tourdate-input');
                 if (this.fieldErrors['tourdate']) {
                     dateInp.classList.add('is-invalid');
@@ -620,7 +630,6 @@ img { display: block; }
                     dateInp.classList.add('is-valid');
                 }
 
-                // ถ้ามี error → หยุด + scroll ขึ้นไปที่ banner
                 if (Object.keys(this.fieldErrors).length > 0) {
                     this.$nextTick(() => {
                         const banner = document.getElementById('validationBanner');
@@ -629,7 +638,8 @@ img { display: block; }
                     return;
                 }
 
-                // ผ่านทุก field → submit จริง
+                // ⬇️ NEW: ผ่าน validation แล้ว → ล็อกปุ่มทันทีก่อน submit จริง
+                this.submitting = true;
                 document.getElementById('bookingForm').submit();
             }
         }));
@@ -676,7 +686,6 @@ img { display: block; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
       ข้อมูลชนเผ่า
     </a>
-    
   </div>
   <div class="nav-divider"></div>
   <div class="auth-group">
@@ -713,7 +722,6 @@ img { display: block; }
 <!-- PAGE CONTENT -->
 <div class="page-bg">
 
-  <!-- Server error (flash attribute จาก redirect) -->
   <div class="error-banner" th:if="${errorMsg}">
     <div class="error-box">
       <span>⚠️</span>
@@ -746,9 +754,6 @@ img { display: block; }
     <!-- LEFT -->
     <div class="form-left">
 
-      <!-- ══════════════════════════════════════════════════
-           VALIDATION BANNER — แสดงเมื่อ submit แล้วไม่ผ่าน
-           ══════════════════════════════════════════════════ -->
       <div id="validationBanner"
            class="validation-banner"
            :class="{ 'show': submitted && errorList.length > 0 }"
@@ -777,17 +782,28 @@ img { display: block; }
             </div>
 
             <div class="form-grid-2">
+<!-- วันที่ออกเดินทาง — เลือกจากรอบทัวร์ที่เปิดจองจริงเท่านั้น -->
+<div class="form-group full">
+  <label class="form-label">วันที่ออกเดินทาง (เลือกรอบที่เปิดจอง) <span class="req">*</span></label>
 
-              <!-- วันที่เดินทาง + inline error -->
-              <div class="form-group">
-                <label class="form-label">วันที่ออกเดินทาง <span class="req">*</span></label>
-                <input type="date" name="tourdate" id="tourdate-input" required class="form-input">
-                <!-- inline error ใต้ field -->
-                <div class="field-error" x-show="submitted && fieldErrors['tourdate']">
-                  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                  <span x-text="fieldErrors['tourdate']"></span>
-                </div>
-              </div>
+  <select name="tourdate" id="tourdate-input" required class="form-select"
+          th:disabled="${schedules == null or schedules.isEmpty()}">
+    <option value="" disabled selected>-- กรุณาเลือกรอบวันที่ --</option>
+    <option th:each="s : ${schedules}"
+            th:value="${#dates.format(s.opendate, 'yyyy-MM-dd')}"
+            th:text="${#dates.format(s.opendate, 'dd/MM/yyyy')} + ' - ' + ${#dates.format(s.enddate, 'dd/MM/yyyy')}">
+    </option>
+  </select>
+
+  <div class="idcard-hint" th:if="${schedules == null or schedules.isEmpty()}">
+    ⚠️ ขณะนี้ยังไม่มีรอบทัวร์ที่เปิดรับจอง กรุณาติดต่อเจ้าหน้าที่
+  </div>
+
+  <div class="field-error" x-show="submitted && fieldErrors['tourdate']">
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+    <span x-text="fieldErrors['tourdate']"></span>
+  </div>
+</div>
 
             <div class="form-group full">
   <label class="form-label">ประเภทจุดรับ</label>
@@ -796,6 +812,15 @@ img { display: block; }
       <input type="radio" name="pickuptype" value="จุดรับส่วนกลาง" x-model="pickupType">
       <span>📍 นัดพบที่จุดรวมพล (ไม่มีค่าใช้จ่ายเพิ่มเติม)</span>
     </label>
+
+    <!-- ⬇️ TODO: แก้ที่อยู่ตรงนี้ให้เป็นจุดนัดพบจริงของบริษัท
+         ถ้าแต่ละทัวร์นัดคนละจุด แนะนำเพิ่มฟิลด์ meetingpoint ใน entity Tour
+         แล้วเปลี่ยนบรรทัดด้านล่างเป็น th:text="${tour.meetingpoint}" แทนข้อความตายตัว -->
+    <div class="meetingpoint-box" x-show="pickupType === 'จุดรับส่วนกลาง'" x-cloak>
+      📍 <strong>จุดนัดพบ:</strong> [ใส่ชื่อสถานที่/ที่อยู่จุดรวมพลจริงตรงนี้ เช่น "ลานจอดรถหน้าสำนักงานบริษัท เลขที่ ... ถ. ... อ.เมือง จ.เชียงใหม่"]<br>
+      🗺️ <a href="#" target="_blank">ดูแผนที่ / Google Maps</a>
+    </div>
+
     <label class="radio-option" :class="{ 'radio-selected': pickupType === 'โรงแรม/ที่พัก' }">
       <input type="radio" name="pickuptype" value="โรงแรม/ที่พัก" x-model="pickupType">
       <span>🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก (เฉพาะในเขตจังหวัดเชียงใหม่)</span>
@@ -848,45 +873,40 @@ img { display: block; }
               </div>
             </div>
 
-            <!-- error จำนวนผู้เดินทาง -->
             <div class="field-error" style="margin-top: 8px;" x-show="submitted && fieldErrors['numOfGuest']">
               <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
               <span x-text="fieldErrors['numOfGuest']"></span>
             </div>
 
-            <!-- ── การ์ดประกันการเดินทาง ── -->
-            <div class="insurance-card" :class="{ 'is-active': wantInsurance }" x-show="hasInsuranceOption" x-cloak>
-              <label class="insurance-card-top">
+            <!-- ── การ์ดประกันการเดินทาง (ภาคบังคับ ปิดไม่ได้) ── -->
+            <div class="insurance-card" x-show="hasInsuranceOption" x-cloak>
+              <div class="insurance-card-top">
                 <div class="insurance-icon-badge">🛡️</div>
                 <div class="insurance-card-body">
                   <div class="insurance-card-title-row">
-                    <span class="insurance-card-title">ประกันการเดินทาง</span>
+                    <span class="insurance-card-title">ประกันการเดินทาง (รวมในการจอง)</span>
                     <span class="insurance-price-tag" x-text="Number(insurancePrice).toLocaleString('th-TH') + ' ฿ / ท่าน'"></span>
                   </div>
                   <div class="insurance-card-desc">
                     คุ้มครองอุบัติเหตุระหว่างการเดินทาง ครอบคลุมค่ารักษาพยาบาลกรณีฉุกเฉิน
-                    เลือกซื้อได้ตามจำนวนผู้เดินทางทุกท่าน
+                    ทุกการจองต้องทำประกันให้ผู้เดินทางทุกท่าน
                   </div>
                 </div>
-                <div class="insurance-toggle-switch">
-                  <input type="checkbox" name="wantinsurance" value="true" x-model="wantInsurance">
-                  <div class="toggle-track"></div>
-                  <div class="toggle-thumb"></div>
-                </div>
-              </label>
+                <!-- badge แทน toggle switch เดิม — กดปิดไม่ได้ ค่าถูกส่งด้วย hidden input เสมอ -->
+                <div class="insurance-included-badge">✅ รวมแล้ว</div>
+                <input type="hidden" name="wantinsurance" value="true">
+              </div>
 
-              <div class="insurance-card-expand" x-show="wantInsurance" x-cloak>
+              <div class="insurance-card-expand">
                 📋 กรอกเลขบัตรประชาชน 13 หลักของผู้เดินทางทุกท่านในฟอร์มด้านล่าง เพื่อออกกรมธรรม์ประกัน
               </div>
             </div>
 
-            <!-- error เลขบัตรประชาชน (ระดับ section ที่ 1) -->
             <div class="field-error" style="margin-top: 8px;" x-show="submitted && fieldErrors['idcards']">
               <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
               <span x-text="fieldErrors['idcards']"></span>
             </div>
 
-            <!-- สถานะที่นั่ง -->
             <div class="seat-status">
   <span class="seat-badge full" th:if="${seatLevel == 'full'}">
     ❌ ทัวร์รอบนี้เต็มแล้ว ไม่สามารถจองได้
@@ -952,7 +972,6 @@ img { display: block; }
               3. รายชื่อผู้เดินทาง
             </div>
 
-            <!-- inline error รายชื่อผู้เดินทาง (section level) -->
             <div class="field-error" style="margin-bottom: 10px; font-size: 13px;"
                  x-show="submitted && fieldErrors['guests']">
               <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -976,7 +995,7 @@ img { display: block; }
 
                 <!-- เลขบัตรของผู้จองเอง (ต้องมาก่อนแขกคนอื่นเสมอ เพื่อให้ guestIdcard ตัวแรก
                      ที่ส่งไป backend ตรงกับผู้จอง — ดู idcardOffset ใน BookingService) -->
-                <div class="form-group insurance-guest-idcard" x-show="wantInsurance" style="margin-bottom:14px;">
+                <div class="form-group insurance-guest-idcard" style="margin-bottom:14px;">
                   <label class="form-label">เลขบัตรประชาชนของผู้จอง (สำหรับทำประกัน) <span class="req">*</span></label>
                   <input type="text" name="guestIdcard" placeholder="กรอกเลข 13 หลัก"
                          maxlength="13" inputmode="numeric" pattern="[0-9]{13}" class="form-input">
@@ -1003,7 +1022,7 @@ img { display: block; }
                           <input type="text" name="guestLastname" placeholder="นามสกุล" class="form-input" required>
                         </div>
                       </div>
-                      <div class="form-group insurance-guest-idcard" x-show="wantInsurance">
+                      <div class="form-group insurance-guest-idcard">
                         <label class="form-label">เลขบัตรประชาชน (สำหรับทำประกัน) <span class="req">*</span></label>
                         <input type="text" name="guestIdcard" placeholder="กรอกเลข 13 หลัก"
                                maxlength="13" inputmode="numeric" pattern="[0-9]{13}" class="form-input">
@@ -1046,7 +1065,7 @@ img { display: block; }
                           <input type="text" name="guestLastname" placeholder="นามสกุล" class="form-input" required>
                         </div>
                       </div>
-                      <div class="form-group insurance-guest-idcard" x-show="wantInsurance">
+                      <div class="form-group insurance-guest-idcard">
                         <label class="form-label">เลขบัตรประชาชน (สำหรับทำประกัน) <span class="req">*</span></label>
                         <input type="text" name="guestIdcard" placeholder="กรอกเลข 13 หลัก"
                                maxlength="13" inputmode="numeric" pattern="[0-9]{13}" class="form-input">
@@ -1090,7 +1109,6 @@ img { display: block; }
           <div class="tour-name" th:text="${tour.tourmname}">ชื่อทัวร์</div>
           <div class="tour-meta" style="margin-bottom:14px;">
             📍 ชุมชนชนเผ่าแผนกการท่องเที่ยว
-          
           </div>
 
           <hr class="summary-divider">
@@ -1131,15 +1149,24 @@ img { display: block; }
             </div>
           </div>
 
-          <!--
-            ปุ่ม confirm: ถ้าที่นั่งเต็ม → disabled (Thymeleaf)
-            ถ้ายังมีที่ → เรียก handleSubmit() แทน submit โดยตรง
-          -->
-          <button type="button" class="btn-confirm"
-                  th:disabled="${availableSeats <= 0}"
-                  @click="handleSubmit()">
-            <span th:if="${availableSeats <= 0}">❌ ทัวร์รอบนี้เต็มแล้ว</span>
-            <span th:if="${availableSeats > 0}">🚀 ยืนยันการจองตอนนี้</span>
+         <!-- ⬇️ NEW: ปุ่มถูก disable ทันทีที่ submitting = true และเปลี่ยนข้อความ/ไอคอน
+              เป็นสถานะ "กำลังบันทึกการจอง..." พร้อม spinner หมุน -->
+         <button type="button" class="btn-confirm"
+        th:disabled="${availableSeats <= 0 or schedules == null or schedules.isEmpty()}"
+        :disabled="submitting"
+        @click="handleSubmit()">
+            <template x-if="!submitting">
+              <span th:if="${availableSeats <= 0}">❌ ทัวร์รอบนี้เต็มแล้ว</span>
+            </template>
+            <template x-if="!submitting">
+              <span th:if="${availableSeats > 0}">🚀 ยืนยันการจองตอนนี้</span>
+            </template>
+            <template x-if="submitting">
+              <span style="display:flex;align-items:center;gap:8px;">
+                <span class="spinner"></span>
+                กำลังบันทึกการจอง...
+              </span>
+            </template>
           </button>
           <div class="no-fee-note" th:if="${availableSeats > 0}">🛡️ ไม่มีค่าธรรมเนียมการจองเพิ่มเติม</div>
         </div>
@@ -1158,6 +1185,9 @@ document.addEventListener('click', function(e) {
   if (w && !w.contains(e.target)) w.classList.remove('open');
 });
 
+/* ⬇️ เติมวันที่อัตโนมัติจาก query string ?tourdate=YYYY-MM-DD
+     ที่ต้องแนบมาจากลิงก์ในหน้ารายละเอียดทัวร์ เช่น:
+     <a th:href="@{/booking/tour/{id}(id=${tour.tourid}, tourdate=${selectedDate})}"> */
 window.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(window.location.search);
   const d = params.get('tourdate');

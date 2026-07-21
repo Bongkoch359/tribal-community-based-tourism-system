@@ -100,4 +100,6 @@ public class TourScheduleService {
         int booked = bookedMap.getOrDefault(schedule.getScheduleid(), 0);
         return Math.max(0, tour.getMaxSeatstour() - booked);
     }
+
+    
 }

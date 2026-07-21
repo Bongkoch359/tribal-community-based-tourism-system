@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.miniproject.repository.Member.BookingtourdetailRepository;
 import com.example.miniproject.repository.Member.TourRepository;
+import com.example.miniproject.repository.Tour.TourScheduleRepository;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -45,6 +46,9 @@ public class BookingService {
 
     @Autowired
     private BookingtourdetailRepository bookingtourdetailRepository;
+    
+    @Autowired
+private TourScheduleRepository tourScheduleRepository;
 
     public static final double INSURANCE_PRICE_PER_PERSON = 100.0;
 
@@ -308,6 +312,10 @@ public class BookingService {
     //  CREATE TOUR BOOKING
     // ════════════════════════════════════════════════════════
 
+    // ════════════════════════════════════════════════════════
+    //  CREATE TOUR BOOKING
+    // ════════════════════════════════════════════════════════
+
     @Transactional
     public String createTourBooking(
             Member member,
@@ -319,10 +327,10 @@ public class BookingService {
             Boolean isBookerGoing,
             String pickuptype,
             String pickuplocation,
-            Boolean wantInsurance,                 // ✅ เพิ่ม
+            Boolean wantInsurance,
             List<String> guestFirstnames,
             List<String> guestLastnames,
-            List<String> guestIdcards) {           // ✅ เพิ่ม
+            List<String> guestIdcards) {
 
         // ── 1. Validate date ──────────────────────────────────
         LocalDate startDate = LocalDate.parse(tourDate);
@@ -330,20 +338,41 @@ public class BookingService {
             throw new IllegalArgumentException("ไม่สามารถเลือกวันย้อนหลังได้");
         }
 
-        // ── 2. ดึง Tour ───────────────────────────────────────
+        // ── 2. ดึง Tour (ไม่ต้องล็อก แค่ใช้ราคา/max seats) ──
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบทัวร์"));
+
+        // ── 2.5 ดึง schedule ของวันที่เลือก (ยังไม่ล็อก) ──
+        Tourschedule scheduleRef = tourScheduleRepository
+                .findByTourTouridAndOpendate(tourId, java.sql.Date.valueOf(startDate))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
+
+        // 🔒 ล็อกแถว schedule นี้ไว้ทันที — คนอื่นที่จองรอบเดียวกันพร้อมกัน
+        // จะต้องรอคิว จนกว่า transaction นี้ commit/rollback ก่อน
+        // ถึงจะอ่านจำนวนที่นั่งที่อัปเดตแล้วได้ (กันที่นั่งเกิน)
+        Tourschedule schedule = tourScheduleRepository
+                .findByIdForUpdate(scheduleRef.getScheduleid())
+                .orElseThrow(() -> new IllegalArgumentException("ไม่พบรอบทัวร์"));
+
+        if (!"เปิดรับจอง".equals(schedule.getStatus())) {
+            throw new IllegalArgumentException("รอบทัวร์วันที่เลือกไม่เปิดรับจองแล้ว");
+        }
 
         // ── 3. คำนวณจำนวนคน ─────────────────────────────────
         int adults = (adult != null && adult > 0) ? adult : 1;
         int childs = (children != null) ? children : 0;
         int totalGuest = adults + childs;
 
-        // ── 4. ตรวจที่นั่ง ───────────────────────────────────
+        // ── 4. ตรวจที่นั่ง เฉพาะรอบนี้ (ไม่ใช่รวมทั้ง tour) ──
         if (tour.getMaxSeatstour() != null) {
-            int availableSeats = tourService.getAvailableSeats(tour);
+            int bookedInSchedule = tourScheduleRepository
+                    .countBookedSeatsBySchedule(schedule.getScheduleid());
+            int availableSeats = tour.getMaxSeatstour() - bookedInSchedule;
+
             if (totalGuest > availableSeats) {
-                throw new IllegalArgumentException("ที่นั่งคงเหลือไม่เพียงพอ (เหลือ " + availableSeats + " ที่นั่ง)");
+                throw new IllegalArgumentException(
+                        "ที่นั่งคงเหลือไม่เพียงพอ (เหลือ " + Math.max(0, availableSeats) + " ที่นั่ง)");
             }
         }
 
@@ -351,9 +380,8 @@ public class BookingService {
         // หมายเหตุ: ถ้าผู้จองไปเองด้วย (isBookerGoing == true) ต้องกรอกเลขบัตรของ
         // ผู้จองเองมาเป็นตัวแรกใน guestIdcards ด้วย (ฝั่ง HTML วางช่องผู้จองไว้ก่อนแขกคนอื่นเสมอ)
         // ดังนั้นจำนวนเลขบัตรที่ต้องมี = totalGuest เท่ากันไม่ว่าจะไปเองหรือจองให้คนอื่น
-        boolean insurance = Boolean.TRUE.equals(wantInsurance);
+        boolean insurance = true;
         if (insurance) {
-           
             if (guestIdcards == null || guestIdcards.size() < totalGuest) {
                 throw new IllegalArgumentException("กรุณากรอกเลขบัตรประชาชนให้ครบทุกท่านเพื่อทำประกัน");
             }
@@ -363,24 +391,24 @@ public class BookingService {
                 }
             }
         }
-        // ── 4.6 Validate จุดรับ (กรณีให้ทัวร์ไปรับที่โรงแรม ต้องอยู่ในเชียงใหม่เท่านั้น) ──
-if ("โรงแรม/ที่พัก".equals(pickuptype)) {
-    if (pickuplocation == null || pickuplocation.trim().isEmpty()) {
-        throw new IllegalArgumentException("กรุณาระบุชื่อโรงแรม/ที่พักสำหรับรับ");
-    }
-    if (!pickuplocation.contains("เชียงใหม่")) {
-        throw new IllegalArgumentException("บริการรับที่พักรองรับเฉพาะในเขตจังหวัดเชียงใหม่เท่านั้น");
-    }
-}
 
+        // ── 4.6 Validate จุดรับ (กรณีให้ทัวร์ไปรับที่โรงแรม ต้องอยู่ในเชียงใหม่เท่านั้น) ──
+        if ("โรงแรม/ที่พัก".equals(pickuptype)) {
+            if (pickuplocation == null || pickuplocation.trim().isEmpty()) {
+                throw new IllegalArgumentException("กรุณาระบุชื่อโรงแรม/ที่พักสำหรับรับ");
+            }
+            if (!pickuplocation.contains("เชียงใหม่")) {
+                throw new IllegalArgumentException("บริการรับที่พักรองรับเฉพาะในเขตจังหวัดเชียงใหม่เท่านั้น");
+            }
+        }
 
         // ── 5. คำนวณราคา ────────────────────────────────────
         double tourSubtotal = (adults * tour.getAdultprice()) + (childs * tour.getChildprice());
 
-double insuranceFeePerPerson = insurance ? INSURANCE_PRICE_PER_PERSON : 0.0;
-double subtotalInsurance = insurance ? (insuranceFeePerPerson * totalGuest) : 0.0;
+        double insuranceFeePerPerson = insurance ? INSURANCE_PRICE_PER_PERSON : 0.0;
+        double subtotalInsurance = insurance ? (insuranceFeePerPerson * totalGuest) : 0.0;
 
-double grandTotal = tourSubtotal + subtotalInsurance;
+        double grandTotal = tourSubtotal + subtotalInsurance;
 
         // ── 6. สร้าง Booking ─────────────────────────────────
         Booking booking = new Booking();
@@ -409,7 +437,8 @@ double grandTotal = tourSubtotal + subtotalInsurance;
         detail.setId(detailId);
         detail.setBooking(booking);
         detail.setTour(tour);
-       
+        detail.setTourschedule(schedule);
+
         detail.setNumofadult(adults);
         detail.setNumofchild(childs);
         detail.setSubtotaltour(tourSubtotal);   // ค่าทัวร์ล้วนๆ ไม่รวมประกัน
@@ -464,7 +493,7 @@ double grandTotal = tourSubtotal + subtotalInsurance;
         return booking.getBookingid();
     }
 
-    // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
     //  EDIT TOUR BOOKING
     // ════════════════════════════════════════════════════════
 
@@ -476,6 +505,8 @@ double grandTotal = tourSubtotal + subtotalInsurance;
             Integer adult,
             Integer children,
             String note,
+            String pickuptype,        // ➕ เพิ่ม
+            String pickuplocation,
             String guestFirstname,
             String guestLastname) {
 
@@ -511,6 +542,16 @@ double grandTotal = tourSubtotal + subtotalInsurance;
                     "ไม่พบรายละเอียดทัวร์");
         }
 
+        // ── 4.6 Validate จุดรับ (เหมือนตอน create) ──
+    if ("โรงแรม/ที่พัก".equals(pickuptype)) {
+        if (pickuplocation == null || pickuplocation.trim().isEmpty()) {
+            throw new IllegalArgumentException("กรุณาระบุชื่อโรงแรม/ที่พักสำหรับรับ");
+        }
+        if (!pickuplocation.contains("เชียงใหม่")) {
+            throw new IllegalArgumentException("บริการรับที่พักรองรับเฉพาะในเขตจังหวัดเชียงใหม่เท่านั้น");
+        }
+    }
+
         Bookingtourdetail detail =
                 booking.getTourDetails().get(0);
 
@@ -524,6 +565,35 @@ double grandTotal = tourSubtotal + subtotalInsurance;
                     "ไม่สามารถเลือกวันย้อนหลังได้");
         }
 
+        // ── 5.5 ดึง/ล็อกรอบทัวร์ของวันที่ใหม่ ─────────────
+        // ถ้า user เปลี่ยนวันเดินทาง → ต้องหารอบ (schedule) ใหม่
+        // ถ้าวันเดิม → ยังต้องล็อกรอบเดิมไว้ เพราะจำนวนคนอาจเปลี่ยน
+        Tourschedule oldSchedule = detail.getTourschedule();
+        boolean isChangingDate = oldSchedule == null
+                || !oldSchedule.getOpendate().toLocalDate().equals(startDate);
+
+        Tourschedule newSchedule;
+        if (isChangingDate) {
+            Tourschedule newScheduleRef = tourScheduleRepository
+                    .findByTourTouridAndOpendate(tour.getTourid(), java.sql.Date.valueOf(startDate))
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
+
+            // 🔒 ล็อกรอบใหม่ไว้ ก่อนเช็คที่นั่ง กันคนอื่นแย่งที่พร้อมกัน
+            newSchedule = tourScheduleRepository
+                    .findByIdForUpdate(newScheduleRef.getScheduleid())
+                    .orElseThrow(() -> new IllegalArgumentException("ไม่พบรอบทัวร์"));
+
+            if (!"เปิดรับจอง".equals(newSchedule.getStatus())) {
+                throw new IllegalArgumentException("รอบทัวร์วันที่เลือกไม่เปิดรับจองแล้ว");
+            }
+        } else {
+            // วันเดิม ไม่ได้เปลี่ยนรอบ — ยังล็อกไว้เพราะจำนวนคนอาจเปลี่ยน
+            newSchedule = tourScheduleRepository
+                    .findByIdForUpdate(oldSchedule.getScheduleid())
+                    .orElseThrow(() -> new IllegalArgumentException("ไม่พบรอบทัวร์"));
+        }
+
         // ── 6. คำนวณใหม่ ──────────────────────────────────
         int adults =
                 (adult != null && adult > 0) ? adult : 1;
@@ -532,6 +602,23 @@ double grandTotal = tourSubtotal + subtotalInsurance;
                 (children != null) ? children : 0;
 
         int totalGuest = adults + childs;
+
+        // ── 6.2 เช็คที่นั่งของรอบใหม่ ───────────────────────
+        // ถ้าเปลี่ยนวัน: เช็คที่นั่งว่างของรอบใหม่ตรงๆ (ยังไม่มีคนของ booking นี้อยู่ในรอบนั้น)
+        // ถ้าไม่เปลี่ยนวัน: booking นี้นับรวมอยู่ใน bookedInSchedule แล้ว ต้องหักจำนวนเดิมออกก่อน
+        //                   ถึงจะได้ที่นั่งว่างที่แท้จริงสำหรับเทียบกับจำนวนคนใหม่
+        if (tour.getMaxSeatstour() != null) {
+            int bookedInSchedule = tourScheduleRepository
+                    .countBookedSeatsBySchedule(newSchedule.getScheduleid());
+
+            int currentGuestInThisBooking = isChangingDate ? 0 : booking.getNumofguest();
+            int availableSeats = tour.getMaxSeatstour() - (bookedInSchedule - currentGuestInThisBooking);
+
+            if (totalGuest > availableSeats) {
+                throw new IllegalArgumentException(
+                        "ที่นั่งคงเหลือไม่เพียงพอ (เหลือ " + Math.max(0, availableSeats) + " ที่นั่ง)");
+            }
+        }
 
         double subtotal =
                 (adults * tour.getAdultprice())
@@ -547,7 +634,7 @@ double grandTotal = tourSubtotal + subtotalInsurance;
         double grandTotal = subtotal + subtotalInsurance;
 
         // ── 7. อัปเดต detail ──────────────────────────────
-       
+        detail.setTourschedule(newSchedule);   // ⬅️ ผูกกับรอบใหม่ (สำคัญ — เดิมไม่เคยอัปเดต)
         detail.setNumofadult(adults);
         detail.setNumofchild(childs);
         detail.setSubtotaltour(subtotal);
@@ -558,6 +645,8 @@ double grandTotal = tourSubtotal + subtotalInsurance;
         booking.setNumofguest(totalGuest);
         booking.setNote(note);
         booking.setTotalamount(grandTotal);
+        booking.setPickuptype(pickuptype);          // ➕ เพิ่ม
+        booking.setPickuplocation(pickuplocation);
         booking.setSubtotalInsurance(subtotalInsurance);
 
         bookingRepository.save(booking);
@@ -601,7 +690,6 @@ double grandTotal = tourSubtotal + subtotalInsurance;
             }
         }
     }
-
     // ════════════════════════════════════════════════════════
     //  CANCEL TOUR BOOKING
     // ════════════════════════════════════════════════════════

@@ -14,6 +14,9 @@ import com.example.miniproject.entity.Member;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.service.Member.BookingService;
 import com.example.miniproject.service.Member.TourService;
+import com.example.miniproject.repository.Tour.TourScheduleRepository;
+import com.example.miniproject.entity.Tourschedule;
+import java.time.LocalDate;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -25,6 +28,9 @@ public class BookingTourController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private TourScheduleRepository tourScheduleRepository;
 
     // ════════════════════════════════════════════════════════
     // GET : หน้าจองทัวร์
@@ -48,10 +54,15 @@ public String bookingPage(
     int availableSeats = tourService.getAvailableSeats(tour);
     String seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
 
+
+    List<Tourschedule> schedules = tourScheduleRepository
+            .findBookableSchedules(id, java.sql.Date.valueOf(LocalDate.now()));
+
     model.addAttribute("tour", tour);
     model.addAttribute("availableSeats", availableSeats);
     model.addAttribute("seatLevel", seatLevel);
     model.addAttribute("insurancePrice", BookingService.INSURANCE_PRICE_PER_PERSON);
+     model.addAttribute("schedules", schedules);
 
     return "Member/booking_tour";
 }
@@ -95,6 +106,7 @@ public String createBooking(
         return "redirect:/booking/tour/" + tourId;
 
     } catch (Exception e) {
+        e.printStackTrace();
         redirectAttributes.addFlashAttribute(
                 "errorMsg",
                 "ไม่สามารถบันทึกข้อมูลการจองได้ กรุณาลองใหม่อีกครั้ง");
@@ -107,47 +119,51 @@ public String createBooking(
     // ════════════════════════════════════════════════════════
     @PostMapping("/booking/tour/edit/{id}")
     public String editBooking(
-            @PathVariable("id") String bookingId,
-            @RequestParam("tourdate") String tourDate,
-            @RequestParam(value = "adult", defaultValue = "1") Integer adult,
-            @RequestParam(value = "children", defaultValue = "0") Integer children,
-            @RequestParam(value = "note", required = false) String note,
-            @RequestParam(value = "guestFirstname", required = false) String guestFirstname,
-            @RequestParam(value = "guestLastname", required = false) String guestLastname,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+        @PathVariable("id") String bookingId,
+        @RequestParam("tourdate") String tourDate,
+        @RequestParam(value = "adult", defaultValue = "1") Integer adult,
+        @RequestParam(value = "children", defaultValue = "0") Integer children,
+        @RequestParam(value = "note", required = false) String note,
+        @RequestParam(value = "pickuptype", required = false) String pickuptype,       // ➕ เพิ่ม
+        @RequestParam(value = "pickuplocation", required = false) String pickuplocation, // ➕ เพิ่ม
+        @RequestParam(value = "guestFirstname", required = false) String guestFirstname,
+        @RequestParam(value = "guestLastname", required = false) String guestLastname,
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
 
-        Member member = (Member) session.getAttribute("loggedInMember");
+    Member member = (Member) session.getAttribute("loggedInMember");
 
-        if (member == null) {
-            return "redirect:/member/login";
-        }
-
-        try {
-            bookingService.editTourBooking(
-                    bookingId,
-                    member.getMemberid(),
-                    tourDate,
-                    adult,
-                    children,
-                    note,
-                    guestFirstname,
-                    guestLastname);
-
-            redirectAttributes.addFlashAttribute("successMsg", "แก้ไขการจองเรียบร้อยแล้ว");
-            return "redirect:/member/bookings/detail/" + bookingId;
-
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
-            return "redirect:/member/bookings/detail/" + bookingId;
-
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(
-                    "errorMsg",
-                    "ไม่สามารถแก้ไขข้อมูลการจองทัวร์ได้ กรุณาลองใหม่อีกครั้ง");
-            return "redirect:/member/bookings/detail/" + bookingId;
-        }
+    if (member == null) {
+        return "redirect:/member/login";
     }
+
+    try {
+        bookingService.editTourBooking(
+                bookingId,
+                member.getMemberid(),
+                tourDate,
+                adult,
+                children,
+                note,
+                pickuptype,       // ➕ เพิ่ม
+                pickuplocation,   // ➕ เพิ่ม
+                guestFirstname,
+                guestLastname);
+
+        redirectAttributes.addFlashAttribute("successMsg", "แก้ไขการจองเรียบร้อยแล้ว");
+        return "redirect:/member/bookings/detail/" + bookingId;
+
+    } catch (IllegalArgumentException | IllegalStateException e) {
+        redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+        return "redirect:/member/bookings/detail/" + bookingId;
+
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute(
+                "errorMsg",
+                "ไม่สามารถแก้ไขข้อมูลการจองทัวร์ได้ กรุณาลองใหม่อีกครั้ง");
+        return "redirect:/member/bookings/detail/" + bookingId;
+    }
+}
 
     // ════════════════════════════════════════════════════════
     // POST : ยกเลิกการจองทัวร์

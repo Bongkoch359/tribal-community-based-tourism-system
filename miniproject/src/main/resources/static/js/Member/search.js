@@ -166,8 +166,75 @@ document.addEventListener('click', function(e) {
   if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove('open');
 });
 
+/* ── Hero image slider ── */
+let heroIndex = 0;
+let heroTimer = null;
+
+function heroGoTo(i) {
+  const slides = document.querySelectorAll('#heroSlider .hero-slide');
+  const dots   = document.querySelectorAll('#heroDots .hero-dot');
+  if (!slides.length) return;
+  heroIndex = (i + slides.length) % slides.length;
+  slides.forEach((s, idx) => s.classList.toggle('active', idx === heroIndex));
+  dots.forEach((d, idx) => d.classList.toggle('active', idx === heroIndex));
+}
+
+function heroSlide(delta) {
+  heroGoTo(heroIndex + delta);
+  restartHeroAutoplay();
+}
+
+function startHeroAutoplay() {
+  const slides = document.querySelectorAll('#heroSlider .hero-slide');
+  if (slides.length <= 1) return;
+  heroTimer = setInterval(() => heroGoTo(heroIndex + 1), 5500);
+}
+
+function restartHeroAutoplay() {
+  if (heroTimer) clearInterval(heroTimer);
+  startHeroAutoplay();
+}
+
+function initHeroSlider() {
+  const slides   = document.querySelectorAll('#heroSlider .hero-slide');
+  const dotsWrap = document.getElementById('heroDots');
+  const arrows   = document.querySelectorAll('.hero-arrow');
+  if (!slides.length || !dotsWrap) return;
+
+  // ถ้ามีรูปเดียว ไม่ต้องแสดงลูกศร/จุด
+  if (slides.length <= 1) {
+    arrows.forEach(a => a.style.display = 'none');
+    dotsWrap.style.display = 'none';
+    return;
+  }
+
+  dotsWrap.innerHTML = '';
+  slides.forEach((_, idx) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'hero-dot' + (idx === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'ไปที่รูปที่ ' + (idx + 1));
+    dot.addEventListener('click', () => { heroGoTo(idx); restartHeroAutoplay(); });
+    dotsWrap.appendChild(dot);
+  });
+
+  // ปัดซ้าย-ขวาบนมือถือ
+  const heroEl = document.querySelector('.hero');
+  if (heroEl) {
+    let touchStartX = 0;
+    heroEl.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    heroEl.addEventListener('touchend', e => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 40) heroSlide(diff < 0 ? 1 : -1);
+    }, { passive: true });
+  }
+
+  startHeroAutoplay();
+}
+
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
+  initHeroSlider();
   const params = new URLSearchParams(window.location.search);
   let type = params.get('type');
 
