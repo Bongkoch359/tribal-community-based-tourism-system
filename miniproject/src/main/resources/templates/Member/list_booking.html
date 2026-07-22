@@ -860,30 +860,29 @@
                 (<span th:text="${homestayCount}">0</span>)
             </a>
         </div>
-
-        <!-- STATUS BAR -->
-        <div class="status-bar">
-            <a th:href="@{/member/bookings/list(type=${activeType})}"
-               th:class="${activeStatus == null} ? 'status-btn active-all' : 'status-btn'">
-                ทั้งหมด
-            </a>
-            <a th:href="@{/member/bookings/list(type=${activeType},status='PENDING')}"
-               th:class="${activeStatus == 'PENDING'} ? 'status-btn active-pending' : 'status-btn'">
-                รอชำระเงิน
-            </a>
-            <a th:href="@{/member/bookings/list(type=${activeType},status='WAITING_APPROVAL')}"
-               th:class="${activeStatus == 'WAITING_APPROVAL'} ? 'status-btn active-waiting' : 'status-btn'">
-                รออนุมัติ
-            </a>
-            <a th:href="@{/member/bookings/list(type=${activeType},status='CONFIRMED')}"
-               th:class="${activeStatus == 'CONFIRMED'} ? 'status-btn active-confirmed' : 'status-btn'">
-                อนุมัติแล้ว
-            </a>
-            <a th:href="@{/member/bookings/list(type=${activeType},status='CANCEL')}"
-               th:class="${activeStatus == 'CANCEL'} ? 'status-btn active-cancel' : 'status-btn'">
-                ยกเลิก
-            </a>
-        </div>
+<!-- STATUS BAR -->
+<div class="status-bar">
+    <a th:href="@{/member/bookings/list(type=${activeType})}"
+       th:class="${activeStatus == null} ? 'status-btn active-all' : 'status-btn'">
+        ทั้งหมด (<span th:text="${countAll}">0</span>)
+    </a>
+    <a th:href="@{/member/bookings/list(type=${activeType},status='PENDING')}"
+       th:class="${activeStatus == 'PENDING'} ? 'status-btn active-pending' : 'status-btn'">
+        รอชำระเงิน (<span th:text="${countPending}">0</span>)
+    </a>
+    <a th:href="@{/member/bookings/list(type=${activeType},status='WAITING_APPROVAL')}"
+       th:class="${activeStatus == 'WAITING_APPROVAL'} ? 'status-btn active-waiting' : 'status-btn'">
+        รออนุมัติ (<span th:text="${countWaiting}">0</span>)
+    </a>
+    <a th:href="@{/member/bookings/list(type=${activeType},status='CONFIRMED')}"
+       th:class="${activeStatus == 'CONFIRMED'} ? 'status-btn active-confirmed' : 'status-btn'">
+        อนุมัติแล้ว (<span th:text="${countConfirmed}">0</span>)
+    </a>
+    <a th:href="@{/member/bookings/list(type=${activeType},status='CANCEL')}"
+       th:class="${activeStatus == 'CANCEL'} ? 'status-btn active-cancel' : 'status-btn'">
+        ยกเลิก (<span th:text="${countCancel}">0</span>)
+    </a>
+</div>
 
         <!-- TABLE -->
         <div class="table-wrap">

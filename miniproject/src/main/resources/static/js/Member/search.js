@@ -20,9 +20,14 @@ const tabCfg = {
   },
 };
 
-function changeTab(type) { switchTab(type); }
+function changeTab(type) { switchTab(type, true); }
 
-function switchTab(type) {
+/**
+ * @param {string} type - 'activity' | 'tour' | 'homestay'
+ * @param {boolean} isUserClick - true = ผู้ใช้กด tab เอง (จะซ่อน "รายการแนะนำ")
+ *                                false = เรียกตอนโหลดหน้าแรก (จะไม่ยุ่งกับ "รายการแนะนำ")
+ */
+function switchTab(type, isUserClick = true) {
   // 1. Tab button active
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tab === type);
@@ -45,6 +50,13 @@ function switchTab(type) {
   document.querySelectorAll('.section-block').forEach(block => {
     block.classList.toggle('show', block.dataset.type === type);
   });
+
+  // 4.1 ซ่อน "รายการแนะนำ" ทันทีที่ผู้ใช้กด tab เอง
+  //     (ให้เห็นเฉพาะตอนเปิดหน้าแรกเท่านั้น)
+  if (isUserClick) {
+    const featuredAll = document.getElementById('featuredAll');
+    if (featuredAll) featuredAll.style.display = 'none';
+  }
 
   // 5. Toggle search fields ตาม tab
   const dateTourStart = document.getElementById('date-tour-start-wrapper');
@@ -238,15 +250,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   let type = params.get('type');
 
-  if (params.has('managerId') && !type) {
-    type = 'tour';
-    const featuredAll = document.getElementById('featuredAll');
-    if (featuredAll) featuredAll.style.display = 'none';
-  }
-
   if (!type || !tabCfg[type]) type = 'activity';
 
-  switchTab(type);
+  // isUserClick = false -> ไม่ยุ่งกับ "รายการแนะนำ" ตอนโหลดหน้าแรก
+  // (แสดงหรือไม่แสดงถูกกำหนดโดย server ผ่าน th:if อยู่แล้ว)
+  switchTab(type, false);
 
   // ผูก event listener ของ date validation แค่ครั้งเดียวตอนโหลดหน้า
   initTourDateValidation();
