@@ -9,4 +9,6 @@ public interface PaymentService {
     PaymentDTO getPaymentPageData(String bookingId);
 
     void confirmPayment(String bookingId, MultipartFile slipFile, String payNote);
+
+    PaymentDTO getReceiptData(String bookingId);
 }

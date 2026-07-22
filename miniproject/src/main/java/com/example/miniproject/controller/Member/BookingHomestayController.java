@@ -1,15 +1,20 @@
 package com.example.miniproject.controller.Member;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.miniproject.dto.Member.PaymentDTO;
+import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Member;
 import com.example.miniproject.entity.Roomtype;
+import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.service.Homestay.RoomTypeService;
 import com.example.miniproject.service.Member.BookingService;
+import com.example.miniproject.service.Member.PaymentService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -21,6 +26,10 @@ public class BookingHomestayController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    @Qualifier("homestayPaymentService")
+    private PaymentService paymentService;
 
     // ════════════════════════════════════════════════════════
     //  GET : หน้าจองโฮมสเตย์
@@ -140,6 +149,52 @@ public class BookingHomestayController {
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถยกเลิกการจองได้ กรุณาลองใหม่อีกครั้ง");
+            return "redirect:/member/bookings/detail/" + bookingId;
+        }
+    }
+
+
+    // ════════════════════════════════════════════════════════
+    //  GET : ใบเสร็จ
+    // ════════════════════════════════════════════════════════
+
+    @GetMapping("/member/receipt/{id}")
+    public String viewReceipt(
+            @PathVariable("id") String bookingId,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        Member member = (Member) session.getAttribute("loggedInMember");
+        if (member == null) return "redirect:/member/login";
+
+        Booking booking = bookingService.getBookingById(bookingId);
+        if (booking == null) {
+            redirectAttributes.addFlashAttribute("errorMsg", "ไม่พบข้อมูลการจอง");
+            return "redirect:/member/bookings/list";
+        }
+
+        // กันคนอื่นเดา bookingId แล้วดูใบเสร็จของคนอื่น
+        if (booking.getMember() == null
+                || !booking.getMember().getMemberid().equals(member.getMemberid())) {
+            redirectAttributes.addFlashAttribute("errorMsg", "ไม่มีสิทธิ์เข้าถึงใบเสร็จนี้");
+            return "redirect:/member/bookings/list";
+        }
+
+        // ใบเสร็จควรดูได้เฉพาะที่จ่ายแล้ว/เสร็จสิ้นแล้ว
+        if (booking.getBookingStatus() != BookingStatus.CONFIRMED
+                && booking.getBookingStatus() != BookingStatus.COMPLETED) {
+            redirectAttributes.addFlashAttribute("errorMsg", "การจองนี้ยังไม่สามารถออกใบเสร็จได้");
+            return "redirect:/member/bookings/detail/" + bookingId;
+        }
+
+        try {
+            PaymentDTO receipt = paymentService.getReceiptData(bookingId);
+            model.addAttribute("receipt", receipt);
+            model.addAttribute("booking", booking);
+            return "member/view_receipt"; // templates/member/receipt.html
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "ไม่พบข้อมูลการชำระเงิน: " + e.getMessage());
             return "redirect:/member/bookings/detail/" + bookingId;
         }
     }

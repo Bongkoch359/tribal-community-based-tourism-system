@@ -176,4 +176,27 @@ public class TourPaymentServiceImpl implements PaymentService {
             throw new RuntimeException("ไม่สามารถบันทึกสลิปได้: " + e.getMessage(), e);
         }
     }
+
+
+    // ─────────────────────────────────────────────────────────────
+    // ดึงข้อมูลสำหรับแสดงหน้าใบเสร็จ (ทัวร์)
+    // ─────────────────────────────────────────────────────────────
+    @Override
+    public PaymentDTO getReceiptData(String bookingId) {
+        // ใช้ข้อมูลชุดเดียวกับหน้าชำระเงิน (booking, tour, manager, ...)
+        PaymentDTO dto = getPaymentPageData(bookingId);
+
+        Payment payment = paymentRepository.findByBooking_Bookingid(bookingId);
+        if (payment == null) {
+            throw new RuntimeException("ไม่พบข้อมูลการชำระเงินของการจองนี้: " + bookingId);
+        }
+
+        dto.setPaymentId(payment.getPaymentid());
+        dto.setPaymentDate(payment.getPaymentdate());
+        dto.setAmount(payment.getAmount());
+        dto.setPaymentSlip(payment.getPaymentslip());
+        dto.setPaymentStatus(payment.getPaymentStatus().name());
+
+        return dto;
+    }
 }

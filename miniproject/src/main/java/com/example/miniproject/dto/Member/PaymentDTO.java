@@ -33,6 +33,12 @@ public class PaymentDTO {
     private String homestayName;    // homestayname
     private String homestayAddress; // address
 
+    // ── NEW: ใช้สำหรับหน้าใบเสร็จ (จาก Payment) ─────────────────────
+    private String paymentId;       // paymentid
+    private Date paymentDate;       // paymentdate
+    private Double amount;          // amount ที่จ่ายจริง
+    private String paymentSlip;     // ชื่อไฟล์สลิป
+
     // ── getters / setters ─────────────────────────────────────────
 
     public String getBookingId() { return bookingId; }
@@ -88,5 +94,18 @@ public class PaymentDTO {
     public void setHomestayName(String homestayName) { this.homestayName = homestayName; }
 
     public String getHomestayAddress() { return homestayAddress; }
-    public void setHomestayAddress(String homestayAddress) { this.homestayAddress = homestayAddress; }
-}
+    public void setHomestayAddress(String homestayAddress) { this.homestayAddress = homestayAddress;}
+
+    
+    public String getPaymentId() { return paymentId; }
+    public void setPaymentId(String paymentId) { this.paymentId = paymentId; }
+
+    public Date getPaymentDate() { return paymentDate; }
+    public void setPaymentDate(Date paymentDate) { this.paymentDate = paymentDate; }
+
+    public Double getAmount() { return amount; }
+    public void setAmount(Double amount) { this.amount = amount; }
+
+    public String getPaymentSlip() { return paymentSlip; }
+    public void setPaymentSlip(String paymentSlip) { this.paymentSlip = paymentSlip; }
+     }
