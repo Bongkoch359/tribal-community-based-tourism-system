@@ -12,7 +12,7 @@ import com.example.miniproject.entity.enums.BookingStatus;
 
 import com.example.miniproject.entity.Member;
 import com.example.miniproject.entity.Tour;
-import com.example.miniproject.service.Member.BookingService;
+import com.example.miniproject.service.Member.BookingTourService;
 import com.example.miniproject.service.Member.TourService;
 import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.entity.Tourschedule;
@@ -27,7 +27,7 @@ public class BookingTourController {
     private TourService tourService;
 
     @Autowired
-    private BookingService bookingService;
+    private BookingTourService tourBookingService;
 
     @Autowired
     private TourScheduleRepository tourScheduleRepository;
@@ -61,7 +61,7 @@ public String bookingPage(
     model.addAttribute("tour", tour);
     model.addAttribute("availableSeats", availableSeats);
     model.addAttribute("seatLevel", seatLevel);
-    model.addAttribute("insurancePrice", BookingService.INSURANCE_PRICE_PER_PERSON);
+    model.addAttribute("insurancePrice", BookingTourService.INSURANCE_PRICE_PER_PERSON);
      model.addAttribute("schedules", schedules);
 
     return "Member/booking_tour";
@@ -94,10 +94,10 @@ public String createBooking(
     }
 
     try {
-        String bookingId = bookingService.createTourBooking(
+        String bookingId = tourBookingService.createTourBooking(
             member, tourId, tourDate, adult, children, note,
             isBookerGoing, pickuptype, pickuplocation,
-            wantInsurance, guestFirstnames, guestLastnames, guestIdcards);  // ✅ เพิ่ม 2 ตัว
+            wantInsurance, guestFirstnames, guestLastnames, guestIdcards);  
 
         return "redirect:/member/bookings/detail/" + bookingId;
 
@@ -138,7 +138,7 @@ public String createBooking(
     }
 
     try {
-        bookingService.editTourBooking(
+        tourBookingService.editTourBooking(
                 bookingId,
                 member.getMemberid(),
                 tourDate,
@@ -181,7 +181,7 @@ public String createBooking(
         }
 
         try {
-            bookingService.cancelTourBooking(bookingId, member.getMemberid());
+            tourBookingService.cancelTourBooking(bookingId, member.getMemberid());
 
             redirectAttributes.addFlashAttribute("successMsg", "ยกเลิกการจองเรียบร้อยแล้ว");
             return "redirect:/member/bookings/detail/" + bookingId;

@@ -38,42 +38,13 @@ public class TourController {
 
     private static final String UPLOAD_DIR = "uploads/tours/";
 
-    // ✅ ใหม่: เก็บข้อมูลรอบทัวร์ที่กรอกมาพร้อมฟอร์ม (วันที่เริ่ม/จบ + สถานะ)
-    // ก่อนจะนำไปสร้างจริงหลังบันทึกทัวร์สำเร็จ
-    private static final java.util.Set<String> ALLOWED_MANUAL_STATUS = java.util.Set.of("เปิดรับจอง", "ปิด");
-
     private static class ScheduleInput {
         java.time.LocalDate opendate;
         java.time.LocalDate enddate;
         String status; // "เปิดรับจอง" | "ปิด" — ค่าเริ่มต้นถ้าไม่ระบุคือ "เปิดรับจอง"
     }
 
-    // ─── คำนวณสถานะรวมของทัวร์จากสถานะของ "รอบทัวร์" (Tourschedule)
-    // ───────────────
-    // ตัดฟิลด์ status ออกจาก Tour แล้ว ให้คำนวณสดจากรอบทัวร์แทน:
-    // - มีอย่างน้อย 1 รอบ "เปิดรับจอง" → เปิดรับจอง
-    // - ไม่มีรอบเปิดรับจอง แต่มีรอบ "เต็ม" → เต็ม
-    // - มีรอบแต่ทุกรอบถูกปิดหมด → ปิด
-    // - ยังไม่มีรอบทัวร์เลย → ยังไม่เปิดรอบ
-    private String computeOverallStatus(List<Tourschedule> schedules) {
-        if (schedules == null || schedules.isEmpty()) {
-            return "ยังไม่เปิดรอบ";
-        }
-        boolean hasOpen = schedules.stream()
-                .anyMatch(s -> "เปิดรับจอง".equals(s.getStatus()));
-        if (hasOpen)
-            return "เปิดรับจอง";
-
-        boolean hasFull = schedules.stream()
-                .anyMatch(s -> "เต็ม".equals(s.getStatus()));
-        if (hasFull)
-            return "เต็ม";
-
-        return "ปิด";
-    }
-
-    // ─── บันทึกรูปจาก imagesJson
-    // ──────────────────────────────────────────────────
+    // ─── บันทึกรูปจาก imagesJson ──────────────────────────────────────────────
     // รับ 3 format:
     // 1. "__KEEP__" → ไม่เปลี่ยนรูป คืน null
     // 2. "__FILENAMES__:a.jpg||b.jpg" → รูปเดิมทั้งหมด คืน "a.jpg||b.jpg"
@@ -94,7 +65,7 @@ public class TourController {
         try {
             Path dir = Paths.get(UPLOAD_DIR).toAbsolutePath();
             Files.createDirectories(dir);
-            System.out.println("📁 บันทึกรูปที่: " + dir);
+            System.out.println(" บันทึกรูปที่: " + dir);
 
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
             com.fasterxml.jackson.databind.JsonNode arr = mapper.readTree(imagesJson);
@@ -124,7 +95,7 @@ public class TourController {
                     String filename = tourid + "_" + idx + "." + ext;
                     Files.write(dir.resolve(filename), bytes,
                             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                    System.out.println("✅ บันทึกสำเร็จ: " + filename);
+                    System.out.println(" บันทึกสำเร็จ: " + filename);
                     names.add(filename);
                     idx++;
                 } catch (Exception ex) {
@@ -150,10 +121,9 @@ public class TourController {
             return "redirect:/manager/login";
 
         List<Tour> tours = tourService.getToursByManager(manager);
-        // ✅ ไม่มีฟิลด์ status ใน Tour แล้ว → คำนวณสถานะรวมจากรอบทัวร์ (Tourschedule)
-        // สดๆ ให้แต่ละทัวร์
+        
         for (Tour t : tours) {
-            t.setOverallStatus(computeOverallStatus(tourScheduleService.getSchedulesByTour(t.getTourid())));
+            t.setOverallStatus(tourScheduleService.computeOverallStatus(tourScheduleService.getSchedulesByTour(t.getTourid())));
         }
 
         model.addAttribute("tours", tours);
@@ -189,7 +159,7 @@ public class TourController {
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
             @RequestParam(value = "tourtype", required = false) String tourtype,
             @RequestParam(value = "images", required = false) String imagesJson,
-            @RequestParam(value = "schedules", required = false) String schedulesJson, // ✅ ใหม่: รอบทัวร์ (JSON array
+            @RequestParam(value = "schedules", required = false) String schedulesJson, // ✅ รอบทัวร์ (JSON array
                                                                                        // [{opendate,enddate}])
                                                                                        // กรอกพร้อมตอนเพิ่มทัวร์
                                                                                        // ไม่ต้องแยกหน้า
@@ -231,7 +201,7 @@ public class TourController {
             return "Tour/addTour";
         }
 
-        // ✅ เพิ่มใหม่: ตรวจความสอดคล้องของจำนวนวัน/คืน (กันกรณี POST ตรงๆ ข้าม JS)
+        // ตรวจความสอดคล้องของจำนวนวัน/คืน (กันกรณี POST ตรงๆ ข้าม JS)
         if (numberOfDays == 1) {
             // ทัวร์รายวัน: คืนต้องเป็น 0 (หรือไม่ส่งมาเลยก็ยอมรับ แล้ว backend จะ set
             // ให้เป็น 0 อยู่แล้ว)
@@ -252,7 +222,7 @@ public class TourController {
                 model.addAttribute("loggedInManager", manager);
                 return "Tour/addTour";
             }
-            // ✅ ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity
+            // ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity
             // รองรับแค่ทัวร์รายวัน)
             if (tourtype == null || tourtype.isBlank()) {
                 model.addAttribute("errorMessage",
@@ -268,8 +238,10 @@ public class TourController {
         }
 
         // ─── ตรวจสอบและแปลงรอบทัวร์ (schedules) ที่กรอกมาพร้อมฟอร์มเพิ่มทัวร์ ───
-        // ✅ ใหม่: ไม่ต้องไปเพิ่มรอบทัวร์แยกหน้าอีกต่อไป กรอกพร้อมกันตรงนี้เลย
-        // (รวมสถานะด้วย)
+        
+        // — logic นี้ยังอยู่ใน TourController เพราะเป็นส่วนหนึ่งของการสร้างทัวร์ใหม่
+        // (สร้าง Tour + schedules พร้อมกันในธุรกรรมเดียว) ไม่ได้ย้ายไป
+        // TourScheduleController
         List<ScheduleInput> scheduleInputs = new ArrayList<>();
         if (schedulesJson != null && !schedulesJson.isBlank()) {
             try {
@@ -294,10 +266,10 @@ public class TourController {
                         return "Tour/addTour";
                     }
 
-                    // ✅ สถานะรอบทัวร์: รับได้แค่ "เปิดรับจอง" หรือ "ปิด" เท่านั้น
+                    //  สถานะรอบทัวร์: รับได้แค่ "เปิดรับจอง" หรือ "ปิด" เท่านั้น
                     // (เต็มคำนวณอัตโนมัติจากการจอง)
                     // ค่าอื่นหรือไม่ระบุ → ใช้ค่าเริ่มต้น "เปิดรับจอง"
-                    String status = (statusStr != null && ALLOWED_MANUAL_STATUS.contains(statusStr.trim()))
+                    String status = (statusStr != null && TourScheduleService.ALLOWED_MANUAL_STATUS.contains(statusStr.trim()))
                             ? statusStr.trim()
                             : "เปิดรับจอง";
 
@@ -336,13 +308,13 @@ public class TourController {
             Tour saved = tourService.createTour(tour, manager,
                     tourtype != null && !tourtype.isBlank() ? tourtype.trim() : null);
 
-            // ✅ บันทึกรูปจาก base64 JSON
+            //  บันทึกรูปจาก base64 JSON
             String imageNames = saveImagesFromBase64(imagesJson, saved.getTourid());
             if (imageNames != null) {
                 tourService.updateImages(saved.getTourid(), imageNames);
             }
 
-            // ✅ บันทึกรอบทัวร์ (Tourschedule) ที่กรอกมาพร้อมกันในฟอร์มเพิ่มทัวร์ —
+            //  บันทึกรอบทัวร์ (Tourschedule) ที่กรอกมาพร้อมกันในฟอร์มเพิ่มทัวร์
             for (ScheduleInput si : scheduleInputs) {
                 Tourschedule createdSchedule = tourScheduleService.createSchedule(saved,
                         Date.valueOf(si.opendate), Date.valueOf(si.enddate));
@@ -351,7 +323,7 @@ public class TourController {
                 }
             }
 
-            return "redirect:/manager/tours?success=created"; 
+            return "redirect:/manager/tours?success=created";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
             model.addAttribute("loggedInManager", manager);
@@ -375,7 +347,7 @@ public class TourController {
 
         List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
         Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
-        tour.setOverallStatus(computeOverallStatus(schedules));
+        tour.setOverallStatus(tourScheduleService.computeOverallStatus(schedules));
 
         model.addAttribute("tour", tour);
         model.addAttribute("schedules", schedules);
@@ -387,132 +359,6 @@ public class TourController {
         return "Tour/tourDetail";
     }
 
-    // ─── แสดงหน้าจัดการรอบทัวร์ (แยกต่างหากจากหน้าแก้ไขข้อมูลทัวร์)//
-    // ──────────────────
-    @GetMapping("/{tourid}/schedules")
-    public String manageSchedules(@PathVariable("tourid") String tourid,
-            @RequestParam(value = "success", required = false) String success,
-            HttpSession session, Model model) {
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null)
-            return "redirect:/manager/login";
-
-        Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-        if (tour == null)
-            return "redirect:/manager/tours?error=notfound";
-
-        if (!tour.getCommunitymanager().getManagerid().equals(manager.getManagerid())) {
-            return "redirect:/manager/tours?error=forbidden";
-        }
-
-        List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
-        tour.setOverallStatus(computeOverallStatus(schedules));
-
-        model.addAttribute("tour", tour);
-        model.addAttribute("schedules", schedules);
-        model.addAttribute("bookedSeatsMap", tourScheduleService.getBookedSeatsMap(tourid));
-        model.addAttribute("loggedInManager", manager);
-        if ("created".equals(success)) {
-            model.addAttribute("successMessage", "สร้างทัวร์สำเร็จ! ตอนนี้เพิ่มวันที่เปิดทัวร์ได้เลย");
-        }
-        return "Tour/tourschedule";
-    }
-
-    // ─── เพิ่มวันที่เปิดทัวร์ใหม่ (Tourschedule) ─────────────────────────────────
-
-    @PostMapping("/{tourid}/schedules")
-    public String addSchedule(@PathVariable("tourid") String tourid,
-            @RequestParam("opendate") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate opendate,
-            @RequestParam("enddate") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate enddate,
-            @RequestParam(value = "status", required = false) String status, 
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null)
-            return "redirect:/manager/login";
-
-        Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-        if (tour == null || !tour.getCommunitymanager().getManagerid().equals(manager.getManagerid())) {
-            return "redirect:/manager/tours?error=forbidden";
-        }
-
-        // ✅ ทัวร์รายวัน (numberOfDays == 1) → วันที่เริ่มกับวันที่จบต้องเท่ากันเสมอ
-        // บังคับที่ backend ด้วย ไม่พึ่ง JS ฝั่งหน้าเว็บอย่างเดียว
-        java.time.LocalDate finalEnddate = enddate;
-        if (tour.getNumberOfDays() != null && tour.getNumberOfDays() == 1) {
-            finalEnddate = opendate;
-        }
-
-        // ตรวจสอบความถูกต้องของวันที่ (Validation)
-        if (finalEnddate.isBefore(opendate)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "วันที่จบทัวร์ต้องไม่ก่อนหน้าวันที่เริ่มทัวร์");
-            return "redirect:/manager/tours/" + tourid + "/schedules";
-        }
-
-        // ส่ง enddate เข้าไปใน Service
-        Tourschedule createdSchedule = tourScheduleService.createSchedule(tour, Date.valueOf(opendate),
-                Date.valueOf(finalEnddate));
-
-        // ✅ ตั้งสถานะเริ่มต้นตามที่เลือก (ถ้าไม่ระบุหรือค่าไม่ถูกต้อง
-        // จะใช้ค่าเริ่มต้นจาก service คือ "เปิดรับจอง")
-        if (createdSchedule != null && status != null && ALLOWED_MANUAL_STATUS.contains(status.trim())) {
-            tourScheduleService.updateStatus(createdSchedule.getScheduleid(), status.trim());
-        }
-
-        redirectAttributes.addFlashAttribute("successMessage", "เพิ่มวันที่เปิดทัวร์สำเร็จ");
-        return "redirect:/manager/tours/" + tourid + "/schedules";
-    }
-
-    // ─── ปิด/เปิดรับจองรอบใดรอบหนึ่งด้วยมือ ─────────────────────────────────────
-
-    @PostMapping("/{tourid}/schedules/{scheduleid}/status")
-    public String updateScheduleStatus(@PathVariable("tourid") String tourid,
-            @PathVariable("scheduleid") String scheduleid,
-            @RequestParam("status") String status,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null)
-            return "redirect:/manager/login";
-
-        Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-        if (tour == null || !tour.getCommunitymanager().getManagerid().equals(manager.getManagerid())) {
-            return "redirect:/manager/tours?error=forbidden";
-        }
-
-        tourScheduleService.updateStatus(scheduleid, status);
-        redirectAttributes.addFlashAttribute("successMessage", "อัปเดตสถานะรอบทัวร์สำเร็จ");
-        return "redirect:/manager/tours/" + tourid + "/schedules";
-    }
-
-    // ─── ลบวันที่เปิดทัวร์ (เฉพาะรอบที่ยังไม่มีคนจอง)
-    // ───────────────────────────────
-
-    @PostMapping("/{tourid}/schedules/{scheduleid}/delete")
-    public String deleteSchedule(@PathVariable("tourid") String tourid,
-            @PathVariable("scheduleid") String scheduleid,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null)
-            return "redirect:/manager/login";
-
-        Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-        if (tour == null || !tour.getCommunitymanager().getManagerid().equals(manager.getManagerid())) {
-            return "redirect:/manager/tours?error=forbidden";
-        }
-
-        Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
-        if (bookedMap.getOrDefault(scheduleid, 0) > 0) {
-            redirectAttributes.addFlashAttribute("errorMessage", "ไม่สามารถลบรอบนี้ได้ เพราะมีคนจองแล้ว");
-            return "redirect:/manager/tours/" + tourid + "/schedules";
-        }
-
-        tourScheduleService.deleteSchedule(scheduleid);
-        redirectAttributes.addFlashAttribute("successMessage", "ลบวันที่เปิดทัวร์สำเร็จ");
-        return "redirect:/manager/tours/" + tourid + "/schedules";
-    }
 
     // ─── แสดงฟอร์มแก้ไขทัวร์ ────────────────────────────────────────────────────
 
@@ -532,7 +378,7 @@ public class TourController {
         }
 
         List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
-        tour.setOverallStatus(computeOverallStatus(schedules));
+        tour.setOverallStatus(tourScheduleService.computeOverallStatus(schedules));
 
         model.addAttribute("tour", tour);
         model.addAttribute("schedules", schedules);
@@ -589,7 +435,7 @@ public class TourController {
             model.addAttribute("loggedInManager", manager);
             return "Tour/editTour";
         }
-        // ✅ ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity
+        // ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity
         // รองรับแค่ทัวร์รายวัน)
         if (numberOfDays != null && numberOfDays > 1) {
             if (tourtype == null || tourtype.isBlank()) {
@@ -622,10 +468,8 @@ public class TourController {
         updated.setChildprice(childprice);
         updated.setNumberOfDays(numberOfDays);
         updated.setNumberOfNights(numberOfDays != null && numberOfDays == 1 ? 0 : numberOfNights);
-        // ✅ ตัดฟิลด์ status ออกแล้ว — สถานะทัวร์คำนวณจากสถานะรอบทัวร์ (Tourschedule)
-        // เสมอ ไม่ต้องรับ/บันทึกจากฟอร์มนี้อีกต่อไป
 
-        // ✅ ถ้าเป็น __KEEP__ หรือ null = ไม่ได้เปลี่ยนรูป ให้คงรูปเดิม
+        //  ถ้าเป็น __KEEP__ หรือ null = ไม่ได้เปลี่ยนรูป ให้คงรูปเดิม
         if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__")) {
             updated.setImages(existing.getImages());
         } else {

@@ -364,6 +364,12 @@
             box-shadow: 0 4px 12px rgba(240, 165, 0, .45);
         }
 
+        .btn-save:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         .schedule-add-form {
             display: flex;
             gap: 12px;
@@ -473,6 +479,108 @@
             color: var(--text-muted);
             padding: 8px 0;
         }
+
+        /* ── Mode toggle (เพิ่มทีละรอบ / เปิดทุกวัน) ── */
+        .mode-toggle-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .mode-toggle-btn {
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 600;
+            padding: 8px 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background .15s, color .15s;
+        }
+
+        .mode-toggle-btn.active {
+            background: var(--green-dark);
+            color: #fff;
+        }
+
+        .mode-toggle-btn:not(.active) {
+            background: #e9e9e6;
+            color: #555;
+        }
+
+        .range-hint {
+            font-size: 12px;
+            color: var(--text-hint);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .range-preview-note {
+            display: none;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: var(--bg-page);
+            border-radius: 6px;
+            color: var(--green-dark);
+            font-weight: 600;
+            font-size: 12.5px;
+        }
+
+        .field-error {
+            display: none;
+            font-size: 11.5px;
+            color: var(--red);
+            margin-top: 4px;
+        }
+
+        .field-error.show {
+            display: block;
+        }
+
+        .exception-box {
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .exception-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 4px 6px 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-weight: 600;
+        }
+
+        .exception-chip.st-closed {
+            background: #f0f0f0;
+            color: var(--text-muted);
+        }
+
+        .exception-chip.st-open {
+            background: var(--green-light);
+            color: var(--green-dark);
+        }
+
+        .exception-chip button {
+            border: none;
+            background: rgba(0, 0, 0, .08);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: inherit;
+            font-size: 10px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 
@@ -564,24 +672,96 @@
         <!-- เพิ่มวันที่เปิดทัวร์ใหม่ -->
         <div class="card">
             <div class="card-title">➕เพิ่มรอบทัวร์</div>
-            <form th:action="@{/manager/tours/{id}/schedules(id=${tour.tourid})}" method="post"
-                class="schedule-add-form">
-                <div class="form-group">
+
+            <!-- ── สลับโหมด: เพิ่มทีละรอบ / เปิดทุกวัน (เหมือนหน้าเพิ่มทัวร์) ── -->
+            <div class="mode-toggle-row">
+                <button type="button" class="mode-toggle-btn active" id="modeSingleBtn">
+                    <i class="fas fa-calendar-day"></i> เพิ่มทีละรอบ
+                </button>
+                <button type="button" class="mode-toggle-btn" id="modeRangeBtn">
+                    <i class="fas fa-calendar-week"></i> เปิดทุกวัน
+                </button>
+            </div>
+
+            <!-- ── โหมด 1: เพิ่มทีละรอบ (เดิม — ยังเป็นฟอร์ม submit ปกติ) ── -->
+            <div id="singleAddMode">
+                <form th:action="@{/manager/tours/{id}/schedules(id=${tour.tourid})}" method="post"
+                    class="schedule-add-form" id="singleAddForm">
+                    <div class="form-group">
+                        <label>วันที่เริ่ม</label>
+                        <input type="date" name="opendate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>วันที่จบ</label>
+                        <input type="date" name="enddate" required>
+                    </div>
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-plus"></i> เพิ่มวันที่
+                    </button>
+                </form>
+            </div>
+
+            <!-- ── โหมด 2: เปิดทุกวัน (สร้างหลายรอบพร้อมกันตามช่วงวันที่) ── -->
+            <div id="rangeAddMode" style="display:none;">
+                <div class="range-hint">
+                    ระบุช่วงวันที่ที่ต้องการเปิดให้จองได้ทุกวัน ระบบจะสร้างรอบทัวร์ให้อัตโนมัติทีละวันตลอดทั้งช่วง
+                </div>
+                <div class="schedule-add-form">
+                    <div class="form-group">
+                        <label>วันที่เริ่ม</label>
+                        <input type="date" id="rangeStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label>วันที่สิ้นสุด</label>
+                        <input type="date" id="rangeEndDate">
+                    </div>
+                    <div class="form-group" style="flex:0 0 170px; min-width:170px;">
+                        <label>สถานะเริ่มต้น</label>
+                        <select id="rangeStatus"
+                            style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:'Sarabun',sans-serif; font-size:14px; background:#fff;">
+                            <option value="เปิดรับจอง" selected>เปิดรับจอง</option>
+                            <option value="ปิด">ปิด</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field-error" id="err-range"></div>
+                <div class="range-preview-note" id="rangePreviewNote"></div>
+
+                <!-- กำหนดสถานะพิเศษเฉพาะบางวัน เช่น วันหยุดนักขัตฤกษ์ -->
+                <div class="exception-box">
+                    <label style="margin-bottom:4px;">กำหนดสถานะพิเศษบางวัน (ไม่บังคับ)</label>
+                    <div class="range-hint" style="margin-bottom:8px;">
+                        ใช้สำหรับวันที่ต้องการให้สถานะต่างจากค่าเริ่มต้นด้านบน เช่น วันหยุดนักขัตฤกษ์ที่ปิดไม่รับจอง
+                        วันที่เลือกไว้ที่นี่จะทับค่าสถานะเริ่มต้นเฉพาะวันนั้นๆ
+                    </div>
                     <div class="schedule-add-form">
                         <div class="form-group">
-                            <label>วันที่เริ่ม</label>
-                            <input type="date" name="opendate" required>
+                            <label>วันที่</label>
+                            <input type="date" id="exceptionDate">
                         </div>
-                        <div class="form-group">
-                            <label>วันที่จบ</label>
-                            <input type="date" name="enddate" required>
+                        <div class="form-group" style="flex:0 0 170px; min-width:170px;">
+                            <label>สถานะของวันนี้</label>
+                            <select id="exceptionStatus"
+                                style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:'Sarabun',sans-serif; font-size:14px; background:#fff;">
+                                <option value="ปิด" selected>ปิด</option>
+                                <option value="เปิดรับจอง">เปิดรับจอง</option>
+                            </select>
                         </div>
-                        <button type="submit" class="btn btn-save">
-                            <i class="fas fa-plus"></i> เพิ่มวันที่
+                        <button type="button" class="btn btn-save" id="addExceptionBtn"
+                            style="background:var(--green-dark); box-shadow:none;">
+                            <i class="fas fa-plus"></i> เพิ่ม
                         </button>
                     </div>
-                    </div>
-            </form>
+                    <div class="field-error" id="err-exceptionDate">กรุณาเลือกวันที่</div>
+                    <div id="exceptionList" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;"></div>
+                </div>
+
+                <div style="margin-top:16px;">
+                    <button type="button" class="btn btn-save" id="addScheduleRangeBtn">
+                        <i class="fas fa-plus"></i> เพิ่มรอบทัวร์
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="card">
@@ -596,7 +776,7 @@
                         <th>จัดการ</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="scheduleTableBody">
                     <tr th:each="s : ${schedules}">
                         <td>
                             <span th:text="${#dates.format(s.opendate, 'dd/MM/yyyy')}"></span>
@@ -671,6 +851,244 @@
                 enddateInput.title = "ทัวร์รายวัน: วันที่จบจะถูกตั้งค่าให้อัตโนมัติ";
             }
         });
+
+        /* ═══════════════════════════════════════════
+           ✅ โหมด "เปิดทุกวัน" — เหมือนหน้าเพิ่มทัวร์
+           หน้านี้เป็นหน้า server-render ปกติ (ไม่มี JS array ผูกกับฟอร์ม create)
+           ดังนั้นการสร้างหลายรอบพร้อมกันจะยิง fetch() ไปที่ endpoint เดิม
+           (ตัวเดียวกับที่ฟอร์ม "เพิ่มทีละรอบ" ใช้อยู่) ทีละวันตามลำดับ
+           แล้วค่อย reload หน้าเมื่อเสร็จ — ไม่ต้องแก้ Controller ฝั่ง backend เลย
+        ═══════════════════════════════════════════ */
+        const modeSingleBtn = document.getElementById('modeSingleBtn');
+        const modeRangeBtn = document.getElementById('modeRangeBtn');
+        const singleAddMode = document.getElementById('singleAddMode');
+        const rangeAddMode = document.getElementById('rangeAddMode');
+        const singleAddForm = document.getElementById('singleAddForm');
+
+        function setScheduleMode(mode) {
+            const isSingle = mode === 'single';
+            singleAddMode.style.display = isSingle ? 'block' : 'none';
+            rangeAddMode.style.display = isSingle ? 'none' : 'block';
+            modeSingleBtn.classList.toggle('active', isSingle);
+            modeRangeBtn.classList.toggle('active', !isSingle);
+        }
+        modeSingleBtn.addEventListener('click', () => setScheduleMode('single'));
+        modeRangeBtn.addEventListener('click', () => setScheduleMode('range'));
+
+        function formatDMY(iso) {
+            const [y, m, d] = iso.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        function addDaysISO(iso, days) {
+            const d = new Date(iso + 'T00:00:00');
+            d.setDate(d.getDate() + days);
+            return d.toISOString().slice(0, 10);
+        }
+
+        function parseDMYtoISO(text) {
+            const [d, m, y] = text.trim().split('/');
+            if (!d || !m || !y) return null;
+            return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        }
+
+        function rangesOverlap(aStart, aEnd, bStart, bEnd) {
+            return aStart <= bEnd && bStart <= aEnd;
+        }
+
+        // ── อ่านรอบทัวร์ที่มีอยู่แล้วจากตารางบนหน้า (ไม่ต้องพึ่งข้อมูลจาก backend เพิ่ม) ──
+        function readExistingSchedulesFromTable() {
+            const rows = document.querySelectorAll('#scheduleTableBody tr');
+            const list = [];
+            rows.forEach(tr => {
+                const spans = tr.querySelectorAll('td:first-child span');
+                if (spans.length < 2) return;
+                const open = parseDMYtoISO(spans[0].textContent);
+                const end = parseDMYtoISO(spans[1].textContent);
+                if (open && end) list.push({ opendate: open, enddate: end });
+            });
+            return list;
+        }
+
+        function showFieldErr(id, msg) {
+            const err = document.getElementById(id);
+            if (err) { err.textContent = msg; err.classList.add('show'); }
+        }
+        function clearFieldErr(id) {
+            document.getElementById(id)?.classList.remove('show');
+        }
+
+        // ── พรีวิวจำนวนรอบทัวร์ก่อนกดสร้างจริง ──
+        const rangeStartDate = document.getElementById('rangeStartDate');
+        const rangeEndDate = document.getElementById('rangeEndDate');
+        const rangeStatus = document.getElementById('rangeStatus');
+        const rangePreviewNote = document.getElementById('rangePreviewNote');
+        const addScheduleRangeBtn = document.getElementById('addScheduleRangeBtn');
+        const MAX_RANGE_DAYS = 366;
+
+        let exceptionDates = {}; // { 'yyyy-mm-dd': 'ปิด' | 'เปิดรับจอง' }
+        const exceptionDateInput = document.getElementById('exceptionDate');
+        const exceptionStatusSelect = document.getElementById('exceptionStatus');
+        const addExceptionBtn = document.getElementById('addExceptionBtn');
+        const exceptionList = document.getElementById('exceptionList');
+
+        function renderExceptionList() {
+            exceptionList.innerHTML = '';
+            Object.keys(exceptionDates).sort().forEach(date => {
+                const status = exceptionDates[date];
+                const isClosed = status === 'ปิด';
+                const chip = document.createElement('span');
+                chip.className = 'exception-chip ' + (isClosed ? 'st-closed' : 'st-open');
+                chip.innerHTML = `${formatDMY(date)} · ${status} <button type="button" title="ลบวันนี้ออก">✕</button>`;
+                chip.querySelector('button').addEventListener('click', () => {
+                    delete exceptionDates[date];
+                    renderExceptionList();
+                    updateRangePreview();
+                });
+                exceptionList.appendChild(chip);
+            });
+        }
+
+        addExceptionBtn.addEventListener('click', () => {
+            const date = exceptionDateInput.value;
+            if (!date) { showFieldErr('err-exceptionDate', 'กรุณาเลือกวันที่'); return; }
+            clearFieldErr('err-exceptionDate');
+            exceptionDates[date] = exceptionStatusSelect.value;
+            renderExceptionList();
+            updateRangePreview();
+            exceptionDateInput.value = '';
+        });
+
+        function updateRangePreview() {
+            const start = rangeStartDate.value;
+            const end = rangeEndDate.value;
+            if (!start || !end || end < start) {
+                rangePreviewNote.style.display = 'none';
+                return;
+            }
+            const dayCount = Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+            const exceptionInRange = Object.keys(exceptionDates).filter(d => d >= start && d <= end).length;
+            rangePreviewNote.style.display = 'block';
+            rangePreviewNote.innerHTML = '<i class="fas fa-circle-info"></i> จะสร้างรอบทัวร์ทั้งหมด ' + dayCount + ' วัน' +
+                (exceptionInRange > 0 ? ` (มี ${exceptionInRange} วันที่จะใช้สถานะพิเศษตามที่กำหนดไว้ด้านล่าง)` : '');
+        }
+        rangeStartDate.addEventListener('input', updateRangePreview);
+        rangeEndDate.addEventListener('input', updateRangePreview);
+
+        // ── ยิง POST ไป endpoint เพิ่มรอบทัวร์เดิม (ฟอร์มเดียวกับ "เพิ่มทีละรอบ") ทีละวัน ──
+        async function createScheduleRequest(opendate, enddate) {
+            const res = await fetch(singleAddForm.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ opendate, enddate })
+            });
+            return res.ok;
+        }
+
+        // ── หลังสร้างเสร็จ: โหลดหน้าปัจจุบันใหม่ (GET) มาหา schedule ที่เพิ่งสร้าง
+        //    แล้วกดปุ่ม "ปิดรับจอง" ให้เฉพาะวันที่ต้องการสถานะ "ปิด" (ค่าเริ่มต้นตอนสร้างคือ "เปิดรับจอง" เสมอ) ──
+        async function applyClosedStatus(closedDates) {
+            if (closedDates.length === 0) return;
+            const res = await fetch(window.location.href, { method: 'GET' });
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const rows = doc.querySelectorAll('#scheduleTableBody tr');
+            const wanted = new Set(closedDates.map(formatDMY));
+
+            for (const tr of rows) {
+                const spans = tr.querySelectorAll('td:first-child span');
+                if (spans.length < 2) continue;
+                const openText = spans[0].textContent.trim();
+                if (!wanted.has(openText)) continue;
+
+                const toggleForm = tr.querySelector('td.schedule-actions form:first-of-type');
+                if (!toggleForm) continue;
+                const statusInput = toggleForm.querySelector('input[name="status"]');
+                // สถานะปัจจุบันของรอบที่เพิ่งสร้างคือ "เปิดรับจอง" เสมอ (ค่าเริ่มต้นของระบบ)
+                // ดังนั้นค่าที่ toggle จะได้คือ "ปิด" พอดี — กดครั้งเดียวจะได้สถานะที่ต้องการ
+                if (statusInput && statusInput.value === 'ปิด') {
+                    try {
+                        await fetch(toggleForm.getAttribute('action'), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({ status: statusInput.value })
+                        });
+                    } catch (e) { /* ข้ามไปวันถัดไปถ้าล้มเหลว ไม่ทำให้ทั้งชุดพัง */ }
+                }
+            }
+        }
+
+        addScheduleRangeBtn.addEventListener('click', async () => {
+            const start = rangeStartDate.value;
+            const end = rangeEndDate.value;
+
+            if (!start) { showFieldErr('err-range', 'กรุณาเลือกวันที่เริ่มช่วง'); return; }
+            if (!end) { showFieldErr('err-range', 'กรุณาเลือกวันที่สิ้นสุดช่วง'); return; }
+            if (end < start) { showFieldErr('err-range', 'วันที่สิ้นสุดช่วงต้องไม่ก่อนวันที่เริ่มช่วง'); return; }
+
+            const dayCount = Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+            if (dayCount > MAX_RANGE_DAYS) {
+                showFieldErr('err-range', `ช่วงวันที่ยาวเกินไป (สูงสุด ${MAX_RANGE_DAYS} วัน/ครั้ง) กรุณาแบ่งสร้างหลายครั้ง`);
+                return;
+            }
+            clearFieldErr('err-range');
+
+            // ✅ กันวันที่ทับซ้อนกับรอบทัวร์ที่มีอยู่แล้วในตาราง + กันทับซ้อนกันเองภายในช่วงที่กำลังสร้าง
+            const reserved = readExistingSchedulesFromTable();
+            const tourLenDays = tourNumberOfDays || 1;
+            const toCreate = [];
+            let cursor = start;
+            let skippedCount = 0;
+            for (let d = 0; d < dayCount; d++) {
+                const opendate = cursor;
+                const enddate = tourLenDays === 1 ? opendate : addDaysISO(opendate, tourLenDays - 1);
+                const conflict = reserved.some(s => rangesOverlap(opendate, enddate, s.opendate, s.enddate));
+                if (conflict) {
+                    skippedCount++;
+                } else {
+                    toCreate.push({ opendate, enddate });
+                    reserved.push({ opendate, enddate });
+                }
+                cursor = addDaysISO(cursor, 1);
+            }
+
+            if (toCreate.length === 0) {
+                showFieldErr('err-range', 'ทุกวันในช่วงนี้ทับซ้อนกับรอบทัวร์ที่มีอยู่แล้วทั้งหมด ไม่มีรอบใหม่ถูกสร้าง');
+                return;
+            }
+
+            addScheduleRangeBtn.disabled = true;
+            const originalLabel = addScheduleRangeBtn.innerHTML;
+            addScheduleRangeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังสร้างรอบทัวร์...';
+
+            let createdCount = 0;
+            let failedCount = 0;
+            const createdDates = [];
+            for (const item of toCreate) {
+                try {
+                    const ok = await createScheduleRequest(item.opendate, item.enddate);
+                    if (ok) { createdCount++; createdDates.push(item.opendate); }
+                    else failedCount++;
+                } catch (e) {
+                    failedCount++;
+                }
+            }
+
+            // ✅ ใช้สถานะพิเศษเฉพาะวัน (หรือสถานะเริ่มต้น ถ้าตั้งเป็น "ปิด") — ปิดเฉพาะวันที่ต้องการ
+            const closedDates = createdDates.filter(d => (exceptionDates[d] || rangeStatus.value) === 'ปิด');
+            await applyClosedStatus(closedDates);
+
+            let msg = `สร้างรอบทัวร์สำเร็จ ${createdCount} วัน`;
+            if (skippedCount > 0) msg += ` (ข้าม ${skippedCount} วัน เพราะทับซ้อนกับรอบทัวร์ที่มีอยู่แล้ว)`;
+            if (failedCount > 0) msg += ` — สร้างไม่สำเร็จ ${failedCount} วัน กรุณาตรวจสอบอีกครั้ง`;
+            alert(msg);
+
+            // เคลียร์เฉพาะวันในช่วงที่เพิ่งสร้างไปแล้ว
+            Object.keys(exceptionDates).forEach(d => { if (d >= start && d <= end) delete exceptionDates[d]; });
+
+            window.location.reload();
+        });
+
     </script>
 
 </body>

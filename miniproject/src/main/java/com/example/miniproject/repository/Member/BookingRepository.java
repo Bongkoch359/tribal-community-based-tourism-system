@@ -99,6 +99,56 @@ long countByRoomHomestayIdAndStatus(
         @Param("homestayId") Integer homestayId,
         @Param("status") BookingStatus status);
 
-        
+     // ─── การจองทัวร์ของ manager (สำหรับหน้ารายการจองทัวร์) ───
+
+    /** ดึงการจองทัวร์ทั้งหมดของ manager คนนั้น (ทุกสถานะ) */
+    @Query("""
+        SELECT DISTINCT b FROM Booking b
+        LEFT JOIN FETCH b.member
+        LEFT JOIN FETCH b.tourDetails td
+        LEFT JOIN FETCH td.tour t
+        LEFT JOIN FETCH td.tourschedule
+        WHERE t.communitymanager.managerid = :managerId
+        AND b.bookingType = com.example.miniproject.entity.enums.BookingType.TOUR
+        ORDER BY b.bookingdate DESC
+    """)
+    List<Booking> findTourBookingsByManagerId(@Param("managerId") String managerId);
+
+    /** ดึงการจองทัวร์ของ manager กรองตามสถานะ */
+    @Query("""
+        SELECT DISTINCT b FROM Booking b
+        LEFT JOIN FETCH b.member
+        LEFT JOIN FETCH b.tourDetails td
+        LEFT JOIN FETCH td.tour t
+        LEFT JOIN FETCH td.tourschedule
+        WHERE t.communitymanager.managerid = :managerId
+        AND b.bookingType = com.example.miniproject.entity.enums.BookingType.TOUR
+        AND b.bookingStatus = :status
+        ORDER BY b.bookingdate DESC
+    """)
+    List<Booking> findTourBookingsByManagerIdAndStatus(
+        @Param("managerId") String managerId,
+        @Param("status") BookingStatus status);
+
+    /**
+     * ดึงการจองทัวร์ "รายการเดียว" พร้อมรายละเอียด สำหรับหน้า "รายละเอียดการจอง" ของ manager
+     * — ผูก managerId ไว้ใน WHERE เลย เพื่อกันไม่ให้ manager คนอื่นเปิดดู/แก้ไข
+     * การจองทัวร์ที่ไม่ใช่ของชุมชนตัวเอง (ป้องกัน IDOR)
+     */
+    @Query("""
+        SELECT DISTINCT b FROM Booking b
+        LEFT JOIN FETCH b.member
+        LEFT JOIN FETCH b.tourDetails td
+        LEFT JOIN FETCH td.tour t
+        LEFT JOIN FETCH t.tourtype
+        LEFT JOIN FETCH td.tourschedule
+        LEFT JOIN FETCH b.guests
+        WHERE b.bookingid = :bookingId
+        AND b.bookingType = com.example.miniproject.entity.enums.BookingType.TOUR
+        AND t.communitymanager.managerid = :managerId
+    """)
+    Optional<Booking> findTourBookingDetailForManager(
+        @Param("bookingId") String bookingId,
+        @Param("managerId") String managerId);
 
 }

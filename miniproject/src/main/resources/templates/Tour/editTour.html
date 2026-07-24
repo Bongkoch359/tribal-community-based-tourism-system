@@ -1,553 +1,343 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขทัวร์</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --green-dark:  #3a7d1e; --green-mid:   #65a30d; --green-light: #d9f99d;
-            --amber:       #65a30d; --amber-hover: #4d7c0a; --bg-page:     #f3fae8;
-            --bg-card:     #ffffff; --border:      #e2ddd4; --text-main:   #1c1c1a;
-            --text-muted:  #6b6b68; --text-hint:   #9a9a96; --radius-card: 12px;
-            --radius-sm:   6px; --shadow-card: 0 1px 3px rgba(0,0,0,0.07); --red: #c0392b;
-        }
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg-page); color: var(--text-main); font-size: 14px; line-height: 1.6; }
-
-        /* ── Navbar ── */
-        .navbar { background: var(--green-dark); display: flex; align-items: center; padding: 0 2rem; height: 83px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
-        .nav-brand { color: #fff; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: .6rem; text-decoration: none; white-space: nowrap; }
-        .nav-brand i { font-size: 1.2rem; }
-        .nav-dropdown { position: relative; margin-left: auto; }
-        .nav-dropdown-trigger { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.85); font-size: .92rem; font-weight: 500; cursor: pointer; padding: .4rem .6rem; border-radius: 8px; transition: background .2s; user-select: none; }
-        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
-        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
-        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
-        .dropdown-menu { display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #fff; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.15); border: 1px solid #e8e8e8; min-width: 200px; padding: 6px 0; z-index: 200; }
-        .nav-dropdown:hover .dropdown-menu { display: block; }
-        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
-        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
-        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
-        .dropdown-item { display: flex; align-items: center; gap: .65rem; padding: .6rem 1rem; font-size: .88rem; color: #333; text-decoration: none; }
-        .dropdown-item:hover { background: #eefcda; color: var(--green-dark); }
-        .dropdown-divider { border-top: 1px solid #f0f0f0; margin: 4px 0; }
-        .dropdown-item.logout { color: #c0392b; }
-        .nav-avatar { width: 36px; height: 36px; background: var(--amber); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; color: #fff; }
-
-        /* ── Layout ── */
-        .page { padding: 28px 28px 60px; max-width: 1100px; margin: auto; }
-        .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 13px; text-decoration: none; margin-bottom: 16px; padding: 5px 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: background .15s; }
-        .back-link:hover { background: var(--bg-page); }
-        .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
-        .page-title { font-size: 22px; font-weight: 700; color: var(--green-dark); }
-        .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
-
-        /* ── Alert ── */
-        .alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .alert-error { background: #fdecea; color: var(--red); border: 1px solid #f5c6c0; }
-        .alert-success { background: var(--green-light); color: var(--green-dark); border: 1px solid #b2d8bb; }
-
-        /* ── Grid ── */
-        .form-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
-
-        /* ── Card ── */
-        .card { background: var(--bg-card); border-radius: var(--radius-card); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-card); }
-        .card-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 14px; letter-spacing: .04em; }
-
-        /* ── Form elements ── */
-        .form-group { margin-bottom: 14px; }
-        .form-group:last-child { margin-bottom: 0; }
-        label { display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 5px; }
-        label .req { color: var(--red); margin-left: 2px; }
-        input[type="text"],
-        input[type="number"],
-        select,
-        textarea {
-            width: 100%; padding: 9px 12px; border: 1px solid var(--border);
-            border-radius: var(--radius-sm); font-family: 'Sarabun', sans-serif;
-            font-size: 14px; color: var(--text-main); background: #fff;
-            transition: border-color .18s, box-shadow .18s; outline: none;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--green-mid);
-            box-shadow: 0 0 0 3px rgba(45,106,53,.12);
-        }
-        textarea { resize: vertical; min-height: 100px; }
-        .hint { font-size: 11px; color: var(--text-hint); margin-top: 3px; }
-
-        /* ── 2-col grid inside card ── */
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-        /* ── Image upload zone ── */
-        .img-upload-zone { border: 2px dashed var(--border); border-radius: 10px; background: #f3fae8; padding: 22px 16px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s; margin-bottom: 12px; }
-        .img-upload-zone:hover, .img-upload-zone.drag-over { border-color: var(--green-mid); background: #f0f7f1; }
-        .img-upload-zone i { font-size: 28px; color: var(--text-hint); margin-bottom: 6px; display: block; }
-        .img-upload-zone .upload-title { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 3px; }
-        .img-upload-zone .upload-hint { font-size: 11px; color: var(--text-hint); }
-        .upload-btn-label { display: inline-flex; align-items: center; gap: 5px; background: var(--green-dark); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: background .15s; }
-        .upload-btn-label:hover { background: var(--green-mid); }
-        input[type="file"] { display: none; }
-        /* ── Image grid ── */
-        .img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-top: 4px; }
-        .img-thumb { position: relative; aspect-ratio: 4/3; border-radius: 8px; overflow: hidden; border: 2px solid var(--border); background: #f3fae8; }
-        .img-thumb:hover { border-color: var(--green-mid); }
-        .img-thumb.primary { border-color: var(--amber); }
-        .img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .thumb-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background .15s; display: flex; align-items: flex-start; justify-content: flex-end; padding: 5px; gap: 4px; }
-        .img-thumb:hover .thumb-overlay { background: rgba(0,0,0,.3); }
-        .thumb-btn { width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; opacity: 0; transition: opacity .15s; }
-        .img-thumb:hover .thumb-btn { opacity: 1; }
-        .thumb-btn.del-btn { background: var(--red); color: #fff; }
-        .thumb-btn.star-btn { background: var(--amber); color: #fff; }
-        .primary-badge { position: absolute; bottom: 4px; left: 4px; background: var(--amber); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 20px; }
-        .img-count-note { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
-
-        /* ── Buttons ── */
-        .btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
-        .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: 'Sarabun', sans-serif; cursor: pointer; text-decoration: none; border: none; transition: background .18s, box-shadow .18s, transform .1s; }
-        .btn:active { transform: scale(.97); }
-        .btn-cancel { background: #fff; color: var(--text-muted); border: 1px solid var(--border); }
-        .btn-cancel:hover { background: var(--bg-page); }
-        .btn-save { background: var(--amber); color: #fff; box-shadow: 0 2px 6px rgba(240,165,0,.35); }
-        .btn-save:hover { background: var(--amber-hover); box-shadow: 0 4px 12px rgba(240,165,0,.45); }
-
-        /* ── Status badge select ── */
-        .status-select-wrap { position: relative; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-mid); position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
-        .status-select-wrap select { padding-left: 26px; }
-
-        /* ── Price display ── */
-        .price-input-wrap { position: relative; }
-        .price-input-wrap input { padding-right: 36px; }
-        .price-unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-hint); font-size: 13px; pointer-events: none; }
-    </style>
+    <link th:href="@{/css/Tour/edit_tour.css}" rel="stylesheet">
 </head>
+
 <body>
 
-<!-- ── Navbar ── -->
-<nav class="navbar">
-    <a class="nav-brand" th:href="@{/manager/tours}">
-        <i class="fas fa-mountain-sun"></i> ระบบท่องเที่ยวชุมชนเผ่า
-    </a>
-    <div class="nav-dropdown">
-        <div class="nav-dropdown-trigger">
-            <div class="nav-avatar"
-                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+    <!-- ── Navbar ── -->
+    <nav class="navbar">
+        <a class="nav-brand" th:href="@{/manager/tours}">
+            <i class="fas fa-mountain-sun"></i> ระบบท่องเที่ยวชุมชนเผ่า
+        </a>
+        <div class="nav-dropdown">
+            <div class="nav-dropdown-trigger">
+                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
                            ? ${#strings.substring(loggedInManager.firstname,0,1)} : 'CM'">CM</div>
-            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ผู้จัดการ</span>
-            <i class="fas fa-chevron-down chevron"></i>
-        </div>
-        <div class="dropdown-menu">
-            <div class="dropdown-header">
-                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ชื่อผู้จัดการ</div>
-                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+                <span
+                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ผู้จัดการ</span>
+                <i class="fas fa-chevron-down chevron"></i>
             </div>
-            <a class="dropdown-item" th:href="@{/manager/profile}">
-                <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-            </a>
-            <hr class="dropdown-divider">
-            <a class="dropdown-item logout" th:href="@{/logout}">
-                <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-            </a>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">
+                    <div class="d-name"
+                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">
+                        ชื่อผู้จัดการ</div>
+                    <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
+                        manager@community.th</div>
+                </div>
+                <a class="dropdown-item" th:href="@{/manager/profile}">
+                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+                </a>
+                <hr class="dropdown-divider">
+                <a class="dropdown-item logout" th:href="@{/logout}">
+                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                </a>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- ── Page ── -->
-<div class="page">
+    <!-- ── Page ── -->
+    <div class="page">
 
-    <a class="back-link" th:href="@{/manager/tours}">
-        <i class="fas fa-arrow-left"></i> ย้อนกลับ
-    </a>
+        <a class="back-link" th:href="@{/manager/tours}">
+            <i class="fas fa-arrow-left"></i> ย้อนกลับ
+        </a>
 
-    <div class="page-header">
-        <div>
-            <div class="page-title">แก้ไขทัวร์</div>
-            <div class="page-subtitle">รหัสทัวร์: <span th:text="${tour.tourid}">-</span></div>
+        <div class="page-header">
+            <div>
+                <div class="page-title">แก้ไขทัวร์</div>
+                <div class="page-subtitle">รหัสทัวร์: <span th:text="${tour.tourid}">-</span></div>
+            </div>
         </div>
-    </div>
 
-    <!-- Alert messages -->
-    <div class="alert alert-error" th:if="${errorMessage}">
-        <i class="fas fa-circle-exclamation"></i>
-        <span th:text="${errorMessage}"></span>
-    </div>
-    <div class="alert alert-success" th:if="${successMessage}">
-        <i class="fas fa-circle-check"></i>
-        <span th:text="${successMessage}"></span>
-    </div>
+        <!-- Alert messages -->
+        <div class="alert alert-error" th:if="${errorMessage}">
+            <i class="fas fa-circle-exclamation"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+        <div class="alert alert-success" th:if="${successMessage}">
+            <i class="fas fa-circle-check"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
 
-    <form th:action="@{/manager/tours/{id}/edit(id=${tour.tourid})}" method="post" id="editForm">
+        <form th:action="@{/manager/tours/{id}/edit(id=${tour.tourid})}" method="post" id="editForm">
 
-        <div class="form-grid">
+            <div class="form-grid">
 
-            <!-- ── ซ้าย: รูปภาพ + สถานะ + ราคา ── -->
-            <div class="left-col">
+                <!-- ── ซ้าย: รูปภาพ + สถานะ + ราคา ── -->
+                <div class="left-col">
 
-                <!-- รูปภาพ -->
-                <div class="card">
-                    <div class="card-title">รูปภาพทัวร์</div>
+                    <!-- รูปภาพ -->
+                    <div class="card">
+                        <div class="card-title">รูปภาพทัวร์</div>
 
-                    <!-- zone drag & drop -->
-                    <div class="img-upload-zone" id="uploadZone"
-                         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
-                         onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-cloud-arrow-up"></i>
-                        <div class="upload-title">ลากรูปมาวางหรือคลิกเพื่อเลือก</div>
-                        <label class="upload-btn-label" onclick="event.stopPropagation()">
-                            <i class="fas fa-folder-open"></i> เลือกรูป
-                            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
-                                   onchange="addFiles(Array.from(this.files)); this.value='';">
-                        </label>
-                        <div class="upload-hint">jpg · png · webp | สูงสุด 10 รูป</div>
+                        <!-- zone drag & drop -->
+                        <div class="img-upload-zone" id="uploadZone" ondragover="handleDragOver(event)"
+                            ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
+                            onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                            <div class="upload-title">ลากรูปมาวางหรือคลิกเพื่อเลือก</div>
+                            <label class="upload-btn-label" onclick="event.stopPropagation()">
+                                <i class="fas fa-folder-open"></i> เลือกรูป
+                                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
+                                    onchange="addFiles(Array.from(this.files)); this.value='';">
+                            </label>
+                            <div class="upload-hint">jpg · png · webp | สูงสุด 10 รูป</div>
+                        </div>
+
+                        <!-- grid รูป -->
+                        <div class="img-grid" id="imgGrid"></div>
+                        <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
+
+                        <!-- hidden inputs -->
+                        <!-- เก็บ filename เดิมจาก DB เพื่อให้ JS โหลดแสดง -->
+                        <input type="hidden" id="imgData"
+                            th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
+                            th:value="${tour.images}" />
+                        <!-- ส่งผลลัพธ์ไปยัง Controller: JSON array base64 หรือ __KEEP__ -->
+                        <input type="hidden" name="images" id="imagesInput" value="__KEEP__">
                     </div>
 
-                    <!-- grid รูป -->
-                    <div class="img-grid" id="imgGrid"></div>
-                    <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
-
-                    <!-- hidden inputs -->
-                    <!-- เก็บ filename เดิมจาก DB เพื่อให้ JS โหลดแสดง -->
-                    <input type="hidden" id="imgData"
-                           th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
-                           th:value="${tour.images}" />
-                    <!-- ส่งผลลัพธ์ไปยัง Controller: JSON array base64 หรือ __KEEP__ -->
-                    <input type="hidden" name="images" id="imagesInput" value="__KEEP__">
-                </div>
-
-                <!-- สถานะ -->
-                <!-- ✅ ตัดสถานะทัวร์ (แก้ไขเองได้) ออกแล้ว — สถานะตอนนี้คำนวณสดจากสถานะของ "รอบทัวร์"
-                     (วันที่เปิดทัวร์) แสดงเป็น read-only เท่านั้น ถ้าต้องการเปลี่ยนสถานะ ให้ไปที่หน้าจัดการรอบทัวร์ -->
-                <div class="card">
-                    <div class="card-title">สถานะทัวร์</div>
-                    <div class="form-group">
-                        <label>สถานะปัจจุบัน (คำนวณจากรอบทัวร์)</label>
-                        <div class="status-select-wrap">
-                            <div class="status-dot"></div>
-                            <input type="text" th:value="${tour.overallStatus}" disabled
-                                   style="padding-left:26px; background:#f5f5f3; color:#555;">
-                        </div>
-                        <div style="margin-top:8px;">
-                            <a th:href="@{/manager/tours/{id}/schedules(id=${tour.tourid})}"
-                               style="font-size:12.5px; color:var(--green-dark, #3a7d1e); text-decoration:underline;">
-                                ไปจัดการรอบทัวร์ / เปลี่ยนสถานะรอบ
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ราคา -->
-                <div class="card">
-                    <div class="card-title">ราคาทัวร์</div>
-                    <div class="two-col">
+                    <div class="card">
+                        <div class="card-title">สถานะทัวร์</div>
                         <div class="form-group">
-                            <label>ผู้ใหญ่ <span class="req">*</span></label>
-                            <div class="price-input-wrap">
-                                <input type="number" name="adultprice" min="0" step="1"
-                                       th:value="${tour.adultprice}" required>
-                                <span class="price-unit">฿</span>
+                            <label>สถานะปัจจุบัน (คำนวณจากรอบทัวร์)</label>
+                            <div class="status-select-wrap">
+                                <div class="status-dot"></div>
+                                <input type="text" th:value="${tour.overallStatus}" disabled
+                                    style="padding-left:26px; background:#f5f5f3; color:#555;">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label>เด็ก <span class="req">*</span></label>
-                            <div class="price-input-wrap">
-                                <input type="number" name="childprice" min="0" step="1"
-                                       th:value="${tour.childprice}" required>
-                                <span class="price-unit">฿</span>
+                            <div style="margin-top:8px; font-size:12.5px; color:var(--text-hint);">
+                                แก้ไข/เปิด-ปิดรอบทัวร์ได้ที่ปฏิทินด้านล่าง
                             </div>
                         </div>
                     </div>
+
+                    <!-- ═══════════════════════════════════════════
+                     ปฏิทินรอบทัวร์ 
+                ═══════════════════════════════════════════ -->
+                    <div class="card" id="scheduleCard">
+                        <div class="card-title">รอบทัวร์ (วันที่เปิดทัวร์)</div>
+
+                        <div class="cal-compact">
+                            <div class="cal-legend">
+                                <span class="cal-legend-item"><i class="cal-dot dot-open"></i> เปิดรับจอง</span>
+                                <span class="cal-legend-item"><i class="cal-dot dot-full"></i> เต็ม</span>
+                                <span class="cal-legend-item"><i class="cal-dot dot-closed"></i> ปิด</span>
+                                <span class="cal-legend-item"><i class="cal-dot dot-none"></i> ยังไม่มีรอบ</span>
+                            </div>
+
+                            <div class="cal-header">
+                                <button type="button" class="cal-nav-btn" id="calPrevBtn"><i
+                                        class="fas fa-chevron-left"></i></button>
+                                <div class="cal-month-label" id="calMonthLabel">-</div>
+                                <button type="button" class="cal-nav-btn" id="calNextBtn"><i
+                                        class="fas fa-chevron-right"></i></button>
+                            </div>
+
+                            <div class="cal-weekdays">
+                                <div>อา</div>
+                                <div>จ</div>
+                                <div>อ</div>
+                                <div>พ</div>
+                                <div>พฤ</div>
+                                <div>ศ</div>
+                                <div>ส</div>
+                            </div>
+                            <div class="cal-grid" id="calGrid"></div>
+
+                            <div class="cal-hint">
+                                <i class="fas fa-circle-info"></i>
+                                คลิกวันเดียว หรือคลิกค้างแล้วลากเลือกช่วงวันที่ แล้วเลือกการดำเนินการด้านล่าง
+                            </div>
+
+                            <!-- Toolbar หลังเลือกช่วงวันที่ -->
+                            <div class="cal-selection-toolbar" id="calToolbar" style="display:none;">
+                                <div class="cal-sel-label" id="calSelLabel"></div>
+                                <div class="cal-sel-actions">
+                                    <button type="button" class="cal-action-btn cal-btn-open" id="calOpenBtn">
+                                        <i class="fas fa-lock-open"></i> เปิดรับจอง
+                                    </button>
+                                    <button type="button" class="cal-action-btn cal-btn-close" id="calCloseBtn">
+                                        <i class="fas fa-lock"></i> ปิดรับจอง
+                                    </button>
+                                    <button type="button" class="cal-action-btn cal-btn-create" id="calCreateBtn">
+                                        <i class="fas fa-plus"></i> สร้างรอบ
+                                    </button>
+                                    <button type="button" class="cal-action-btn cal-btn-delete" id="calDeleteBtn">
+                                        <i class="fas fa-trash"></i> ลบรอบ
+                                    </button>
+                                    <button type="button" class="cal-action-btn cal-btn-clear" id="calClearBtn">
+                                        <i class="fas fa-xmark"></i> ยกเลิก
+                                    </button>
+                                </div>
+                                <div class="cal-sel-note" id="calSelNote"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                 </div>
 
+                <!-- ── ขวา: ข้อมูลหลัก ── -->
+                <div class="right-col">
+
+                    <!-- ข้อมูลพื้นฐาน -->
+                    <div class="card">
+                        <div class="card-title">ข้อมูลพื้นฐาน</div>
+
+                        <div class="form-group">
+                            <label>ชื่อทัวร์ <span class="req">*</span></label>
+                            <input type="text" name="tourmname" th:value="${tour.tourmname}" placeholder="ชื่อทัวร์"
+                                required maxlength="200">
+                        </div>
+
+                        <!-- ประเภททัวร์ -->
+                        <div class="form-group">
+                            <label>ประเภททัวร์ <span class="req">*</span></label>
+                            <select id="tourtypeSelect" name="tourtypeUi" required>
+                                <option value="" disabled>— เลือกประเภททัวร์ —</option>
+                                <option value="ทัวร์รายวัน">ทัวร์รายวัน (1 วัน ไม่พักค้าง)</option>
+                                <option value="ทัวร์วัฒนธรรมชนเผ่า">ทัวร์วัฒนธรรมชนเผ่า</option>
+                                <option value="ทัวร์วิถีชีวิต">ทัวร์วิถีชีวิต</option>
+                                <option value="__custom__">อื่นๆ (ระบุชื่อประเภทเอง)</option>
+                            </select>
+                        </div>
+
+                        <!-- ช่องระบุชื่อเอง แสดงเฉพาะกรณีเลือก "อื่นๆ" -->
+                        <div class="form-group" id="customTypeGroup" style="display:none;">
+                            <label>ระบุชื่อประเภททัวร์ <span class="req">*</span></label>
+                            <input type="text" id="tourtypeCustom" placeholder="เช่น ทัวร์เกษตรอินทรีย์ 4 วัน 3 คืน">
+                        </div>
+
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label>จำนวนวัน <span class="req">*</span></label>
+                                <input type="number" id="numberOfDays" name="numberOfDays" min="1"
+                                    th:value="${tour.numberOfDays}" required>
+                                <p class="hint">วัน</p>
+                            </div>
+                            <div class="form-group">
+                                <label>จำนวนคืน</label>
+                                <input type="number" id="numberOfNights" name="numberOfNights" min="0"
+                                    th:value="${tour.numberOfNights}">
+                                <p class="hint">คืน (ทัวร์รายวันระบบจะตั้ง 0 ให้อัตโนมัติ)</p>
+                            </div>
+                        </div>
+
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label>ราคาผู้ใหญ่ <span class="req">*</span></label>
+                                <div class="price-input-wrap">
+                                    <input type="number" name="adultprice" min="0" step="1"
+                                        th:value="${tour.adultprice}" required>
+                                    <span class="price-unit">฿</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>ราคาเด็ก <span class="req">*</span></label>
+                                <div class="price-input-wrap">
+                                    <input type="number" name="childprice" min="0" step="1"
+                                        th:value="${tour.childprice}" required>
+                                    <span class="price-unit">฿</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label>ที่นั่งขั้นต่ำ <span class="req">*</span></label>
+                                <input type="number" name="minSeatstour" min="1" th:value="${tour.minSeatstour}"
+                                    required>
+                                <p class="hint">ท่าน</p>
+                            </div>
+                            <div class="form-group">
+                                <label>ที่นั่งสูงสุด <span class="req">*</span></label>
+                                <input type="number" name="maxSeatstour" min="1" th:value="${tour.maxSeatstour}"
+                                    required>
+                                <p class="hint">ท่าน</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- รายละเอียด -->
+                    <div class="card">
+                        <div class="card-title">รายละเอียดทัวร์</div>
+                        <div class="form-group">
+                            <label>รายละเอียด <span class="req">*</span></label>
+                            <textarea name="tourdetail" rows="6" placeholder="อธิบายโปรแกรมทัวร์..." required
+                                th:text="${tour.tourdetail}"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- เงื่อนไข -->
+                    <div class="card">
+                        <div class="card-title">เงื่อนไขการจอง</div>
+                        <div class="form-group">
+                            <label>เงื่อนไข</label>
+                            <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม (ถ้ามี)..."
+                                th:text="${tour.conditiontour}"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="btn-row">
+                        <a class="btn btn-cancel" th:href="@{/manager/tours/{id}(id=${tour.tourid})}">
+                            <i class="fas fa-xmark"></i> ยกเลิก
+                        </a>
+                        <button type="submit" class="btn btn-save">
+                            <i class="fas fa-floppy-disk"></i> บันทึกการแก้ไข
+                        </button>
+                    </div>
+
+                </div>
             </div>
 
-            <!-- ── ขวา: ข้อมูลหลัก ── -->
-            <div class="right-col">
+        </form>
+    </div>
 
-                <!-- ข้อมูลพื้นฐาน -->
-                <div class="card">
-                    <div class="card-title">ข้อมูลพื้นฐาน</div>
+    <!-- ═══════════════════════════════════════════
+     ข้อมูลรอบทัวร์เริ่มต้น + URL ของ endpoint ต่างๆ
+     ✅ ส่งเป็นค่า primitive เท่านั้น (ไม่ serialize ทั้ง entity ตรงๆ)
+     เพื่อเลี่ยงปัญหา circular reference ตอน Jackson แปลง entity เป็น JSON
+═══════════════════════════════════════════ -->
+    <script th:inline="javascript">
+        // รอบทัวร์ทั้งหมดของทัวร์นี้ (primitive fields เท่านั้น)
+        window.scheduleData = [
+            /*[# th:each="s : ${schedules}"]*/
+            {
+                "scheduleid": /*[[${s.scheduleid}]]*/ "",
+                "opendate": /*[[${#dates.format(s.opendate, 'yyyy-MM-dd')}]]*/ "",
+                "enddate": /*[[${#dates.format(s.enddate, 'yyyy-MM-dd')}]]*/ "",
+                "status": /*[[${s.status}]]*/ "",
+                "booked": /*[[${bookedSeatsMap.get(s.scheduleid)} ?: 0]]*/ 0
+            },
+            /*[/]*/
+        ];
 
-                    <div class="form-group">
-                        <label>ชื่อทัวร์ <span class="req">*</span></label>
-                        <input type="text" name="tourmname" th:value="${tour.tourmname}"
-                               placeholder="ชื่อทัวร์" required maxlength="200">
-                    </div>
+        const tourNumberOfDays = /*[[${tour.numberOfDays}]]*/ 1;
+        const tourMaxSeats = /*[[${tour.maxSeatstour}]]*/ 0;
 
-                    <!-- ประเภททัวร์ -->
-                    <div class="form-group">
-                        <label>ประเภททัวร์ <span class="req">*</span></label>
-                        <select id="tourtypeSelect" name="tourtypeUi" required>
-                            <option value="" disabled>— เลือกประเภททัวร์ —</option>
-                            <option value="ทัวร์รายวัน">ทัวร์รายวัน (1 วัน ไม่พักค้าง)</option>
-                            <option value="ทัวร์วัฒนธรรมชนเผ่า">ทัวร์วัฒนธรรมชนเผ่า</option>
-                            <option value="ทัวร์วิถีชีวิต">ทัวร์วิถีชีวิต</option>
-                            <option value="__custom__">อื่นๆ (ระบุชื่อประเภทเอง)</option>
-                        </select>
-                    </div>
+        // URL ของ endpoint เดิมใน TourScheduleController (ไม่มีการแก้ backend เลย)
+        const scheduleAddUrl = /*[[@{/manager/tours/{id}/schedules(id=${tour.tourid})}]]*/ '';
+        const scheduleBulkStatusUrl = /*[[@{/manager/tours/{id}/schedules/bulk-status(id=${tour.tourid})}]]*/ '';
+        // ใช้ __SID__ เป็น placeholder แล้วแทนที่ด้วย scheduleid จริงตอนเรียกใช้งาน
+        const scheduleDeleteUrlTemplate = /*[[@{/manager/tours/{id}/schedules/__SID__/delete(id=${tour.tourid})}]]*/ '';
+    </script>
 
-                    <!-- ช่องระบุชื่อเอง แสดงเฉพาะกรณีเลือก "อื่นๆ" -->
-                    <div class="form-group" id="customTypeGroup" style="display:none;">
-                        <label>ระบุชื่อประเภททัวร์ <span class="req">*</span></label>
-                        <input type="text" id="tourtypeCustom" placeholder="เช่น ทัวร์เกษตรอินทรีย์ 4 วัน 3 คืน">
-                    </div>
-
-                    <div class="two-col">
-                        <div class="form-group">
-                            <label>จำนวนวัน <span class="req">*</span></label>
-                            <input type="number" id="numberOfDays" name="numberOfDays" min="1"
-                                   th:value="${tour.numberOfDays}" required>
-                            <p class="hint">วัน</p>
-                        </div>
-                        <div class="form-group">
-                            <label>จำนวนคืน</label>
-                            <input type="number" id="numberOfNights" name="numberOfNights" min="0"
-                                   th:value="${tour.numberOfNights}">
-                            <p class="hint">คืน (ทัวร์รายวันระบบจะตั้ง 0 ให้อัตโนมัติ)</p>
-                        </div>
-                    </div>
-
-                    <div class="two-col">
-                        <div class="form-group">
-                            <label>ที่นั่งขั้นต่ำ <span class="req">*</span></label>
-                            <input type="number" name="minSeatstour" min="1"
-                                   th:value="${tour.minSeatstour}" required>
-                            <p class="hint">ท่าน</p>
-                        </div>
-                        <div class="form-group">
-                            <label>ที่นั่งสูงสุด <span class="req">*</span></label>
-                            <input type="number" name="maxSeatstour" min="1"
-                                   th:value="${tour.maxSeatstour}" required>
-                            <p class="hint">ท่าน</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- รายละเอียด -->
-                <div class="card">
-                    <div class="card-title">รายละเอียดทัวร์</div>
-                    <div class="form-group">
-                        <label>รายละเอียด <span class="req">*</span></label>
-                        <textarea name="tourdetail" rows="6" placeholder="อธิบายโปรแกรมทัวร์..." required
-                                  th:text="${tour.tourdetail}"></textarea>
-                    </div>
-                </div>
-
-                <!-- เงื่อนไข -->
-                <div class="card">
-                    <div class="card-title">เงื่อนไขการจอง</div>
-                    <div class="form-group">
-                        <label>เงื่อนไข</label>
-                        <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม (ถ้ามี)..."
-                                  th:text="${tour.conditiontour}"></textarea>
-                    </div>
-                </div>
-
-                <!-- Action buttons -->
-                <div class="btn-row">
-                    <a class="btn btn-cancel" th:href="@{/manager/tours/{id}(id=${tour.tourid})}">
-                        <i class="fas fa-xmark"></i> ยกเลิก
-                    </a>
-                    <button type="submit" class="btn btn-save">
-                        <i class="fas fa-floppy-disk"></i> บันทึกการแก้ไข
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
-    </form>
-</div>
-
-<script>
-const MAX_IMAGES = 10;
-let imageDataList = []; // { src: 'data:...' หรือ '/uploads/tours/...' , base64: '...' หรือ null, name: '...' }
-let primaryIndex  = 0;
-
-const imgGrid      = document.getElementById('imgGrid');
-const imgCountNote = document.getElementById('imgCountNote');
-const imagesInput  = document.getElementById('imagesInput');
-const uploadZone   = document.getElementById('uploadZone');
-
-// ── โหลดรูปเดิมจาก DB ──
-(function loadExisting() {
-    const el = document.getElementById('imgData');
-    if (!el || !el.value) return;
-    const names = el.value.split('||').map(s => s.trim()).filter(Boolean);
-    names.forEach(name => {
-        imageDataList.push({ src: '/uploads/tours/' + name, base64: null, name: name });
-    });
-    renderGrid();
-})();
-
-// ── Drag & Drop ──
-function handleDragOver(e)  { e.preventDefault(); uploadZone.classList.add('drag-over'); }
-function handleDragLeave(e) { uploadZone.classList.remove('drag-over'); }
-function handleDrop(e) {
-    e.preventDefault();
-    uploadZone.classList.remove('drag-over');
-    addFiles(Array.from(e.dataTransfer.files));
-}
-
-// ── เพิ่มไฟล์ใหม่ ──
-function addFiles(files) {
-    const allowed = MAX_IMAGES - imageDataList.length;
-    files = files.slice(0, allowed);
-    if (files.length === 0) return;
-    let loaded = 0;
-    files.forEach(file => {
-        if (!file.type.match(/^image\/(jpeg|png|webp)$/)) { loaded++; return; }
-        const reader = new FileReader();
-        reader.onload = e => {
-            imageDataList.push({ src: e.target.result, base64: e.target.result, name: file.name });
-            loaded++;
-            if (loaded === files.length) renderGrid();
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-// ── Render grid ──
-function renderGrid() {
-    imgGrid.innerHTML = '';
-    imageDataList.forEach((img, i) => {
-        const thumb = document.createElement('div');
-        thumb.className = 'img-thumb' + (i === primaryIndex ? ' primary' : '');
-        thumb.innerHTML = `
-            <img src="${img.src}" alt="${img.name}"/>
-            <div class="thumb-overlay">
-                <button type="button" class="thumb-btn star-btn" onclick="setPrimary(${i})" title="ตั้งรูปหลัก"><i class="fas fa-star"></i></button>
-                <button type="button" class="thumb-btn del-btn"  onclick="removeImage(${i})"  title="ลบรูป"><i class="fas fa-trash"></i></button>
-            </div>
-            ${i === primaryIndex ? '<div class="primary-badge">หลัก</div>' : ''}
-        `;
-        imgGrid.appendChild(thumb);
-    });
-
-    if (imageDataList.length > 0) {
-        imgCountNote.style.display = 'block';
-        imgCountNote.textContent = `เลือกแล้ว ${imageDataList.length}/${MAX_IMAGES} รูป`;
-    } else {
-        imgCountNote.style.display = 'none';
-    }
-
-    packImages();
-}
-
-// ── pack ส่งไป Controller ──
-function packImages() {
-    if (imageDataList.length === 0) {
-        imagesInput.value = '__KEEP__';
-        return;
-    }
-    // ถ้ามีรูปใหม่ (base64 != null) ให้ส่ง JSON array
-    const hasNew = imageDataList.some(i => i.base64 !== null);
-    if (hasNew) {
-        // รูปเดิมที่ไม่ได้เปลี่ยน ให้ส่ง base64 ว่างเป็น marker __OLD__:filename
-        const arr = imageDataList.map((img, i) => ({
-            base64: img.base64 !== null ? img.base64 : '__OLD__:' + img.name,
-            primary: i === primaryIndex
-        }));
-        imagesInput.value = JSON.stringify(arr);
-    } else {
-        // ทุกรูปเป็นรูปเดิม — ส่งแค่ชื่อไฟล์
-        const names = imageDataList.map(i => i.name).join('||');
-        imagesInput.value = '__FILENAMES__:' + names;
-    }
-}
-
-function setPrimary(index) { primaryIndex = index; renderGrid(); }
-function removeImage(index) {
-    imageDataList.splice(index, 1);
-    if (primaryIndex >= imageDataList.length) primaryIndex = 0;
-    renderGrid();
-}
-
-/* ═══════════════════════════════════════════
-   TOUR TYPE (เหมือนฟอร์มเพิ่มทัวร์)
-   - "ทัวร์รายวัน" เท่านั้น → ล็อกวัน=1 คืน=0
-   - ประเภทอื่นทั้งหมด → ให้กรอกวัน/คืนเอง
-   - tourtype ตอนนี้เป็น entity (TourType) → อ่านชื่อผ่าน tour.tourtype.typename
-═══════════════════════════════════════════ */
-const tourtypeSelect  = document.getElementById('tourtypeSelect');
-const daysInput       = document.getElementById('numberOfDays');
-const nightsInput     = document.getElementById('numberOfNights');
-const customTypeGroup = document.getElementById('customTypeGroup');
-const tourtypeCustom  = document.getElementById('tourtypeCustom');
-
-const KNOWN_TYPES = ['ทัวร์รายวัน', 'ทัวร์วัฒนธรรมชนเผ่า', 'ทัวร์วิถีชีวิต'];
-
-function applyTourTypeRules() {
-    const type = tourtypeSelect.value;
-    if (type === 'ทัวร์รายวัน') {
-        customTypeGroup.style.display = 'none';
-        daysInput.readOnly = true;
-        nightsInput.readOnly = true;
-        daysInput.value = 1;
-        nightsInput.value = 0;
-    } else {
-        customTypeGroup.style.display = (type === '__custom__') ? 'block' : 'none';
-        daysInput.readOnly = false;
-        nightsInput.readOnly = false;
-    }
-}
-tourtypeSelect.addEventListener('change', applyTourTypeRules);
-
-// ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
-// ✅ tourtype เป็น entity แล้ว ต้องอ่านชื่อผ่าน .typename และกัน null (ทัวร์ที่ยังไม่ผูกประเภท)
-(function initTourType() {
-    const savedType = /*[[${tour.tourtype != null ? tour.tourtype.typename : ''}]]*/ '';
-    if (!savedType) return;
-    if (KNOWN_TYPES.includes(savedType)) {
-        tourtypeSelect.value = savedType;
-    } else {
-        tourtypeSelect.value = '__custom__';
-        tourtypeCustom.value = savedType;
-    }
-    // เก็บวัน/คืนเดิมไว้ก่อนเรียก applyTourTypeRules (เผื่อโดนล้างถ้าเป็นทัวร์รายวัน)
-    const d = daysInput.value, n = nightsInput.value;
-    applyTourTypeRules();
-    if (tourtypeSelect.value !== 'ทัวร์รายวัน') {
-        daysInput.value = d;
-        nightsInput.value = n;
-    }
-})();
-
-// ── Validate ──
-document.getElementById('editForm').addEventListener('submit', function (e) {
-    const min = parseInt(document.querySelector('[name="minSeatstour"]').value);
-    const max = parseInt(document.querySelector('[name="maxSeatstour"]').value);
-    if (min > max) {
-        e.preventDefault();
-        alert('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด');
-        return;
-    }
-
-    if (tourtypeSelect.value === '') {
-        e.preventDefault();
-        alert('กรุณาเลือกประเภททัวร์');
-        return;
-    }
-    if (tourtypeSelect.value === '__custom__' && tourtypeCustom.value.trim() === '') {
-        e.preventDefault();
-        alert('กรุณาระบุชื่อประเภททัวร์');
-        return;
-    }
-
-    // ส่งค่า tourtype จริงไปเป็น hidden field เพื่อให้ backend อ่านได้ (select ใช้ name="tourtypeUi" เฉยๆ)
-    const finalTourType = tourtypeSelect.value === '__custom__'
-        ? tourtypeCustom.value.trim()
-        : tourtypeSelect.value;
-    const hidden = document.createElement('input');
-    hidden.type = 'hidden';
-    hidden.name = 'tourtype';
-    hidden.value = finalTourType;
-    this.appendChild(hidden);
-});
-</script>
+    <script src="/js/Tour/edit_tour.js"></script>
 
 </body>
+
 </html>
