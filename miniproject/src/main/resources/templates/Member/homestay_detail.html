@@ -841,18 +841,17 @@
           <div class="stars">★★★★★</div>
           <div class="score-label" th:text="'จาก ' + ${reviewCount} + ' รีวิว'">จาก 0 รีวิว</div>
         </div>
-        <div class="bar-rows">
-          <div class="bar-row" th:each="star : ${#numbers.sequence(5, 1, -1)}">
-            <span class="bar-label" th:text="${star}">5</span>
-            <div class="bar-track">
-              <div class="bar-fill"
-                   th:style="${reviewCount > 0}
-                     ? 'width:' + (${reviews.stream().filter(r -> r.rating == star).count() * 100 / reviewCount}) + '%'
-                     : 'width:0%'"></div>
-            </div>
-          </div>
-        </div>
+       <div class="bar-rows">
+  <div class="bar-row" th:each="star : ${#numbers.sequence(5, 1, -1)}">
+    <span class="bar-label" th:text="${star}">5</span>
+    <div class="bar-track">
+      <div class="bar-fill"
+           th:style="${reviewCount > 0 ? ('width:' + (reviews.?[rating == #star].size() * 100 / reviewCount) + '%') : 'width:0%'}"></div>
+    </div>
+  </div>
+       </div>
       </div>
+  
       <div th:if="${reviews.isEmpty()}">
         <p style="color:var(--neutral-400);text-align:center;padding:20px 0;">ยังไม่มีรีวิว</p>
       </div>

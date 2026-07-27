@@ -391,7 +391,8 @@
             background: var(--white);
             transition: all .14s;
         }
-
+.completed { background: #f0fdf4; color: #15803d; }
+.status-btn.active-completed { background: #16a34a; color: #fff; border-color: #16a34a; }
         .status-btn:hover {
             border-color: var(--green-400);
             background: var(--green-50);
@@ -878,6 +879,12 @@
        th:class="${activeStatus == 'CONFIRMED'} ? 'status-btn active-confirmed' : 'status-btn'">
         อนุมัติแล้ว (<span th:text="${countConfirmed}">0</span>)
     </a>
+
+    <a th:href="@{/member/bookings/list(type=${activeType},status='COMPLETED')}"
+   th:class="${activeStatus == 'COMPLETED'} ? 'status-btn active-completed' : 'status-btn'">
+    เสร็จสิ้นแล้ว (<span th:text="${countCompleted}">0</span>)
+</a>
+
     <a th:href="@{/member/bookings/list(type=${activeType},status='CANCEL')}"
        th:class="${activeStatus == 'CANCEL'} ? 'status-btn active-cancel' : 'status-btn'">
         ยกเลิก (<span th:text="${countCancel}">0</span>)
@@ -939,6 +946,9 @@
                                   class="status-badge waiting">รออนุมัติ</span>
                             <span th:if="${booking.bookingStatus.name() == 'CONFIRMED'}"
                                   class="status-badge confirmed">อนุมัติแล้ว</span>
+                            <span th:if="${booking.bookingStatus.name() == 'COMPLETED'}"
+                                  class="status-badge completed">เสร็จสิ้นแล้ว</span>
+
                             <span th:if="${booking.bookingStatus.name() == 'CANCEL'}"
                                   class="status-badge cancel">ยกเลิก</span>
                         </td>

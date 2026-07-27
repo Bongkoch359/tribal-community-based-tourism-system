@@ -68,6 +68,8 @@ public class BookingController {
         long countWaiting  = bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.WAITING_APPROVAL);
         long countConfirmed= bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.CONFIRMED);
         long countCancel   = bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.CANCEL);
+        long countCompleted = bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.COMPLETED);
+model.addAttribute("countCompleted", countCompleted);
 
         // ── ส่งข้อมูลไปยัง view ──────────────────────────────────────
         model.addAttribute("member",         member);
@@ -111,6 +113,8 @@ public class BookingController {
         if (booking == null) {
             return "redirect:/member/bookings";
         }
+
+        bookingService.autoCompleteIfPastEndDate(booking); 
 
         model.addAttribute("booking", booking);
 
