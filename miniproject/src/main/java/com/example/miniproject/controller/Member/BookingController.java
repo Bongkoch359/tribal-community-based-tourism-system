@@ -1,5 +1,6 @@
 package com.example.miniproject.controller.Member;
 
+import com.example.miniproject.dto.Member.PaymentDTO;
 import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Member;
 import com.example.miniproject.entity.Tourschedule;
@@ -7,14 +8,17 @@ import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.entity.enums.BookingType;
 import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.service.Member.BookingService;
+import com.example.miniproject.service.Member.PaymentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +33,15 @@ public class BookingController {
     // ⬇️ NEW: ใช้ดึงรอบทัวร์ที่เปิดรับจอง สำหรับ dropdown เลือกวันในหน้าแก้ไขการจอง
     @Autowired
     private TourScheduleRepository tourScheduleRepository;
+
+    // ⬇️ NEW: ใช้ดึงข้อมูลใบเสร็จ แยกตามประเภทการจอง (โฮมสเตย์ / ทัวร์)
+    @Autowired
+    @Qualifier("homestayPaymentService")
+    private PaymentService homestayPaymentService;
+
+    @Autowired
+    @Qualifier("tourPaymentService")
+    private PaymentService tourPaymentService;
 
     /**
      * GET /member/booking/list?type=TOUR&status=PENDING
@@ -69,7 +82,7 @@ public class BookingController {
         long countConfirmed= bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.CONFIRMED);
         long countCancel   = bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.CANCEL);
         long countCompleted = bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.COMPLETED);
-model.addAttribute("countCompleted", countCompleted);
+        model.addAttribute("countCompleted", countCompleted);
 
         // ── ส่งข้อมูลไปยัง view ──────────────────────────────────────
         model.addAttribute("member",         member);
@@ -146,5 +159,39 @@ model.addAttribute("countCompleted", countCompleted);
         }
 
        return "redirect:/member/bookings/list";
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  GET : หน้าใบเสร็จ (ใช้ได้ทั้งโฮมสเตย์และทัวร์)
+    // ════════════════════════════════════════════════════════
+
+    @GetMapping("/receipt/{bookingId}")
+    public String viewReceipt(
+            @PathVariable String bookingId,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        Member member = (Member) session.getAttribute("loggedInMember");
+        if (member == null) return "redirect:/member/login";
+
+        Booking booking = bookingService.getBookingById(bookingId);
+        if (booking == null) {
+            return "redirect:/member/bookings/list";
+        }
+
+        try {
+            PaymentDTO receipt = (booking.getBookingType() == BookingType.ACCOMMODATION)
+                    ? homestayPaymentService.getReceiptData(bookingId)
+                    : tourPaymentService.getReceiptData(bookingId);
+
+            model.addAttribute("booking", booking);
+            model.addAttribute("receipt", receipt);
+            return "Member/view_receipt";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "ไม่พบข้อมูลใบเสร็จของการจองนี้");
+            return "redirect:/member/bookings/detail/" + bookingId;
+        }
     }
 }

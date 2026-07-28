@@ -4,7 +4,10 @@ import com.example.miniproject.entity.*;
 import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.entity.enums.BookingType;
 import com.example.miniproject.repository.Member.BookingroomdetailRepository;
+import com.example.miniproject.repository.Member.BookingtourdetailRepository;
 import com.example.miniproject.repository.Member.GuestRepository;
+import com.example.miniproject.repository.Member.TourRepository;
+import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.repository.Homestay.RoomTypeRepository;
 import com.example.miniproject.repository.Member.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class BookingService {
@@ -35,6 +39,17 @@ public class BookingService {
 
     @Autowired
     private BookingIdGenerator bookingIdGenerator;
+
+    @Autowired
+private TourRepository tourRepository;
+
+@Autowired
+private TourScheduleRepository tourScheduleRepository;
+
+@Autowired
+private BookingtourdetailRepository bookingtourdetailRepository;
+
+private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
 
     // ════════════════════════════════════════════════════════
     //  GET / FIND
@@ -276,9 +291,7 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
-<<<<<<< Updated upstream
-=======
-    // ════════════════════════════════════════════════════════
+//══════════════════════════════════════════════
     //  HELPERS
     // ════════════════════════════════════════════════════════
 
@@ -729,5 +742,5 @@ public void autoCompleteIfPastEndDate(Booking booking) {
     }
 }
 
->>>>>>> Stashed changes
+
 }

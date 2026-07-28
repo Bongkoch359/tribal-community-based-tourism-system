@@ -377,5 +377,18 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
     </div>
 
 </div>
+
+<script>
+/* ════ Auto Print เมื่อมาจากปุ่ม "ดูใบเสร็จ" (?print=true) ════ */
+window.addEventListener('load', function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('print') === 'true') {
+        // หน่วงเล็กน้อยให้ browser render รูป/ฟอนต์เสร็จก่อนเปิด print dialog
+        setTimeout(function () {
+            window.print();
+        }, 300);
+    }
+});
+</script>
 </body>
 </html>
