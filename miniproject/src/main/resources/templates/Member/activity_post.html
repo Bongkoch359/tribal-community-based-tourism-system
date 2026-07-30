@@ -81,24 +81,22 @@ img { display: block; }
     color: rgba(255,255,255,0.55); font-size: 14px; font-weight: 500;
     transition: color .15s; display: flex; align-items: center; gap: 5px;
 }
-.top-bar a:hover { color: #fff; }
+.top-bar a:hover { color: var(--turmeric-500); }
 .top-bar a svg { width: 14px; height: 14px; }
 .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
 
 .navbar {
-    background: var(--pine-800);
+    background: var(--pine-900);
+    background-image: linear-gradient(180deg, var(--pine-800), var(--pine-900));
     height: var(--navbar-h);
     display: flex; align-items: center; padding: 0 5%; gap: 8px;
     position: sticky; top: 0; z-index: 1000;
-    box-shadow: 0 3px 16px rgba(0,0,0,0.28);
+    box-shadow: 0 3px 18px rgba(13,32,22,0.35);
+    border-bottom: 3px solid var(--turmeric-500);
 }
-.navbar-brand { color: #fff; margin-right: auto; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
-.brand-icon {
-    width: 48px; height: 48px; background: var(--pine-400); border-radius: 14px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(90,171,119,0.35);
-}
-.brand-icon svg { width: 26px; height: 26px; }
+.navbar-brand { color: #fff; margin-right: auto; display: flex; align-items: center; gap: 14px; flex-shrink: 0; text-decoration: none; }
+.brand-logo { width: 130px; height: 100px; flex-shrink: 0; }
+.brand-logo img { width: 100%; height: 100%; object-fit: contain; }
 .brand-name { display: flex; flex-direction: column; }
 .brand-name-line1 { font-size: 20px; font-weight: 800; line-height: 1.15; }
 .brand-name-line2 { font-size: 13px; font-weight: 400; color: var(--moss-200); opacity: .8; }
@@ -110,19 +108,19 @@ img { display: block; }
     display: flex; align-items: center; gap: 7px;
 }
 .nav-link svg { width: 17px; height: 17px; opacity: .7; flex-shrink: 0; }
-.nav-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.nav-link:hover { background: rgba(255,255,255,0.10); color: var(--turmeric-500); }
 .nav-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.14); margin: 0 8px; }
 .auth-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
 .login-dropdown { position: relative; }
 .btn-login {
-    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff;
-    border-radius: var(--r-md); padding: 10px 20px; font-size: 16px; font-weight: 600;
+    background: rgba(255,255,255,0.10); border: 1.5px solid rgba(255,255,255,0.25); color: #fff;
+    border-radius: 100px; padding: 9px 20px 9px 9px; font-size: 16px; font-weight: 600;
     display: flex; align-items: center; gap: 9px; transition: background .15s, border-color .15s; white-space: nowrap;
 }
-.btn-login:hover { background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.40); }
+.btn-login:hover { background: rgba(255,255,255,0.18); border-color: var(--turmeric-500); }
 .btn-login .icon-user {
-    width: 34px; height: 34px; background: rgba(255,255,255,0.16); border-radius: 50%;
+    width: 34px; height: 34px; background: var(--turmeric-500); border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
 }
 .btn-login .icon-user svg { width: 17px; height: 17px; }
@@ -153,12 +151,12 @@ img { display: block; }
 .item-arrow { width: 17px; height: 17px; color: var(--ink-300); flex-shrink: 0; }
 
 .btn-register {
-    background: var(--turmeric-500); border: none; color: #fff; border-radius: var(--r-md); padding: 10px 22px;
+    background: linear-gradient(135deg, var(--turmeric-500), var(--turmeric-600)); border: none; color: #fff; border-radius: 100px; padding: 10px 22px;
     font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;
     transition: background .15s, transform .1s, box-shadow .15s; white-space: nowrap;
     box-shadow: 0 3px 12px rgba(214,141,40,0.40);
 }
-.btn-register:hover { background: var(--turmeric-600); box-shadow: 0 5px 20px rgba(214,141,40,0.48); }
+.btn-register:hover { box-shadow: 0 5px 20px rgba(214,141,40,0.48); filter: brightness(1.04); }
 .btn-register:active { transform: scale(0.97); }
 .btn-register svg { width: 17px; height: 17px; }
 
@@ -168,9 +166,9 @@ img { display: block; }
     border: 1.5px solid rgba(255,255,255,0.25); border-radius: 50px; padding: 8px 18px 8px 8px;
     cursor: pointer; color: white; transition: background .2s, border-color .2s;
 }
-.btn-user-menu:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.45); }
+.btn-user-menu:hover { background: rgba(255,255,255,0.22); border-color: var(--turmeric-500); }
 .user-avatar {
-    width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--pine-400), var(--pine-600));
+    width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--turmeric-500), var(--turmeric-600));
     display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; color: white;
     flex-shrink: 0; border: 2px solid rgba(255,255,255,0.3);
 }
@@ -475,10 +473,8 @@ img { display: block; }
 <nav class="navbar">
 
   <a href="/search" class="navbar-brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24" fill="white">
-        <path d="M3 17l6-8 4 5 3-3 5 6H3z"/>
-      </svg>
+    <div class="brand-logo">
+      <img th:src="@{/images/logo3.png}" alt="Logo">
     </div>
     <div class="brand-name">
       <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
@@ -679,7 +675,7 @@ img { display: block; }
             </span>
             <span class="hero-pill muted" th:if="${post.createddate != null}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span th:text="${#dates.format(post.createddate, 'dd MMM yyyy')}"></span>
+                <span th:text="${#dates.format(post.createddate, 'dd MMMM yyyy')}"></span>
             </span>
         </div>
     </div>

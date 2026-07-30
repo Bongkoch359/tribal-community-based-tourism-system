@@ -150,4 +150,15 @@ Optional<Booking> findTourBookingDetailForManager(
     @Param("bookingId") String bookingId,
     @Param("managerId") String managerId);
 
+
+
+    @Query("SELECT DISTINCT b FROM Booking b " +
+       "JOIN b.roomDetails rd " +
+       "WHERE b.member.memberid = :memberId " +
+       "AND rd.roomtype.homestay.homestayid = :homestayId " +
+       "AND b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.COMPLETED " +
+       "AND b.review IS NULL")
+List<Booking> findCompletedBookingsWithoutReview(@Param("memberId") String memberId,
+                                                   @Param("homestayId") Integer homestayId);
+
 }

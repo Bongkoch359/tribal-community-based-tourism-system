@@ -39,6 +39,11 @@ public class PaymentDTO {
     private Double amount;          // amount ที่จ่ายจริง
     private String paymentSlip;     // ชื่อไฟล์สลิป
 
+    // ── NEW: ใช้สำหรับหน้าใบเสร็จ - แยกรายการให้ยอดตรงกับ totalAmount ──
+    private Double roomSubtotal;       // จาก Bookingroomdetail.subtotalroom
+    private Boolean wantInsurance;     // จาก Booking.wantInsurance
+    private Double subtotalInsurance;  // จาก Booking.subtotalInsurance
+
     // ── getters / setters ─────────────────────────────────────────
 
     public String getBookingId() { return bookingId; }
@@ -108,4 +113,13 @@ public class PaymentDTO {
 
     public String getPaymentSlip() { return paymentSlip; }
     public void setPaymentSlip(String paymentSlip) { this.paymentSlip = paymentSlip; }
-     }
+
+    public Double getRoomSubtotal() { return roomSubtotal; }
+    public void setRoomSubtotal(Double roomSubtotal) { this.roomSubtotal = roomSubtotal; }
+
+    public Boolean getWantInsurance() { return wantInsurance; }
+    public void setWantInsurance(Boolean wantInsurance) { this.wantInsurance = wantInsurance; }
+
+    public Double getSubtotalInsurance() { return subtotalInsurance; }
+    public void setSubtotalInsurance(Double subtotalInsurance) { this.subtotalInsurance = subtotalInsurance; }
+}

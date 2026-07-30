@@ -70,6 +70,11 @@ if (roomDetails != null && !roomDetails.isEmpty()) {
     dto.setNumOfRooms(detail.getNumofrooms());
     dto.setNumOfAdults(detail.getNumofadults());
     dto.setNumOfChildren(detail.getNumofChcldren());
+   
+    // ── ใบเสร็จ: ค่าห้อง + ประกัน ──
+    dto.setRoomSubtotal(detail.getSubtotalroom());
+    dto.setWantInsurance(booking.getWantInsurance());
+    dto.setSubtotalInsurance(booking.getSubtotalInsurance());
 
     // ข้อมูล Roomtype
     if (detail.getRoomtype() != null) {

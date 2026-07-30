@@ -17,26 +17,28 @@ public class ReviewController {
     private ReviewService reviewService;
 
     @PostMapping("/submit")
-    public String submitReview(
-            @RequestParam("bookingId") String bookingId,
-            @RequestParam("rating") Integer rating,
-            @RequestParam(value = "comment", required = false) String comment,
-            @RequestParam(value = "reviewimage", required = false) MultipartFile imageFile,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+public String submitReview(
+        @RequestParam("bookingId") String bookingId,
+        @RequestParam("rating") Integer rating,
+        @RequestParam(value = "comment", required = false) String comment,
+        @RequestParam(value = "reviewimage", required = false) MultipartFile imageFile,
+        @RequestParam(value = "homestayId", required = false) Integer homestayId,
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
 
-        Member member = (Member) session.getAttribute("loggedInMember");
-        if (member == null) return "redirect:/member/login";
+    Member member = (Member) session.getAttribute("loggedInMember");
+    if (member == null) return "redirect:/member/login";
 
-        try {
-            reviewService.submitReview(bookingId, member.getMemberid(), rating, comment, imageFile);
-            redirectAttributes.addFlashAttribute("successMsg", "ขอบคุณสำหรับรีวิวของคุณ! 🌟");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถส่งรีวิวได้ กรุณาลองใหม่");
-        }
-
-        return "redirect:/member/bookings/detail/" + bookingId;
+    try {
+        reviewService.submitReview(bookingId, member.getMemberid(), rating, comment, imageFile);
+        redirectAttributes.addFlashAttribute("successMsg", "ขอบคุณสำหรับรีวิวของคุณ! 🌟");
+    } catch (IllegalArgumentException | IllegalStateException e) {
+        redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถส่งรีวิวได้ กรุณาลองใหม่");
     }
+
+    return homestayId != null ? "redirect:/homestay/" + homestayId
+                               : "redirect:/member/bookings/detail/" + bookingId;
+}
 }

@@ -1,15 +1,22 @@
 package com.example.miniproject.controller.Member;
 
+import com.example.miniproject.entity.Booking;
+import com.example.miniproject.entity.Bookingroomdetail;
 import com.example.miniproject.entity.Homestay;
+import com.example.miniproject.entity.Member;
 import com.example.miniproject.entity.Review;
 import com.example.miniproject.entity.Roomtype;
+import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.BookingroomdetailRepository;
 import com.example.miniproject.service.Homestay.HomestayService;
+
+import jakarta.servlet.http.HttpSession;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,15 +33,19 @@ public class ViewHomestayDetailController {
     @Autowired
     private HomestayService homestayService;
 
-    // ✅ เพิ่ม inject
     @Autowired
     private BookingroomdetailRepository bookingroomdetailRepository;
+
+    // ✅ เพิ่ม inject
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @GetMapping("/{id}")
     public String homestayDetail(
             @PathVariable Integer id,
-            @RequestParam(required = false) String startDate,  // ✅ เพิ่ม
-            @RequestParam(required = false) String endDate,    // ✅ เพิ่ม
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            HttpSession session,     // ✅ เพิ่ม
             Model model) {
 
         Homestay homestay = homestayService.getHomestayDetailForMember(id);
@@ -52,7 +63,6 @@ public class ViewHomestayDetailController {
         Double        avgRating   = homestayService.getAvgRating(id);
         Long          reviewCount = homestayService.getReviewCount(id);
 
-        // ✅ คำนวณห้องที่เหลือจริงๆ
         java.sql.Date sd, ed;
         try {
             sd = (startDate != null && !startDate.isBlank())
@@ -80,7 +90,27 @@ public class ViewHomestayDetailController {
         model.addAttribute("reviews",        reviews);
         model.addAttribute("avgRating",      avgRating);
         model.addAttribute("reviewCount",    reviewCount);
-        model.addAttribute("availableRooms", availableRooms); // ✅ เพิ่ม
+        model.addAttribute("availableRooms", availableRooms);
+
+        // ✅ ส่วนที่เพิ่ม: การจองที่เข้าพักเสร็จแล้วแต่ยังไม่ได้รีวิว
+        Member member = (Member) session.getAttribute("loggedInMember");
+        if (member != null) {
+            List<Booking> pendingReviews = bookingRepository
+                    .findCompletedBookingsWithoutReview(member.getMemberid(), id);
+
+            Map<String, java.sql.Date> checkoutDateMap = pendingReviews.stream()
+    .collect(Collectors.toMap(
+        Booking::getBookingid,
+        b -> b.getRoomDetails().stream()
+                .filter(rd -> rd.getRoomtype().getHomestay().getHomestayid() == id)  // ✅ แก้ตรงนี้
+                .map(Bookingroomdetail::getCheckoutdate)
+                .max(java.sql.Date::compareTo)
+                .orElse(null)
+    ));
+
+            model.addAttribute("pendingReviewBookings", pendingReviews);
+            model.addAttribute("checkoutDateMap", checkoutDateMap);
+        }
 
         return "Member/homestay_detail";
     }

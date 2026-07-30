@@ -835,9 +835,30 @@
         <div class="sec-accent"></div>
         รีวิวจากผู้เข้าพัก
       </div>
+
+
+      <div th:if="${pendingReviewBookings != null and !pendingReviewBookings.isEmpty()}"
+     th:each="pb : ${pendingReviewBookings}"
+     style="background:var(--amber-100);border-radius:var(--r-md);padding:16px 20px;margin-bottom:20px;
+            display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+  <div>
+    <strong style="color:var(--amber-700);">คุณเคยเข้าพักที่นี่</strong>
+    <span style="color:var(--neutral-600);font-size:14px;display:block;"
+          th:if="${checkoutDateMap[pb.bookingid] != null}"
+          th:text="'เข้าพักเมื่อวันที่ ' + ${#dates.format(checkoutDateMap[pb.bookingid], 'dd MMMM yyyy')}"></span>
+  </div>
+  <button type="button" class="btn-book" style="width:auto;padding:10px 20px;"
+          th:attr="onclick='openReviewModal(\'' + ${pb.bookingid} + '\')'">
+    เขียนรีวิว
+  </button>
+</div>
+
+
       <div class="review-summary">
         <div class="score-box">
-          <div class="score-num" th:text="${#numbers.formatDecimal(avgRating, 1, 1)}">0.0</div>
+          
+          <div class="score-num" 
+     th:text="${reviewCount != null and reviewCount > 0} ? ${#numbers.formatDecimal(avgRating, 1, 1)} : '0.0'">0.0</div>
           <div class="stars">★★★★★</div>
           <div class="score-label" th:text="'จาก ' + ${reviewCount} + ' รีวิว'">จาก 0 รีวิว</div>
         </div>
@@ -968,6 +989,39 @@
   <button class="lb-next" onclick="nextImg()">›</button>
 </div>
 
+
+<div id="reviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+     z-index:9998;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:var(--r-lg);padding:28px;width:90%;max-width:480px;">
+    <h3 style="margin-bottom:16px;color:var(--green-800);">เขียนรีวิวการเข้าพักของคุณ</h3>
+    <form th:action="@{/member/review/submit}" method="post" enctype="multipart/form-data" id="reviewForm">
+      <input type="hidden" name="bookingId" id="reviewBookingId" value=""/>
+      <input type="hidden" name="homestayId" th:value="${homestay.homestayid}"/>
+
+      <label style="font-size:14px;font-weight:700;display:block;margin-bottom:8px;">ให้คะแนน</label>
+      <div id="starPicker" style="font-size:28px;color:var(--neutral-300);margin-bottom:16px;cursor:pointer;">
+        <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span>
+        <span data-val="4">★</span><span data-val="5">★</span>
+      </div>
+      <input type="hidden" name="rating" id="ratingInput" value="0" required/>
+
+      <label style="font-size:14px;font-weight:700;display:block;margin-bottom:8px;">ความคิดเห็น</label>
+      <textarea name="comment" rows="4" placeholder="เล่าประสบการณ์การเข้าพักของคุณ..."
+                style="width:100%;border:1px solid var(--neutral-300);border-radius:var(--r-sm);
+                       padding:10px;font-family:'Sarabun',sans-serif;margin-bottom:16px;"></textarea>
+
+      <label style="font-size:14px;font-weight:700;display:block;margin-bottom:8px;">รูปภาพ (ถ้ามี)</label>
+      <input type="file" name="reviewimage" accept="image/*" style="margin-bottom:20px;"/>
+
+      <div style="display:flex;gap:10px;">
+        <button type="button" onclick="closeReviewModal()" class="btn-book-disabled" style="cursor:pointer;">ยกเลิก</button>
+        <button type="submit" class="btn-book">ส่งรีวิว</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 <script th:inline="javascript">
   var GALLERY_IMGS = /*[[${homestay.images != null ? #strings.arraySplit(homestay.images, ',') : {}}]]*/ [];
   var HOMESTAY_ADDRESS = /*[[${homestay.address}]]*/ '';
@@ -1039,6 +1093,30 @@
   });
   document.getElementById('lightbox').addEventListener('click', function(e) {
     if (e.target === this) closeLightbox();
+  });
+
+
+   function openReviewModal(bookingId) {
+    document.getElementById('reviewBookingId').value = bookingId;
+    document.getElementById('reviewModal').style.display = 'flex';
+  }
+  function closeReviewModal() {
+    document.getElementById('reviewModal').style.display = 'none';
+    document.getElementById('ratingInput').value = 0;
+    resetStars();
+  }
+  var stars = document.querySelectorAll('#starPicker span');
+  function resetStars() {
+    stars.forEach(function(s) { s.style.color = 'var(--neutral-300)'; });
+  }
+  stars.forEach(function(star) {
+    star.addEventListener('click', function() {
+      var val = parseInt(this.dataset.val);
+      document.getElementById('ratingInput').value = val;
+      stars.forEach(function(s) {
+        s.style.color = parseInt(s.dataset.val) <= val ? 'var(--amber-500)' : 'var(--neutral-300)';
+      });
+    });
   });
 </script>
 
