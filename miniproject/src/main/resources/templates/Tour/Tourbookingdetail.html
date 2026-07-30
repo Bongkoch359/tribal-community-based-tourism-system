@@ -733,6 +733,47 @@
             margin-top: 2px;
         }
 
+        /* ─── VERIFY CHECKBOX ─── */
+        .verify-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #f7f9f4;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+        }
+
+        .verify-check:hover {
+            border-color: var(--green-mid);
+        }
+
+        .verify-check.checked {
+            background: var(--green-light);
+            border-color: var(--green-mid);
+        }
+
+        .verify-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            accent-color: var(--green-dark);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .verify-check label {
+            font-size: .88rem;
+            color: var(--text-main);
+            font-weight: 500;
+            line-height: 1.5;
+            cursor: pointer;
+            user-select: none;
+        }
+
         .btn-confirm-booking {
             width: 100%;
             background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
@@ -755,6 +796,14 @@
         .btn-confirm-booking:hover {
             background: linear-gradient(135deg, #2d611a, var(--green-mid));
             transform: translateY(-1px);
+        }
+
+        .btn-confirm-booking:disabled {
+            background: var(--gray-light);
+            color: var(--text-hint);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
         }
 
         .btn-cancel-booking {
@@ -872,33 +921,54 @@
             background: #8a2424;
         }
 
-        .toast {
+        .toast-overlay {
+            display: none;
             position: fixed;
-            bottom: 28px;
-            right: 28px;
+            inset: 0;
+            background: rgba(0, 0, 0, 0);
             z-index: 9999;
-            background: var(--green-dark);
-            color: #fff;
-            padding: 14px 22px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
-            font-size: .95rem;
-            font-weight: 500;
-            display: flex;
             align-items: center;
-            gap: 10px;
-            transform: translateY(80px);
-            opacity: 0;
-            transition: all .35s ease;
+            justify-content: center;
+            pointer-events: none;
+            transition: background .35s ease;
         }
 
-        .toast.show {
-            transform: translateY(0);
+        .toast-overlay.show {
+            display: flex;
+            background: rgba(0, 0, 0, .25);
+        }
+
+        .toast {
+            background: #fff;
+            color: var(--text-main);
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+            font-size: 1.05rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            text-align: center;
+            min-width: 260px;
+            transform: scale(.85);
+            opacity: 0;
+            transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .toast-overlay.show .toast {
+            transform: scale(1);
             opacity: 1;
         }
 
-        .toast.error {
-            background: var(--red-text);
+        .toast i.toast-icon {
+            font-size: 2.6rem;
+            color: var(--green-dark);
+        }
+
+        .toast.error i.toast-icon {
+            color: var(--red-text);
         }
 
         .footer {
@@ -1274,10 +1344,21 @@
                             <i class="fas fa-circle-info"></i>
                             กรุณาตรวจสอบหลักฐานการชำระเงินก่อนยืนยันการจอง
                         </div>
-                        <button class="btn-confirm-booking"
+
+                        <div class="verify-check" id="verifyCheckWrap"
+                            th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
+                            onclick="if(event.target.tagName!=='INPUT'){document.getElementById('verifySlipCheck').click();}">
+                            <input type="checkbox" id="verifySlipCheck" onchange="toggleConfirmBtn(this.checked)">
+                            <label for="verifySlipCheck" onclick="event.stopPropagation();">
+                                ฉันตรวจสอบยอดเงินและหลักฐานการชำระเงินถูกต้องแล้ว
+                            </label>
+                        </div>
+
+                        <button class="btn-confirm-booking" id="btnConfirmBooking"
                             th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
                             th:attr="data-bookingid=${booking.bookingid}"
-                            onclick="openConfirmModal(this.dataset.bookingid)">
+                            onclick="openConfirmModal(this.dataset.bookingid)"
+                            disabled>
                             <i class="fas fa-circle-check"></i> ยืนยันการจอง
                         </button>
                         <button class="btn-cancel-booking"
@@ -1327,7 +1408,12 @@
         <img id="slipLightboxImg" src="" alt="สลิปการชำระเงิน">
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div class="toast-overlay" id="toastOverlay">
+        <div class="toast" id="toast">
+            <i class="fas fa-circle-check toast-icon" id="toastIcon"></i>
+            <span id="toastMsg"></span>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="footer-content">
@@ -1338,6 +1424,13 @@
 
     <script th:inline="javascript">
         let pendingBookingId = null;
+
+        function toggleConfirmBtn(checked) {
+            const btn = document.getElementById('btnConfirmBooking');
+            const wrap = document.getElementById('verifyCheckWrap');
+            if (btn) btn.disabled = !checked;
+            if (wrap) wrap.classList.toggle('checked', checked);
+        }
 
         function openConfirmModal(bookingId) {
             pendingBookingId = bookingId;
@@ -1371,7 +1464,7 @@
                 const data = await res.json();
                 if (data.success) {
                     showToast(successMsg, false);
-                    setTimeout(() => window.location.href = '/manager/bookings', 1400);
+                    setTimeout(() => window.location.href = '/manager/bookings', 1600);
                 } else {
                     showToast(data.message || 'เกิดข้อผิดพลาด', true);
                 }
@@ -1381,11 +1474,17 @@
         }
 
         function showToast(msg, isError = false) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast' + (isError ? ' error' : '');
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+            const overlay = document.getElementById('toastOverlay');
+            const box = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msgEl = document.getElementById('toastMsg');
+
+            msgEl.textContent = msg;
+            box.className = 'toast' + (isError ? ' error' : '');
+            icon.className = 'fas toast-icon ' + (isError ? 'fa-circle-xmark' : 'fa-circle-check');
+
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 1800);
         }
 
         document.querySelectorAll('.modal-overlay').forEach(el => {

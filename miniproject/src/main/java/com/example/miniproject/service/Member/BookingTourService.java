@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -71,16 +72,20 @@ public class BookingTourService {
      * จึงดึงแยกแล้ว set เข้า booking ก่อน return ให้ view ใช้ booking.payment ได้ตามปกติ
      */
     @Transactional(readOnly = true)
-    public Booking getTourBookingDetailForManager(String bookingId, String managerId) {
-        Booking booking = bookingRepository
-                .findTourBookingDetailForManager(bookingId, managerId)
-                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง หรือไม่มีสิทธิ์เข้าถึงการจองนี้"));
+public Booking getTourBookingDetailForManager(String bookingId, String managerId) {
+    Booking booking = bookingRepository
+            .findTourBookingDetailForManager(bookingId, managerId)
+            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง หรือไม่มีสิทธิ์เข้าถึงการจองนี้"));
 
-        Payment payment = paymentRepository.findByBooking_Bookingid(bookingId);
-        booking.setPayment(payment);
+    // ดึง guests แยกต่างหาก กัน cartesian product กับ tourDetails
+    List<Guest> guests = guestRepository.findByBooking_Bookingid(bookingId);
+    booking.setGuests(new HashSet<>(guests));
 
-        return booking;
-    }
+    Payment payment = paymentRepository.findByBooking_Bookingid(bookingId);
+    booking.setPayment(payment);
+
+    return booking;
+}
 
     /** ยืนยันการจองทัวร์ (manager) — ทำได้เฉพาะการจองที่อยู่ในสถานะ "รอตรวจสอบ" เท่านั้น */
     @Transactional

@@ -135,20 +135,19 @@ long countByRoomHomestayIdAndStatus(
      * — ผูก managerId ไว้ใน WHERE เลย เพื่อกันไม่ให้ manager คนอื่นเปิดดู/แก้ไข
      * การจองทัวร์ที่ไม่ใช่ของชุมชนตัวเอง (ป้องกัน IDOR)
      */
-    @Query("""
-        SELECT DISTINCT b FROM Booking b
-        LEFT JOIN FETCH b.member
-        LEFT JOIN FETCH b.tourDetails td
-        LEFT JOIN FETCH td.tour t
-        LEFT JOIN FETCH t.tourtype
-        LEFT JOIN FETCH td.tourschedule
-        LEFT JOIN FETCH b.guests
-        WHERE b.bookingid = :bookingId
-        AND b.bookingType = com.example.miniproject.entity.enums.BookingType.TOUR
-        AND t.communitymanager.managerid = :managerId
-    """)
-    Optional<Booking> findTourBookingDetailForManager(
-        @Param("bookingId") String bookingId,
-        @Param("managerId") String managerId);
+   @Query("""
+    SELECT DISTINCT b FROM Booking b
+    LEFT JOIN FETCH b.member
+    LEFT JOIN FETCH b.tourDetails td
+    LEFT JOIN FETCH td.tour t
+    LEFT JOIN FETCH t.tourtype
+    LEFT JOIN FETCH td.tourschedule
+    WHERE b.bookingid = :bookingId
+    AND b.bookingType = com.example.miniproject.entity.enums.BookingType.TOUR
+    AND t.communitymanager.managerid = :managerId
+""")
+Optional<Booking> findTourBookingDetailForManager(
+    @Param("bookingId") String bookingId,
+    @Param("managerId") String managerId);
 
 }

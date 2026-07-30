@@ -90,7 +90,7 @@
                                 <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
                                     onchange="addFiles(Array.from(this.files)); this.value='';">
                             </label>
-                            <div class="upload-hint">jpg · png · webp | สูงสุด 10 รูป</div>
+                            <div class="upload-hint">jpg · png · webp | สูงสุด 5 รูป</div>
                         </div>
 
                         <!-- grid รูป -->
@@ -285,8 +285,8 @@
                     <div class="card">
                         <div class="card-title">เงื่อนไขการจอง</div>
                         <div class="form-group">
-                            <label>เงื่อนไข</label>
-                            <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม (ถ้ามี)..."
+                            <label>เงื่อนไข <span class="req">*</span></label>
+                            <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม..." required
                                 th:text="${tour.conditiontour}"></textarea>
                         </div>
                     </div>
@@ -309,7 +309,7 @@
 
     <!-- ═══════════════════════════════════════════
      ข้อมูลรอบทัวร์เริ่มต้น + URL ของ endpoint ต่างๆ
-     ✅ ส่งเป็นค่า primitive เท่านั้น (ไม่ serialize ทั้ง entity ตรงๆ)
+    ส่งเป็นค่า primitive เท่านั้น (ไม่ serialize ทั้ง entity ตรงๆ)
      เพื่อเลี่ยงปัญหา circular reference ตอน Jackson แปลง entity เป็น JSON
 ═══════════════════════════════════════════ -->
     <script th:inline="javascript">

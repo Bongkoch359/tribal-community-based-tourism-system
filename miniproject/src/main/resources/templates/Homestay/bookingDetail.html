@@ -684,6 +684,47 @@
             margin-top: 2px;
         }
 
+        /* ─── VERIFY CHECKBOX ─── */
+        .verify-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #f6f4ee;
+            border: 1.5px solid #e0d8c8;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+        }
+
+        .verify-check:hover {
+            border-color: #1a6b52;
+        }
+
+        .verify-check.checked {
+            background: #d1e7dd;
+            border-color: #1a6b52;
+        }
+
+        .verify-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            accent-color: #1a6b52;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .verify-check label {
+            font-size: .88rem;
+            color: #0d2e24;
+            font-weight: 500;
+            line-height: 1.5;
+            cursor: pointer;
+            user-select: none;
+        }
+
         .btn-confirm-booking {
             width: 100%;
             background: linear-gradient(135deg, #1a6b52, #2a9068);
@@ -706,6 +747,14 @@
         .btn-confirm-booking:hover {
             background: linear-gradient(135deg, #0d3d30, #2a9068);
             transform: translateY(-1px);
+        }
+
+        .btn-confirm-booking:disabled {
+            background: #e0e0e0;
+            color: #aaa;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
         }
 
         .btn-cancel-booking {
@@ -1226,10 +1275,21 @@
                             <i class="fas fa-circle-info"></i>
                             กรุณาตรวจสอบหลักฐานการชำระเงินก่อนยืนยันการจอง
                         </div>
-                        <button class="btn-confirm-booking"
+
+                        <div class="verify-check" id="verifyCheckWrap"
+                            th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
+                            onclick="if(event.target.tagName!=='INPUT'){document.getElementById('verifySlipCheck').click();}">
+                            <input type="checkbox" id="verifySlipCheck" onchange="toggleConfirmBtn(this.checked)">
+                            <label for="verifySlipCheck" onclick="event.stopPropagation();">
+                                ฉันตรวจสอบยอดเงินและหลักฐานการชำระเงินถูกต้องแล้ว
+                            </label>
+                        </div>
+
+                        <button class="btn-confirm-booking" id="btnConfirmBooking"
                             th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
                             th:attr="data-bookingid=${booking.bookingid}, data-homestayid=${booking.roomDetails != null and !booking.roomDetails.isEmpty() ? booking.roomDetails[0].roomtype?.homestay?.homestayid : 0}"
-                            onclick="openConfirmModal(this.dataset.bookingid, this.dataset.homestayid)">
+                            onclick="openConfirmModal(this.dataset.bookingid, this.dataset.homestayid)"
+                            disabled>
                             <i class="fas fa-circle-check"></i> ยืนยันการจอง
                         </button>
                         <button class="btn-cancel-booking"
@@ -1291,6 +1351,13 @@
     <script th:inline="javascript">
         let pendingBookingId = null;
         let pendingHomestayId = null;
+
+        function toggleConfirmBtn(checked) {
+            const btn = document.getElementById('btnConfirmBooking');
+            const wrap = document.getElementById('verifyCheckWrap');
+            if (btn) btn.disabled = !checked;
+            if (wrap) wrap.classList.toggle('checked', checked);
+        }
 
         function openConfirmModal(bookingId, homestayId) {
             pendingBookingId = bookingId;

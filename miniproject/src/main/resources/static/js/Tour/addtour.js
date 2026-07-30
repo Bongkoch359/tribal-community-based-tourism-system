@@ -29,18 +29,34 @@ function handleDrop(e) {
     addFiles(Array.from(e.dataTransfer.files));
 }
 
+// ✅ แก้บั๊ก: เดิมนับ loaded เทียบกับ files.length ทั้งหมด (รวมไฟล์ที่ไม่ผ่านชนิดไฟล์)
+//    ทำให้ถ้ามีไฟล์ผิดชนิดปนมา loaded จะไม่มีวันเท่ากับ files.length -> renderGrid() ไม่ถูกเรียก
+//    แก้โดยกรองไฟล์ที่ถูกต้อง (และไม่เกินโควตา) ไว้ก่อน แล้วนับเทียบกับจำนวนไฟล์ที่ถูกต้องนั้นแทน
 function addFiles(files) {
     const allowed = MAX_IMAGES - imageDataList.length;
-    files = files.slice(0, allowed);
+    const validFiles = files
+        .filter(file => file.type.match(/^image\/(jpeg|png|webp)$/))
+        .slice(0, allowed);
+
+    // แจ้งผู้ใช้เมื่อมีไฟล์ถูกตัดทิ้ง (ผิดชนิด หรือเกินโควตา)
+    if (validFiles.length < files.length) {
+        const invalidCount = files.filter(f => !f.type.match(/^image\/(jpeg|png|webp)$/)).length;
+        if (invalidCount > 0) {
+            alert('มีไฟล์บางไฟล์ไม่ใช่รูปภาพชนิด jpg/png/webp จึงถูกข้ามไป');
+        } else if (allowed <= 0 || files.length > allowed) {
+            alert(`เลือกรูปได้สูงสุด ${MAX_IMAGES} รูป มีบางไฟล์ถูกข้ามไปเนื่องจากเกินจำนวนที่กำหนด`);
+        }
+    }
+
+    if (validFiles.length === 0) return;
+
     let loaded = 0;
-    if (files.length === 0) return;
-    files.forEach(file => {
-        if (!file.type.match(/^image\/(jpeg|png|webp)$/)) return;
+    validFiles.forEach(file => {
         const reader = new FileReader();
         reader.onload = e => {
             imageDataList.push({ base64: e.target.result, name: file.name });
             loaded++;
-            if (loaded === files.length) renderGrid();
+            if (loaded === validFiles.length) renderGrid();
         };
         reader.readAsDataURL(file);
     });
@@ -84,8 +100,16 @@ function setPrimary(index) {
     renderGrid();
 }
 
+// ✅ แก้บั๊ก: เดิมเช็คแค่กรณี primaryIndex เกินขอบเขตหลังลบ (>= length)
+//    แต่ถ้าลบรูปที่ index ก่อนหน้ารูปหลัก จะทำให้ primaryIndex ชี้ไปผิดรูป (เลื่อนตำแหน่งไม่ทัน)
+//    แก้โดยปรับ primaryIndex ตามตำแหน่งที่ถูกลบ
 function removeImage(index) {
     imageDataList.splice(index, 1);
+    if (index < primaryIndex) {
+        primaryIndex--;
+    } else if (index === primaryIndex) {
+        primaryIndex = 0;
+    }
     if (primaryIndex >= imageDataList.length) primaryIndex = 0;
     renderGrid();
 }
@@ -621,6 +645,7 @@ const REQUIRED = [
     { id: 'tourmname', errId: 'err-tourmname', msg: 'กรุณากรอกชื่อทัวร์' },
     { id: 'tourtypeSelect', errId: 'err-tourtype', msg: 'กรุณาเลือกประเภททัวร์' },
     { id: 'tourdetail', errId: 'err-tourdetail', msg: 'กรุณากรอกรายละเอียดทัวร์' },
+    { id: 'conditiontour', errId: 'err-conditiontour', msg: 'กรุณากรอกเงื่อนไขทัวร์' },
     { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งขั้นต่ำ' },
     { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งสูงสุด' },
     { id: 'adultprice', errId: 'err-adultprice', msg: 'กรุณาระบุราคาผู้ใหญ่' },
@@ -632,6 +657,33 @@ REQUIRED.forEach(f => {
     if (!el) return;
     const evt = el.tagName === 'SELECT' ? 'change' : 'input';
     el.addEventListener(evt, () => clearErr(f.id, f.errId));
+});
+
+// ✅ ห้ามค่าติดลบในทุกช่องตัวเลข: จำนวนวัน/คืน, ที่นั่งขั้นต่ำ/สูงสุด, ราคาผู้ใหญ่/เด็ก
+//    (ฟอร์มมี novalidate จึง attribute min="0"/"1" ของ HTML ไม่ทำงานเอง ต้องเช็คเองด้วย JS)
+const NUMERIC_NON_NEGATIVE = [
+    { id: 'numberOfDays', errId: 'err-numberOfDays', msg: 'จำนวนวันต้องไม่ติดลบ' },
+    { id: 'numberOfNights', errId: 'err-numberOfDays', msg: 'จำนวนคืนต้องไม่ติดลบ' },
+    { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'จำนวนที่นั่งขั้นต่ำต้องไม่ติดลบ' },
+    { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'จำนวนที่นั่งสูงสุดต้องไม่ติดลบ' },
+    { id: 'adultprice', errId: 'err-adultprice', msg: 'ราคาผู้ใหญ่ต้องไม่ติดลบ' },
+    { id: 'childprice', errId: 'err-childprice', msg: 'ราคาเด็กต้องไม่ติดลบ' },
+];
+
+function isNegativeValue(val) {
+    return val !== '' && !isNaN(parseFloat(val)) && parseFloat(val) < 0;
+}
+
+NUMERIC_NON_NEGATIVE.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!el) return;
+    // ผูก listener นี้ "หลัง" listener อื่นๆ ที่ clearErr ไปแล้ว (REQUIRED / tour-type)
+    // เพื่อให้ข้อความ error เรื่องติดลบแสดงทับได้เสมอถ้ายังติดลบอยู่
+    el.addEventListener('input', () => {
+        if (isNegativeValue(el.value)) {
+            showErr(f.id, f.errId, f.msg);
+        }
+    });
 });
 
 function showErr(id, errId, msg) {
@@ -681,6 +733,16 @@ document.getElementById('tourForm').addEventListener('submit', function (e) {
         showErr('maxSeatstour', 'err-maxSeatstour', 'จำนวนสูงสุดต้องมากกว่าหรือเท่ากับขั้นต่ำ');
         valid = false;
     }
+
+    // ─── กันค่าติดลบซ้ำอีกชั้นตอน submit (เผื่อกรณี input event ไม่ทำงาน เช่น autofill) ───
+    NUMERIC_NON_NEGATIVE.forEach(f => {
+        const el = document.getElementById(f.id);
+        if (!el) return;
+        if (isNegativeValue(el.value)) {
+            showErr(f.id, f.errId, f.msg);
+            valid = false;
+        }
+    });
 
     // ─── ต้องมีอย่างน้อย 1 รอบทัวร์ก่อนบันทึก ───
     if (scheduleList.length === 0) {

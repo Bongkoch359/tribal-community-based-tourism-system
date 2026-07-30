@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เพิ่มทัวร์รายวัน</title>
+    <title>เพิ่มทัวร์</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link th:href="@{/css/Tour/add_tour.css}" rel="stylesheet">
@@ -129,10 +129,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">เงื่อนไขทัวร์</label>
+                        <label class="form-label">เงื่อนไขทัวร์ <span class="req">*</span></label>
                         <textarea class="form-control" id="conditiontour" name="conditiontour" style="min-height:80px;"
                             placeholder="เช่น ต้องจองล่วงหน้า 1 วัน, สิ่งที่รวม/ไม่รวมในราคา..."
                             th:text="${tour?.conditiontour}"></textarea>
+                        <div class="field-error" id="err-conditiontour">กรุณากรอกเงื่อนไขทัวร์</div>
                     </div>
 
                     <div class="form-row">
