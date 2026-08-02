@@ -7,39 +7,56 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --green-950: #0a1f12;
-            --green-900: #14321e;
-            --green-800: #1a472a;
-            --green-700: #215c35;
-            --green-600: #2d7a4f;
-            --green-500: #3d9e68;
-            --green-400: #52b788;
-            --green-300: #86d4aa;
-            --green-200: #a7e3c3;
-            --green-100: #d8f3dc;
-            --green-50:  #f0faf4;
-            --amber-700: #a16207;
-            --amber-600: #c27b04;
-            --amber-500: #e8960a;
-            --amber-400: #f5aa1f;
-            --neutral-800: #292524;
-            --neutral-700: #44403c;
-            --neutral-600: #57534e;
-            --neutral-500: #78716c;
-            --neutral-400: #a8a29e;
-            --neutral-300: #d6d3d1;
-            --neutral-200: #e7e5e4;
-            --neutral-100: #f5f5f4;
-            --neutral-50:  #fafaf9;
+            /* forest greens (matches search page) */
+            --green-950: #0f2114;
+            --green-900: #16311d;
+            --green-800: #1c4026;
+            --green-700: #295736;
+            --green-600: #367048;
+            --green-500: #4c8c5f;
+            --green-400: #66a878;
+            --green-300: #93c6a1;
+            --green-200: #bfdec8;
+            --green-100: #e2f0e5;
+            --green-50:  #f4faf5;
+
+            /* wood / earth */
+            --wood-900: #3b2415;
+            --wood-700: #6b4423;
+            --wood-600: #8a5a34;
+            --wood-500: #a97748;
+            --wood-100: #f1e4d2;
+
+            /* amber / gold accent (CTA) */
+            --amber-700: #92620a;
+            --amber-600: #b9790c;
+            --amber-500: #d68f14;
+            --amber-400: #e4a53a;
+            --amber-100: #faedd2;
+
+            /* warm cream neutrals (base of the whole page) */
+            --cream-100: #fbf6ea;
+            --cream-50:  #f6efdd;
+            --paper:     #fffdf8;
+
+            --neutral-800: #3a2f21;
+            --neutral-700: #524533;
+            --neutral-600: #6b5c46;
+            --neutral-500: #8a7a63;
+            --neutral-400: #a99c85;
+            --neutral-300: #cfc3ac;
+            --neutral-200: #e4dac2;
+            --neutral-100: #eee6d3;
+            --neutral-50:  #f7f1e3;
             --white: #ffffff;
-            --navbar-h: 100px;
+            --navbar-h: 92px;
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Sarabun', sans-serif;
-            background: var(--neutral-50);
+            background: var(--cream-100);
             color: var(--neutral-800);
             line-height: 1.6;
             font-size: 17px;
@@ -59,57 +76,65 @@
             color: rgba(255,255,255,0.55); font-size: 14px; font-weight: 500;
             transition: color .15s; display: flex; align-items: center; gap: 5px;
         }
-        .top-bar a:hover { color: #fff; }
+        .top-bar a:hover { color: var(--amber-400); }
         .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
 
         /* ── NAVBAR ── */
         .navbar {
-            background: var(--green-800);
+            background: var(--green-900);
+            background-image: linear-gradient(180deg, var(--green-800), var(--green-900));
             height: var(--navbar-h);
             display: flex; align-items: center;
             padding: 0 5%; gap: 8px;
             position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 3px 16px rgba(0,0,0,0.28);
+            box-shadow: 0 3px 18px rgba(15,33,20,0.35);
+            border-bottom: 3px solid var(--amber-500);
         }
         .navbar-brand {
             color: #fff; margin-right: auto;
-            display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+            display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+            text-decoration: none;
         }
-        .brand-icon {
-            width: 48px; height: 48px; background: var(--green-400);
-            border-radius: 14px; display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; box-shadow: 0 4px 12px rgba(82,183,136,0.35);
+        .brand-logo {
+            width: 130px;
+            height: 100px;
+            flex-shrink: 0;
         }
-        .brand-icon svg { width: 26px; height: 26px; }
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
         .brand-name { display: flex; flex-direction: column; }
-        .brand-name-line1 { font-size: 20px; font-weight: 800; line-height: 1.15; color: #fff; }
-        .brand-name-line2 { font-size: 13px; font-weight: 400; color: var(--green-200); opacity: .8; }
+        .brand-name-line1 { font-size: 22px; font-weight: 700; line-height: 1; color: #fff; }
+        .brand-name-line2 { font-size: 12px; font-weight: 400; color: var(--green-200); margin-top: 4px; opacity: .85; }
 
         .nav-links { display: flex; align-items: center; gap: 2px; }
         .nav-link {
-            color: rgba(255,255,255,0.80); font-size: 16px; font-weight: 600;
+            color: rgba(255,255,255,0.82); font-size: 16px; font-weight: 600;
             padding: 10px 16px; border-radius: 8px;
             transition: background .15s, color .15s; white-space: nowrap;
             display: flex; align-items: center; gap: 7px;
         }
-        .nav-link svg { width: 17px; height: 17px; opacity: .7; flex-shrink: 0; }
-        .nav-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
-        .nav-link.active { background: rgba(255,255,255,0.15); color: #fff; }
+        .nav-link svg { width: 17px; height: 17px; opacity: .75; flex-shrink: 0; }
+        .nav-link:hover { background: rgba(255,255,255,0.10); color: var(--amber-400); }
+        .nav-link.active { background: rgba(255,255,255,0.12); color: var(--amber-400); }
+        .nav-link.active svg { opacity: 1; color: var(--amber-400); }
         .nav-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.14); margin: 0 8px; }
 
         /* ── AUTH ── */
         .auth-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         .login-dropdown { position: relative; }
         .btn-login {
-            background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
-            color: #fff; border-radius: 12px; padding: 10px 20px;
+            background: rgba(255,255,255,0.10); border: 1.5px solid rgba(255,255,255,0.25);
+            color: #fff; border-radius: 100px; padding: 9px 20px 9px 9px;
             font-size: 16px; font-weight: 600;
             display: flex; align-items: center; gap: 9px;
             transition: background .15s, border-color .15s; white-space: nowrap;
         }
-        .btn-login:hover { background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.40); }
+        .btn-login:hover { background: rgba(255,255,255,0.18); border-color: var(--amber-400); }
         .btn-login .icon-user {
-            width: 34px; height: 34px; background: rgba(255,255,255,0.16);
+            width: 34px; height: 34px; background: var(--amber-500);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
         }
         .btn-login .icon-user svg { width: 17px; height: 17px; }
@@ -118,8 +143,8 @@
 
         .login-dropdown-menu {
             display: none; position: absolute; top: calc(100% + 12px); right: 0;
-            background: var(--white); border-radius: 16px;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.16); min-width: 280px;
+            background: var(--paper); border-radius: 16px;
+            box-shadow: 0 24px 64px rgba(20,14,8,0.18); min-width: 280px;
             z-index: 9999; border: 1px solid var(--neutral-200); overflow: hidden;
             animation: menuDrop .18s ease both;
         }
@@ -134,7 +159,7 @@
             border-bottom: 1px solid var(--neutral-100);
         }
         .dropdown-top p { font-size: 15px; font-weight: 700; color: var(--neutral-700); margin-bottom: 3px; }
-        .dropdown-top span { font-size: 13px; color: var(--neutral-400); }
+        .dropdown-top span { font-size: 13px; color: var(--neutral-500); }
         .dropdown-item {
             display: flex; align-items: center; gap: 13px; padding: 14px 20px;
             font-size: 15px; color: var(--neutral-700); font-weight: 500;
@@ -145,35 +170,36 @@
         .item-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 19px; }
         .item-info { flex: 1; }
         .item-info strong { display: block; font-size: 15px; font-weight: 700; color: var(--neutral-800); line-height: 1.2; }
-        .item-info span { font-size: 13px; color: var(--neutral-400); }
+        .item-info span { font-size: 13px; color: var(--neutral-500); }
         .item-arrow { width: 17px; height: 17px; color: var(--neutral-300); }
 
         .btn-register {
-            background: var(--amber-500); border: none; color: #fff;
-            border-radius: 12px; padding: 10px 22px; font-size: 16px; font-weight: 700;
+            background: linear-gradient(135deg, var(--amber-500), var(--amber-600));
+            border: none; color: #fff;
+            border-radius: 100px; padding: 10px 22px; font-size: 16px; font-weight: 700;
             display: flex; align-items: center; gap: 8px;
-            transition: background .15s, box-shadow .15s; white-space: nowrap;
-            box-shadow: 0 3px 12px rgba(232,150,10,0.40);
+            transition: background .15s, box-shadow .15s, filter .15s; white-space: nowrap;
+            box-shadow: 0 3px 12px rgba(214,143,20,0.40);
         }
-        .btn-register:hover { background: var(--amber-600); }
+        .btn-register:hover { box-shadow: 0 5px 20px rgba(214,143,20,0.5); filter: brightness(1.04); }
         .btn-register svg { width: 17px; height: 17px; }
 
         .user-menu-wrapper { position: relative; }
         .btn-user-menu {
             display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.10); border: 1.5px solid rgba(255,255,255,0.25);
             border-radius: 50px; padding: 8px 18px 8px 8px;
-            cursor: pointer; color: white; transition: background .2s;
+            cursor: pointer; color: white; transition: background .2s, border-color .2s;
         }
-        .btn-user-menu:hover { background: rgba(255,255,255,0.22); }
+        .btn-user-menu:hover { background: rgba(255,255,255,0.20); border-color: var(--amber-400); }
         .user-avatar {
             width: 40px; height: 40px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--green-400), var(--green-600));
+            background: linear-gradient(135deg, var(--amber-400), var(--amber-600));
             display: flex; align-items: center; justify-content: center;
             font-weight: 800; font-size: 17px; color: white;
             flex-shrink: 0; border: 2px solid rgba(255,255,255,0.3);
         }
-        .user-avatar.avatar-manager { background: linear-gradient(135deg, #f5aa1f, #c27b04); }
+        .user-avatar.avatar-manager { background: linear-gradient(135deg, #f5aa1f, #b9790c); }
         .user-avatar.avatar-owner   { background: linear-gradient(135deg, #60a5fa, #0369a1); }
         .user-avatar.avatar-admin   { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
         .user-info { display: flex; flex-direction: column; text-align: left; line-height: 1.25; }
@@ -184,8 +210,8 @@
 
         .user-dropdown-menu {
             display: none; position: absolute; top: calc(100% + 14px); right: 0;
-            background: white; border-radius: 24px;
-            box-shadow: 0 12px 48px rgba(0,0,0,0.18); min-width: 240px; padding: 8px;
+            background: var(--paper); border-radius: 24px;
+            box-shadow: 0 12px 48px rgba(20,14,8,0.2); min-width: 240px; padding: 8px;
             z-index: 1000; border: 1px solid var(--neutral-200);
             animation: menuDrop .18s ease both;
         }
@@ -198,17 +224,18 @@
         .udrop-item:hover .udrop-icon svg { color: var(--green-700); }
         .udrop-text { flex: 1; }
         .udrop-text span { display: block; font-size: 15px; font-weight: 600; color: var(--neutral-800); line-height: 1.2; }
-        .udrop-text small { font-size: 12px; color: var(--neutral-400); }
+        .udrop-text small { font-size: 12px; color: var(--neutral-500); }
         .udrop-divider { height: 1px; background: var(--neutral-200); margin: 8px 6px; }
-        .udrop-logout:hover { background: #fef2f2; }
-        .udrop-icon-red { background: #fee2e2; }
-        .udrop-icon-red svg { color: #dc2626; }
-        .udrop-logout .udrop-text span { color: #dc2626; }
-        .udrop-logout:hover .udrop-icon-red { background: #fecaca; }
+        .udrop-logout:hover { background: #fdf1ee; }
+        .udrop-icon-red { background: #fbe4dd; }
+        .udrop-icon-red svg { color: #b3462e; }
+        .udrop-logout .udrop-text span { color: #b3462e; }
+        .udrop-logout:hover .udrop-icon-red { background: #f6d1c5; }
 
         /* ── HERO BANNER ── */
         .tribe-hero {
             position: relative; height: 480px; overflow: hidden;
+            border-bottom: 3px solid var(--amber-500);
         }
         .tribe-hero-img {
             width: 100%; height: 100%; object-fit: cover;
@@ -218,9 +245,9 @@
             position: absolute; inset: 0;
             background: linear-gradient(
                 to bottom,
-                rgba(10,31,18,0.3) 0%,
-                rgba(10,31,18,0.15) 40%,
-                rgba(10,31,18,0.72) 100%
+                rgba(15,33,20,0.35) 0%,
+                rgba(15,33,20,0.18) 40%,
+                rgba(15,33,20,0.80) 100%
             );
         }
         .tribe-hero-bottom {
@@ -230,7 +257,7 @@
         .tribe-hero-inner { max-width: 1200px; margin: 0 auto; }
         .breadcrumb-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
         .breadcrumb-nav a { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: color .15s; }
-        .breadcrumb-nav a:hover { color: #fff; }
+        .breadcrumb-nav a:hover { color: var(--amber-400); }
         .breadcrumb-nav span { color: rgba(255,255,255,0.40); font-size: 13px; }
         .breadcrumb-nav .bc-current { color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 600; }
         .tribe-hero h1 {
@@ -240,8 +267,8 @@
         }
         .tribe-hero-tags { display: flex; gap: 10px; flex-wrap: wrap; }
         .hero-tag {
-            background: rgba(82,183,136,0.18); border: 1px solid rgba(82,183,136,0.35);
-            color: var(--green-200); border-radius: 100px;
+            background: rgba(214,143,20,0.20); border: 1px solid rgba(228,165,58,0.45);
+            color: var(--amber-400); border-radius: 100px;
             padding: 5px 16px; font-size: 13px; font-weight: 600;
             backdrop-filter: blur(4px);
         }
@@ -258,11 +285,11 @@
         /* Main content */
         .detail-main {}
         .section-block {
-            background: var(--white);
+            background: var(--paper);
             border: 1px solid var(--neutral-200);
             border-radius: 20px; padding: 36px 40px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(59,36,21,0.05);
         }
         .section-block:last-child { margin-bottom: 0; }
 
@@ -284,14 +311,15 @@
         /* Sidebar */
         .detail-sidebar {}
         .sidebar-card {
-            background: var(--white); border: 1px solid var(--neutral-200);
+            background: var(--paper); border: 1px solid var(--neutral-200);
             border-radius: 20px; overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(59,36,21,0.05);
             position: sticky; top: calc(var(--navbar-h) + 24px);
         }
         .sidebar-card-top {
-            background: linear-gradient(135deg, var(--green-800), var(--green-600));
+            background: linear-gradient(135deg, var(--green-900), var(--green-700));
             padding: 28px 24px; text-align: center;
+            border-bottom: 3px solid var(--amber-500);
         }
         .sidebar-card-top .tribe-icon { font-size: 52px; margin-bottom: 12px; }
         .sidebar-card-top h3 { color: #fff; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
@@ -308,51 +336,54 @@
             background: var(--green-50); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
         .si-icon svg { width: 17px; height: 17px; color: var(--green-600); }
-        .si-label { font-size: 12px; color: var(--neutral-400); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
+        .si-label { font-size: 12px; color: var(--neutral-500); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
         .si-value { font-size: 15px; color: var(--neutral-800); font-weight: 600; }
 
         .btn-book-tour {
             display: flex; align-items: center; justify-content: center; gap: 9px;
-            background: var(--amber-500); color: #fff;
-            border-radius: 14px; padding: 14px 24px;
+            background: linear-gradient(135deg, var(--amber-500), var(--amber-600));
+            color: #fff;
+            border-radius: 100px; padding: 14px 24px;
             font-size: 17px; font-weight: 700; width: 100%;
             margin-top: 22px; border: none;
-            box-shadow: 0 4px 16px rgba(232,150,10,0.40);
-            transition: background .15s, transform .1s;
+            box-shadow: 0 4px 16px rgba(214,143,20,0.40);
+            transition: box-shadow .15s, transform .1s, filter .15s;
         }
-        .btn-book-tour:hover { background: var(--amber-600); transform: translateY(-1px); }
+        .btn-book-tour:hover { box-shadow: 0 6px 22px rgba(214,143,20,0.5); filter: brightness(1.04); transform: translateY(-1px); }
         .btn-book-tour svg { width: 18px; height: 18px; }
 
         .btn-back-link {
             display: inline-flex; align-items: center; gap: 8px;
-            color: var(--green-700); font-size: 15px; font-weight: 600;
+            color: var(--wood-700); font-size: 15px; font-weight: 600;
             padding: 10px 0; margin-top: 8px;
             transition: color .15s;
         }
-        .btn-back-link:hover { color: var(--green-800); }
+        .btn-back-link:hover { color: var(--amber-600); }
         .btn-back-link svg { width: 16px; height: 16px; }
 
         /* ── FOOTER ── */
-        .footer { background: var(--green-950); color: rgba(255,255,255,0.55); padding: 60px 5% 32px; }
+        .footer { background: var(--green-950); color: rgba(255,255,255,0.55); padding: 60px 5% 32px; border-top: 3px solid var(--amber-500); }
         .footer-inner { max-width: 1200px; margin: 0 auto; }
         .footer-top { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 44px; padding-bottom: 44px; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 30px; }
         .footer-brand { color: #fff; font-weight: 800; font-size: 18px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
-        .footer-brand .f-icon { width: 36px; height: 36px; background: var(--green-600); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .footer-brand .f-icon { width: 36px; height: 36px; background: var(--amber-600); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .footer-brand .f-icon svg { width: 20px; height: 20px; }
         .footer-desc { font-size: 15px; line-height: 1.8; max-width: 280px; margin-bottom: 22px; }
-        .footer-col h4 { color: rgba(255,255,255,0.90); font-size: 13px; font-weight: 700; margin-bottom: 18px; letter-spacing: .5px; text-transform: uppercase; }
+        .footer-col h4 { color: var(--amber-400); font-size: 13px; font-weight: 700; margin-bottom: 18px; letter-spacing: .5px; text-transform: uppercase; }
         .footer-col a { display: flex; align-items: center; gap: 7px; color: rgba(255,255,255,0.50); font-size: 15px; margin-bottom: 12px; transition: color .14s; }
-        .footer-col a:hover { color: rgba(255,255,255,0.88); }
+        .footer-col a:hover { color: #fff; }
         .footer-bottom { display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
         .footer-bottom-links { display: flex; gap: 22px; }
         .footer-bottom-links a { color: rgba(255,255,255,0.40); font-size: 14px; transition: color .14s; }
-        .footer-bottom-links a:hover { color: rgba(255,255,255,0.78); }
+        .footer-bottom-links a:hover { color: rgba(255,255,255,0.85); }
 
         @media (max-width: 1024px) {
             .detail-wrap { grid-template-columns: 1fr; }
             .sidebar-card { position: static; }
         }
         @media (max-width: 768px) {
+            :root { --navbar-h: auto; }
+            .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 10px; }
             .tribe-hero { height: 360px; }
             .tribe-hero h1 { font-size: 34px; }
             .section-block { padding: 24px; }
@@ -390,8 +421,8 @@
 <!-- NAVBAR -->
 <nav class="navbar">
     <a th:href="@{/}" href="/" class="navbar-brand">
-        <div class="brand-icon">
-            <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+        <div class="brand-logo">
+            <img th:src="@{/images/logo3.png}" src="../static/images/logo3.png" alt="Logo">
         </div>
         <div class="brand-name">
             <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
@@ -439,12 +470,12 @@
                         <span>กรุณาเลือกประเภทบัญชีของคุณ</span>
                     </div>
                     <a th:href="@{/member/login}" href="/member/login" class="dropdown-item">
-                        <div class="item-icon" style="background:#d8f3dc;">🌿</div>
+                        <div class="item-icon" style="background:#e2f0e5;">🌿</div>
                         <div class="item-info"><strong>สมาชิกทั่วไป</strong><span>จองกิจกรรม ทัวร์ และที่พัก</span></div>
                         <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                     </a>
                     <a th:href="@{/manager/login}" href="/manager/login" class="dropdown-item">
-                        <div class="item-icon" style="background:#fef3c7;">🏕️</div>
+                        <div class="item-icon" style="background:#faedd2;">🏕️</div>
                         <div class="item-info"><strong>ผู้จัดการท่องเที่ยวชุมชน</strong><span>จัดการทัวร์และกิจกรรม</span></div>
                         <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                     </a>
@@ -562,8 +593,8 @@
 
         <div class="section-block">
             <div class="section-header-bar">
-                <div class="section-icon" style="background:#d8f3dc;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#2d7a4f" stroke-width="2">
+                <div class="section-icon" style="background:#e2f0e5;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#295736" stroke-width="2">
                         <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                 </div>
@@ -574,8 +605,8 @@
 
         <div class="section-block">
             <div class="section-header-bar">
-                <div class="section-icon" style="background:#fef3c7;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#c27b04" stroke-width="2">
+                <div class="section-icon" style="background:#faedd2;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#b9790c" stroke-width="2">
                         <path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
@@ -598,8 +629,8 @@
 
         <div class="section-block">
             <div class="section-header-bar">
-                <div class="section-icon" style="background:#f0fdf4;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+                <div class="section-icon" style="background:#e2f0e5;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#367048" stroke-width="2">
                         <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                 </div>
@@ -619,31 +650,31 @@
                 <h3>ห้องเรียนภาษาเบื้องต้น</h3>
             </div>
             
-            <p class="content-text" style="color: #6b7280; margin-bottom: 1.5rem;">
+            <p class="content-text" style="color: var(--neutral-500); margin-bottom: 1.5rem;">
                 ฝึกออกเสียงภาษาท้องถิ่นง่าย ๆ เพื่อสร้างความประทับใจและมิตรภาพอันดีกับชุมชนเมื่อไปเยือน
             </p>
 
-            <div style="overflow-x: auto; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <div style="overflow-x: auto; border: 1px solid var(--neutral-200); border-radius: 8px;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
                     <thead>
-                        <tr style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
-                            <th style="padding: 12px 16px; font-weight: 600; color: #374151; width: 20%;">หมวดหมู่</th>
-                            <th style="padding: 12px 16px; font-weight: 600; color: #374151; width: 30%;">คำศัพท์ประจำเผ่า</th>
-                            <th style="padding: 12px 16px; font-weight: 600; color: #374151; width: 25%;">คำอ่านออกเสียง</th>
-                            <th style="padding: 12px 16px; font-weight: 600; color: #374151; width: 25%;">ความหมาย</th>
+                        <tr style="background-color: var(--cream-50); border-bottom: 2px solid var(--neutral-200);">
+                            <th style="padding: 12px 16px; font-weight: 600; color: var(--neutral-700); width: 20%;">หมวดหมู่</th>
+                            <th style="padding: 12px 16px; font-weight: 600; color: var(--neutral-700); width: 30%;">คำศัพท์ประจำเผ่า</th>
+                            <th style="padding: 12px 16px; font-weight: 600; color: var(--neutral-700); width: 25%;">คำอ่านออกเสียง</th>
+                            <th style="padding: 12px 16px; font-weight: 600; color: var(--neutral-700); width: 25%;">ความหมาย</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="v : ${tribe.vocabularies}" style="border-bottom: 1px solid #e5e7eb;">
+                        <tr th:each="v : ${tribe.vocabularies}" style="border-bottom: 1px solid var(--neutral-200);">
                             <td style="padding: 12px 16px;">
                                 <span th:text="${v.category}" 
-                                      style="background-color: #f3f4f6; color: #4b5563; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                      style="background-color: var(--neutral-100); color: var(--neutral-600); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
                                     ทักทาย
                                 </span>
                             </td>
-                            <td th:text="${v.word}" style="padding: 12px 16px; font-weight: 600; color: #1f2937;">-</td>
-                            <td th:text="${'[' + v.karaoke + ']'}" style="padding: 12px 16px; color: #6b7280; font-family: monospace;">-</td>
-                            <td th:text="${v.meaning}" style="padding: 12px 16px; font-weight: 500; color: #059669;">-</td>
+                            <td th:text="${v.word}" style="padding: 12px 16px; font-weight: 600; color: var(--neutral-800);">-</td>
+                            <td th:text="${'[' + v.karaoke + ']'}" style="padding: 12px 16px; color: var(--neutral-500); font-family: monospace;">-</td>
+                            <td th:text="${v.meaning}" style="padding: 12px 16px; font-weight: 500; color: #295736;">-</td>
                         </tr>
                     </tbody>
                 </table>

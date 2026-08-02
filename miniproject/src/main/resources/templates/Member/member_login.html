@@ -10,6 +10,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      /* ── สีเดิมของหน้านี้ (ใช้กับฟอร์ม/ปุ่ม submit ฯลฯ — ไม่แตะต้อง) ── */
       --green-950: #0a1f12;
       --green-900: #14321e;
       --green-800: #1a472a;
@@ -38,12 +39,24 @@
       --r-md: 12px;
       --r-lg: 16px;
       --r-xl: 24px;
+
+      /* ── สีเฉพาะสำหรับ NAV/โลโก้/พื้นหลัง — ก็อปมาจากหน้า search (theme ป่า-ไม้-อำพัน) ── */
+      --nav-green-950: #0f2114;
+      --nav-green-900: #16311d;
+      --nav-green-800: #1c4026;
+      --nav-green-200: #bfdec8;
+      --nav-amber-600: #b9790c;
+      --nav-amber-500: #d68f14;
+      --nav-amber-400: #e4a53a;
+      --nav-neutral-200: #e4dac2;
+      --nav-cream-100: #fbf6ea;
+      --nav-paper: #fffdf8;
     }
 
     html { scroll-behavior: smooth; }
     body {
       font-family: 'Sarabun', sans-serif;
-      background: var(--neutral-50);
+      background: var(--nav-cream-100);
       color: var(--neutral-800);
       min-height: 100vh;
       font-size: 16px;
@@ -52,10 +65,10 @@
     a { text-decoration: none; color: inherit; }
     button { font-family: 'Sarabun', sans-serif; cursor: pointer; }
 
-    /* TOP BAR */
+    /* ══════════════════ TOP BAR (ธีม search) ══════════════════ */
     .top-bar {
-      background: var(--green-950);
-      padding: 8px 5%;
+      background: var(--nav-green-950);
+      padding: 7px 5%;
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -63,17 +76,18 @@
     }
     .top-bar a {
       color: rgba(255,255,255,0.55);
-      font-size: 14px; font-weight: 500;
+      font-size: 13.5px; font-weight: 500;
       transition: color .15s;
       display: flex; align-items: center; gap: 5px;
     }
-    .top-bar a:hover { color: #fff; }
+    .top-bar a:hover { color: var(--nav-amber-400); }
     .top-bar a svg { width: 14px; height: 14px; }
     .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
 
-    /* NAVBAR */
+    /* ══════════════════ NAVBAR (ธีม search) ══════════════════ */
     .navbar {
-      background: var(--green-800);
+      background: var(--nav-green-900);
+      background-image: linear-gradient(180deg, var(--nav-green-800), var(--nav-green-900));
       height: var(--navbar-h);
       display: flex;
       align-items: center;
@@ -82,56 +96,56 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 3px 16px rgba(0,0,0,0.28);
+      box-shadow: 0 3px 18px rgba(15,33,20,.35);
+      border-bottom: 3px solid var(--nav-amber-500);
     }
     .navbar-brand {
       color: #fff; margin-right: auto;
-      display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
     }
-    .brand-icon {
-      width: 48px; height: 48px;
-      background: var(--green-400);
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(82,183,136,0.35);
+
+    /* โลโก้แบบรูปภาพ เหมือนหน้า search */
+    .brand-logo {
+      width: 130px; height: 100px; flex-shrink: 0;
     }
-    .brand-icon svg { width: 26px; height: 26px; fill: white; }
+    .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+
     .brand-name { display: flex; flex-direction: column; }
-    .brand-name-line1 { font-size: 20px; font-weight: 800; line-height: 1.15; color: #fff; }
-    .brand-name-line2 { font-size: 13px; font-weight: 400; color: var(--green-200); opacity: .8; }
+    .brand-name-line1 { font-size: 22px; font-weight: 700; line-height: 1; color: #fff; }
+    .brand-name-line2 { font-size: 12px; font-weight: 400; color: var(--nav-green-200); margin-top: 4px; opacity: .9; }
 
     .nav-links { display: flex; align-items: center; gap: 2px; }
     .nav-link {
-      color: rgba(255,255,255,0.80);
+      color: rgba(255,255,255,.82);
       font-size: 16px; font-weight: 600;
       padding: 10px 16px; border-radius: var(--r-sm);
       transition: background .15s, color .15s;
       white-space: nowrap;
       display: flex; align-items: center; gap: 7px;
     }
-    .nav-link svg { width: 17px; height: 17px; opacity: .7; flex-shrink: 0; }
-    .nav-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .nav-link svg { width: 17px; height: 17px; opacity: .75; flex-shrink: 0; }
+    .nav-link:hover { background: rgba(255,255,255,.10); color: var(--nav-amber-400); }
 
     .nav-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.14); margin: 0 8px; }
     .auth-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
+    /* ปุ่ม "สมัครสมาชิก" — restyle ให้เข้าธีม search (amber gradient) */
     .btn-register {
-      background: var(--amber-500);
+      background: linear-gradient(135deg, var(--nav-amber-500), var(--nav-amber-600));
       border: none; color: #fff;
-      border-radius: var(--r-md);
+      border-radius: 100px;
       padding: 10px 22px;
       font-size: 16px; font-weight: 700;
       display: flex; align-items: center; gap: 8px;
-      transition: background .15s, transform .1s, box-shadow .15s;
+      transition: box-shadow .15s, filter .15s, transform .1s;
       white-space: nowrap;
-      box-shadow: 0 3px 12px rgba(232,150,10,0.40);
+      box-shadow: 0 3px 12px rgba(214,143,20,0.40);
     }
-    .btn-register:hover { background: var(--amber-600); box-shadow: 0 5px 20px rgba(232,150,10,0.48); }
+    .btn-register:hover { box-shadow: 0 5px 20px rgba(214,143,20,0.5); filter: brightness(1.04); }
     .btn-register:active { transform: scale(0.97); }
     .btn-register svg { width: 17px; height: 17px; }
 
-    /* PAGE BODY */
+    /* ══════════════════ PAGE BODY / ฟอร์ม (เดิมทั้งหมด — พื้นหลังปรับเป็นธีม search) ══════════════════ */
     .page-body {
       min-height: calc(100vh - var(--navbar-h) - 38px);
       display: flex;
@@ -142,13 +156,13 @@
 
     /* FORM CARD */
     .form-card {
-      background: #fff;
+      background: var(--nav-paper);
       border-radius: 18px;
       padding: 48px 52px;
       width: 100%;
       max-width: 480px;
-      box-shadow: 0 4px 32px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05);
-      border: 1px solid var(--neutral-200);
+      box-shadow: 0 14px 40px rgba(59,36,21,0.14), 0 4px 12px rgba(59,36,21,0.06);
+      border: 1px solid var(--nav-neutral-200);
     }
 
     .form-card-header { margin-bottom: 32px; text-align: center; }
@@ -275,12 +289,12 @@
 <!-- NAVBAR -->
 <nav class="navbar">
   <a class="navbar-brand" href="/search">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+    <div class="brand-logo">
+      <img th:src="@{/images/logo3.png}" src="../static/images/logo3.png" alt="Logo">
     </div>
     <div class="brand-name">
-      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
-      <span class="brand-name-line2">Tribal Community Tourism</span>
+      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+      <span class="brand-name-line2">Tribal Community-Based Tourism System</span>
     </div>
   </a>
 
