@@ -492,28 +492,5 @@ public class TourController {
         }
     }
 
-    // ─── แสดงรีวิวของทัวร์ ───────────────────────────────────────────────────────
-
-    @GetMapping("/{tourid}/reviews")
-    public String tourReviews(@PathVariable("tourid") String tourid,
-            HttpSession session, Model model) {
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null)
-            return "redirect:/manager/login";
-
-        Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
-        if (tour == null)
-            return "redirect:/manager/tours?error=notfound";
-
-        List<Review> reviews = reviewService.getReviewsByTourId(tourid);
-        double avgRating = reviewService.getAvgRatingByTourId(tourid);
-        Map<Integer, Long> ratingCounts = reviewService.getRatingCountsByTourId(tourid);
-
-        model.addAttribute("tour", tour);
-        model.addAttribute("reviews", reviews);
-        model.addAttribute("avgRating", avgRating);
-        model.addAttribute("ratingCounts", ratingCounts);
-        model.addAttribute("loggedInManager", manager);
-        return "Tour/tourReviews";
-    }
+    
 }

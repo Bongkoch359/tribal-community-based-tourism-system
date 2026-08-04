@@ -34,6 +34,13 @@
             white-space: nowrap;
             margin-right: auto;
         }
+        .hs-navbar-brand img.brand-logo-img {
+            height: 75px;
+            width: auto;
+            max-width: 160px;
+            object-fit: contain;
+            display: block;
+        }
 
         .hs-nav-right {
             display: flex;
@@ -941,7 +948,7 @@
 
     <nav class="hs-navbar">
         <a class="hs-navbar-brand" th:href="@{/}">
-            <i class="fas fa-mountain-sun"></i> ระบบท่องเที่ยวชุมชนชนเผ่า
+            <img th:src="@{/images/logo3.png}" alt="Logo" class="brand-logo-img"> ระบบท่องเที่ยวชุมชนชนเผ่า
         </a>
         <div class="hs-nav-right">
             <div class="hs-profile-dropdown">

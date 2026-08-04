@@ -14,9 +14,9 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, String> {
 
     // ─── โฮมสเตย์ ─────────────────────────────────────────
-
+    // เพิ่ม DISTINCT ป้องกัน review ซ้ำ ถ้า booking มีหลาย roomDetail
     @Query("""
-        SELECT r FROM Review r
+        SELECT DISTINCT r FROM Review r
         JOIN r.booking b
         JOIN b.roomDetails rd
         JOIN rd.roomtype rt
@@ -27,18 +27,21 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
 
     Optional<Review> findByBookingBookingid(String bookingId);
 
+    // นับ/เฉลี่ยจาก reviewid ที่ไม่ซ้ำ แทนการ AVG/COUNT(r) ตรงๆ บน join ที่มีโอกาสซ้ำแถว
     @Query("""
         SELECT AVG(r.rating) FROM Review r
-        JOIN r.booking b
-        JOIN b.roomDetails rd
-        JOIN rd.roomtype rt
-        WHERE rt.homestay.homestayid = :homestayId
+        WHERE r.reviewid IN (
+            SELECT DISTINCT r2.reviewid FROM Review r2
+            JOIN r2.booking b
+            JOIN b.roomDetails rd
+            JOIN rd.roomtype rt
+            WHERE rt.homestay.homestayid = :homestayId
+        )
     """)
     Double avgRatingByHomestayId(@Param("homestayId") Integer homestayId);
 
-    // ── นับจำนวนรีวิวของโฮมสเตย์ (เพิ่มใหม่) ──────────────
     @Query("""
-        SELECT COUNT(r) FROM Review r
+        SELECT COUNT(DISTINCT r) FROM Review r
         JOIN r.booking b
         JOIN b.roomDetails rd
         JOIN rd.roomtype rt
@@ -47,9 +50,8 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
     Long countByHomestayId(@Param("homestayId") Integer homestayId);
 
     // ─── ทัวร์ ────────────────────────────────────────────
-
     @Query("""
-        SELECT r FROM Review r
+        SELECT DISTINCT r FROM Review r
         JOIN r.booking b
         JOIN b.tourDetails btd
         WHERE btd.tour.tourid = :tourid
@@ -59,22 +61,22 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
 
     @Query("""
         SELECT AVG(r.rating) FROM Review r
-        JOIN r.booking b
-        JOIN b.tourDetails btd
-        WHERE btd.tour.tourid = :tourid
+        WHERE r.reviewid IN (
+            SELECT DISTINCT r2.reviewid FROM Review r2
+            JOIN r2.booking b
+            JOIN b.tourDetails btd
+            WHERE btd.tour.tourid = :tourid
+        )
     """)
     Double avgRatingByTourId(@Param("tourid") String tourid);
 
-    // ── นับจำนวนรีวิวของทัวร์ (เพิ่มใหม่) ─────────────────
     @Query("""
-        SELECT COUNT(r) FROM Review r
+        SELECT COUNT(DISTINCT r) FROM Review r
         JOIN r.booking b
         JOIN b.tourDetails btd
         WHERE btd.tour.tourid = :tourid
     """)
     Long countByTourId(@Param("tourid") String tourid);
-
-    
 
     @Query("SELECT COUNT(r) FROM Review r")
     long countAll();

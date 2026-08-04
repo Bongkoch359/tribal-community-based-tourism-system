@@ -14,9 +14,9 @@
     --green-light:  #2a9068;
     --green-pale:   #d8f5ec;
     --green-border: #9dd4c4;
-    --orange:       #e07b2a;
-    --orange-light: #f4a35a;
-    --bg:           #f5f0e8;
+    --orange:       #e08a00;   /* ปรับให้ตรงกับโทนสีหลักของระบบ (เดิม #e07b2a) */
+    --orange-light: #f5a623;   /* ปรับให้ตรงกับโทนสีหลักของระบบ (เดิม #f4a35a) */
+    --bg:           #f0ece3;   /* ปรับให้ตรงกับพื้นหลังของหน้าอื่น (เดิม #f5f0e8) */
     --surface:      #ffffff;
     --text-primary: #0d2e24;
     --text-secondary:#3d7060;
@@ -36,41 +36,266 @@ body {
     background-color: var(--bg);
     color: var(--text-primary);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* ── Top Nav ── */
-.top-nav {
+/* ═══════════════════════════════════════════════
+   NAVBAR — เหมือนหน้า homestays / bookingDetail / listRoom ทุกประการ
+   ═══════════════════════════════════════════════ */
+.hs-navbar {
     background: var(--green-dark);
-    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    height: 84px;
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+    gap: .5rem;
 }
 
-.back-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-family: var(--font);
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
+.hs-navbar-brand {
     display: flex;
     align-items: center;
-    gap: 6px;
-    opacity: .9;
-    transition: opacity var(--transition);
+    gap: .6rem;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    white-space: nowrap;
+    margin-right: auto;
 }
 
-.back-btn:hover { opacity: 1; }
+.hs-navbar-brand img.brand-logo-img {
+    height: 75px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    display: block;
+}
 
-.back-icon { font-size: 18px; }
+.hs-nav-links {
+    display: flex;
+    align-items: center;
+    gap: .15rem;
+    margin-right: 1.25rem;
+}
+
+.hs-nav-link {
+    color: rgba(255, 255, 255, .7);
+    text-decoration: none;
+    font-size: .92rem;
+    font-weight: 500;
+    padding: .45rem 1rem;
+    border-radius: 6px;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    white-space: nowrap;
+}
+
+.hs-nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, .08);
+}
+
+.hs-nav-link.active {
+    color: #fff;
+    border-bottom: 3px solid #5ecfb0;
+    border-radius: 0;
+    padding-bottom: calc(.45rem - 3px);
+}
+
+.hs-nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.hs-profile-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.hs-profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: .45rem .75rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    transition: background .2s, border-color .2s;
+}
+
+.hs-profile-trigger:hover {
+    background: rgba(255, 255, 255, .1);
+    border-color: rgba(255, 255, 255, .22);
+}
+
+.hs-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e08a00, #f5a623);
+    color: #fff;
+    font-weight: 700;
+    font-size: .82rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
+    flex-shrink: 0;
+}
+
+.hs-owner-name {
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 600;
+    display: block;
+    line-height: 1.2;
+}
+
+.hs-owner-role {
+    color: rgba(255, 255, 255, .55);
+    font-size: .72rem;
+    display: block;
+    line-height: 1;
+}
+
+.hs-chevron {
+    font-size: .7rem;
+    color: rgba(255, 255, 255, .5);
+    margin-left: 2px;
+    transition: transform .2s;
+}
+
+.hs-profile-dropdown:hover .hs-chevron {
+    transform: rotate(180deg);
+}
+
+.hs-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: #fff;
+    min-width: 210px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+    z-index: 1000;
+    border-radius: 12px;
+    margin-top: 10px;
+    padding: 6px 0;
+    border: 1px solid #e8e8e8;
+}
+
+.hs-dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    display: block;
+}
+
+.hs-profile-dropdown:hover .hs-dropdown-content {
+    display: block;
+}
+
+.hs-dropdown-content a {
+    color: #333;
+    padding: .6rem 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    font-size: .88rem;
+    transition: background .15s;
+}
+
+.hs-dropdown-content a i {
+    width: 16px;
+    text-align: center;
+    color: #6b7c6e;
+    font-size: .85rem;
+}
+
+.hs-dropdown-content a:hover {
+    background: #f0faf7;
+    color: #0d3d30;
+}
+
+.hs-dropdown-content a:hover i {
+    color: #0d3d30;
+}
+
+.hs-dropdown-content a.active-page {
+    color: var(--green-main);
+    font-weight: 600;
+}
+
+.hs-dropdown-content hr {
+    margin: 4px 0;
+    border: 0;
+    border-top: 1px solid #f0f0f0;
+}
+
+.hs-dropdown-content a.hs-logout {
+    color: #c0392b;
+}
+
+.hs-dropdown-content a.hs-logout i {
+    color: #c0392b;
+}
+
+.hs-dropdown-content a.hs-logout:hover {
+    background: #fff5f5;
+}
+
+@media (max-width: 768px) {
+    .hs-nav-links {
+        display: none;
+    }
+
+    .hs-navbar {
+        padding: 0 1rem;
+    }
+}
+
+/* ── Back Button (สไตล์เดียวกับหน้าอื่น เช่น homestayReviews) ── */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-main);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 1.2rem;
+    transition: background .18s;
+}
+
+.back-btn:hover {
+    background: var(--green-dark);
+    color: #fff;
+}
 
 /* ── Main Container ── */
 .main-container {
     max-width: 560px;
     margin: 0 auto;
     padding: 28px 16px 60px;
+    flex: 1;
+    width: 100%;
 }
 
 /* ── Page Header ── */
@@ -160,7 +385,7 @@ body {
     border-bottom: 1.5px solid var(--green-pale);
 }
 
-.section-icon { font-size: 18px; }
+.section-icon { font-size: 18px; color: var(--green-main); }
 
 .section-title {
     font-size: 15px;
@@ -272,7 +497,7 @@ body {
     margin-top: 4px;
 }
 
-.hint-icon { font-size: 14px; flex-shrink: 0; }
+.hint-icon { font-size: 14px; flex-shrink: 0; color: var(--orange); }
 
 /* ── Action Buttons ── */
 .form-actions {
@@ -353,6 +578,32 @@ body {
 
 .toast.error {
     background: var(--error);
+}
+
+/* ═══════════════════════════════════════════════
+   FOOTER — เหมือนหน้าอื่นทุกประการ
+   ═══════════════════════════════════════════════ */
+.footer {
+    padding: 1rem 2rem;
+    background: var(--green-dark);
+    color: #c8f0e4;
+    font-size: 0.9rem;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer a {
+    color: #5ecfb0;
+    text-decoration: none;
+    margin-left: 8px;
+}
+
+.footer a:hover {
+    text-decoration: underline;
 }
 
 /* ── Responsive ── */

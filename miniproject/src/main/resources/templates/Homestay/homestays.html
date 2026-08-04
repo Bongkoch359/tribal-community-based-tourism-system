@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ข้อมูลโฮมสเตย์</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/homestay.css}" rel="stylesheet">
-<style>
+    <style>
         /* ═══════════════════════════════════════════════
            NAVBAR — self-contained, no dashboard.css needed
            ═══════════════════════════════════════════════ */
@@ -20,9 +22,10 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
             gap: .5rem;
         }
+
         .hs-navbar-brand {
             display: flex;
             align-items: center;
@@ -34,15 +37,28 @@
             white-space: nowrap;
             margin-right: auto;
         }
-        .hs-navbar-brand i { color: #fff; font-size: 1.2rem; }
+        .hs-navbar-brand img.brand-logo-img {
+            height: 75px;
+            width: auto;
+            max-width: 160px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .hs-navbar-brand i {
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
         .hs-nav-links {
             display: flex;
             align-items: center;
             gap: .15rem;
             margin-right: 1.25rem;
         }
+
         .hs-nav-link {
-            color: rgba(255,255,255,.7);
+            color: rgba(255, 255, 255, .7);
             text-decoration: none;
             font-size: .92rem;
             font-weight: 500;
@@ -54,27 +70,48 @@
             gap: .45rem;
             white-space: nowrap;
         }
-        .hs-nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+
+        .hs-nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, .08);
+        }
+
         .hs-nav-link.active {
             color: #fff;
             border-bottom: 3px solid #5ecfb0;
             border-radius: 0;
             padding-bottom: calc(.45rem - 3px);
         }
-        .hs-nav-right { display: flex; align-items: center; }
-        .hs-profile-dropdown { position: relative; display: inline-block; cursor: pointer; }
+
+        .hs-nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .hs-profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
         .hs-profile-trigger {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: .45rem .75rem;
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,.12);
+            border: 1px solid rgba(255, 255, 255, .12);
             transition: background .2s, border-color .2s;
         }
-        .hs-profile-trigger:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.22); }
+
+        .hs-profile-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .22);
+        }
+
         .hs-avatar {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: linear-gradient(135deg, #e08a00, #f5a623);
             color: #fff;
@@ -83,54 +120,136 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 0 2px rgba(255,255,255,.2);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
             flex-shrink: 0;
         }
-        .hs-owner-name { color: #fff; font-size: .9rem; font-weight: 600; display: block; line-height: 1.2; }
-        .hs-owner-role { color: rgba(255,255,255,.55); font-size: .72rem; display: block; line-height: 1; }
-        .hs-chevron { font-size: .7rem; color: rgba(255,255,255,.5); margin-left: 2px; transition: transform .2s; }
-        .hs-profile-dropdown:hover .hs-chevron { transform: rotate(180deg); }
+
+        .hs-owner-name {
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .hs-owner-role {
+            color: rgba(255, 255, 255, .55);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+        }
+
+        .hs-chevron {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .5);
+            margin-left: 2px;
+            transition: transform .2s;
+        }
+
+        .hs-profile-dropdown:hover .hs-chevron {
+            transform: rotate(180deg);
+        }
+
         .hs-dropdown-content {
             display: none;
             position: absolute;
-            right: 0; top: 100%;
+            right: 0;
+            top: 100%;
             background: #fff;
             min-width: 210px;
-            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
             z-index: 1000;
             border-radius: 12px;
             margin-top: 10px;
             padding: 6px 0;
             border: 1px solid #e8e8e8;
         }
+
         .hs-dropdown-content::before {
-            content: ""; position: absolute; top: -10px; left: 0;
-            width: 100%; height: 10px; display: block;
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            display: block;
         }
-        .hs-profile-dropdown:hover .hs-dropdown-content { display: block; }
+
+        .hs-profile-dropdown:hover .hs-dropdown-content {
+            display: block;
+        }
+
         .hs-dropdown-header {
             padding: .75rem 1rem .55rem;
             border-bottom: 1px solid #f0f0f0;
             margin-bottom: 4px;
         }
-        .hs-dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #0d2e24; }
-        .hs-dropdown-header .d-email { font-size: .75rem; color: #6b7c6e; margin-top: 2px; }
-        .hs-dropdown-content a {
-            color: #333; padding: .6rem 1rem;
-            text-decoration: none; display: flex;
-            align-items: center; gap: .65rem;
-            font-size: .88rem; transition: background .15s;
+
+        .hs-dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: #0d2e24;
         }
-        .hs-dropdown-content a i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
-        .hs-dropdown-content a:hover { background: #f0faf7; color: #0d3d30; }
-        .hs-dropdown-content a:hover i { color: #0d3d30; }
-        .hs-dropdown-content hr { margin: 4px 0; border: 0; border-top: 1px solid #f0f0f0; }
-        .hs-dropdown-content a.hs-logout { color: #c0392b; }
-        .hs-dropdown-content a.hs-logout i { color: #c0392b; }
-        .hs-dropdown-content a.hs-logout:hover { background: #fff5f5; }
+
+        .hs-dropdown-header .d-email {
+            font-size: .75rem;
+            color: #6b7c6e;
+            margin-top: 2px;
+        }
+
+        .hs-dropdown-content a {
+            color: #333;
+            padding: .6rem 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: .88rem;
+            transition: background .15s;
+        }
+
+        .hs-dropdown-content a i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .hs-dropdown-content a:hover {
+            background: #f0faf7;
+            color: #0d3d30;
+        }
+
+        .hs-dropdown-content a:hover i {
+            color: #0d3d30;
+        }
+
+        .hs-dropdown-content hr {
+            margin: 4px 0;
+            border: 0;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .hs-dropdown-content a.hs-logout {
+            color: #c0392b;
+        }
+
+        .hs-dropdown-content a.hs-logout i {
+            color: #c0392b;
+        }
+
+        .hs-dropdown-content a.hs-logout:hover {
+            background: #fff5f5;
+        }
+
         @media (max-width: 768px) {
-            .hs-nav-links { display: none; }
-            .hs-navbar { padding: 0 1rem; }
+            .hs-nav-links {
+                display: none;
+            }
+
+            .hs-navbar {
+                padding: 0 1rem;
+            }
         }
 
         /* ─── Footer ─── */
@@ -141,138 +260,149 @@
             font-size: 0.9rem;
             /* ไม่ต้อง margin-top:auto เพราะ body เป็น flex แล้ว .page มี flex:1 */
         }
+
         .footer-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .footer a { color: #5ecfb0; text-decoration: none; margin-left: 8px; }
-        .footer a:hover { text-decoration: underline; }
-</style>
+
+        .footer a {
+            color: #5ecfb0;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body style="display:flex; flex-direction:column; min-height:100vh; margin:0; background:#f0ede8;">
 
-<!-- ─── NAVBAR ─── -->
-<nav class="hs-navbar">
-    <a class="hs-navbar-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun"></i>
-        ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
-    <div class="hs-nav-links">
-        <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
-        <a class="hs-nav-link" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
-        <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
-        <a class="hs-nav-link active" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
-    </div>
-    <div class="hs-nav-right">
-        <div class="hs-profile-dropdown">
-            <div class="hs-profile-trigger">
-                <div class="hs-avatar" th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
-                <div>
-                    <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
-                    <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+    <!-- ─── NAVBAR ─── -->
+    <nav class="hs-navbar">
+        <a class="hs-navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo3.png}" alt="Logo" class="brand-logo-img">
+            ระบบท่องเที่ยวชุมชนชนเผ่า
+        </a>
+        <div class="hs-nav-links">
+            <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
+            <a class="hs-nav-link" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
+            <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
+            <a class="hs-nav-link active" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
+        </div>
+        <div class="hs-nav-right">
+            <div class="hs-profile-dropdown">
+                <div class="hs-profile-trigger">
+                    <div class="hs-avatar"
+                        th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">
+                        HS</div>
+                    <div>
+                        <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
+                        <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+                    </div>
+                    <i class="fas fa-chevron-down hs-chevron"></i>
                 </div>
-                <i class="fas fa-chevron-down hs-chevron"></i>
-            </div>
-            <div class="hs-dropdown-content">
-                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
-                <hr>
-                <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
+                <div class="hs-dropdown-content">
+                    <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                    <hr>
+                    <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i>
+                        ออกจากระบบ</a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- ─── CONTENT ─── -->
-<div class="page">
+    <!-- ─── CONTENT ─── -->
+    <div class="page">
 
-    <div class="page-header">
-        <h2><i class="fas fa-house"></i> โฮมสเตย์ของฉัน</h2>
-        <!-- <a href="#" class="btn-add"><i class="fas fa-plus"></i> เพิ่มโฮมสเตย์</a> -->
-    </div>
+        <div class="page-header">
+            <h2><i class="fas fa-house"></i> โฮมสเตย์ของฉัน</h2>
+            <!-- <a href="#" class="btn-add"><i class="fas fa-plus"></i> เพิ่มโฮมสเตย์</a> -->
+        </div>
 
-    <div class="section-label">รายการโฮมสเตย์ทั้งหมด</div>
+        <div class="section-label">รายการโฮมสเตย์ทั้งหมด</div>
 
-    <!-- ✅ มีข้อมูล -->
-    <div th:if="${not #lists.isEmpty(homestays)}">
-        <div th:each="hs : ${homestays}"
-             class="homestay-card"
-             th:classappend="${hs.homestay.status == 'active'} ? ' active' : ' pending'">
+        <!-- ✅ มีข้อมูล -->
+        <div th:if="${not #lists.isEmpty(homestays)}">
+            <div th:each="hs : ${homestays}" class="homestay-card"
+                th:classappend="${hs.homestay.status == 'active'} ? ' active' : ' pending'">
 
-            <!-- รูปภาพ -->
-            <div class="hs-img">
-                <img th:if="${hs.firstImage != null}"
-                     th:src="${hs.firstImage}"
-                     alt="homestay"
-                     style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
-                <i th:unless="${hs.firstImage != null}"
-                   class="fas fa-house" style="font-size:2rem; color:#ccc;"></i>
-            </div>
+                <!-- รูปภาพ -->
+                <div class="hs-img">
+                    <img th:if="${hs.firstImage != null}" th:src="${hs.firstImage}" alt="homestay"
+                        style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                    <i th:unless="${hs.firstImage != null}" class="fas fa-house"
+                        style="font-size:2rem; color:#ccc;"></i>
+                </div>
 
-            <!-- ข้อมูล -->
-            <div class="hs-info">
-                <div class="hs-name">
-                    <span th:text="${hs.homestay.homestayname}">บ้านมูเซอดาว</span>
-                    <!-- <span class="badge-status"
+                <!-- ข้อมูล -->
+                <div class="hs-info">
+                    <div class="hs-name">
+                        <span th:text="${hs.homestay.homestayname}">บ้านมูเซอดาว</span>
+                        <!-- <span class="badge-status"
                           th:classappend="${hs.homestay.status == 'active'} ? ' badge-active' : ' badge-pending'"
                           th:text="${hs.homestay.status == 'active'} ? 'อนุมัติแล้ว' : 'รอการอนุมัติ'">
                     </span> -->
+                    </div>
+                    <div class="hs-meta">
+                        <span>
+                            <i class="fas fa-location-dot"></i>
+                            <span th:text="${hs.homestay.address}">ที่อยู่</span>
+                        </span>
+                        <span th:if="${hs.homestay.owner != null and hs.homestay.owner.phone != null}">
+                            <i class="fas fa-phone"></i>
+                            <span th:text="${hs.homestay.owner.phone}">081-234-5678</span>
+                        </span>
+                    </div>
+                    <div class="hs-rating">
+                        <i class="fas fa-star"></i>
+                        <span th:text="${#numbers.formatDecimal(hs.avgRating, 1, 1)}">0.0</span>
+                        <span class="count" th:text="'(' + ${hs.reviewCount} + ' รีวิว)'"></span>
+                    </div>
                 </div>
-                <div class="hs-meta">
-                    <span>
-                        <i class="fas fa-location-dot"></i>
-                        <span th:text="${hs.homestay.address}">ที่อยู่</span>
-                    </span>
-                    <span th:if="${hs.homestay.owner != null and hs.homestay.owner.phone != null}">
-                        <i class="fas fa-phone"></i>
-                        <span th:text="${hs.homestay.owner.phone}">081-234-5678</span>
-                    </span>
-                </div>
-                <div class="hs-rating">
-                    <i class="fas fa-star"></i>
-                    <span th:text="${#numbers.formatDecimal(hs.avgRating, 1, 1)}">0.0</span>
-                    <span class="count" th:text="'(' + ${hs.reviewCount} + ' รีวิว)'"></span>
-                </div>
-            </div>
 
-            <!-- Actions -->
-            <div class="hs-actions" style="flex-direction: row; align-items: center;">
-                <a th:href="@{/owner/homestays/{id}(id=${hs.homestay.homestayid})}" class="btn-detail">
-                    <i class="fas fa-circle-info"></i> ดูรายละเอียด
-                </a>
-                <a href="#" class="btn-review">
-                    <i class="fas fa-star"></i>
-                    รีวิว (<span th:text="${hs.reviewCount}">0</span>)
-                </a>
-            </div>
+                <!-- Actions -->
+                <div class="hs-actions" style="flex-direction: row; align-items: center;">
+                    <a th:href="@{/owner/homestays/{id}(id=${hs.homestay.homestayid})}" class="btn-detail">
+                        <i class="fas fa-circle-info"></i> ดูรายละเอียด
+                    </a>
+                    <a th:href="@{/owner/homestay/{id}/reviews(id=${hs.homestay.homestayid})}" class="btn-review">
+                        <i class="fas fa-star"></i>
+                        รีวิว (<span th:text="${hs.reviewCount}">0</span>)
+                    </a>
+                </div>
 
+            </div>
         </div>
-    </div>
 
-    <!--  ไม่มีข้อมูล -->
-    <div th:if="${#lists.isEmpty(homestays)}" class="empty-state">
-        <i class="fas fa-house-circle-xmark"></i>
-        <p>ยังไม่มีโฮมสเตย์ในระบบ</p>
-        <a href="#" class="btn-add" style="display:inline-flex;">
-            <i class="fas fa-plus"></i> เพิ่มโฮมสเตย์แรก
-        </a>
-    </div>
-
-</div>
-
-<!-- ─── FOOTER ─── -->
-<footer class="footer">
-    <div class="footer-content">
-        <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-        <span class="footer-right">
-            Version 1.0 |
-            <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
-            <a href="#" onclick="openContactModal()">
-                <i class="fas fa-headset"></i> ติดต่อแอดมิน
+        <!--  ไม่มีข้อมูล -->
+        <div th:if="${#lists.isEmpty(homestays)}" class="empty-state">
+            <i class="fas fa-house-circle-xmark"></i>
+            <p>ยังไม่มีโฮมสเตย์ในระบบ</p>
+            <a href="#" class="btn-add" style="display:inline-flex;">
+                <i class="fas fa-plus"></i> เพิ่มโฮมสเตย์แรก
             </a>
-        </span>
+        </div>
+
     </div>
-</footer>
+
+    <!-- ─── FOOTER ─── -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="footer-right">
+                Version 1.0 |
+                <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+                <a href="#" onclick="openContactModal()">
+                    <i class="fas fa-headset"></i> ติดต่อแอดมิน
+                </a>
+            </span>
+        </div>
+    </footer>
 
 </body>
+
 </html>

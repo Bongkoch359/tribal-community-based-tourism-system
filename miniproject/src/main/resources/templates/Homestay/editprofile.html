@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขโปรไฟล์</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/edit-profile.css}" rel="stylesheet">
     <style>
         .bank-alert {
@@ -29,14 +30,37 @@
     </style>
 </head>
 <body>
-    <!-- Top Nav -->
-    <header class="top-nav">
-        <button class="back-btn" onclick="history.back()">
-            <span class="back-icon">&#8592;</span> กลับ
-        </button>
-    </header>
+    <!-- ─── NAVBAR (เหมือนหน้าอื่นทุกประการ) ─── -->
+    <nav class="hs-navbar">
+        <a class="hs-navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo3.png}" alt="Logo" class="brand-logo-img">
+            ระบบท่องเที่ยวชุมชนชนเผ่า
+        </a>
+        <div class="hs-nav-right">
+            <div class="hs-profile-dropdown">
+                <div class="hs-profile-trigger">
+                    <div class="hs-avatar" id="navAvatar">HS</div>
+                    <div>
+                        <span class="hs-owner-name" id="navOwnerName">เจ้าของ</span>
+                        <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+                    </div>
+                    <i class="fas fa-chevron-down hs-chevron"></i>
+                </div>
+                <div class="hs-dropdown-content">
+                    <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                    <hr>
+                    <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <main class="main-container">
+
+        <a class="back-btn" onclick="history.back()">
+            <i class="fas fa-chevron-left"></i> กลับ
+        </a>
+
         <div class="page-header">
             <h1 class="page-title">แก้ไขโปรไฟล์</h1>
             <p class="page-subtitle">อัปเดตข้อมูลส่วนตัวและรหัสผ่านของบัญชีคุณ</p>
@@ -60,7 +84,7 @@
             <!-- Personal Info Section -->
             <section class="form-section">
                 <div class="section-header">
-                    <span class="section-icon">&#128100;</span>
+                    <span class="section-icon"><i class="fas fa-user"></i></span>
                     <h2 class="section-title">ข้อมูลส่วนตัว</h2>
                 </div>
 
@@ -81,7 +105,7 @@
                     <label class="form-label" for="email">อีเมล <span class="required">*</span></label>
                     <div class="input-with-icon">
                         <input type="email" id="email" name="email" class="form-input" placeholder="อีเมล" required>
-                        <span class="input-icon">&#9993;</span>
+                        <span class="input-icon"><i class="fas fa-envelope"></i></span>
                     </div>
                     <span class="error-msg" id="emailError"></span>
                 </div>
@@ -90,7 +114,7 @@
                     <label class="form-label" for="phone">เบอร์โทรศัพท์</label>
                     <div class="input-with-icon">
                         <input type="tel" id="phone" name="phone" class="form-input" placeholder="0812345678" maxlength="10">
-                        <span class="input-icon">&#128222;</span>
+                        <span class="input-icon"><i class="fas fa-phone"></i></span>
                     </div>
                     <span class="error-msg" id="phoneError"></span>
                 </div>
@@ -99,13 +123,13 @@
             <!-- Bank Info Section -->
             <section class="form-section" id="bankSection">
                 <div class="section-header">
-                    <span class="section-icon">&#127981;</span>
+                    <span class="section-icon"><i class="fas fa-building-columns"></i></span>
                     <h2 class="section-title">ข้อมูลบัญชีธนาคาร</h2>
                 </div>
 
                 <!-- Banner แจ้งเตือนกรณียังไม่กรอกข้อมูลธนาคาร -->
                 <div class="bank-alert" id="bankAlert" style="display:none;">
-                    <span class="bank-alert-icon">&#9888;</span>
+                    <span class="bank-alert-icon"><i class="fas fa-triangle-exclamation"></i></span>
                     <div>
                         <strong>กรุณากรอกข้อมูลบัญชีธนาคาร</strong><br>
                         <small>คุณยังไม่ได้กรอกข้อมูลธนาคาร โฮมสเตย์จะไม่สามารถรับเงินได้จนกว่าจะกรอกข้อมูลนี้</small>
@@ -136,7 +160,7 @@
         <label class="form-label" for="bankBranch">สาขา</label>
         <div class="input-with-icon">
             <input type="text" id="bankBranch" name="bankBranch" class="form-input" placeholder="เช่น สาขาเชียงใหม่">
-            <span class="input-icon">&#128205;</span>
+            <span class="input-icon"><i class="fas fa-location-dot"></i></span>
         </div>
     </div>
 </div>
@@ -145,7 +169,7 @@
                     <label class="form-label" for="accountName">ชื่อบัญชี <span class="required">*</span></label>
                     <div class="input-with-icon">
                         <input type="text" id="accountName" name="accountName" class="form-input" placeholder="ชื่อ-นามสกุล ตามหน้าสมุดบัญชี">
-                        <span class="input-icon">&#128100;</span>
+                        <span class="input-icon"><i class="fas fa-user"></i></span>
                     </div>
                     <span class="error-msg" id="accountNameError"></span>
                 </div>
@@ -154,7 +178,7 @@
                     <label class="form-label" for="accountNumber">เลขบัญชีธนาคาร <span class="required">*</span></label>
                     <div class="input-with-icon">
                         <input type="text" id="accountNumber" name="accountNumber" class="form-input" placeholder="เช่น 1234567890" maxlength="30">
-                        <span class="input-icon">&#128179;</span>
+                        <span class="input-icon"><i class="fas fa-credit-card"></i></span>
                     </div>
                     <span class="error-msg" id="accountNumberError"></span>
                 </div>
@@ -163,7 +187,7 @@
             <!-- Change Password Section -->
             <section class="form-section">
                 <div class="section-header">
-                    <span class="section-icon">&#128273;</span>
+                    <span class="section-icon"><i class="fas fa-key"></i></span>
                     <h2 class="section-title">เปลี่ยนรหัสผ่าน</h2>
                 </div>
 
@@ -171,7 +195,7 @@
                     <label class="form-label" for="currentPassword">รหัสผ่านปัจจุบัน <span class="required">*</span></label>
                     <div class="input-with-icon">
                         <input type="password" id="currentPassword" name="currentPassword" class="form-input" placeholder="กรอกรหัสผ่านปัจจุบัน">
-                        <button type="button" class="toggle-password" data-target="currentPassword">&#128065;</button>
+                        <button type="button" class="toggle-password" data-target="currentPassword"><i class="fas fa-eye"></i></button>
                     </div>
                 </div>
 
@@ -180,7 +204,7 @@
                         <label class="form-label" for="newPassword">รหัสผ่านใหม่ <span class="required">*</span></label>
                         <div class="input-with-icon">
                             <input type="password" id="newPassword" name="newPassword" class="form-input" placeholder="รหัสผ่านใหม่">
-                            <button type="button" class="toggle-password" data-target="newPassword">&#128065;</button>
+                            <button type="button" class="toggle-password" data-target="newPassword"><i class="fas fa-eye"></i></button>
                         </div>
                         <span class="error-msg" id="newPasswordError"></span>
                     </div>
@@ -188,14 +212,14 @@
                         <label class="form-label" for="confirmPassword">ยืนยันรหัสผ่านใหม่ <span class="required">*</span></label>
                         <div class="input-with-icon">
                             <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="ยืนยันรหัสผ่านใหม่">
-                            <button type="button" class="toggle-password" data-target="confirmPassword">&#128065;</button>
+                            <button type="button" class="toggle-password" data-target="confirmPassword"><i class="fas fa-eye"></i></button>
                         </div>
                         <span class="error-msg" id="confirmPasswordError"></span>
                     </div>
                 </div>
 
                 <div class="password-hint">
-                    <span class="hint-icon">&#9432;</span>
+                    <span class="hint-icon"><i class="fas fa-circle-info"></i></span>
                     หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้ปล่อยว่างช่องไว้ได้เลย
                 </div>
             </section>
@@ -203,10 +227,10 @@
             <!-- Action Buttons -->
             <div class="form-actions">
                 <button type="button" class="btn btn-reset" id="resetBtn">
-                    <span>&#8635;</span> รีเซ็ต
+                    <i class="fas fa-rotate-left"></i> รีเซ็ต
                 </button>
                 <button type="submit" class="btn btn-save" id="saveBtn">
-                    <span>&#10003;</span> บันทึกข้อมูล
+                    <i class="fas fa-check"></i> บันทึกข้อมูล
                 </button>
             </div>
         </form>
@@ -215,20 +239,43 @@
         <div class="toast" id="toast"></div>
     </main>
 
+    <!-- ─── FOOTER (เหมือนหน้าอื่น) ─── -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="footer-right">
+                Version 1.0 |
+                <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+                <a href="#" onclick="openContactModal()">
+                    <i class="fas fa-headset"></i> ติดต่อแอดมิน
+                </a>
+            </span>
+        </div>
+    </footer>
+
     <script th:src="@{/js/Homestay/edit-profile.js}"></script>
     <script>
         // แสดง bank alert ถ้ายังไม่มีข้อมูลธนาคาร (ให้ edit-profile.js populate ก่อน แล้วค่อยเช็ค)
         document.addEventListener('profileLoaded', function(e) {
-    const data = e.detail;
-    // bankName เป็น select ต้อง set value
-    if (data.bankName) {
-        document.getElementById('bankName').value = data.bankName;
-    }
-    if (data.bankBranch)  document.getElementById('bankBranch').value  = data.bankBranch;
-    if (data.accountName) document.getElementById('accountName').value = data.accountName;
+            const data = e.detail;
 
-    const missing = !data.bankName || !data.accountNumber || !data.accountName;
-    document.getElementById('bankAlert').style.display = missing ? 'flex' : 'none';
-});
+            // ── sync navbar profile card (มุมขวาบน) ให้ตรงกับข้อมูลจริง ──
+            const fullName = ((data.firstname || '') + ' ' + (data.lastname || '')).trim();
+            const navNameEl = document.getElementById('navOwnerName');
+            const navAvatarEl = document.getElementById('navAvatar');
+            if (fullName && navNameEl) navNameEl.textContent = fullName;
+            if (fullName && navAvatarEl) navAvatarEl.textContent = fullName.substring(0, 2);
+
+            // bankName เป็น select ต้อง set value
+            if (data.bankName) {
+                document.getElementById('bankName').value = data.bankName;
+            }
+            if (data.bankBranch)  document.getElementById('bankBranch').value  = data.bankBranch;
+            if (data.accountName) document.getElementById('accountName').value = data.accountName;
+
+            const missing = !data.bankName || !data.accountNumber || !data.accountName;
+            document.getElementById('bankAlert').style.display = missing ? 'flex' : 'none';
+        });
     </script>
+</body>
 </html>

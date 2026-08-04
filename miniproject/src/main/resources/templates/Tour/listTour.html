@@ -569,6 +569,27 @@
             background: var(--green-mid);
         }
 
+        /* ปุ่มดูรีวิว — ใช้สีอำพัน (amber) ให้ต่างจากปุ่มแก้ไข */
+        .btn-reviews {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 13px;
+            background: var(--amber);
+            color: #fff;
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .btn-reviews:hover {
+            background: var(--amber-hover);
+        }
+
         /* ─── EMPTY STATE ─── */
         .empty-state {
             text-align: center;
@@ -762,7 +783,7 @@
                         <th style="width:140px;">ราคาเด็ก</th>
                         <th style="width:130px;">ที่นั่ง</th>
                         <th style="width:140px;">สถานะ</th>
-                        <th style="width:220px;">จัดการ</th>
+                        <th style="width:260px;">จัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -837,6 +858,9 @@
                             <div class="action-btns">
                                 <a class="btn-view" th:href="@{/manager/tours/{id}/edit(id=${tour.tourid})}">
                                     <i class="fas fa-pen"></i> แก้ไข
+                                </a>
+                                <a class="btn-reviews" th:href="@{/manager/tours/{id}/reviews(id=${tour.tourid})}">
+                                    <i class="fas fa-star"></i> ดูรีวิว
                                 </a>
                             </div>
                         </td>

@@ -70,6 +70,14 @@ body {
             white-space: nowrap;
         }
 
+        .top-navbar .brand .brand-logo-img {
+            height: 75px;
+            width: auto;
+            max-width: 170px;
+            object-fit: contain;
+            display: block;
+        }
+
         .nav-right {
             display: flex;
             align-items: stretch;
