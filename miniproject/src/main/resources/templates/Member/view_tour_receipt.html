@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบเสร็จรับเงิน - ทัวร์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Taviraj:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+    --ink:#20291f;
+    --ink-soft:#4a5442;
+    --paper:#ffffff;
+    --paper-line:#d4d4d4;
+    --forest:#1f4d3a;
+    --forest-deep:#123527;
+    --stamp:#a13d2c;
+    --gray-100:#f5f5f4;
+    --gray-200:#e7e5e4;
+    --gray-400:#a8a29e;
+    --gray-600:#57534e;
+    --shadow-md:0 6px 24px rgba(20,25,18,.14);
+    --navbar-h:100px;
+}
+
+body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); font-size:15px; }
+
+/* ── NAVBAR ── */
+.navbar {
+    background:var(--forest-deep); height:var(--navbar-h);
+    display:flex; align-items:center; padding:0 5%; gap:14px;
+    position:sticky; top:0; z-index:1000;
+    box-shadow:0 3px 16px rgba(0,0,0,.28);
+}
+.navbar-brand { color:#fff; margin-right:auto; display:flex; align-items:center; gap:14px; text-decoration:none; }
+.brand-icon {
+    width:48px; height:48px; background:#3f8562; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 12px rgba(63,133,98,.35);
+}
+.brand-icon svg { width:26px; height:26px; }
+.brand-name { display:flex; flex-direction:column; }
+.brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; }
+.brand-name-line2 { font-size:13px; font-weight:400; color:#a7e3c3; opacity:.8; }
+
+/* ── BREADCRUMB ── */
+.breadcrumb {
+    background:#fff; padding:.55rem 5%; border-bottom:1px solid var(--gray-200);
+    font-size:.8rem; color:var(--gray-600);
+}
+.breadcrumb a { color:var(--forest); text-decoration:none; }
+
+/* ── PAGE WRAP ── */
+.page-wrap { max-width:760px; margin:0 auto; padding:2rem 5% 3rem; }
+
+.alert { border-radius:10px; padding:12px 16px; font-size:.88rem; font-weight:600; display:flex; align-items:center; gap:.5rem; margin-bottom:16px; }
+.alert-error { background:#fdecea; border:1px solid #ef9a9a; color:#b71c1c; }
+
+/* ── PRINT BAR ── */
+.print-bar { display:flex; justify-content:flex-end; gap:10px; margin-bottom:18px; }
+.btn-print, .btn-back {
+    display:inline-flex; align-items:center; gap:.4rem;
+    border-radius:8px; padding:.6rem 1.2rem; font-size:.88rem; font-weight:700;
+    cursor:pointer; font-family:inherit; text-decoration:none; transition:.2s; border:none;
+}
+.btn-print { background:var(--forest); color:#fff; }
+.btn-print:hover { background:var(--forest-deep); }
+.btn-back { background:#fff; color:var(--gray-600); border:1.5px solid var(--gray-200); }
+.btn-back:hover { background:var(--gray-100); }
+
+/* ══════════════════════════════════════════════
+   THE PAPER RECEIPT
+   ══════════════════════════════════════════════ */
+.receipt-sheet {
+    position:relative;
+    background:var(--paper);
+    box-shadow:var(--shadow-md);
+    padding:10px;
+}
+.receipt-copy-tag {
+    position:absolute; top:0; left:0;
+    background:var(--forest-deep); color:#e9f3ec;
+    font-size:.68rem; font-weight:700; letter-spacing:.06em;
+    padding:5px 14px 5px 10px;
+    clip-path:polygon(0 0,100% 0,86% 100%,0 100%);
+}
+
+.receipt-border {
+    border:1.5px solid var(--forest-deep);
+    outline:1px solid var(--paper-line);
+    outline-offset:-6px;
+    padding:34px 36px 30px;
+    position:relative;
+}
+
+/* paid stamp */
+.paid-stamp {
+    position:absolute; top:120px; right:44px;
+    width:112px; height:112px;
+    border:3px solid var(--stamp); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    transform:rotate(-13deg);
+    color:var(--stamp); font-weight:800; font-size:.78rem; letter-spacing:.03em;
+    line-height:1.3;
+    opacity:.85;
+    pointer-events:none;
+}
+.paid-stamp::before {
+    content:""; position:absolute; inset:6px; border:1px solid var(--stamp); border-radius:50%;
+}
+.paid-stamp span { padding:0 10px; }
+
+/* header: issuer + doctype */
+.receipt-top {
+    display:flex; justify-content:space-between; align-items:flex-start; gap:20px;
+    padding-bottom:20px; border-bottom:2px solid var(--forest-deep);
+    flex-wrap:wrap;
+}
+.issuer-block { display:flex; gap:14px; align-items:flex-start; max-width:330px; }
+.issuer-mark {
+    width:44px; height:44px; border:2px solid var(--forest); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    color:var(--forest);
+}
+.issuer-mark svg { width:22px; height:22px; }
+.issuer-name { font-weight:800; font-size:1.02rem; color:var(--forest-deep); }
+.issuer-address { font-size:.8rem; color:var(--ink-soft); margin-top:4px; line-height:1.5; }
+
+.doctype-block { text-align:right; }
+.doctype-th { font-family:'Taviraj',serif; font-weight:700; font-size:1.5rem; color:var(--forest-deep); letter-spacing:.02em; }
+.doctype-en { font-size:.72rem; color:var(--gray-600); letter-spacing:.14em; text-transform:uppercase; margin-top:2px; }
+
+/* meta strip */
+.meta-strip {
+    display:flex; gap:0; margin-top:22px; border:1px solid var(--forest-deep);
+}
+.meta-cell { flex:1; padding:9px 14px; }
+.meta-cell + .meta-cell { border-left:1px solid var(--forest-deep); }
+.meta-cell .meta-label { font-size:.68rem; color:var(--ink-soft); font-weight:600; letter-spacing:.04em; }
+.meta-cell .meta-value { font-size:.92rem; font-weight:800; color:var(--forest-deep); margin-top:2px; }
+
+/* customer info */
+.section-block { margin-top:26px; }
+.section-title {
+    font-size:.78rem; font-weight:700; color:#fff; background:var(--forest);
+    display:inline-block; padding:4px 12px; letter-spacing:.03em;
+}
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; margin-top:14px; }
+.detail-item .detail-label { font-size:.74rem; color:var(--ink-soft); }
+.detail-item .detail-value { font-size:.92rem; font-weight:700; color:var(--ink); margin-top:1px; }
+
+/* itemized table */
+.item-table { width:100%; border-collapse:collapse; margin-top:14px; border:1px solid var(--forest-deep); }
+.item-table th {
+    background:var(--forest); color:#fff;
+    text-align:left; font-size:.76rem; font-weight:700; padding:9px 12px;
+}
+.item-table th:first-child, .item-table td:first-child { width:44px; text-align:center; }
+.item-table th:last-child, .item-table td:last-child { text-align:right; }
+.item-table td { padding:11px 12px; font-size:.9rem; border-top:1px solid var(--paper-line); }
+.item-table tr.fill-row td { color:transparent; height:24px; user-select:none; }
+.item-table tr.total-row td { border-top:1.5px solid var(--forest-deep); font-weight:800; font-size:.98rem; color:var(--forest-deep); }
+.item-table tr.paid-row td { font-weight:800; font-size:1.08rem; color:var(--stamp); background:#fbeee9; }
+
+.amount-words {
+    display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;
+    border:1px solid var(--forest-deep); border-top:none;
+    padding:10px 12px; font-size:.85rem;
+}
+.amount-words .aw-label { color:var(--ink-soft); }
+.amount-words .aw-value { font-weight:700; color:var(--forest-deep); }
+
+.payment-method { font-size:.85rem; color:var(--ink-soft); margin-top:12px; }
+.payment-method b { color:var(--ink); }
+
+/* signatures */
+.signature-row { display:flex; justify-content:space-between; gap:24px; margin-top:52px; flex-wrap:wrap; }
+.signature-box { text-align:center; flex:1; min-width:180px; }
+.signature-line { border-bottom:1px dashed var(--gray-400); height:44px; }
+.signature-label { font-size:.8rem; color:var(--ink-soft); margin-top:6px; }
+.signature-sub { font-size:.72rem; color:var(--gray-400); margin-top:2px; }
+
+.receipt-footer-note {
+    margin-top:28px; padding-top:14px; border-top:1px dashed var(--paper-line);
+    font-size:.74rem; color:var(--gray-600); text-align:center; line-height:1.6;
+}
+
+/* ── PRINT MODE ── */
+@media print {
+    @page { margin: 12mm; }
+    .navbar, .breadcrumb, .print-bar { display:none !important; }
+    * { box-shadow:none !important; text-shadow:none !important; }
+    body { background:#fff !important; color:#000 !important; }
+    .page-wrap { padding:0; max-width:100%; margin:0; }
+
+    .receipt-sheet { background:#fff !important; padding:0; }
+    .receipt-copy-tag {
+        background:none !important; color:#000 !important;
+        border:1px solid #000; clip-path:none;
+    }
+    .receipt-border { border:1.5px solid #000; outline:none; padding:24px 26px 20px; }
+
+    .paid-stamp { border-color:#000 !important; color:#000 !important; opacity:.9; }
+    .paid-stamp::before { border-color:#000 !important; }
+
+    .receipt-top { border-bottom:2px solid #000; }
+    .issuer-mark { border-color:#000; color:#000; }
+    .issuer-name, .doctype-th, .meta-value, .amount-words .aw-value,
+    .item-table tr.total-row td, .item-table tr.paid-row td { color:#000 !important; }
+    .issuer-address, .doctype-en, .meta-label, .detail-label, .payment-method,
+    .signature-label, .signature-sub, .receipt-footer-note, .aw-label { color:#333 !important; }
+
+    .meta-strip, .meta-cell + .meta-cell { border-color:#000; }
+
+    .section-title { background:none !important; color:#000 !important; border:1px solid #000; padding:3px 10px; }
+
+    .item-table { border-color:#000; }
+    .item-table th { background:none !important; color:#000 !important; border-bottom:1px solid #000; }
+    .item-table td { border-top:1px solid #999; }
+    .item-table tr.total-row td { border-top:1.5px solid #000; }
+    .item-table tr.paid-row td { background:none !important; }
+    .item-table tr.fill-row td { color:transparent !important; }
+
+    .amount-words { border-color:#000; }
+
+    .signature-line { border-bottom:1px solid #000; }
+
+    .receipt-top, .meta-strip, .item-table, .amount-words, .signature-row { break-inside: avoid; }
+}
+
+@media (max-width:560px) {
+    .detail-grid { grid-template-columns:1fr; }
+    .receipt-border { padding:24px 18px; }
+    .receipt-top { flex-direction:column; }
+    .doctype-block { text-align:left; }
+    .paid-stamp { top:auto; bottom:14px; right:14px; width:88px; height:88px; font-size:.66rem; }
+    .signature-row { flex-direction:column; align-items:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar">
+    <a href="/search" class="navbar-brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+        </div>
+        <div class="brand-name">
+            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
+            <span class="brand-name-line2">Tribal Community Tourism</span>
+        </div>
+    </a>
+</nav>
+
+<!-- ══ BREADCRUMB ══ -->
+<div class="breadcrumb">
+    <a href="/search">หน้าแรก</a> &rsaquo;
+    <a href="/member/bookings/list">การจองของฉัน</a> &rsaquo;
+    <a th:href="@{/member/bookings/detail/{id}(id=${receipt.bookingId})}" th:text="${receipt.bookingId}">รหัสการจอง</a> &rsaquo;
+    <span>ใบเสร็จ</span>
+</div>
+
+<div class="page-wrap">
+
+    <div class="alert alert-error" th:if="${errorMsg != null}"><span>❌</span><span th:text="${errorMsg}"></span></div>
+
+    <!-- ══ PRINT / BACK BAR ══ -->
+    <div class="print-bar">
+        <a th:href="@{/member/bookings/detail/{id}(id=${receipt.bookingId})}" class="btn-back">← กลับไปดูรายละเอียดการจอง</a>
+        <button class="btn-print" onclick="window.print()">🖨️ พิมพ์ใบเสร็จ</button>
+    </div>
+
+    <!-- ══ RECEIPT SHEET ══ -->
+    <div class="receipt-sheet">
+        <span class="receipt-copy-tag">ต้นฉบับ · ORIGINAL</span>
+
+        <div class="receipt-border">
+
+            <!-- stamp -->
+            <div class="paid-stamp" th:if="${receipt.paymentStatus == 'PAID'}">
+                <span>ชำระเงินแล้ว<br>PAID</span>
+            </div>
+
+            <!-- issuer + doctype -->
+            <div class="receipt-top">
+                <div class="issuer-block">
+                    <div class="issuer-mark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+                    </div>
+                    <div>
+                        <div class="issuer-name" th:text="${receipt.communityManagerName != null ? receipt.communityManagerName : '-'}"></div>
+                        <div class="issuer-address" th:text="${receipt.communityManagerAddress != null ? receipt.communityManagerAddress : '-'}"></div>
+                    </div>
+                </div>
+                <div class="doctype-block">
+                    <div class="doctype-th">ใบเสร็จรับเงิน</div>
+                    <div class="doctype-en">Receipt / Payment Confirmation</div>
+                </div>
+            </div>
+
+            <!-- meta strip -->
+            <div class="meta-strip">
+                <div class="meta-cell">
+                    <div class="meta-label">เลขที่ใบเสร็จ</div>
+                    <div class="meta-value" th:text="${receipt.paymentId}"></div>
+                </div>
+                <div class="meta-cell">
+                    <div class="meta-label">วันที่ออกใบเสร็จ</div>
+                    <div class="meta-value" th:text="${receipt.paymentDate != null ? #dates.format(receipt.paymentDate,'dd MMMM yyyy') : '-'}"></div>
+                </div>
+                <div class="meta-cell">
+                    <div class="meta-label">สถานะ</div>
+                    <div class="meta-value" th:text="${receipt.paymentStatus}"></div>
+                </div>
+            </div>
+
+            <!-- payer info -->
+            <div class="section-block">
+                <span class="section-title">ข้อมูลผู้ชำระเงิน</span>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">ชื่อ-นามสกุล</div>
+                        <div class="detail-value"
+                             th:text="${(receipt.memberFirstname != null ? receipt.memberFirstname : '')
+                                       + ' '
+                                       + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">โทรศัพท์</div>
+                        <div class="detail-value" th:text="${receipt.memberPhone != null ? receipt.memberPhone : '-'}"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">เลขที่การจองอ้างอิง</div>
+                        <div class="detail-value" th:text="${receipt.bookingId}"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">วันที่ทำรายการจอง</div>
+                        <div class="detail-value" th:text="${receipt.bookingDate != null ? #dates.format(receipt.bookingDate,'dd MMMM yyyy') : '-'}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- tour info -->
+            <div class="section-block">
+                <span class="section-title">ข้อมูลทัวร์</span>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">ชื่อทัวร์</div>
+                        <div class="detail-value" th:text="${receipt.tourName != null ? receipt.tourName : '-'}"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">ระยะเวลา</div>
+                        <div class="detail-value" th:text="${receipt.tourDuration != null ? receipt.tourDuration : '-'}"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">วันที่ออกเดินทาง</div>
+                        <div class="detail-value" th:text="${receipt.scheduleOpenDate != null ? #dates.format(receipt.scheduleOpenDate,'dd MMMM yyyy') : '-'}"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">จำนวนผู้เดินทาง</div>
+                        <div class="detail-value"
+                             th:text="${(receipt.numOfAdults != null ? receipt.numOfAdults : 0)} + ' ผู้ใหญ่ / ' + ${(receipt.numOfChildren != null ? receipt.numOfChildren : 0)} + ' เด็ก'"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- itemized table -->
+            <div class="section-block">
+                <span class="section-title">รายการ</span>
+                <table class="item-table">
+                    <thead>
+                        <tr><th>ลำดับ</th><th>รายการ</th><th>จำนวนเงิน (บาท)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${receipt.numOfAdults != null and receipt.numOfAdults > 0}">
+                            <td>1</td>
+                            <td th:text="'ค่าทัวร์ผู้ใหญ่ x ' + ${receipt.numOfAdults}
+                                          + (${receipt.adultPrice != null} ? ' (' + ${#numbers.formatDecimal(receipt.adultPrice,0,'COMMA',2,'POINT')} + ' บาท/ท่าน)' : '')"></td>
+                            <td th:text="${receipt.adultPrice != null ? #numbers.formatDecimal(receipt.adultPrice * receipt.numOfAdults,0,'COMMA',2,'POINT') : '0.00'}"></td>
+                        </tr>
+                        <tr th:if="${receipt.numOfChildren != null and receipt.numOfChildren > 0}">
+                            <td>2</td>
+                            <td th:text="'ค่าทัวร์เด็ก x ' + ${receipt.numOfChildren}
+                                          + (${receipt.childPrice != null} ? ' (' + ${#numbers.formatDecimal(receipt.childPrice,0,'COMMA',2,'POINT')} + ' บาท/ท่าน)' : '')"></td>
+                            <td th:text="${receipt.childPrice != null ? #numbers.formatDecimal(receipt.childPrice * receipt.numOfChildren,0,'COMMA',2,'POINT') : '0.00'}"></td>
+                        </tr>
+                        <tr th:if="${receipt.wantInsurance == true}">
+                            <td>3</td>
+                            <td>ค่าประกันการเดินทาง</td>
+                            <td th:text="${receipt.subtotalInsurance != null ? #numbers.formatDecimal(receipt.subtotalInsurance,0,'COMMA',2,'POINT') : '0.00'}"></td>
+                        </tr>
+                        <tr class="fill-row"><td>–</td><td>—</td><td>—</td></tr>
+                        <tr class="total-row">
+                            <td colspan="2">ยอดรวมทั้งสิ้น</td>
+                            <td th:text="${receipt.totalAmount != null ? #numbers.formatDecimal(receipt.totalAmount,0,'COMMA',2,'POINT') : '0.00'}"></td>
+                        </tr>
+                        <tr class="paid-row">
+                            <td colspan="2">ยอดที่ชำระแล้ว</td>
+                            <td th:text="${receipt.amount != null ? #numbers.formatDecimal(receipt.amount,0,'COMMA',2,'POINT') : '0.00'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="amount-words" th:if="${receipt.amount != null}">
+                    <span class="aw-label">จำนวนเงินตัวอักษร</span>
+                    <span class="aw-value" id="bahtText" th:attr="data-amount=${receipt.amount}">-</span>
+                </div>
+                <div class="payment-method" th:if="${receipt.bankName != null}">
+                    ชำระผ่าน: <b th:text="${receipt.bankName}"></b>
+                    <span th:if="${receipt.accountName != null}" th:text="' บัญชี ' + ${receipt.accountName}"></span>
+                    <span th:if="${receipt.bankAccount != null}" th:text="' เลขที่ ' + ${receipt.bankAccount}"></span>
+                </div>
+            </div>
+
+            <!-- signatures -->
+            <div class="signature-row">
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div class="signature-label">ผู้จ่ายเงิน</div>
+                    <div class="signature-sub"
+                         th:text="${(receipt.memberFirstname != null ? receipt.memberFirstname : '') + ' ' + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div class="signature-label">ผู้รับเงิน</div>
+                    <div class="signature-sub" th:text="${receipt.communityManagerName != null ? receipt.communityManagerName : '-'}"></div>
+                </div>
+            </div>
+
+            <div class="receipt-footer-note">
+                เอกสารนี้ออกโดยระบบอัตโนมัติ ไม่จำเป็นต้องมีลายเซ็นหรือตราประทับ<br>
+                หากมีข้อสงสัยเกี่ยวกับการชำระเงิน กรุณาติดต่อผู้ดูแลระบบ
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+window.addEventListener('load', function () {
+    // ── สั่งพิมพ์อัตโนมัติทันทีที่หน้าโหลดเสร็จ (ไม่ต้องรอ query param) ──
+    setTimeout(function () { window.print(); }, 300);
+
+    // ── convert amount to Thai baht text ──
+    const el = document.getElementById('bahtText');
+    if (el) {
+        const raw = parseFloat(el.getAttribute('data-amount'));
+        el.textContent = isNaN(raw) ? '-' : bahtText(raw);
+    }
+});
+
+function bahtText(number) {
+    const txtNum = ['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+    const txtDigit = ['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];
+    number = Math.round(number * 100) / 100;
+    const parts = number.toFixed(2).split('.');
+    let baht = parts[0];
+    const satang = parseInt(parts[1], 10);
+
+    function readNumber(numStr) {
+        let result = '';
+        const len = numStr.length;
+        for (let i = 0; i < len; i++) {
+            const digit = parseInt(numStr[i], 10);
+            const pos = len - i - 1;
+            if (digit === 0) continue;
+            if (pos === 0 && digit === 1 && len > 1) { result += 'เอ็ด'; continue; }
+            if (pos === 1 && digit === 2) { result += 'ยี่' + txtDigit[1]; continue; }
+            if (pos === 1 && digit === 1) { result += txtDigit[1]; continue; }
+            result += txtNum[digit] + txtDigit[pos];
+        }
+        return result;
+    }
+
+    let bahtWords = '';
+    let remaining = baht.replace(/^0+(?=\d)/, '');
+    const millionChunks = [];
+    while (remaining.length > 6) {
+        millionChunks.unshift(remaining.slice(-6));
+        remaining = remaining.slice(0, -6);
+    }
+    millionChunks.unshift(remaining);
+    for (let i = 0; i < millionChunks.length; i++) {
+        bahtWords += readNumber(millionChunks[i]);
+        if (i < millionChunks.length - 1) bahtWords += 'ล้าน';
+    }
+    if (bahtWords === '') bahtWords = 'ศูนย์';
+
+    let result = bahtWords + 'บาท';
+    result += satang === 0 ? 'ถ้วน' : readNumber(String(satang)) + 'สตางค์';
+    return result;
+}
+</script>
+</body>
+</html>

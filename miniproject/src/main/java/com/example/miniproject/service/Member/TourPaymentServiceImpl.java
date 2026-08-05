@@ -1,6 +1,6 @@
 package com.example.miniproject.service.Member;
 
-import com.example.miniproject.dto.Member.PaymentDTO;
+import com.example.miniproject.dto.Member.TourReceiptDTO;
 import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Bookingtourdetail;
 import com.example.miniproject.entity.Communitymanager;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service("tourPaymentService")
-public class TourPaymentServiceImpl implements PaymentService {
+public class TourPaymentServiceImpl implements PaymentService<TourReceiptDTO> {
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -33,77 +33,75 @@ public class TourPaymentServiceImpl implements PaymentService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    
-    // ✅ แก้ใหม่ — ลบ @Value ออก แล้วใช้ user.dir แทน
     private final String slipUploadDir = System.getProperty("user.dir") + "/uploads/slips/";
 
     // ─────────────────────────────────────────────────────────────
     // ดึงข้อมูลสำหรับแสดงหน้าชำระเงิน (ทัวร์)
     // ─────────────────────────────────────────────────────────────
     @Override
-    public PaymentDTO getPaymentPageData(String bookingId) {
+    public TourReceiptDTO getPaymentPageData(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
 
-        PaymentDTO dto = new PaymentDTO();
+        TourReceiptDTO dto = new TourReceiptDTO();
         dto.setBookingId(booking.getBookingid());
         dto.setBookingDate(booking.getBookingdate());
         dto.setTotalAmount(booking.getTotalamount());
-        dto.setNumOfGuests(booking.getNumofguest());
+
+        // ── ผู้จ่ายเงิน ──
+        if (booking.getMember() != null) {
+            dto.setMemberFirstname(booking.getMember().getFirstname());
+            dto.setMemberLastname(booking.getMember().getLastname());
+            dto.setMemberPhone(booking.getMember().getPhone());
+        }
 
         // ดึงข้อมูลจาก tourDetails (Bookingtourdetail)
         List<Bookingtourdetail> tourDetails = booking.getTourDetails();
         if (tourDetails != null && !tourDetails.isEmpty()) {
             Bookingtourdetail detail = tourDetails.get(0);
 
-            // วันเริ่มทัวร์ → อ่านจาก tourschedule.opendate แทน (ทัวร์ไม่มี checkout ใช้ checkIn อย่างเดียว)
+            // วันเริ่มทัวร์ → อ่านจาก tourschedule.opendate
             Date openDate = detail.getTourschedule() != null
                     ? detail.getTourschedule().getOpendate()
                     : null;
 
-            dto.setCheckIn(openDate);
+            dto.setScheduleOpenDate(openDate);
             if (openDate != null) {
-                Date deadline = Date.valueOf(
-                        openDate.toLocalDate().minusDays(1)
-                );
+                Date deadline = Date.valueOf(openDate.toLocalDate().minusDays(1));
                 dto.setPaymentDeadline(deadline);
             }
-            dto.setCheckOut(null);
 
             // จำนวนผู้ใหญ่ / เด็ก
             dto.setNumOfAdults(detail.getNumofadult());
             dto.setNumOfChildren(detail.getNumofchild());
-            dto.setNumOfRooms(null); // ทัวร์ไม่มีห้อง
+            dto.setSubtotalTour(detail.getSubtotaltour());
+
+            // ── ประกันภัย ──
+            dto.setWantInsurance(booking.getWantInsurance());
+            dto.setSubtotalInsurance(booking.getSubtotalInsurance());
 
             // ข้อมูล Tour
             if (detail.getTour() != null) {
-                dto.setRoomTypeName(detail.getTour().getTourmname()); // ใช้ field เดิมเก็บชื่อทัวร์
+                dto.setTourName(detail.getTour().getTourmname());
+                dto.setTourDuration(detail.getTour().getTourDuration());
+                dto.setAdultPrice(detail.getTour().getAdultprice());
+                dto.setChildPrice(detail.getTour().getChildprice());
 
-                // รูปทัวร์
-                if (detail.getTour().getImages() != null && !detail.getTour().getImages().isEmpty()) {
-
-                    String images = detail.getTour().getImages();
-
-                    // แยกรูปด้วย ||
+                // ── รูปทัวร์ ──
+                String images = detail.getTour().getImages();
+                if (images != null && !images.isEmpty()) {
                     String[] imageArray = images.split("\\|\\|");
-
-                    // เอารูปแรก
                     String firstImage = imageArray[0].trim();
-
-                    dto.setRoomImageUrl("/uploads/tours/" + firstImage);
+                    dto.setTourImageUrl("/uploads/tours/" + firstImage);
                 }
 
-
-                // ✅ แก้ใหม่ให้ตรงกับ Communitymanager entity
+                // ข้อมูล Communitymanager
                 if (detail.getTour().getCommunitymanager() != null) {
                     Communitymanager mgr = detail.getTour().getCommunitymanager();
 
-                    // ชื่อเต็ม = firstname + lastname
                     String fullName = mgr.getFirstname() + " " + mgr.getLastname();
-                    dto.setHomestayName(fullName);
-
-                    // Communitymanager ไม่มี address → ใช้ tribe แทน (หรือ set null ถ้าไม่ต้องการแสดง)
-                    dto.setHomestayAddress(mgr.getTribe());
+                    dto.setCommunityManagerName(fullName);
+                    dto.setCommunityManagerAddress(mgr.getTribe());
 
                     dto.setBankName(mgr.getBankName());
                     dto.setBankAccount(mgr.getAccountNumber());
@@ -132,7 +130,6 @@ public class TourPaymentServiceImpl implements PaymentService {
 
         String savedFileName = saveSlipFile(slipFile, bookingId);
 
-        // หา Payment เดิม ถ้าไม่มีสร้างใหม่
         Payment payment = paymentRepository.findByBooking_Bookingid(bookingId);
         if (payment == null) {
             payment = new Payment();
@@ -147,7 +144,6 @@ public class TourPaymentServiceImpl implements PaymentService {
 
         paymentRepository.save(payment);
 
-        // ✅ อัปเดตสถานะ Booking หลังบันทึก Payment
         booking.setBookingStatus(BookingStatus.WAITING_APPROVAL);
         bookingRepository.save(booking);
     }
@@ -177,14 +173,12 @@ public class TourPaymentServiceImpl implements PaymentService {
         }
     }
 
-
     // ─────────────────────────────────────────────────────────────
     // ดึงข้อมูลสำหรับแสดงหน้าใบเสร็จ (ทัวร์)
     // ─────────────────────────────────────────────────────────────
     @Override
-    public PaymentDTO getReceiptData(String bookingId) {
-        // ใช้ข้อมูลชุดเดียวกับหน้าชำระเงิน (booking, tour, manager, ...)
-        PaymentDTO dto = getPaymentPageData(bookingId);
+    public TourReceiptDTO getReceiptData(String bookingId) {
+        TourReceiptDTO dto = getPaymentPageData(bookingId);
 
         Payment payment = paymentRepository.findByBooking_Bookingid(bookingId);
         if (payment == null) {

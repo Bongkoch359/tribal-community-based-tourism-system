@@ -1,14 +1,13 @@
 package com.example.miniproject.service.Member;
 
-import com.example.miniproject.dto.Member.PaymentDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface PaymentService {
+public interface PaymentService<T> {
 
     //กลาง
-    PaymentDTO getPaymentPageData(String bookingId);
+    T getPaymentPageData(String bookingId);
 
     void confirmPayment(String bookingId, MultipartFile slipFile, String payNote);
 
-    PaymentDTO getReceiptData(String bookingId);
+    T getReceiptData(String bookingId);
 }

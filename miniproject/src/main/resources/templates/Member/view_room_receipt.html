@@ -320,17 +320,17 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
             <div class="section-block">
                 <span class="section-title">ข้อมูลผู้ชำระเงิน</span>
                 <div class="detail-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">ชื่อ-นามสกุล</div>
-                        <div class="detail-value"
-                             th:text="${(booking.member != null ? booking.member.firstname : '')
-                                       + ' '
-                                       + (booking.member != null ? booking.member.lastname : '')}"></div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">โทรศัพท์</div>
-                        <div class="detail-value" th:text="${booking.member != null ? booking.member.phone : '-'}"></div>
-                    </div>
+                   <div class="detail-item">
+    <div class="detail-label">ชื่อ-นามสกุล</div>
+    <div class="detail-value"
+         th:text="${(receipt.memberFirstname != null ? receipt.memberFirstname : '')
+                   + ' '
+                   + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></div>
+</div>
+<div class="detail-item">
+    <div class="detail-label">โทรศัพท์</div>
+    <div class="detail-value" th:text="${receipt.memberPhone != null ? receipt.memberPhone : '-'}"></div>
+</div>
                     <div class="detail-item">
                         <div class="detail-label">เลขที่การจองอ้างอิง</div>
                         <div class="detail-value" th:text="${receipt.bookingId}"></div>
@@ -378,13 +378,12 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
             </div>
 
             <!-- signatures -->
-            <div class="signature-row">
-                <div class="signature-box">
-                    <div class="signature-line"></div>
-                    <div class="signature-label">ผู้จ่ายเงิน</div>
-                    <div class="signature-sub"
-                         th:text="${(booking.member != null ? booking.member.firstname : '') + ' ' + (booking.member != null ? booking.member.lastname : '')}"></div>
-                </div>
+           <div class="signature-box">
+    <div class="signature-line"></div>
+    <div class="signature-label">ผู้จ่ายเงิน</div>
+    <div class="signature-sub"
+         th:text="${(receipt.memberFirstname != null ? receipt.memberFirstname : '') + ' ' + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></div>
+</div>
                 <div class="signature-box">
                     <div class="signature-line"></div>
                     <div class="signature-label">ผู้รับเงิน</div>

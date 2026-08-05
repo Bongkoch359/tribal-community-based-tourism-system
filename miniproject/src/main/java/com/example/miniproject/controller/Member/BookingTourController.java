@@ -99,6 +99,8 @@ public String createBooking(
             isBookerGoing, pickuptype, pickuplocation,
             wantInsurance, guestFirstnames, guestLastnames, guestIdcards);  
 
+            redirectAttributes.addFlashAttribute("successMsg", "จองทัวร์สำเร็จแล้ว!");
+
         return "redirect:/member/bookings/detail/" + bookingId;
 
     } catch (IllegalArgumentException e) {

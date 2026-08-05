@@ -1,6 +1,7 @@
 package com.example.miniproject.controller.Member;
 
-import com.example.miniproject.dto.Member.PaymentDTO;
+import com.example.miniproject.dto.Member.RoomReceiptDTO;
+import com.example.miniproject.dto.Member.TourReceiptDTO;
 import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Member;
 import com.example.miniproject.entity.Tourschedule;
@@ -37,11 +38,11 @@ public class BookingController {
     // ⬇️ NEW: ใช้ดึงข้อมูลใบเสร็จ แยกตามประเภทการจอง (โฮมสเตย์ / ทัวร์)
     @Autowired
     @Qualifier("homestayPaymentService")
-    private PaymentService homestayPaymentService;
+    private PaymentService<RoomReceiptDTO> homestayPaymentService;
 
     @Autowired
     @Qualifier("tourPaymentService")
-    private PaymentService tourPaymentService;
+    private PaymentService<TourReceiptDTO> tourPaymentService;
 
     /**
      * GET /member/booking/list?type=TOUR&status=PENDING
@@ -71,7 +72,6 @@ public class BookingController {
                 .getBookingsByMemberTypeAndStatus(memberId, activeType, activeStatus);
 
         // ── นับจำนวน badge บน type tab ──────────────────────────────
-        // ⚠️ หาก BookingType enum ของคุณใช้ชื่อต่างออกไป ให้แก้ตรงนี้
         long tourCount     = bookingService.countByMemberAndType(memberId, BookingType.TOUR);
         long homestayCount = bookingService.countByMemberAndType(memberId, BookingType.ACCOMMODATION);
 
@@ -114,8 +114,6 @@ public class BookingController {
         catch (Exception e) { return null; }
     }
 
-
-
     @GetMapping("/detail/{bookingId}")
     public String bookingDetail(
             @PathVariable String bookingId,
@@ -127,7 +125,7 @@ public class BookingController {
             return "redirect:/member/bookings";
         }
 
-        bookingService.autoCompleteIfPastEndDate(booking); 
+        bookingService.autoCompleteIfPastEndDate(booking);
 
         model.addAttribute("booking", booking);
 
@@ -140,10 +138,6 @@ public class BookingController {
         // จองทัวร์
         else if (booking.getBookingType() == BookingType.TOUR) {
 
-            // ⬇️ NEW: ดึงรอบทัวร์ (schedule) ที่เปิดรับจองอยู่ตอนนี้ ของทัวร์ตัวนี้
-            //         ส่งเข้า view เป็น "schedules" เพื่อให้ dropdown วันออกเดินทาง
-            //         ในหน้าแก้ไขการจอง (detail_bookingtour.html) มีตัวเลือกให้เลือก
-            //         เหมือนกับที่หน้าจองใหม่ (BookingTourController.bookingPage) ทำไว้
             if (booking.getTourDetails() != null && !booking.getTourDetails().isEmpty()
                     && booking.getTourDetails().get(0).getTour() != null) {
 
@@ -158,11 +152,11 @@ public class BookingController {
             return "Member/detail_bookingtour";
         }
 
-       return "redirect:/member/bookings/list";
+        return "redirect:/member/bookings/list";
     }
 
     // ════════════════════════════════════════════════════════
-    //  GET : หน้าใบเสร็จ (ใช้ได้ทั้งโฮมสเตย์และทัวร์)
+    //  GET : หน้าใบเสร็จ (แยกตามประเภทการจอง)
     // ════════════════════════════════════════════════════════
 
     @GetMapping("/receipt/{bookingId}")
@@ -181,13 +175,24 @@ public class BookingController {
         }
 
         try {
-            PaymentDTO receipt = (booking.getBookingType() == BookingType.ACCOMMODATION)
-                    ? homestayPaymentService.getReceiptData(bookingId)
-                    : tourPaymentService.getReceiptData(bookingId);
-
             model.addAttribute("booking", booking);
-            model.addAttribute("receipt", receipt);
-            return "Member/view_receipt";
+
+            if (booking.getBookingType() == BookingType.ACCOMMODATION) {
+
+                RoomReceiptDTO receipt = homestayPaymentService.getReceiptData(bookingId);
+                model.addAttribute("receipt", receipt);
+                return "Member/view_room_receipt";
+
+            } else if (booking.getBookingType() == BookingType.TOUR) {
+
+                TourReceiptDTO receipt = tourPaymentService.getReceiptData(bookingId);
+                model.addAttribute("receipt", receipt);
+                return "Member/view_tour_receipt";
+
+            } else {
+                redirectAttributes.addFlashAttribute("errorMsg", "ไม่รองรับประเภทการจองนี้");
+                return "redirect:/member/bookings/detail/" + bookingId;
+            }
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "ไม่พบข้อมูลใบเสร็จของการจองนี้");

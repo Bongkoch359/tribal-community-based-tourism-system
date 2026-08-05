@@ -8,39 +8,82 @@
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
+/* ============================================================
+   VARIABLES — Tribal / Forest / Wood / Amber theme
+   (จับคู่ชื่อตัวแปรเดิมของหน้านี้ ให้ชี้ไปยังโทนสีเดียวกับหน้า search.css
+   เพื่อให้ทุก component ในหน้านี้ retheme อัตโนมัติโดยไม่ต้องแก้ทีละจุด)
+============================================================ */
 :root {
-    --green-950: #0a1f12;
-    --green-dark:#1a472a;
-    --green-main:#2d7a4f;
-    --green-light:#d8f3dc;
-    --green-accent:#52b788;
-    --green-200:#a7e3c3;
-    --green-50:#f0faf4;
-    --orange:#e8960a;
-    --orange-light:#fff8ed;
-    --red:#e53935;
-    --red-light:#fdecea;
-    --yellow:#f59e0b;
-    --yellow-light:#fffbeb;
-    --blue:#0369a1;
-    --blue-light:#dbeafe;
-    --gray-50:#f9fafb;
-    --gray-100:#f5f5f4;
-    --gray-200:#e7e5e4;
-    --gray-400:#a8a29e;
-    --gray-600:#57534e;
-    --gray-800:#292524;
-    --shadow:0 2px 12px rgba(0,0,0,.08);
-    --shadow-md:0 4px 20px rgba(0,0,0,.12);
-    --radius-lg:16px;
-    --edit-border:#a7e3c3;
-    --edit-bg:#f0faf4;
-    --edit-focus:#2d7a4f;
-    --edit-highlight:rgba(45,122,79,.06);
-    --navbar-h:100px;
+    /* ── forest greens (จาก search.css) ── */
+    --green-950: #0f2114;
+    --green-900: #16311d;
+    --green-800: #1c4026;
+    --green-700: #295736;
+    --green-600: #367048;
+    --green-500: #4c8c5f;
+    --green-400: #66a878;
+    --green-300: #93c6a1;
+    --green-200: #bfdec8;
+    --green-100: #e2f0e5;
+    --green-50:  #f4faf5;
+
+    /* ── amber / gold accent (CTA) ── */
+    --amber-700: #92620a;
+    --amber-600: #b9790c;
+    --amber-500: #d68f14;
+    --amber-400: #e4a53a;
+    --amber-100: #faedd2;
+
+    --wood-700:  #6b4423;
+
+    /* ── warm cream / paper (พื้นหลังหลัก) ── */
+    --cream-100: #fbf6ea;
+    --cream-50:  #f6efdd;
+    --paper:     #fffdf8;
+
+    /* ── neutrals ── */
+    --neutral-800: #3a2f21;
+    --neutral-700: #524533;
+    --neutral-600: #6b5c46;
+    --neutral-500: #8a7a63;
+    --neutral-400: #a99c85;
+    --neutral-300: #cfc3ac;
+    --neutral-200: #e4dac2;
+    --neutral-100: #eee6d3;
+    --neutral-50:  #f7f1e3;
+
+    /* ── ชื่อตัวแปรเดิมของหน้านี้ ผูกกับพาเลตใหม่ด้านบน ── */
+    --green-dark:   var(--green-800);
+    --green-main:   var(--green-700);
+    --green-light:  var(--green-100);
+    --green-accent: var(--green-500);
+    --orange:       var(--amber-500);
+    --orange-light: var(--amber-100);
+    --red:          #b3462e;
+    --red-light:    #fbe4dd;
+    --yellow:       var(--amber-600);
+    --yellow-light: var(--amber-100);
+    --blue:         #0369a1;
+    --blue-light:   #dbeafe;
+    --gray-50:  var(--neutral-50);
+    --gray-100: var(--neutral-100);
+    --gray-200: var(--neutral-200);
+    --gray-400: var(--neutral-400);
+    --gray-600: var(--neutral-600);
+    --gray-800: var(--neutral-800);
+
+    --shadow:    0 1px 3px rgba(59,36,21,.10), 0 1px 2px rgba(59,36,21,.05);
+    --shadow-md: 0 4px 16px rgba(59,36,21,.12), 0 2px 6px rgba(59,36,21,.05);
+    --radius-lg: 18px;
+
+    --edit-border:    var(--green-300);
+    --edit-bg:        var(--green-50);
+    --edit-focus:     var(--green-700);
+    --edit-highlight: rgba(41,87,54,.06);
+    --navbar-h: 100px;
 }
 
-body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-800); font-size:15px; }
+body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(--gray-800); font-size:15px; }
 
 /* ── TOP BAR ── */
 .top-bar {
@@ -60,51 +103,50 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
   align-items: center;
   gap: 5px;
 }
-.top-bar a:hover { color: #fff; }
+.top-bar a:hover { color: var(--amber-400); }
 .top-bar a svg { width: 14px; height: 14px; }
 .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
 
 
 /* ── NAVBAR ── */
 .navbar {
-    background:#1a472a; height:var(--navbar-h);
+    background: var(--green-900);
+    background-image: linear-gradient(180deg, var(--green-800), var(--green-900));
+    height:var(--navbar-h);
     display:flex; align-items:center; padding:0 5%; gap:8px;
     position:sticky; top:0; z-index:1000;
-    box-shadow:0 3px 16px rgba(0,0,0,.28);
+    box-shadow:0 3px 18px rgba(15,33,20,.35);
+    border-bottom: 3px solid var(--amber-500);
 }
 .navbar-brand { color:#fff; margin-right:auto; display:flex; align-items:center; gap:14px; text-decoration:none; }
-.brand-icon {
-    width:48px; height:48px; background:#52b788; border-radius:14px;
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 4px 12px rgba(82,183,136,.35);
-}
-.brand-icon svg { width:26px; height:26px; }
+.brand-logo { width:130px; height:90px; flex-shrink:0; }
+.brand-logo img { width:100%; height:100%; object-fit:contain; }
 .brand-name { display:flex; flex-direction:column; }
-.brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; }
-.brand-name-line2 { font-size:13px; font-weight:400; color:#a7e3c3; opacity:.8; }
+.brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; color:#fff; }
+.brand-name-line2 { font-size:13px; font-weight:400; color:var(--green-200); opacity:.85; }
 
 .nav-links { display:flex; align-items:center; gap:2px; }
 .nav-link {
-    color:rgba(255,255,255,.80); font-size:15px; font-weight:600;
+    color:rgba(255,255,255,.82); font-size:15px; font-weight:600;
     padding:10px 15px; border-radius:8px; transition:.15s;
     white-space:nowrap; display:flex; align-items:center; gap:6px; text-decoration:none;
 }
-.nav-link svg { width:16px; height:16px; opacity:.7; }
-.nav-link:hover { background:rgba(255,255,255,.12); color:#fff; }
+.nav-link svg { width:16px; height:16px; opacity:.75; }
+.nav-link:hover { background:rgba(255,255,255,.10); color:var(--amber-400); }
 
 .nav-divider { width:1px; height:32px; background:rgba(255,255,255,.14); margin:0 8px; }
 
 .user-menu-wrapper { position:relative; }
 .btn-user-menu {
     display:flex; align-items:center; gap:10px;
-    background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.10); border:1.5px solid rgba(255,255,255,.25);
     border-radius:50px; padding:8px 18px 8px 8px;
     cursor:pointer; color:white; transition:.2s;
 }
-.btn-user-menu:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.45); }
+.btn-user-menu:hover { background:rgba(255,255,255,.20); border-color:var(--amber-400); }
 .user-avatar {
     width:40px; height:40px; border-radius:50%;
-    background:linear-gradient(135deg,#52b788,#2d7a4f);
+    background:linear-gradient(135deg, var(--amber-400), var(--amber-600));
     display:flex; align-items:center; justify-content:center;
     font-weight:800; font-size:17px; color:white;
     border:2px solid rgba(255,255,255,.3);
@@ -117,8 +159,8 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 
 .user-dropdown-menu {
     display:none; position:absolute; top:calc(100% + 14px); right:0;
-    background:white; border-radius:16px;
-    box-shadow:0 12px 48px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.08);
+    background:var(--paper); border-radius:16px;
+    box-shadow:0 12px 48px rgba(20,14,8,.20),0 4px 16px rgba(20,14,8,.10);
     min-width:240px; padding:8px; z-index:1000;
     border:1px solid var(--gray-200);
 }
@@ -135,17 +177,18 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 .udrop-text span { display:block; font-size:15px; font-weight:600; color:var(--gray-800); line-height:1.2; }
 .udrop-text small { font-size:12px; color:var(--gray-400); }
 .udrop-divider { height:1px; background:var(--gray-200); margin:8px 6px; }
-.udrop-logout:hover { background:#fef2f2; }
-.udrop-icon-red { background:#fee2e2; }
-.udrop-icon-red svg { color:#dc2626; }
-.udrop-logout .udrop-text span { color:#dc2626; }
+.udrop-logout:hover { background:#fdf1ee; }
+.udrop-icon-red { background:var(--red-light); }
+.udrop-icon-red svg { color:var(--red); }
+.udrop-logout .udrop-text span { color:var(--red); }
 
 /* ── BREADCRUMB ── */
 .breadcrumb {
-    background:#fff; padding:.55rem 5%; border-bottom:1px solid var(--gray-200);
+    background:var(--paper); padding:.6rem 5%; border-bottom:1px solid var(--gray-200);
     font-size:.8rem; color:var(--gray-600); max-width:100%;
 }
-.breadcrumb a { color:var(--green-main); text-decoration:none; }
+.breadcrumb a { color:var(--green-main); text-decoration:none; font-weight:600; }
+.breadcrumb a:hover { text-decoration:underline; }
 
 /* ── PAGE WRAP ── */
 .page-wrap { max-width:1160px; margin:0 auto; padding:1.5rem 5% 3rem; }
@@ -155,12 +198,33 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 .alert-success { background:var(--green-light); border:1px solid #a5d6a7; color:var(--green-dark); }
 .alert-error   { background:var(--red-light);   border:1px solid #ef9a9a; color:#b71c1c; }
 .alert-info    { background:var(--blue-light);   border:1px solid #90caf9; color:#1e4f6b; }
+/* ── TOAST SUCCESS ── */
+.toast-success {
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--green-dark);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-size: .9rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(20,14,8,.25);
+    z-index: 3000;
+    opacity: 0;
+    transition: opacity .25s ease, transform .25s ease;
+}
+.toast-success.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
 
 /* ── STATUS HEADER ── */
 .booking-header {
-    background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow);
+    background:var(--paper); border-radius:var(--radius-lg); box-shadow:var(--shadow);
     padding:18px 22px; display:flex; align-items:center; justify-content:space-between;
     margin-bottom:20px; flex-wrap:wrap; gap:12px;
+    border:1px solid var(--gray-200);
 }
 .booking-header-left { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
 .booking-id-label { font-size:.78rem; color:var(--gray-600); }
@@ -168,7 +232,7 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 
 /* ── STATUS BADGES ── */
 .status-badge { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .9rem; border-radius:20px; font-size:.8rem; font-weight:700; }
-.status-PENDING          { background:var(--yellow-light); color:#92400e;         border:1px solid #fcd34d; }
+.status-PENDING          { background:var(--yellow-light); color:var(--amber-700);   border:1px solid #f2d9a3; }
 .status-WAITING_APPROVAL { background:var(--blue-light);   color:#1e4f6b;         border:1px solid #90caf9; }
 .status-CONFIRMED        { background:var(--green-light);  color:var(--green-dark); border:1px solid #a5d6a7; }
 .status-CANCEL           { background:var(--red-light);    color:#b71c1c;         border:1px solid #ef9a9a; }
@@ -177,7 +241,7 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 /* ── EDIT TOGGLE ── */
 .btn-edit-toggle {
     display:inline-flex; align-items:center; gap:.4rem;
-    background:#fff; color:var(--green-main);
+    background:var(--paper); color:var(--green-main);
     border:2px solid var(--green-main); border-radius:8px;
     padding:.5rem 1.1rem; font-size:.88rem; font-weight:700;
     cursor:pointer; transition:.2s; font-family:inherit;
@@ -190,8 +254,8 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 .detail-layout { display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start; }
 
 /* ── CARDS ── */
-.card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; margin-bottom:16px; transition:box-shadow .25s; }
-.card.is-editable { box-shadow:var(--shadow-md); }
+.card { background:var(--paper); border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; margin-bottom:16px; transition:box-shadow .25s; border:1px solid var(--gray-200); }
+.card.is-editable { box-shadow:var(--shadow-md); border-color:var(--amber-400); }
 
 .section-header {
     display:flex; align-items:center; justify-content:space-between;
@@ -226,7 +290,7 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
     transition:border-color .18s, box-shadow .18s; outline:none;
 }
 .inline-input:focus, .inline-textarea:focus, .inline-select:focus {
-    border-color:var(--edit-focus); box-shadow:0 0 0 3px rgba(45,122,79,.12);
+    border-color:var(--edit-focus); box-shadow:0 0 0 3px rgba(41,87,54,.12);
 }
 .inline-textarea { resize:vertical; min-height:72px; }
 
@@ -244,7 +308,7 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 .editing-mode .inline-actions { display:flex; }
 
 .btn-inline-cancel {
-    background:#fff; color:var(--gray-600); border:1.5px solid var(--gray-200);
+    background:var(--paper); color:var(--gray-600); border:1.5px solid var(--gray-200);
     border-radius:8px; padding:9px 18px; font-size:.88rem; font-weight:700;
     cursor:pointer; font-family:inherit; transition:.2s;
 }
@@ -262,7 +326,7 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
     padding:.25rem .75rem; border-radius:20px; font-size:.76rem; font-weight:700;
 }
 .chip-green  { background:var(--green-light);  color:var(--green-dark); }
-.chip-orange { background:var(--orange-light); color:#92400e; }
+.chip-orange { background:var(--orange-light); color:var(--amber-700); }
 .chip-blue   { background:var(--blue-light);   color:var(--blue); }
 
 /* ── PICKUP BADGE ── */
@@ -272,14 +336,14 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
     border-radius:8px; padding:4px 10px; font-size:.82rem; font-weight:700;
 }
 
-/* ── PICKUP RADIO GROUP (เหมือนหน้าจองใหม่) ── */
+/* ── PICKUP RADIO GROUP ── */
 .radio-group { display:flex; flex-direction:column; gap:8px; margin-top:2px; }
 .radio-group-label { font-size:.75rem; color:var(--gray-600); font-weight:600; margin-bottom:2px; }
 .radio-option {
     display:flex; align-items:center; gap:10px; padding:10px 14px;
     border:1.5px solid var(--gray-200); border-radius:10px;
     cursor:pointer; transition:border-color .14s, background .14s;
-    font-size:.86rem; color:var(--gray-600); background:#fff;
+    font-size:.86rem; color:var(--gray-600); background:var(--paper);
 }
 .radio-option:hover { border-color:var(--green-accent); background:var(--green-50); }
 .radio-option.radio-selected { border-color:var(--green-main); background:var(--green-50); color:var(--green-dark); font-weight:700; }
@@ -311,9 +375,9 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 .note-empty { color:var(--gray-400); font-size:.85rem; font-style:italic; }
 
 /* ── ACTION BAR ── */
-.action-bar { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:16px 20px; display:flex; gap:12px; flex-wrap:wrap; }
+.action-bar { background:var(--paper); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:16px 20px; display:flex; gap:12px; flex-wrap:wrap; border:1px solid var(--gray-200); }
 .btn-cancel-booking {
-    flex:1; min-width:140px; background:#fff; color:var(--red);
+    flex:1; min-width:140px; background:var(--paper); color:var(--red);
     border:2px solid var(--red); border-radius:8px; padding:12px;
     font-size:.92rem; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit;
 }
@@ -324,13 +388,13 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
     font-size:.92rem; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit;
     text-decoration:none; display:flex; align-items:center; justify-content:center; gap:.4rem;
 }
-.btn-pay:hover { background:#c27b04; }
+.btn-pay:hover { background:var(--amber-700); }
 .btn-review {
-    flex:1; min-width:150px; background:#f59e0b; color:#fff;
+    flex:1; min-width:150px; background:var(--amber-500); color:#fff;
     border:none; border-radius:8px; padding:12px;
     font-size:.92rem; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit;
 }
-.btn-review:hover { background:#d97706; }
+.btn-review:hover { background:var(--amber-700); }
 .btn-receipt {
     flex:1; min-width:150px; background:var(--blue); color:#fff;
     text-decoration:none; border-radius:8px; padding:12px;
@@ -346,9 +410,9 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 }
 
 /* ── SIDEBAR ── */
-.summary-card { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:sticky; top:calc(var(--navbar-h) + 16px); }
+.summary-card { background:var(--paper); border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:sticky; top:calc(var(--navbar-h) + 16px); border:1px solid var(--gray-200); }
 .summary-img { width:100%; height:180px; object-fit:cover; display:block; }
-.summary-img-placeholder { width:100%; height:180px; background:linear-gradient(135deg,#d8f3dc,#a7e3c3); display:flex; align-items:center; justify-content:center; font-size:3rem; }
+.summary-img-placeholder { width:100%; height:180px; background:linear-gradient(135deg, var(--green-100), var(--green-300)); display:flex; align-items:center; justify-content:center; font-size:3rem; }
 .summary-body { padding:16px 18px; }
 .tour-name-sb { font-size:1rem; font-weight:800; line-height:1.35; }
 .tour-meta-sb { font-size:.78rem; color:var(--gray-600); margin-top:4px; display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
@@ -361,9 +425,9 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 .price-box-total { font-size:1.5rem; font-weight:800; color:var(--green-dark); margin-top:2px; }
 
 /* ── REVIEW MODAL ── */
-.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; align-items:center; justify-content:center; }
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(15,33,20,.5); z-index:200; align-items:center; justify-content:center; }
 .modal-overlay.open { display:flex; }
-.modal { background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-md); width:100%; max-width:540px; max-height:90vh; overflow-y:auto; padding:24px; }
+.modal { background:var(--paper); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); width:100%; max-width:540px; max-height:90vh; overflow-y:auto; padding:24px; }
 .modal-title { font-size:1.05rem; font-weight:800; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; }
 .modal-close { background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--gray-600); }
 .form-group { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
@@ -371,7 +435,7 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 .form-control { padding:10px 12px; border:1.5px solid var(--gray-200); border-radius:8px; font-size:.88rem; font-family:inherit; color:var(--gray-800); }
 .form-control:focus { outline:none; border-color:var(--green-accent); }
 .modal-actions { display:flex; gap:10px; margin-top:18px; }
-.btn-modal-cancel { flex:1; background:#fff; color:var(--gray-600); border:1.5px solid var(--gray-200); border-radius:8px; padding:11px; font-size:.9rem; font-weight:700; cursor:pointer; font-family:inherit; }
+.btn-modal-cancel { flex:1; background:var(--paper); color:var(--gray-600); border:1.5px solid var(--gray-200); border-radius:8px; padding:11px; font-size:.9rem; font-weight:700; cursor:pointer; font-family:inherit; }
 .btn-modal-save   { flex:2; background:var(--green-main); color:#fff; border:none; border-radius:8px; padding:11px; font-size:.9rem; font-weight:700; cursor:pointer; font-family:inherit; }
 .btn-modal-save:hover { background:var(--green-dark); }
 .btn-modal-save:disabled { background:var(--gray-400); cursor:not-allowed; }
@@ -379,12 +443,12 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 /* ── STAR ── */
 .star-wrap { display:flex; gap:4px; margin-top:6px; }
 .star-btn { background:none; border:none; font-size:2.2rem; cursor:pointer; color:#d1d5db; transition:color .15s,transform .1s; padding:0 2px; line-height:1; }
-.star-btn:hover, .star-btn.active { color:#f59e0b; }
+.star-btn:hover, .star-btn.active { color:var(--amber-500); }
 .star-btn:hover { transform:scale(1.15); }
 .img-preview-wrap { margin-top:8px; display:none; }
 .img-preview-wrap img { max-width:100%; border-radius:10px; border:1.5px solid var(--gray-200); }
 
-/* ── INSURANCE SECTION (ใหม่) ── */
+/* ── INSURANCE SECTION ── */
 .insurance-info-card {
     border:1.5px solid var(--blue-light);
     border-radius:var(--radius-lg);
@@ -462,12 +526,12 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar">
     <a href="/search" class="navbar-brand">
-        <div class="brand-icon">
-            <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+        <div class="brand-logo">
+            <img th:src="@{/images/logo3.png}" alt="Logo">
         </div>
         <div class="brand-name">
-            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
-            <span class="brand-name-line2">Tribal Community Tourism</span>
+            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="brand-name-line2">Tribal Community-Based Tourism System</span>
         </div>
     </a>
 
@@ -530,8 +594,11 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
     sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'}">
 
     <!-- Alerts -->
-    <div class="alert alert-success" th:if="${successMsg != null}"><span>✅</span><span th:text="${successMsg}"></span></div>
-    <div class="alert alert-error"   th:if="${errorMsg   != null}"><span>❌</span><span th:text="${errorMsg}"></span></div>
+<div class="toast-success" id="toastSuccess" th:if="${successMsg != null}">
+    ✅ <span th:text="${successMsg}"></span>
+</div>
+<div class="alert alert-error" th:if="${errorMsg != null}"><span>❌</span><span th:text="${errorMsg}"></span></div>
+
 
     <!-- ══ BOOKING HEADER ══ -->
     <div class="booking-header">
@@ -914,9 +981,9 @@ body { font-family:'Sarabun',sans-serif; background:#f4efe6; color:var(--gray-80
                 </a>
 
                 <!-- ใบเสร็จ: CONFIRMED / COMPLETED -->
-                <a th:if="${sts == 'CONFIRMED' or sts == 'COMPLETED'}"
-                   th:href="@{/member/receipt/{id}(id=${booking.bookingid})}"
-                   class="btn-receipt">🧾 ดูใบเสร็จ</a>
+               <a th:if="${sts == 'CONFIRMED' or sts == 'COMPLETED'}"
+   th:href="@{/member/bookings/receipt/{id}(id=${booking.bookingid})}"
+   class="btn-receipt">🧾 ดูใบเสร็จ</a>
 
                 <!-- รีวิว: COMPLETED ยังไม่ได้รีวิว -->
                 <button class="btn-review"
@@ -1153,6 +1220,17 @@ function confirmCancel() {
         document.getElementById('cancelForm').submit();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const toast = document.getElementById('toastSuccess');
+    if (toast) {
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 250);
+        }, 2500);
+    }
+});
 
 /* ════ User Menu ════ */
 function toggleUserMenu() {

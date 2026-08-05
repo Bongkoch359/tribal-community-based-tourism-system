@@ -1,6 +1,6 @@
 package com.example.miniproject.service.Member;
 
-import com.example.miniproject.dto.Member.PaymentDTO;
+import com.example.miniproject.dto.Member.RoomReceiptDTO;
 import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Bookingroomdetail;
 import com.example.miniproject.entity.Payment;
@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.miniproject.entity.enums.BookingStatus;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,7 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service("homestayPaymentService")
-public class HomestayPaymentServiceImpl implements PaymentService {
+public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO> {
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -39,92 +38,79 @@ public class HomestayPaymentServiceImpl implements PaymentService {
     // ดึงข้อมูลสำหรับแสดงหน้าชำระเงิน
     // ─────────────────────────────────────────────────────────────
     @Override
-    public PaymentDTO getPaymentPageData(String bookingId) {
+    public RoomReceiptDTO getPaymentPageData(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
 
-        PaymentDTO dto = new PaymentDTO();
+        RoomReceiptDTO dto = new RoomReceiptDTO();
         dto.setBookingId(booking.getBookingid());
         dto.setBookingDate(booking.getBookingdate());
         dto.setTotalAmount(booking.getTotalamount());
-        dto.setNumOfGuests(booking.getNumofguest());
+
+        // ── ผู้จ่ายเงิน ──
+        if (booking.getMember() != null) {
+            dto.setMemberFirstname(booking.getMember().getFirstname());
+            dto.setMemberLastname(booking.getMember().getLastname());
+            dto.setMemberPhone(booking.getMember().getPhone());
+        }
 
         // ดึงข้อมูลจาก roomDetails (Bookingroomdetail)
-List<Bookingroomdetail> roomDetails = booking.getRoomDetails();
+        List<Bookingroomdetail> roomDetails = booking.getRoomDetails();
 
-if (roomDetails != null && !roomDetails.isEmpty()) {
+        if (roomDetails != null && !roomDetails.isEmpty()) {
 
-    Bookingroomdetail detail = roomDetails.get(0);
+            Bookingroomdetail detail = roomDetails.get(0);
 
-    // วันเช็คอิน / เช็คเอาท์
-    dto.setCheckIn(detail.getCheckindate());
-    if (detail.getCheckindate() != null) {
-    Date deadline = Date.valueOf(
-        detail.getCheckindate().toLocalDate().minusDays(1)
-    );
-    dto.setPaymentDeadline(deadline);
-}
-    dto.setCheckOut(detail.getCheckoutdate());
-
-    // จำนวนห้อง / ผู้ใหญ่ / เด็ก
-    dto.setNumOfRooms(detail.getNumofrooms());
-    dto.setNumOfAdults(detail.getNumofadults());
-    dto.setNumOfChildren(detail.getNumofChcldren());
-   
-    // ── ใบเสร็จ: ค่าห้อง + ประกัน ──
-    dto.setRoomSubtotal(detail.getSubtotalroom());
-    dto.setWantInsurance(booking.getWantInsurance());
-    dto.setSubtotalInsurance(booking.getSubtotalInsurance());
-
-    // ข้อมูล Roomtype
-    if (detail.getRoomtype() != null) {
-
-        dto.setRoomTypeName(
-            detail.getRoomtype().getTypename()
-        );
-
-        // รูปห้อง
-        String images = detail.getRoomtype().getImages();
-
-        if (images != null && !images.isEmpty()) {
-
-            String[] imageArray = images.split(",");
-
-            // เอารูปแรก
-            String firstImage = imageArray[0].trim();
-
-            dto.setRoomImageUrl(firstImage);
-        
-        }
-
-        // ข้อมูล Homestay
-        if (detail.getRoomtype().getHomestay() != null) {
-
-            dto.setHomestayName(
-                detail.getRoomtype().getHomestay().getHomestayname()
-            );
-
-            dto.setHomestayAddress(
-                detail.getRoomtype().getHomestay().getAddress()
-            );
-
-            // ข้อมูลบัญชีธนาคาร
-            if (detail.getRoomtype().getHomestay().getOwner() != null) {
-
-                dto.setBankName(
-                    detail.getRoomtype().getHomestay().getOwner().getBankName()
+            // วันเช็คอิน / เช็คเอาท์
+            dto.setCheckIn(detail.getCheckindate());
+            if (detail.getCheckindate() != null) {
+                Date deadline = Date.valueOf(
+                        detail.getCheckindate().toLocalDate().minusDays(1)
                 );
+                dto.setPaymentDeadline(deadline);
+            }
+            dto.setCheckOut(detail.getCheckoutdate());
 
-                dto.setBankAccount(
-                    detail.getRoomtype().getHomestay().getOwner().getAccountNumber()
-                );
-                dto.setAccountName(detail.getRoomtype().getHomestay().getOwner().getAccountName()); 
+            // จำนวนห้อง / ผู้ใหญ่ / เด็ก
+            dto.setNumOfRooms(detail.getNumofrooms());
+            dto.setNumOfAdults(detail.getNumofadults());
+            dto.setNumOfChildren(detail.getNumofChcldren());
+
+            // ── ใบเสร็จ: ค่าห้อง + ประกัน ──
+            dto.setRoomSubtotal(detail.getSubtotalroom());
+            dto.setWantInsurance(booking.getWantInsurance());
+            dto.setSubtotalInsurance(booking.getSubtotalInsurance());
+
+            // ข้อมูล Roomtype
+            if (detail.getRoomtype() != null) {
+
+                dto.setRoomTypeName(detail.getRoomtype().getTypename());
+
+                // รูปห้อง
+                String images = detail.getRoomtype().getImages();
+                if (images != null && !images.isEmpty()) {
+                    String[] imageArray = images.split(",");
+                    String firstImage = imageArray[0].trim();
+                    dto.setRoomImageUrl(firstImage);
+                }
+
+                // ข้อมูล Homestay
+                if (detail.getRoomtype().getHomestay() != null) {
+
+                    dto.setHomestayName(detail.getRoomtype().getHomestay().getHomestayname());
+                    dto.setHomestayAddress(detail.getRoomtype().getHomestay().getAddress());
+
+                    // ข้อมูลบัญชีธนาคาร
+                    if (detail.getRoomtype().getHomestay().getOwner() != null) {
+                        dto.setBankName(detail.getRoomtype().getHomestay().getOwner().getBankName());
+                        dto.setBankAccount(detail.getRoomtype().getHomestay().getOwner().getAccountNumber());
+                        dto.setAccountName(detail.getRoomtype().getHomestay().getOwner().getAccountName());
+                    }
+                }
             }
         }
-    }
-}
 
-        // สถานะ payment ปัจจุบัน  →  findByBooking_Bookingid return Payment (ไม่ใช่ Optional)
+        // สถานะ payment ปัจจุบัน
         Payment existing = paymentRepository.findByBooking_Bookingid(bookingId);
         if (existing != null) {
             dto.setPaymentStatus(existing.getPaymentStatus().name());
@@ -144,7 +130,6 @@ if (roomDetails != null && !roomDetails.isEmpty()) {
 
         String savedFileName = saveSlipFile(slipFile, bookingId);
 
-        // หา Payment เดิม ถ้าไม่มีสร้างใหม่
         Payment payment = paymentRepository.findByBooking_Bookingid(bookingId);
         if (payment == null) {
             payment = new Payment();
@@ -159,7 +144,6 @@ if (roomDetails != null && !roomDetails.isEmpty()) {
 
         paymentRepository.save(payment);
 
-        // ✅ อัปเดตสถานะ Booking หลังบันทึก Payment
         booking.setBookingStatus(BookingStatus.WAITING_APPROVAL);
         bookingRepository.save(booking);
     }
@@ -193,9 +177,8 @@ if (roomDetails != null && !roomDetails.isEmpty()) {
     // ดึงข้อมูลสำหรับแสดงหน้าใบเสร็จ
     // ─────────────────────────────────────────────────────────────
     @Override
-    public PaymentDTO getReceiptData(String bookingId) {
-        // ใช้ข้อมูลชุดเดียวกับหน้าชำระเงิน (booking, room, homestay, ...)
-        PaymentDTO dto = getPaymentPageData(bookingId);
+    public RoomReceiptDTO getReceiptData(String bookingId) {
+        RoomReceiptDTO dto = getPaymentPageData(bookingId);
 
         Payment payment = paymentRepository.findByBooking_Bookingid(bookingId);
         if (payment == null) {

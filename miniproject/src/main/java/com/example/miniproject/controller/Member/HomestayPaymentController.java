@@ -1,7 +1,6 @@
 package com.example.miniproject.controller.Member;
 
-
-import com.example.miniproject.dto.Member.PaymentDTO;
+import com.example.miniproject.dto.Member.RoomReceiptDTO;
 import com.example.miniproject.service.Member.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,17 +16,17 @@ public class HomestayPaymentController {
 
     @Autowired
     @Qualifier("homestayPaymentService")
-    private PaymentService paymentService;
+    private PaymentService<RoomReceiptDTO> paymentService;
 
     // GET: แสดงหน้าชำระเงินโฮมสเตย์
     @GetMapping("/{bookingId}")
     public String showPaymentPage(@PathVariable String bookingId, Model model) {
         try {
-            PaymentDTO payment = paymentService.getPaymentPageData(bookingId);
+            RoomReceiptDTO payment = paymentService.getPaymentPageData(bookingId);
             model.addAttribute("payment", payment);
         } catch (Exception e) {
             model.addAttribute("errorMsg", "ไม่พบข้อมูลการจอง: " + e.getMessage());
-            model.addAttribute("payment", new PaymentDTO());
+            model.addAttribute("payment", new RoomReceiptDTO());
         }
         return "Member/homestay-payment";
     }
