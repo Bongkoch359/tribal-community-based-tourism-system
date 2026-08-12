@@ -87,7 +87,7 @@ public class HomestayownerController {
                     if (!savedPaths.isEmpty()) {
                         Map<String, String> imgUpdate = new HashMap<>();
                         imgUpdate.put("images", String.join(",", savedPaths));
-                       ownerService.updateImages(hsId, imgUpdate);
+                       homestayService.updateImages(hsId, imgUpdate);
                     }
                 }
             }
@@ -166,22 +166,87 @@ public class HomestayownerController {
 
     // ───── Update Profile ─────
 
-    @PutMapping("/owner/profile")
-    @ResponseBody
-    public ResponseEntity<?> updateProfile(@RequestBody UpdateProfileRequest req,
-                                           HttpSession session) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
-        if (ownerid == null)
-            return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
-        try {
-            Homestayowner updated = ownerService.updateProfile(ownerid, req);
-            session.setAttribute("ownername", updated.getFirstname() + " " + updated.getLastname());
-            return ResponseEntity.ok(toSafeMap(updated));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
-        }
+    // ───── Update Profile (เฉพาะข้อมูลส่วนตัว) ─────
+
+@PutMapping("/owner/profile")
+@ResponseBody
+public ResponseEntity<?> updateProfile(@RequestBody Map<String, String> body,
+                                       HttpSession session) {
+    Integer ownerid = (Integer) session.getAttribute("ownerid");
+    if (ownerid == null)
+        return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
+    try {
+        Homestayowner updated = ownerService.updateProfile(
+                ownerid,
+                body.get("firstname"),
+                body.get("lastname"),
+                body.get("email"),
+                body.get("phone")
+        );
+        session.setAttribute("ownername", updated.getFirstname() + " " + updated.getLastname());
+        return ResponseEntity.ok(toSafeMap(updated));
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
+    }
+}
+
+// ───── Update Bank Info ─────
+
+@PutMapping("/owner/profile/bank")
+@ResponseBody
+public ResponseEntity<?> updateBankInfo(@RequestBody Map<String, String> body,
+                                        HttpSession session) {
+    Integer ownerid = (Integer) session.getAttribute("ownerid");
+    if (ownerid == null)
+        return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
+    try {
+        Homestayowner updated = ownerService.updateBankInfo(
+                ownerid,
+                body.get("bankName"),
+                body.get("accountName"),
+                body.get("accountNumber"),
+                body.get("bankBranch")
+        );
+        return ResponseEntity.ok(toSafeMap(updated));
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
+    }
+}
+
+// ───── Update Signature ─────
+
+@PostMapping(value = "/owner/profile/signature", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+@ResponseBody
+public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFile signature,
+                                         HttpSession session) {
+    Integer ownerid = (Integer) session.getAttribute("ownerid");
+    if (ownerid == null)
+        return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
+
+    if (signature == null || signature.isEmpty()) {
+        return ResponseEntity.badRequest().body(Map.of("success", false, "message", "กรุณาเลือกไฟล์ลายเซ็น"));
     }
 
+    String contentType = signature.getContentType();
+    boolean validType = contentType != null &&
+            (contentType.equals("image/png") || contentType.equals("image/jpeg"));
+    if (!validType) {
+        return ResponseEntity.badRequest().body(Map.of("success", false, "message", "รองรับเฉพาะไฟล์ PNG หรือ JPG เท่านั้น"));
+    }
+    if (signature.getSize() > 2 * 1024 * 1024) {
+        return ResponseEntity.badRequest().body(Map.of("success", false, "message", "ขนาดไฟล์ต้องไม่เกิน 2MB"));
+    }
+
+    try {
+        String base64  = Base64.getEncoder().encodeToString(signature.getBytes());
+        String dataUrl = "data:" + contentType + ";base64," + base64;
+        Homestayowner updated = ownerService.updateSignature(ownerid, dataUrl);
+        return ResponseEntity.ok(Map.of("success", true, "signatureImageUrl", updated.getSignatureImageUrl()));
+    } catch (IOException e) {
+        return ResponseEntity.internalServerError()
+                .body(Map.of("success", false, "message", "อัปโหลดลายเซ็นไม่สำเร็จ: " + e.getMessage()));
+    }
+}
     // ───── Change Password ─────
 
     @PutMapping("/owner/change-password")
@@ -322,21 +387,21 @@ public class HomestayownerController {
     }
     //แปลง Object เป็นข้อมูลปลอดภัยสำหรับส่งออก
     private Map<String, Object> toSafeMap(Homestayowner o) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("ownerid",            o.getOwnerid());
-        map.put("firstname",          o.getFirstname());
-        map.put("lastname",           o.getLastname());
-        map.put("email",              o.getEmail());
-        map.put("phone",              o.getPhone());
-        map.put("bankName",           o.getBankName());
-        map.put("accountNumber",      o.getAccountNumber());
-        map.put("verificationstatus", o.getVerificationstatus());
-        map.put("accountstatus",      o.getAccountstatus());
-         map.put("bankBranch",         o.getBankBranch());
+    Map<String, Object> map = new HashMap<>();
+    map.put("ownerid",            o.getOwnerid());
+    map.put("firstname",          o.getFirstname());
+    map.put("lastname",           o.getLastname());
+    map.put("email",              o.getEmail());
+    map.put("phone",              o.getPhone());
+    map.put("bankName",           o.getBankName());
+    map.put("accountNumber",      o.getAccountNumber());
+    map.put("verificationstatus", o.getVerificationstatus());
+    map.put("accountstatus",      o.getAccountstatus());
+    map.put("bankBranch",         o.getBankBranch());
     map.put("accountName",        o.getAccountName());
-        return map;
-    }
-
+    map.put("signatureImageUrl",  o.getSignatureImageUrl()); 
+    return map;
+}
     private Map<String, String> errorBody(String message) {
         Map<String, String> body = new HashMap<>();
         body.put("message", message);

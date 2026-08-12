@@ -293,7 +293,6 @@
         <div class="welcome">
             ยินดีต้อนรับ, <span th:text="${homestayname}">บ้านระเบียงดาว</span>
         </div>
-
         <!-- ── Banner แจ้งเตือนข้อมูลธนาคารไม่ครบ ── -->
         <div class="bank-banner" th:if="${bankInfoMissing}">
             <i class="fas fa-triangle-exclamation"></i>
@@ -306,6 +305,20 @@
             </a>
         </div>
 
+        <!-- ── Banner แจ้งเตือนลายเซ็น (แสดงเมื่อยังไม่ได้อัปโหลดลายเซ็น) ── -->
+        <div class="signature-banner" id="signatureBanner" th:if="${signatureMissing}">
+            <i class="fas fa-signature"></i>
+            <div class="signature-banner-text">
+                <strong>ยังไม่ได้อัปโหลดลายเซ็น</strong>
+                <span>ลายเซ็นจะถูกนำไปแสดงในใบเสร็จรับเงินของโฮมสเตย์</span>
+            </div>
+            <a class="signature-banner-btn" th:href="@{/owner/profile-edit}">
+                <i class="fas fa-pen-to-square me-1"></i> อัปโหลดลายเซ็น
+            </a>
+            <button class="signature-banner-dismiss" onclick="dismissSignatureBanner()" title="ปิด">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
         <!-- ── Homestay Selector (แสดงเมื่อมี > 1 โฮมสเตย์) ── -->
         <div class="homestay-selector" th:if="${myHomestays != null and myHomestays.size() > 1}">
             <label><i class="fas fa-house"></i> โฮมสเตย์ :</label>

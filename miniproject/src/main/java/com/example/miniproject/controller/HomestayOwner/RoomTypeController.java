@@ -4,8 +4,10 @@ import com.example.miniproject.dto.Homestay.AddRoomRequest;
 import com.example.miniproject.dto.Homestay.UpdateRoomRequest;
 import com.example.miniproject.entity.Facilities;
 import com.example.miniproject.entity.Homestay;
+import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.entity.Roomtype;
 import com.example.miniproject.service.Homestay.HomestayService;
+import com.example.miniproject.service.Homestay.HomestayOwnerService;
 import com.example.miniproject.service.Homestay.RoomTypeService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class RoomTypeController {
     @Autowired
     private HomestayService homestayService;
 
+    @Autowired
+    private HomestayOwnerService homestayOwnerService;
+
     /** โฟลเดอร์เก็บรูปห้องพัก (สร้างอัตโนมัติถ้ายังไม่มี) */
     private static final String ROOM_UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/rooms/";
 
@@ -43,6 +48,9 @@ public class RoomTypeController {
 
         String ownername = (String) session.getAttribute("ownername");
         Integer ownerid = (Integer) session.getAttribute("ownerid");
+
+        boolean bankInfoMissing = checkBankInfoMissing(ownerid);
+        model.addAttribute("bankInfoMissing", bankInfoMissing);
 
         // ดึงโฮมสเตย์ทั้งหมดของเจ้าของคนนี้
         List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
@@ -89,7 +97,7 @@ public class RoomTypeController {
         model.addAttribute("ownername", ownername != null ? ownername : "Owner");
         model.addAttribute("homestayid", homestayid);
         model.addAttribute("homestayname", homestayname);
-        model.addAttribute("myHomestays", myHomestays); // ← เพิ่ม
+        model.addAttribute("myHomestays", myHomestays);
         model.addAttribute("rooms", roomViews);
         return "Homestay/listRoom";
     }
@@ -99,8 +107,20 @@ public class RoomTypeController {
     public String showAddRoomForm(
             @RequestParam("homestayid") Integer homestayid,
             @RequestParam(value = "homestayname", defaultValue = "") String homestayname,
-            @SessionAttribute(name = "ownername", required = false) String ownername,
+            HttpSession session,
             Model model) {
+
+        if (session.getAttribute("ownerid") == null)
+            return "redirect:/owner/login";
+
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+
+        // ── กันฝั่ง server: ธนาคารยังไม่ครบ ห้ามเข้าหน้าเพิ่มห้องพัก ──
+        if (checkBankInfoMissing(ownerid)) {
+            return "redirect:/owner/rooms?error=bankInfoRequired";
+        }
+
+        String ownername = (String) session.getAttribute("ownername");
 
         model.addAttribute("homestayid", homestayid);
         model.addAttribute("homestayname", homestayname);
@@ -125,6 +145,20 @@ public class RoomTypeController {
             @RequestParam(value = "facilitiesIds", required = false) List<String> facilitiesIds,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
             HttpSession session) {
+
+        if (session.getAttribute("ownerid") == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "กรุณาเข้าสู่ระบบ"));
+        }
+
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+
+        // ── กันฝั่ง server: ธนาคารยังไม่ครบ ห้ามบันทึกห้องพัก ──
+        if (checkBankInfoMissing(ownerid)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "กรุณากรอกข้อมูลบัญชีธนาคารให้ครบก่อนเพิ่มห้องพัก"));
+        }
+
         try {
             // บันทึกรูปและเก็บ URL path
             String imageUrls = saveImages(images);
@@ -329,5 +363,22 @@ public class RoomTypeController {
     private String orDefault(HttpSession session, String key) {
         Object val = session.getAttribute(key);
         return val != null ? val.toString() : "Owner";
+    }
+
+    // ─── helper: เช็คว่าข้อมูลธนาคารของเจ้าของยังไม่ครบหรือไม่ ──────────────
+    private boolean checkBankInfoMissing(Integer ownerid) {
+        if (ownerid == null)
+            return true;
+
+        Homestayowner owner;
+        try {
+            owner = homestayOwnerService.getProfile(ownerid);
+        } catch (IllegalArgumentException e) {
+            return true; // ไม่พบ owner
+        }
+
+        return owner.getBankName() == null || owner.getBankName().isBlank()
+                || owner.getAccountNumber() == null || owner.getAccountNumber().isBlank()
+                || owner.getAccountName() == null || owner.getAccountName().isBlank();
     }
 }

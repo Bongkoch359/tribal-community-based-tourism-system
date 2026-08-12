@@ -42,6 +42,11 @@ public class Homestayowner {
 	@Column(length = 50)
 	private  Boolean verificationstatus;
 
+	@Lob
+    @Column(columnDefinition = "LONGTEXT")
+	private String signatureImageUrl;
+
+	
 	private String accountstatus;
 	// @Enumerated(EnumType.STRING)
 	// private HomestayownerStatus accountstatus;
@@ -139,7 +144,15 @@ public class Homestayowner {
 		this.accountstatus = accountstatus;
 	}
 	
-	
+	public void setOwnerid(int ownerid) {
+		this.ownerid = ownerid;
+	}
+	public String getSignatureImageUrl() {
+		return signatureImageUrl;
+	}
+	public void setSignatureImageUrl(String signatureImageUrl) {
+		this.signatureImageUrl = signatureImageUrl;
+	}
 	
 
 }

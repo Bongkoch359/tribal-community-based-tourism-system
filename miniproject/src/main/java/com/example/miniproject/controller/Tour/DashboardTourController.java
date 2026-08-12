@@ -25,8 +25,7 @@ public class DashboardTourController {
     @GetMapping("/dashboard")
     public String dashboard(Model model, HttpSession session) {
 
-        Communitymanager manager =
-                (Communitymanager) session.getAttribute("loggedInManager");
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
 
         if (manager == null) {
             return "redirect:/manager/login";
@@ -35,33 +34,34 @@ public class DashboardTourController {
         model.addAttribute("loggedInManager", manager);
 
         // ─── ตรวจสอบข้อมูลธนาคาร ───
-        boolean bankInfoMissing =
-                manager.getBankName()      == null || manager.getBankName().isBlank()      ||
-                manager.getAccountName()   == null || manager.getAccountName().isBlank()   ||
+        boolean bankInfoMissing = manager.getBankName() == null || manager.getBankName().isBlank() ||
+                manager.getAccountName() == null || manager.getAccountName().isBlank() ||
                 manager.getAccountNumber() == null || manager.getAccountNumber().isBlank();
         model.addAttribute("bankInfoMissing", bankInfoMissing);
+
+        // ─── ตรวจสอบลายเซ็น ───
+        boolean signatureMissing = manager.getSignatureImageUrl() == null || manager.getSignatureImageUrl().isBlank();
+        model.addAttribute("signatureMissing", signatureMissing);
 
         // ─── Stats, Bookings, Posts ───
         DashboardStatsDTO stats = dashboardService.getDashboardStats();
         model.addAttribute("stats", stats);
         model.addAttribute("recentBookings", dashboardService.getRecentBookings(5));
-        model.addAttribute("recentPosts",    dashboardService.getPublishedPosts());
+        model.addAttribute("recentPosts", dashboardService.getPublishedPosts());
 
         // ─── Monthly Revenue → JSON string สำหรับ Chart.js ───
         List<MonthlyRevenueDTO> monthly = dashboardService.getMonthlyRevenue();
         try {
             ObjectMapper mapper = new ObjectMapper();
-            // labels: ["ม.ค.","ก.พ.", ...]
             List<String> labels = monthly.stream()
                     .map(MonthlyRevenueDTO::getLabel).toList();
-            // data: [0, 1200, 3400, ...]
             List<Double> data = monthly.stream()
                     .map(MonthlyRevenueDTO::getRevenue).toList();
             model.addAttribute("chartLabels", mapper.writeValueAsString(labels));
-            model.addAttribute("chartData",   mapper.writeValueAsString(data));
+            model.addAttribute("chartData", mapper.writeValueAsString(data));
         } catch (Exception e) {
             model.addAttribute("chartLabels", "[]");
-            model.addAttribute("chartData",   "[]");
+            model.addAttribute("chartData", "[]");
         }
 
         return "Tour/dashboardTour";

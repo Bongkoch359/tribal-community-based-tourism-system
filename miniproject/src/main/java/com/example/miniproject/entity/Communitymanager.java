@@ -48,6 +48,9 @@ public class Communitymanager {
     // วันที่สร้างบัญชี
     @Column(name = "created_date")
     private LocalDateTime createdDate;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+	private String signatureImageUrl;
 
     @Enumerated(EnumType.STRING)
     private ManagerStatus accountstatus;
@@ -187,4 +190,13 @@ public class Communitymanager {
     public void setActivityPosts(List<Activitypost> activityPosts) {
         this.activityPosts = activityPosts;
     }
+
+    public String getSignatureImageUrl() {
+        return signatureImageUrl;
+    }
+
+    public void setSignatureImageUrl(String signatureImageUrl) {
+        this.signatureImageUrl = signatureImageUrl;
+    }
+    
 }

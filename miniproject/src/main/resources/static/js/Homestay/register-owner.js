@@ -104,6 +104,42 @@ function validateStep1() {
         if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); first.focus(); }
     }
 }
+// ============================================================
+//  TERMS & CONDITIONS MODAL
+// ============================================================
+(function () {
+    const termsLink   = document.getElementById('termsLink');
+    const termsBody   = document.getElementById('termsBody');
+    const acceptBtn   = document.getElementById('acceptTermsBtn');
+    const agreeCheckbox = document.getElementById('agree');
+
+    if (!termsLink || !termsBody || !acceptBtn || !agreeCheckbox) return;
+
+    // กันไม่ให้ href="#" เลื่อนหน้า และกัน event ทะลุไปโดน label/checkbox
+    termsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    // บังคับเลื่อนอ่านจนสุดก่อนถึงจะกดปุ่ม "ยอมรับเงื่อนไข" ได้
+    termsBody.addEventListener('scroll', () => {
+        const scrolledToBottom =
+            termsBody.scrollTop + termsBody.clientHeight >= termsBody.scrollHeight - 5;
+        if (scrolledToBottom) acceptBtn.disabled = false;
+    });
+
+    // เผื่อเนื้อหาสั้นจนไม่มี scrollbar เลย -> ปลดล็อกปุ่มให้อัตโนมัติ
+    document.getElementById('termsModal')?.addEventListener('shown.bs.modal', () => {
+        if (termsBody.scrollHeight <= termsBody.clientHeight) acceptBtn.disabled = false;
+    });
+
+    // กดยอมรับใน modal -> ติ๊ก checkbox ให้ และปลดล็อกให้กดเองได้ต่อไป
+    acceptBtn.addEventListener('click', () => {
+        agreeCheckbox.checked = true;
+        agreeCheckbox.disabled = false;
+        validateAgree(); // เคลียร์ error message ถ้ามี
+    });
+})();
 
 // ============================================================
 //  STEP 2 — DYNAMIC HOMESTAY + IMAGE UPLOAD

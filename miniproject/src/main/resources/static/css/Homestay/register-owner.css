@@ -277,13 +277,21 @@ body {
 }
 
 .link-green {
-    color: #0d3d30;
-    font-weight: 600;
-    text-decoration: none;
+    color: #2d6a2d;
+    text-decoration: underline;
+    text-decoration-color: #2d6a2d;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.15s ease;
 }
 
 .link-green:hover {
-    text-decoration: underline;
+    color: #1e4620;
+    text-decoration-color: #1e4620;
+}
+
+.link-green:visited {
+    color: #2d6a2d; /* กันไม่ให้เปลี่ยนเป็นสีม่วงเวลาเคยกดแล้ว เพราะเป็นปุ่มเปิด modal ไม่ใช่ลิงก์ไปหน้าอื่นจริงๆ */
 }
 
 /* ── Buttons ── */
@@ -381,6 +389,24 @@ body {
     padding: 0;
 }
 
+
+.btn-accept-green {
+    background-color: #2d6a2d;
+    border-color: #2d6a2d;
+    color: #fff;
+}
+.btn-accept-green:hover:not(:disabled) {
+    background-color: #1e4620;
+    border-color: #1e4620;
+    color: #fff;
+}
+.btn-accept-green:disabled {
+    background-color: #c4c4c4;
+    border-color: #c4c4c4;
+    color: #fff;
+    opacity: 1;
+    cursor: not-allowed;
+}
 /* Upload area */
 .upload-area {
     border: 2px dashed #ccc;

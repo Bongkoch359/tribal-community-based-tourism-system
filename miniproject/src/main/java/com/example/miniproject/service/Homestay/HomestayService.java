@@ -100,5 +100,11 @@ public Double getAvgRating(Integer homestayid) {
 public Long getReviewCount(Integer homestayid) {
     return homestayRepository.countReviewByHomestayId(homestayid);
 }
+public void updateImages(Integer homestayid, Map<String, String> req) {
+    Homestay h = homestayRepository.findById(homestayid)
+            .orElseThrow(() -> new RuntimeException("ไม่พบโฮมสเตย์"));
+    h.setImages(req.get("images"));
+    homestayRepository.save(h);
+}
 
 }

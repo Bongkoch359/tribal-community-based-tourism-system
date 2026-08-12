@@ -360,7 +360,55 @@ body {
         .footer a:hover {
             text-decoration: underline;
         }
+/* ── Signature reminder banner (soft, สีต่างจาก bank เพื่อลด priority) ── */
+.signature-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #eef7ff;
+    border: 1.5px solid #4a90d9;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    color: #1d3f5e;
+}
 
+.signature-banner i {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    color: #4a90d9;
+}
+
+.signature-banner-text {
+    flex: 1;
+    font-size: 0.93rem;
+    line-height: 1.5;
+}
+
+.signature-banner-text strong {
+    display: block;
+    margin-bottom: 2px;
+}
+
+.signature-banner-btn {
+    background: #4a90d9;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.signature-banner-btn:hover {
+    background: #2f6cad;
+    color: #fff;
+}
 
 /* ─── RESPONSIVE ─── */
 @media (max-width: 900px) {

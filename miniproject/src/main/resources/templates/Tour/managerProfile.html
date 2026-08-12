@@ -604,6 +604,47 @@
         </div>
     </form>
 
+    <!-- ═══ SIGNATURE FORM ═══ -->
+<form th:action="@{/manager/profile/update-signature}" method="post"
+      enctype="multipart/form-data" id="signatureForm">
+    <div class="card">
+        <div class="card-title">
+            <i class="fas fa-signature"></i> ลายเซ็นสำหรับออกใบเสร็จ
+        </div>
+
+        <div class="lock-notice" style="margin-bottom:14px;">
+            <i class="fas fa-circle-info" style="color:#f0a500;"></i>
+            <span>ลายเซ็นนี้จะถูกนำไปแสดงในใบเสร็จรับเงินของทัวร์ที่คุณจัด</span>
+        </div>
+
+        <div th:if="${loggedInManager?.signatureImageUrl != null}" style="margin-bottom:14px;">
+            <div class="form-hint" style="margin-bottom:6px;">ลายเซ็นปัจจุบัน</div>
+            <img th:src="${loggedInManager.signatureImageUrl}"
+                 style="max-width:220px; max-height:110px; border:1px solid var(--border); border-radius:8px; background:#fafdf7; padding:6px;">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">อัปโหลดไฟล์ลายเซ็นใหม่</label>
+            <input class="form-control" type="file" name="signatureFile"
+                   id="signatureFileInput" accept="image/png,image/jpeg">
+            <div class="form-hint">รองรับ PNG หรือ JPG ขนาดไม่เกิน 2MB (แนะนำพื้นหลังโปร่งใส)</div>
+        </div>
+
+        <div id="signaturePreviewWrap" style="display:none; margin-bottom:14px;">
+            <div class="form-hint" style="margin-bottom:6px;">ตัวอย่างไฟล์ที่เลือก</div>
+            <img id="signaturePreviewImg"
+                 style="max-width:220px; max-height:110px; border:1px solid var(--border); border-radius:8px; background:#fafdf7; padding:6px;">
+        </div>
+
+        <div class="action-bar" style="margin-top:4px;">
+            <button type="submit" class="btn-save">
+                <i class="fas fa-upload"></i>
+                อัปโหลดลายเซ็น
+            </button>
+        </div>
+    </div>
+</form>
+
     <!-- ═══ PROFILE FORM ═══ -->
     <form th:action="@{/manager/profile/update}" method="post" id="profileForm">
 
@@ -946,6 +987,23 @@
             }
         }
     });
+     // ─── Preview ไฟล์ลายเซ็นก่อนอัปโหลด ───
+    const signatureFileInput = document.getElementById('signatureFileInput');
+    if (signatureFileInput) {
+        signatureFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const wrap = document.getElementById('signaturePreviewWrap');
+            const img  = document.getElementById('signaturePreviewImg');
+            if (!file) { wrap.style.display = 'none'; return; }
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                img.src = ev.target.result;
+                wrap.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 
     // ─── Auto-show modal ถ้ามี successMessage ───
 (function() {

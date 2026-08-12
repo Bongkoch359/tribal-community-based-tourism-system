@@ -654,7 +654,8 @@
                 รายการห้องพักทั้งหมด
                 <span class="count-chip" th:text="${rooms.size()} + ' ห้อง'">0 ห้อง</span>
             </div>
-            <a class="btn-add" th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}">
+            <a class="btn-add" th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}"
+                th:onclick="${bankInfoMissing} ? 'return blockAddRoom(event)' : null">
                 <i class="fas fa-plus"></i> เพิ่มห้องพัก
             </a>
         </div>
@@ -789,6 +790,11 @@
             'ปิดปรับปรุง': 'fa-screwdriver-wrench',
             'เต็ม': 'fa-ban',
         };
+        function blockAddRoom(e) {
+            e.preventDefault();
+            alert('กรุณากรอกข้อมูลบัญชีธนาคารให้ครบก่อน จึงจะสามารถเพิ่มห้องพักได้');
+            return false;
+        }
 
         function buildFilterButtons() {
             // แสดงปุ่มกรองครบทุกสถานะที่มีในระบบเสมอ ไม่ว่าจะมีห้องพักสถานะนั้นอยู่จริงหรือไม่

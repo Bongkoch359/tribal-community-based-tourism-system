@@ -64,4 +64,12 @@ public class CommunityManagerService {
         manager.setPassword(newPassword);
         managerRepository.save(manager);
     }
+
+    // ─── อัปเดตลายเซ็น ───
+@Transactional
+public void updateSignature(String managerId, String signatureBase64) {
+    Communitymanager manager = getById(managerId);
+    manager.setSignatureImageUrl(signatureBase64);
+    managerRepository.save(manager);
+}
 }
