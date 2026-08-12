@@ -158,6 +158,26 @@ function applyTourTypeRules() {
 }
 tourtypeSelect.addEventListener('change', applyTourTypeRules);
 
+/* ═══════════════════════════════════════════
+   จุดรับ / นัดพบ — เปิด/ปิดช่องกรอกรายละเอียดตาม checkbox
+═══════════════════════════════════════════ */
+const allowMeetingPointChk = document.getElementById('allowMeetingPointChk');
+const meetingPointDetailGroup = document.getElementById('meetingPointDetailGroup');
+const meetingPointDetailInput = document.getElementById('meetingPointDetail');
+const allowHotelPickupChk = document.getElementById('allowHotelPickupChk');
+const hotelPickupAreaGroup = document.getElementById('hotelPickupAreaGroup');
+const hotelPickupAreaInput = document.getElementById('hotelPickupArea');
+const pickupOptionErr = document.getElementById('err-pickupOption');
+
+function applyPickupRules() {
+    meetingPointDetailGroup.style.display = allowMeetingPointChk.checked ? 'block' : 'none';
+    hotelPickupAreaGroup.style.display = allowHotelPickupChk.checked ? 'block' : 'none';
+    if (pickupOptionErr) pickupOptionErr.style.display = 'none';
+}
+allowMeetingPointChk.addEventListener('change', applyPickupRules);
+allowHotelPickupChk.addEventListener('change', applyPickupRules);
+window.addEventListener('DOMContentLoaded', applyPickupRules);
+
 // ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
 // ✅ tourtype เป็น entity แล้ว ต้องอ่านชื่อผ่าน .typename และกัน null (ทัวร์ที่ยังไม่ผูกประเภท)
 (function initTourType() {
@@ -221,6 +241,30 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
             alert('จำนวนคืนต้องน้อยกว่าจำนวนวัน');
             return;
         }
+    }
+
+    // ✅ เพิ่มใหม่: ต้องเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง และกรอกรายละเอียดให้ครบ
+    if (!allowMeetingPointChk.checked && !allowHotelPickupChk.checked) {
+        e.preventDefault();
+        if (pickupOptionErr) pickupOptionErr.style.display = 'block';
+        alert('กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง (จุดรวมพล หรือ รับที่โรงแรม)');
+        return;
+    }
+    if (allowMeetingPointChk.checked && meetingPointDetailInput.value.trim() === '') {
+        e.preventDefault();
+        alert('กรุณาระบุสถานที่จุดรวมพล');
+        return;
+    }
+    if (allowHotelPickupChk.checked && hotelPickupAreaInput.value.trim() === '') {
+        e.preventDefault();
+        alert('กรุณาระบุเขตพื้นที่ที่รับได้');
+        return;
+    }
+    const meetingTimeInput = document.getElementById('meetingTime');
+    if (!meetingTimeInput || meetingTimeInput.value.trim() === '') {
+        e.preventDefault();
+        alert('กรุณาระบุเวลานัดพบ');
+        return;
     }
 
     // ส่งค่า tourtype จริงไปเป็น hidden field เพื่อให้ backend อ่านได้ (select ใช้ name="tourtypeUi" เฉยๆ)

@@ -8,14 +8,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link th:href="@{/css/Tour/edit_tour.css}" rel="stylesheet">
+    <style>
+        .hs-navbar-brand {
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .hs-navbar-brand .brand-logo-img {
+            height: 75px;
+            width: auto;
+        }
+    </style>
 </head>
 
 <body>
 
     <!-- ── Navbar ── -->
     <nav class="navbar">
-        <a class="nav-brand" th:href="@{/manager/tours}">
-            <i class="fas fa-mountain-sun"></i> ระบบท่องเที่ยวชุมชนเผ่า
+        <a class="hs-navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo3.png}" alt="Logo" class="brand-logo-img" style="height: 75px;">
+            ระบบท่องเที่ยวชุมชนชนเผ่า
         </a>
         <div class="nav-dropdown">
             <div class="nav-dropdown-trigger">
@@ -288,6 +306,63 @@
                             <label>เงื่อนไข <span class="req">*</span></label>
                             <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม..." required
                                 th:text="${tour.conditiontour}"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- จุดรับ / นัดพบ -->
+                    <div class="card">
+                        <div class="card-title">จุดรับ / นัดพบ <span class="req">*</span></div>
+                        <p class="hint" style="margin-bottom:14px;">
+                            เลือกได้มากกว่า 1 ช่องทาง 
+                        </p>
+
+                        <div class="form-group" style="display:flex; align-items:flex-start; gap:8px;">
+                            <input type="checkbox" id="allowMeetingPointChk" name="allowMeetingPoint" value="true"
+                                style="margin-top:4px;" th:checked="${tour.allowMeetingPoint}" />
+                            <label for="allowMeetingPointChk" style="margin-bottom:0;">
+                                📍 นัดพบที่จุดรวมพล (ไม่มีค่าใช้จ่ายเพิ่มเติม)
+                            </label>
+                        </div>
+                        <div class="form-group" id="meetingPointDetailGroup" style="display:none;">
+                            <label>สถานที่จุดรวมพล <span class="req">*</span></label>
+                            <input type="text" id="meetingPointDetail" name="meetingPointDetail"
+                                placeholder="เช่น ลานจอดรถหน้าตลาดวโรรส อ.เมือง จ.เชียงใหม่"
+                                th:value="${tour.meetingPointDetail}" />
+                        </div>
+
+                        <div class="form-group" style="display:flex; align-items:flex-start; gap:8px; margin-top:10px;">
+                            <input type="checkbox" id="allowHotelPickupChk" name="allowHotelPickup" value="true"
+                                style="margin-top:4px;" th:checked="${tour.allowHotelPickup}" />
+                            <label for="allowHotelPickupChk" style="margin-bottom:0;">
+                                🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
+                            </label>
+                        </div>
+                        <div class="form-group" id="hotelPickupAreaGroup" style="display:none;">
+                            <label>เขตพื้นที่ที่รับได้ <span class="req">*</span></label>
+                            <input type="text" id="hotelPickupArea" name="hotelPickupArea"
+                                placeholder="เช่น อำเภอเมือง (เชียงใหม่)" th:value="${tour.hotelPickupArea}" />
+                            <!-- <p class="hint">ระบุให้ละเอียดระดับ<strong>อำเภอ</strong> เช่น "อำเภอเมือง" แทนที่จะระบุทั้งจังหวัด
+                                เพื่อจำกัดพื้นที่ให้บริการรับส่งให้แม่นยำ ระบบจะรับส่งเฉพาะที่พักที่มีคำนี้ในที่อยู่เท่านั้น
+                                สมาชิกต้องระบุคำนี้ในที่อยู่ตอนจอง</p> -->
+                        </div>
+                        <p class="hint" id="err-pickupOption" style="display:none; color:#c0392b;">
+                            กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง
+                        </p>
+
+                        <div class="two-col" style="margin-top:14px;">
+                            <div class="form-group">
+                                <label>เวลานัดพบ <span class="req">*</span></label>
+                                <input type="time" id="meetingTime" name="meetingTime" th:value="${tour.meetingTime}"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>กรุณาพร้อมก่อนเวลา</label>
+                                <div class="price-input-wrap">
+                                    <input type="number" id="arriveBeforeMinutes" name="arriveBeforeMinutes" min="0"
+                                        placeholder="10" th:value="${tour.arriveBeforeMinutes}">
+                                    <span class="price-unit">นาที</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

@@ -602,6 +602,31 @@ function applyTourTypeRules() {
 tourtypeSelect.addEventListener('change', applyTourTypeRules);
 tourtypeCustom.addEventListener('input', () => clearErr('tourtypeCustom', 'err-tourtypeCustom'));
 
+/* ═══════════════════════════════════════════
+   จุดรับ / นัดพบ — เปิด/ปิดช่องกรอกรายละเอียดตาม checkbox
+═══════════════════════════════════════════ */
+const allowMeetingPointChk = document.getElementById('allowMeetingPointChk');
+const meetingPointDetailGroup = document.getElementById('meetingPointDetailGroup');
+const meetingPointDetailInput = document.getElementById('meetingPointDetail');
+const allowHotelPickupChk = document.getElementById('allowHotelPickupChk');
+const hotelPickupAreaGroup = document.getElementById('hotelPickupAreaGroup');
+const hotelPickupAreaInput = document.getElementById('hotelPickupArea');
+
+function applyPickupRules() {
+    meetingPointDetailGroup.style.display = allowMeetingPointChk.checked ? 'block' : 'none';
+    hotelPickupAreaGroup.style.display = allowHotelPickupChk.checked ? 'block' : 'none';
+    clearErr('meetingPointDetail', 'err-meetingPointDetail');
+    clearErr('hotelPickupArea', 'err-hotelPickupArea');
+    document.getElementById('err-pickupOption')?.classList.remove('show');
+}
+
+allowMeetingPointChk.addEventListener('change', applyPickupRules);
+allowHotelPickupChk.addEventListener('change', applyPickupRules);
+meetingPointDetailInput.addEventListener('input', () => clearErr('meetingPointDetail', 'err-meetingPointDetail'));
+hotelPickupAreaInput.addEventListener('input', () => clearErr('hotelPickupArea', 'err-hotelPickupArea'));
+
+window.addEventListener('DOMContentLoaded', applyPickupRules);
+
 // เผื่อมีค่าเดิมติดมาจาก server (เช่น validation error แล้ว reload หน้าเดิม / โหมดแก้ไข)
 window.addEventListener('DOMContentLoaded', () => {
     const savedType = /*[[${tour?.tourtype?.typename}]]*/ '';
@@ -650,6 +675,7 @@ const REQUIRED = [
     { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'กรุณาระบุจำนวนที่นั่งสูงสุด' },
     { id: 'adultprice', errId: 'err-adultprice', msg: 'กรุณาระบุราคาผู้ใหญ่' },
     { id: 'childprice', errId: 'err-childprice', msg: 'กรุณาระบุราคาเด็ก' },
+    { id: 'meetingTime', errId: 'err-meetingTime', msg: 'กรุณาระบุเวลานัดพบ' },
 ];
 
 REQUIRED.forEach(f => {
@@ -743,6 +769,21 @@ document.getElementById('tourForm').addEventListener('submit', function (e) {
             valid = false;
         }
     });
+
+    // ─── ต้องเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง และกรอกรายละเอียดให้ครบ ───
+    if (!allowMeetingPointChk.checked && !allowHotelPickupChk.checked) {
+        const err = document.getElementById('err-pickupOption');
+        if (err) err.classList.add('show');
+        valid = false;
+    }
+    if (allowMeetingPointChk.checked && meetingPointDetailInput.value.trim() === '') {
+        showErr('meetingPointDetail', 'err-meetingPointDetail', 'กรุณาระบุสถานที่จุดรวมพล');
+        valid = false;
+    }
+    if (allowHotelPickupChk.checked && hotelPickupAreaInput.value.trim() === '') {
+        showErr('hotelPickupArea', 'err-hotelPickupArea', 'กรุณาระบุเขตพื้นที่ที่รับได้');
+        valid = false;
+    }
 
     // ─── ต้องมีอย่างน้อย 1 รอบทัวร์ก่อนบันทึก ───
     if (scheduleList.length === 0) {

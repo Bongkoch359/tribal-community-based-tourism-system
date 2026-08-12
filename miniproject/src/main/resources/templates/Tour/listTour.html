@@ -67,7 +67,8 @@
             box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
         }
 
-        .nav-brand {
+        .nav-brand,
+        .hs-navbar-brand {
             color: #fff;
             font-size: 1.05rem;
             font-weight: 700;
@@ -81,6 +82,11 @@
         .nav-brand i {
             color: #fff;
             font-size: 1.2rem;
+        }
+
+        .hs-navbar-brand .brand-logo-img {
+            height: 75px;
+            width: auto;
         }
 
         .nav-link {
@@ -677,8 +683,8 @@
 
     <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
-        <a class="nav-brand" th:href="@{/}">
-            <i class="fas fa-mountain-sun"></i>
+        <a class="hs-navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo3.png}" alt="Logo" class="brand-logo-img" style="height: 75px;">
             ระบบท่องเที่ยวชุมชนชนเผ่า
         </a>
 

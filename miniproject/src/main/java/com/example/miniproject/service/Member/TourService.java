@@ -153,6 +153,14 @@ public class TourService {
         existing.setNumberOfDays(updated.getNumberOfDays());
         existing.setNumberOfNights(updated.getNumberOfNights());
         existing.setTourtype(resolveTourType(tourTypeName, updated.getNumberOfDays()));
+
+        // ✅ จุดรับ/นัดพบ — ผู้จัดการชุมชนแก้ไขได้เช่นกัน
+        existing.setAllowMeetingPoint(updated.getAllowMeetingPoint());
+        existing.setMeetingPointDetail(updated.getMeetingPointDetail());
+        existing.setAllowHotelPickup(updated.getAllowHotelPickup());
+        existing.setHotelPickupArea(updated.getHotelPickupArea());
+        existing.setMeetingTime(updated.getMeetingTime());
+        existing.setArriveBeforeMinutes(updated.getArriveBeforeMinutes());
         if (updated.getImages() != null && !updated.getImages().isBlank()) {
             existing.setImages(updated.getImages());
         }

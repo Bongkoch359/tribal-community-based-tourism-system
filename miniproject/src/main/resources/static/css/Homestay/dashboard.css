@@ -241,9 +241,9 @@ body {
     cursor: default;
 }
 .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,.18); }
-.stat-card.green-dark  { background: var(--green-dark); }
-.stat-card.green-mid   { background: var(--green-mid); }
-.stat-card.orange      { background: var(--orange); }
+.stat-card.green-dark  { background: linear-gradient(135deg, #64748b 0%, #475569 100%); }
+.stat-card.green-mid   { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+.stat-card.orange      { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
 .stat-card.green-light { background: var(--green-light); }
 
 .stat-info { display: flex; flex-direction: column; gap: .3rem; }

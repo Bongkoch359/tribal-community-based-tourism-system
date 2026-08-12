@@ -159,6 +159,13 @@ public class TourController {
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
             @RequestParam(value = "tourtype", required = false) String tourtype,
             @RequestParam(value = "images", required = false) String imagesJson,
+            // ✅ จุดรับ/นัดพบ — ผู้จัดการชุมชนกำหนดตอนสร้างทัวร์
+            @RequestParam(value = "allowMeetingPoint", required = false) Boolean allowMeetingPoint,
+            @RequestParam(value = "meetingPointDetail", required = false) String meetingPointDetail,
+            @RequestParam(value = "allowHotelPickup", required = false) Boolean allowHotelPickup,
+            @RequestParam(value = "hotelPickupArea", required = false) String hotelPickupArea,
+            @RequestParam(value = "meetingTime", required = false) String meetingTime,
+            @RequestParam(value = "arriveBeforeMinutes", required = false) Integer arriveBeforeMinutes,
             @RequestParam(value = "schedules", required = false) String schedulesJson, // ✅ รอบทัวร์ (JSON array
                                                                                        // [{opendate,enddate}])
                                                                                        // กรอกพร้อมตอนเพิ่มทัวร์
@@ -237,6 +244,31 @@ public class TourController {
             }
         }
 
+        // ─── ตรวจสอบจุดรับ/นัดพบ ───
+        boolean meetingPointOn = Boolean.TRUE.equals(allowMeetingPoint);
+        boolean hotelPickupOn = Boolean.TRUE.equals(allowHotelPickup);
+
+        if (!meetingPointOn && !hotelPickupOn) {
+            model.addAttribute("errorMessage", "กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง (จุดรวมพล หรือ รับที่โรงแรม)");
+            model.addAttribute("loggedInManager", manager);
+            return "Tour/addTour";
+        }
+        if (meetingPointOn && (meetingPointDetail == null || meetingPointDetail.isBlank())) {
+            model.addAttribute("errorMessage", "กรุณาระบุสถานที่จุดรวมพล");
+            model.addAttribute("loggedInManager", manager);
+            return "Tour/addTour";
+        }
+        if (hotelPickupOn && (hotelPickupArea == null || hotelPickupArea.isBlank())) {
+            model.addAttribute("errorMessage", "กรุณาระบุเขตพื้นที่ที่รับได้ (เช่น เชียงใหม่)");
+            model.addAttribute("loggedInManager", manager);
+            return "Tour/addTour";
+        }
+        if (meetingTime == null || meetingTime.isBlank()) {
+            model.addAttribute("errorMessage", "กรุณาระบุเวลานัดพบ");
+            model.addAttribute("loggedInManager", manager);
+            return "Tour/addTour";
+        }
+
         // ─── ตรวจสอบและแปลงรอบทัวร์ (schedules) ที่กรอกมาพร้อมฟอร์มเพิ่มทัวร์ ───
         
         // — logic นี้ยังอยู่ใน TourController เพราะเป็นส่วนหนึ่งของการสร้างทัวร์ใหม่
@@ -303,6 +335,14 @@ public class TourController {
         tour.setChildprice(childprice);
         tour.setNumberOfDays(numberOfDays);
         tour.setNumberOfNights(numberOfDays == 1 ? 0 : numberOfNights); // ทัวร์รายวันบังคับ 0 คืน
+
+        // ✅ จุดรับ/นัดพบ
+        tour.setAllowMeetingPoint(meetingPointOn);
+        tour.setMeetingPointDetail(meetingPointOn ? meetingPointDetail.trim() : null);
+        tour.setAllowHotelPickup(hotelPickupOn);
+        tour.setHotelPickupArea(hotelPickupOn ? hotelPickupArea.trim() : null);
+        tour.setMeetingTime(meetingTime.trim());
+        tour.setArriveBeforeMinutes(arriveBeforeMinutes);
 
         try {
             Tour saved = tourService.createTour(tour, manager,
@@ -403,6 +443,13 @@ public class TourController {
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
             @RequestParam(value = "tourtype", required = false) String tourtype,
             @RequestParam(value = "images", required = false) String imagesJson, // ✅ รับ base64 หรือ __KEEP__
+            // ✅ จุดรับ/นัดพบ — ผู้จัดการชุมชนแก้ไขได้
+            @RequestParam(value = "allowMeetingPoint", required = false) Boolean allowMeetingPoint,
+            @RequestParam(value = "meetingPointDetail", required = false) String meetingPointDetail,
+            @RequestParam(value = "allowHotelPickup", required = false) Boolean allowHotelPickup,
+            @RequestParam(value = "hotelPickupArea", required = false) String hotelPickupArea,
+            @RequestParam(value = "meetingTime", required = false) String meetingTime,
+            @RequestParam(value = "arriveBeforeMinutes", required = false) Integer arriveBeforeMinutes,
             HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
@@ -457,6 +504,43 @@ public class TourController {
             }
         }
 
+        // ─── ตรวจสอบจุดรับ/นัดพบ ───
+        boolean meetingPointOn = Boolean.TRUE.equals(allowMeetingPoint);
+        boolean hotelPickupOn = Boolean.TRUE.equals(allowHotelPickup);
+
+        if (!meetingPointOn && !hotelPickupOn) {
+            model.addAttribute("errorMessage", "กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง (จุดรวมพล หรือ รับที่โรงแรม)");
+            model.addAttribute("tour", existing);
+            model.addAttribute("schedules", tourScheduleService.getSchedulesByTour(tourid));
+            model.addAttribute("bookedSeatsMap", tourScheduleService.getBookedSeatsMap(tourid));
+            model.addAttribute("loggedInManager", manager);
+            return "Tour/editTour";
+        }
+        if (meetingPointOn && (meetingPointDetail == null || meetingPointDetail.isBlank())) {
+            model.addAttribute("errorMessage", "กรุณาระบุสถานที่จุดรวมพล");
+            model.addAttribute("tour", existing);
+            model.addAttribute("schedules", tourScheduleService.getSchedulesByTour(tourid));
+            model.addAttribute("bookedSeatsMap", tourScheduleService.getBookedSeatsMap(tourid));
+            model.addAttribute("loggedInManager", manager);
+            return "Tour/editTour";
+        }
+        if (hotelPickupOn && (hotelPickupArea == null || hotelPickupArea.isBlank())) {
+            model.addAttribute("errorMessage", "กรุณาระบุเขตพื้นที่ที่รับได้ (เช่น เชียงใหม่)");
+            model.addAttribute("tour", existing);
+            model.addAttribute("schedules", tourScheduleService.getSchedulesByTour(tourid));
+            model.addAttribute("bookedSeatsMap", tourScheduleService.getBookedSeatsMap(tourid));
+            model.addAttribute("loggedInManager", manager);
+            return "Tour/editTour";
+        }
+        if (meetingTime == null || meetingTime.isBlank()) {
+            model.addAttribute("errorMessage", "กรุณาระบุเวลานัดพบ");
+            model.addAttribute("tour", existing);
+            model.addAttribute("schedules", tourScheduleService.getSchedulesByTour(tourid));
+            model.addAttribute("bookedSeatsMap", tourScheduleService.getBookedSeatsMap(tourid));
+            model.addAttribute("loggedInManager", manager);
+            return "Tour/editTour";
+        }
+
         // ─── อัปเดต fields ───
         Tour updated = new Tour();
         updated.setTourmname(tourmname.trim());
@@ -468,6 +552,14 @@ public class TourController {
         updated.setChildprice(childprice);
         updated.setNumberOfDays(numberOfDays);
         updated.setNumberOfNights(numberOfDays != null && numberOfDays == 1 ? 0 : numberOfNights);
+
+        // จุดรับ/นัดพบ
+        updated.setAllowMeetingPoint(meetingPointOn);
+        updated.setMeetingPointDetail(meetingPointOn ? meetingPointDetail.trim() : null);
+        updated.setAllowHotelPickup(hotelPickupOn);
+        updated.setHotelPickupArea(hotelPickupOn ? hotelPickupArea.trim() : null);
+        updated.setMeetingTime(meetingTime.trim());
+        updated.setArriveBeforeMinutes(arriveBeforeMinutes);
 
         //  ถ้าเป็น __KEEP__ หรือ null = ไม่ได้เปลี่ยนรูป ให้คงรูปเดิม
         if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__")) {

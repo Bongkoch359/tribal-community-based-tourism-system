@@ -32,6 +32,17 @@ public class Tour {
     private Double adultprice;
     private Double childprice;
 
+    // เปิดตัวเลือกจุดรวมพล หรือไม่
+    private Boolean allowMeetingPoint; // true = เปิดตัวเลือก "นัดพบที่จุดรวมพล"
+    private String meetingPointDetail; // รายละเอียด/ที่อยู่จุดรวมพล
+
+    // เปิดตัวเลือกรับที่โรงแรม หรือไม่
+    private Boolean allowHotelPickup; // true = เปิดตัวเลือก "รับที่โรงแรม/ที่พัก"
+    private String hotelPickupArea; // เขตพื้นที่ที่รับได้ เช่น "เชียงใหม่"
+
+    // เวลานัดพบ
+    private String meetingTime; // เช่น "06:30"
+    private Integer arriveBeforeMinutes; // เช่น 10 (มาก่อนกี่นาที)
 
     @Lob
     @Column(columnDefinition = "LONGTEXT")
@@ -73,6 +84,7 @@ public class Tour {
     public String getOverallStatus() {
         return overallStatus;
     }
+
     // "สถานะสรุป" ของทัวร์ที่คำนวณสดจากรอบทัวร์ทั้งหมด ใช้แค่โชว์บนหน้าเว็บ
     public void setOverallStatus(String overallStatus) {
         this.overallStatus = overallStatus;
@@ -209,6 +221,54 @@ public class Tour {
         this.tourSchedules = tourSchedules;
     }
 
+    public Boolean getAllowMeetingPoint() {
+        return allowMeetingPoint;
+    }
+
+    public void setAllowMeetingPoint(Boolean allowMeetingPoint) {
+        this.allowMeetingPoint = allowMeetingPoint;
+    }
+
+    public String getMeetingPointDetail() {
+        return meetingPointDetail;
+    }
+
+    public void setMeetingPointDetail(String meetingPointDetail) {
+        this.meetingPointDetail = meetingPointDetail;
+    }
+
+    public Boolean getAllowHotelPickup() {
+        return allowHotelPickup;
+    }
+
+    public void setAllowHotelPickup(Boolean allowHotelPickup) {
+        this.allowHotelPickup = allowHotelPickup;
+    }
+
+    public String getHotelPickupArea() {
+        return hotelPickupArea;
+    }
+
+    public void setHotelPickupArea(String hotelPickupArea) {
+        this.hotelPickupArea = hotelPickupArea;
+    }
+
+    public String getMeetingTime() {
+        return meetingTime;
+    }
+
+    public void setMeetingTime(String meetingTime) {
+        this.meetingTime = meetingTime;
+    }
+
+    public Integer getArriveBeforeMinutes() {
+        return arriveBeforeMinutes;
+    }
+
+    public void setArriveBeforeMinutes(Integer arriveBeforeMinutes) {
+        this.arriveBeforeMinutes = arriveBeforeMinutes;
+    }
+
     @PrePersist
     @PreUpdate
     public void updateTourtype() {
@@ -229,7 +289,6 @@ public class Tour {
 
     // =======================================================================================
 
-
     @Transient
     public Double getStartingPrice() {
         if (adultprice == null && childprice == null) {
@@ -244,5 +303,4 @@ public class Tour {
         return Math.min(adultprice, childprice);
     }
 
- 
 }
