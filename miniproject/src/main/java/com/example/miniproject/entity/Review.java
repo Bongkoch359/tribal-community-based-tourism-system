@@ -12,9 +12,14 @@ public class Review {
     private Integer rating;
 	@Column(length = 255)
     private String comment;
-	@Column(length = 255)
-	private	String reviewimage;
+
+	@Column(length = 1000)
+    private String reviewimages;  
+
     private Date reviewdate;
+
+	@Column(name = "anonymous", nullable = false)
+    private boolean anonymous = false;
     
      @OneToOne
     @JoinColumn(name="bookingid", unique = true)
@@ -57,14 +62,9 @@ public class Review {
 	}
 
 
-	public String getReviewimage() {
-		return reviewimage;
-	}
-
-
-	public void setReviewimage(String reviewimage) {
-		this.reviewimage = reviewimage;
-	}
+	
+    public String getReviewimages() { return reviewimages; }
+	public void setReviewimages(String reviewimages) { this.reviewimages = reviewimages; }
 
 
 	public Date getReviewdate() {
@@ -75,6 +75,9 @@ public class Review {
 	public void setReviewdate(Date reviewdate) {
 		this.reviewdate = reviewdate;
 	}
+
+	public boolean isAnonymous() { return anonymous; }
+	public void setAnonymous(boolean anonymous) { this.anonymous = anonymous; }
 
 
 	public Booking getBooking() {

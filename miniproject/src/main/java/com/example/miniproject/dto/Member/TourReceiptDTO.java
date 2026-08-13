@@ -49,6 +49,8 @@ public class TourReceiptDTO {
     // เพิ่มใน RoomReceiptDTO และ TourReceiptDTO
     private Date paymentDeadline;
 
+     private String signatureImageUrl;
+
 
     public TourReceiptDTO() {}
 
@@ -140,4 +142,13 @@ public void setPaymentDeadline(Date paymentDeadline) { this.paymentDeadline = pa
     public String getTourImageUrl() { return tourImageUrl; }
     public void setTourImageUrl(String tourImageUrl) { this.tourImageUrl = tourImageUrl; }
 
+   
+
+public String getSignatureImageUrl() {
+    return signatureImageUrl;
+}
+
+public void setSignatureImageUrl(String signatureImageUrl) {
+    this.signatureImageUrl = signatureImageUrl;
+}
 }

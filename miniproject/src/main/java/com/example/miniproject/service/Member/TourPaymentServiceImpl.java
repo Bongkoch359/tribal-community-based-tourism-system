@@ -106,6 +106,7 @@ public class TourPaymentServiceImpl implements PaymentService<TourReceiptDTO> {
                     dto.setBankName(mgr.getBankName());
                     dto.setBankAccount(mgr.getAccountNumber());
                     dto.setAccountName(mgr.getAccountName());
+                    dto.setSignatureImageUrl(mgr.getSignatureImageUrl());
                 }
             }
         }

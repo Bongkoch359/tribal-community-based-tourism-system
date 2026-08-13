@@ -120,37 +120,31 @@ public String createBooking(
     // POST : แก้ไขการจองทัวร์
     // ════════════════════════════════════════════════════════
     @PostMapping("/booking/tour/edit/{id}")
-    public String editBooking(
-        @PathVariable("id") String bookingId,
-        @RequestParam("tourdate") String tourDate,
-        @RequestParam(value = "adult", defaultValue = "1") Integer adult,
-        @RequestParam(value = "children", defaultValue = "0") Integer children,
-        @RequestParam(value = "note", required = false) String note,
-        @RequestParam(value = "pickuptype", required = false) String pickuptype,       // ➕ เพิ่ม
-        @RequestParam(value = "pickuplocation", required = false) String pickuplocation, // ➕ เพิ่ม
-        @RequestParam(value = "guestFirstname", required = false) String guestFirstname,
-        @RequestParam(value = "guestLastname", required = false) String guestLastname,
-        HttpSession session,
-        RedirectAttributes redirectAttributes) {
+public String editBooking(
+    @PathVariable("id") String bookingId,
+    @RequestParam("tourdate") String tourDate,
+    @RequestParam(value = "adult", defaultValue = "1") Integer adult,
+    @RequestParam(value = "children", defaultValue = "0") Integer children,
+    @RequestParam(value = "note", required = false) String note,
+    @RequestParam(value = "pickuptype", required = false) String pickuptype,
+    @RequestParam(value = "pickuplocation", required = false) String pickuplocation,
+    @RequestParam(value = "guestId", required = false) List<String> guestIds,           // ✅ เพิ่ม
+    @RequestParam(value = "guestFirstname", required = false) List<String> guestFirstnames,
+    @RequestParam(value = "guestLastname", required = false) List<String> guestLastnames,
+    @RequestParam(value = "guestIdcard", required = false) List<String> guestIdcards,
+    HttpSession session,
+    RedirectAttributes redirectAttributes) {
 
     Member member = (Member) session.getAttribute("loggedInMember");
-
     if (member == null) {
         return "redirect:/member/login";
     }
 
     try {
         tourBookingService.editTourBooking(
-                bookingId,
-                member.getMemberid(),
-                tourDate,
-                adult,
-                children,
-                note,
-                pickuptype,       // ➕ เพิ่ม
-                pickuplocation,   // ➕ เพิ่ม
-                guestFirstname,
-                guestLastname);
+                bookingId, member.getMemberid(), tourDate, adult, children, note,
+                pickuptype, pickuplocation,
+                guestIds, guestFirstnames, guestLastnames, guestIdcards);
 
         redirectAttributes.addFlashAttribute("successMsg", "แก้ไขการจองเรียบร้อยแล้ว");
         return "redirect:/member/bookings/detail/" + bookingId;
@@ -158,11 +152,8 @@ public String createBooking(
     } catch (IllegalArgumentException | IllegalStateException e) {
         redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
         return "redirect:/member/bookings/detail/" + bookingId;
-
     } catch (Exception e) {
-        redirectAttributes.addFlashAttribute(
-                "errorMsg",
-                "ไม่สามารถแก้ไขข้อมูลการจองทัวร์ได้ กรุณาลองใหม่อีกครั้ง");
+        redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถแก้ไขข้อมูลการจองทัวร์ได้ กรุณาลองใหม่อีกครั้ง");
         return "redirect:/member/bookings/detail/" + bookingId;
     }
 }

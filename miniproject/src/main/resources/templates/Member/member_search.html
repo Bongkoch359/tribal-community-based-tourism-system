@@ -549,6 +549,16 @@
               </svg>
               <span th:text="${a.location}"></span>
             </p>
+
+
+<p class="card-desc"
+   th:text="${a.description != null ?
+              (#strings.length(a.description) > 70 ?
+              #strings.substring(a.description,0,70) + '...' :
+              a.description)
+              : 'ไม่มีรายละเอียด'}">
+</p>
+
             <div class="fcard-footer">
               <span class="fcard-cta">ดูรายละเอียด →</span>
             </div>
@@ -637,6 +647,15 @@
               </svg>
               <span th:text="${h.address}">ที่อยู่</span>
             </p>
+
+            <p class="card-desc"
+   th:text="${h.description != null ?
+              (#strings.length(h.description) > 70 ?
+              #strings.substring(h.description,0,70) + '...' :
+              h.description)
+              : 'ไม่มีรายละเอียด'}">
+</p>
+
             <div class="fcard-tags">
               <span class="fcard-tag fcard-tag-blue">ที่พักชาวเขา</span>
             </div>
@@ -699,6 +718,16 @@
               </svg>
               <span th:text="${a.location}"></span>
             </p>
+
+
+<p class="card-desc"
+   th:text="${a.description != null ?
+              (#strings.length(a.description) > 70 ?
+              #strings.substring(a.description,0,70) + '...' :
+              a.description)
+              : 'ไม่มีรายละเอียด'}">
+</p>
+
             <div class="card-tags">
               <span class="card-tag">กิจกรรมชุมชน</span>
             </div>
@@ -839,6 +868,16 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-4-4-7-7.5-7-10.5a7 7 0 1114 0c0 3-3 6.5-7 10.5z"/><circle cx="12" cy="10" r="2"/></svg>
               <span th:text="${h.address}"></span>
             </p>
+
+
+<p class="card-desc"
+   th:text="${h.description != null ?
+              (#strings.length(h.description) > 70 ?
+              #strings.substring(h.description,0,70) + '...' :
+              h.description)
+              : 'ไม่มีรายละเอียด'}">
+</p>
+
             <div class="card-footer">
               <div>
                 <div class="card-price-label">ราคา</div>

@@ -976,12 +976,13 @@ img { display: block; max-width: 100%; }
           <th:block th:each="review, iterStat : ${reviews}">
             <div class="review-item">
               <div class="review-head">
-                <div class="review-avatar"
-                     th:classappend="${iterStat.index % 2 == 1} ? ' alt' : ''"
-                     th:text="${review.booking?.member?.firstname != null} ? ${#strings.substring(review.booking.member.firstname, 0, 1)} : '?'">ม</div>
-                <div>
-                  <div class="review-name"
-                       th:text="${review.booking?.member != null} ? ${review.booking.member.firstname + ' ' + review.booking.member.lastname} : 'สมาชิก'">ชื่อสมาชิก</div>
+               <div class="review-avatar"
+     th:classappend="${iterStat.index % 2 == 1} ? ' alt' : ''"
+     th:text="${review.anonymous == true} ? '🙈' : ((${review.booking?.member?.firstname != null}) ? ${#strings.substring(review.booking.member.firstname, 0, 1)} : '?')">ม</div>
+<div>
+  <div class="review-name"
+       th:text="${review.anonymous == true} ? 'ผู้เข้าร่วมไม่ระบุชื่อ' : ((${review.booking?.member != null}) ? ${review.booking.member.firstname + ' ' + review.booking.member.lastname} : 'สมาชิก')">ชื่อสมาชิก</div>
+       
                   <div class="review-date"
                        th:text="${review.reviewdate != null} ? ${#dates.format(review.reviewdate, 'dd/MM/yyyy')} : ''">วันที่</div>
                 </div>
@@ -994,8 +995,8 @@ img { display: block; max-width: 100%; }
                 </div>
               </div>
               <p class="review-text" th:text="${review.comment}">ความคิดเห็น</p>
-              <img th:if="${review.reviewimage != null and !review.reviewimage.isEmpty()}"
-                   th:src="${review.reviewimage}"
+              <img th:if="${review.reviewimages != null and !review.reviewimages.isEmpty()}"
+                   th:src="${review.reviewimages}"
                    class="review-image" alt="รูปรีวิว" loading="lazy"
                    onerror="this.style.display='none'" />
             </div>

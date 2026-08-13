@@ -105,6 +105,7 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
                         dto.setBankName(detail.getRoomtype().getHomestay().getOwner().getBankName());
                         dto.setBankAccount(detail.getRoomtype().getHomestay().getOwner().getAccountNumber());
                         dto.setAccountName(detail.getRoomtype().getHomestay().getOwner().getAccountName());
+                            dto.setSignatureImageUrl(detail.getRoomtype().getHomestay().getOwner().getSignatureImageUrl());
                     }
                 }
             }
@@ -190,6 +191,7 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
         dto.setAmount(payment.getAmount());
         dto.setPaymentSlip(payment.getPaymentslip());
         dto.setPaymentStatus(payment.getPaymentStatus().name());
+        
 
         return dto;
     }

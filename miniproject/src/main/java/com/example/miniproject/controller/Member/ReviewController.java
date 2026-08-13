@@ -21,8 +21,9 @@ public String submitReview(
         @RequestParam("bookingId") String bookingId,
         @RequestParam("rating") Integer rating,
         @RequestParam(value = "comment", required = false) String comment,
-        @RequestParam(value = "reviewimage", required = false) MultipartFile imageFile,
+        @RequestParam(value = "reviewimages", required = false) MultipartFile[] imageFiles,
         @RequestParam(value = "homestayId", required = false) Integer homestayId,
+        @RequestParam(value = "anonymous", required = false, defaultValue = "false") boolean anonymous,
         HttpSession session,
         RedirectAttributes redirectAttributes) {
 
@@ -30,8 +31,8 @@ public String submitReview(
     if (member == null) return "redirect:/member/login";
 
     try {
-        reviewService.submitReview(bookingId, member.getMemberid(), rating, comment, imageFile);
-        redirectAttributes.addFlashAttribute("successMsg", "ขอบคุณสำหรับรีวิวของคุณ! 🌟");
+        reviewService.submitReview(bookingId, member.getMemberid(), rating, comment, imageFiles, anonymous);
+        redirectAttributes.addFlashAttribute("successMsg", "ขอบคุณสำหรับรีวิวของคุณ!");
     } catch (IllegalArgumentException | IllegalStateException e) {
         redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
     } catch (Exception e) {

@@ -541,13 +541,15 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     <div class="booking-banner" th:if="${payment != null and payment.bookingId != null}">
         <div class="booking-banner-icon">🎒</div>
         <div class="booking-banner-content">
+
             <div class="booking-banner-title"
-                 th:text="${payment.roomTypeName != null ? payment.roomTypeName : 'การจองทัวร์'}"></div>
-            <div class="booking-banner-sub">
-                🏕️ <span th:text="${payment.homestayName != null ? payment.homestayName : '-'}"></span>
-                <span th:if="${payment.homestayAddress != null}">
-                    &nbsp;·&nbsp;<span th:text="${payment.homestayAddress}"></span>
-                </span>
+    th:text="${payment.tourName != null ? payment.tourName : 'การจองทัวร์'}"></div>
+<div class="booking-banner-sub">
+
+                🏕️ <span th:text="${payment.communityManagerName != null ? payment.communityManagerName : '-'}"></span>
+<span th:if="${payment.communityManagerAddress != null}">
+    &nbsp;·&nbsp;<span th:text="${payment.communityManagerAddress}"></span>
+</span>
             </div>
         </div>
         <div class="booking-banner-id">#<span th:text="${payment.bookingId}"></span></div>
@@ -668,13 +670,13 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
         <!-- RIGHT SIDEBAR -->
         <div class="summary-card">
             <img class="summary-img"
-                 th:if="${payment.roomImageUrl != null}"
-                 th:src="@{${payment.roomImageUrl}}" alt="ทัวร์">
-            <div class="summary-img-placeholder" th:if="${payment.roomImageUrl == null}">🎒</div>
+                 th:if="${payment.tourImageUrl != null}"
+                 th:src="@{${payment.tourImageUrl}}" alt="ทัวร์">
+            <div class="summary-img-placeholder" th:if="${payment.tourImageUrl == null}">🎒</div>
 
             <div class="summary-body">
-                <div class="tour-name" th:text="${payment.roomTypeName != null ? payment.roomTypeName : '-'}"></div>
-                <div class="tour-loc">🏕️ <span th:text="${payment.homestayName != null ? payment.homestayName : '-'}"></span></div>
+                <div class="tour-name" th:text="${payment.tourName != null ? payment.tourName : '-'}"></div>
+                <div class="tour-loc">🏕️ <span th:text="${payment.communityManagerName != null ? payment.communityManagerName : '-'}"></span></div>
 
                 <div class="sum-divider"></div>
 
@@ -684,7 +686,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
                 </div>
                 <div class="sum-row">
                     <span class="label">ชื่อทัวร์</span>
-                    <span class="val" th:text="${payment.roomTypeName != null ? payment.roomTypeName : '-'}">-</span>
+                    <span class="val" th:text="${payment.tourName != null ? payment.tourName : '-'}">-</span>
                 </div>
 
                 <div class="sum-divider"></div>
@@ -692,7 +694,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
                 <div class="sum-row">
                     <span class="label">วันเริ่มทัวร์</span>
                     <span class="val"
-                          th:text="${payment.checkIn != null ? #dates.format(payment.checkIn,'dd MMM yyyy') : '-'}">-</span>
+                          th:text="${payment.scheduleOpenDate != null ? #dates.format(payment.scheduleOpenDate,'dd MMM yyyy') : '-'}">-</span>
                 </div>
                 <div class="sum-row">
                     <span class="label">ชำระก่อนวันที่</span>

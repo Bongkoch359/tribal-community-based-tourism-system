@@ -4,27 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ใบเสร็จรับเงิน</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Taviraj:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Kalam:wght@700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-    --ink:#20291f;
-    --ink-soft:#4a5442;
+    --ink:#222222;
+    --ink-soft:#5c5c5c;
     --paper:#ffffff;
-    --paper-line:#d4d4d4;
+    --line:#d9d9d9;
+    --line-strong:#bbbbbb;
     --forest:#1f4d3a;
     --forest-deep:#123527;
+    --band:#f2f2f0;
+    --band-strong:#e7e5e2;
     --stamp:#a13d2c;
     --gray-100:#f5f5f4;
-    --gray-200:#e7e5e4;
-    --gray-400:#a8a29e;
     --gray-600:#57534e;
     --shadow-md:0 6px 24px rgba(20,25,18,.14);
     --navbar-h:100px;
 }
 
-body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); font-size:15px; }
+body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); font-size:14.5px; }
 
 /* ── NAVBAR ── */
 .navbar {
@@ -46,13 +47,13 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
 
 /* ── BREADCRUMB ── */
 .breadcrumb {
-    background:#fff; padding:.55rem 5%; border-bottom:1px solid var(--gray-200);
+    background:#fff; padding:.55rem 5%; border-bottom:1px solid var(--band-strong);
     font-size:.8rem; color:var(--gray-600);
 }
 .breadcrumb a { color:var(--forest); text-decoration:none; }
 
 /* ── PAGE WRAP ── */
-.page-wrap { max-width:760px; margin:0 auto; padding:2rem 5% 3rem; }
+.page-wrap { max-width:720px; margin:0 auto; padding:2rem 5% 3rem; }
 
 .alert { border-radius:10px; padding:12px 16px; font-size:.88rem; font-weight:600; display:flex; align-items:center; gap:.5rem; margin-bottom:16px; }
 .alert-error { background:#fdecea; border:1px solid #ef9a9a; color:#b71c1c; }
@@ -66,176 +67,149 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
 }
 .btn-print { background:var(--forest); color:#fff; }
 .btn-print:hover { background:var(--forest-deep); }
-.btn-back { background:#fff; color:var(--gray-600); border:1.5px solid var(--gray-200); }
+.btn-back { background:#fff; color:var(--gray-600); border:1.5px solid var(--band-strong); }
 .btn-back:hover { background:var(--gray-100); }
 
 /* ══════════════════════════════════════════════
-   THE PAPER RECEIPT
+   THE PAPER RECEIPT  (plain, boxed, print-friendly)
    ══════════════════════════════════════════════ */
 .receipt-sheet {
     position:relative;
     background:var(--paper);
     box-shadow:var(--shadow-md);
-    padding:10px;
-}
-.receipt-copy-tag {
-    position:absolute; top:0; left:0;
-    background:var(--forest-deep); color:#e9f3ec;
-    font-size:.68rem; font-weight:700; letter-spacing:.06em;
-    padding:5px 14px 5px 10px;
-    clip-path:polygon(0 0,100% 0,86% 100%,0 100%);
+    padding:36px 40px 34px;
 }
 
-.receipt-border {
-    border:1.5px solid var(--forest-deep);
-    outline:1px solid var(--paper-line);
-    outline-offset:-6px;
-    padding:34px 36px 30px;
-    position:relative;
-}
-
-/* paid stamp */
+/* stamp */
 .paid-stamp {
-    position:absolute; top:120px; right:44px;
-    width:112px; height:112px;
+    position:absolute; bottom:120px; right:44px;
+    width:104px; height:104px;
     border:3px solid var(--stamp); border-radius:50%;
     display:flex; align-items:center; justify-content:center; text-align:center;
     transform:rotate(-13deg);
-    color:var(--stamp); font-weight:800; font-size:.78rem; letter-spacing:.03em;
-    line-height:1.3;
-    opacity:.85;
-    pointer-events:none;
+    color:var(--stamp); font-weight:800; font-size:.74rem; letter-spacing:.03em;
+    line-height:1.3; opacity:.85; pointer-events:none;
 }
-.paid-stamp::before {
-    content:""; position:absolute; inset:6px; border:1px solid var(--stamp); border-radius:50%;
-}
-.paid-stamp span { padding:0 10px; }
+.paid-stamp::before { content:""; position:absolute; inset:6px; border:1px solid var(--stamp); border-radius:50%; }
+.paid-stamp span { padding:0 8px; }
 
-/* header: issuer + doctype */
-.receipt-top {
-    display:flex; justify-content:space-between; align-items:flex-start; gap:20px;
-    padding-bottom:20px; border-bottom:2px solid var(--forest-deep);
-    flex-wrap:wrap;
-}
-.issuer-block { display:flex; gap:14px; align-items:flex-start; max-width:330px; }
-.issuer-mark {
-    width:44px; height:44px; border:2px solid var(--forest); border-radius:50%;
-    display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    color:var(--forest);
-}
-.issuer-mark svg { width:22px; height:22px; }
-.issuer-name { font-weight:800; font-size:1.02rem; color:var(--forest-deep); }
-.issuer-address { font-size:.8rem; color:var(--ink-soft); margin-top:4px; line-height:1.5; }
+/* ── top header: issuer left / logo+contact right ── */
+.doc-header { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap; }
+.issuer-col .issuer-label { font-size:.78rem; font-weight:700; color:var(--ink-soft); margin-bottom:4px; }
+.issuer-col .issuer-name { font-weight:800; font-size:1rem; color:var(--forest-deep); }
+.issuer-col .issuer-address { font-size:.82rem; color:var(--ink-soft); margin-top:3px; line-height:1.55; max-width:320px; }
 
-.doctype-block { text-align:right; }
-.doctype-th { font-family:'Taviraj',serif; font-weight:700; font-size:1.5rem; color:var(--forest-deep); letter-spacing:.02em; }
-.doctype-en { font-size:.72rem; color:var(--gray-600); letter-spacing:.14em; text-transform:uppercase; margin-top:2px; }
-
-/* meta strip: no. / date, boxed like an official form */
-.meta-strip {
-    display:flex; gap:0; margin-top:22px; border:1px solid var(--forest-deep);
+.brand-col { text-align:right; }
+.brand-col .brand-mark {
+    display:inline-flex; align-items:center; gap:8px; justify-content:flex-end;
+    font-weight:800; font-size:1.05rem; color:var(--forest-deep);
 }
-.meta-cell { flex:1; padding:9px 14px; }
-.meta-cell + .meta-cell { border-left:1px solid var(--forest-deep); }
-.meta-cell .meta-label { font-size:.68rem; color:var(--ink-soft); font-weight:600; letter-spacing:.04em; }
-.meta-cell .meta-value { font-size:.92rem; font-weight:800; color:var(--forest-deep); margin-top:2px; }
-
-/* customer info */
-.section-block { margin-top:26px; }
-.section-title {
-    font-size:.78rem; font-weight:700; color:#fff; background:var(--forest);
-    display:inline-block; padding:4px 12px; letter-spacing:.03em;
+.brand-col .brand-mark .mini-icon {
+    width:30px; height:30px; background:var(--forest); border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
 }
-.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; margin-top:14px; }
-.detail-item .detail-label { font-size:.74rem; color:var(--ink-soft); }
-.detail-item .detail-value { font-size:.92rem; font-weight:700; color:var(--ink); margin-top:1px; }
+.brand-col .brand-mark .mini-icon svg { width:16px; height:16px; }
+.brand-col .contact-line { font-size:.8rem; color:var(--ink-soft); margin-top:6px; }
 
-/* itemized table */
-.item-table { width:100%; border-collapse:collapse; margin-top:14px; border:1px solid var(--forest-deep); }
-.item-table th {
-    background:var(--forest); color:#fff;
-    text-align:left; font-size:.76rem; font-weight:700; padding:9px 12px;
+/* ── ref line: booking no / date, plain text, right + left ── */
+.ref-line {
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px 20px;
+    margin-top:18px; padding-top:14px; border-top:1px solid var(--line);
+    font-size:.82rem; color:var(--ink-soft);
 }
-.item-table th:first-child, .item-table td:first-child { width:44px; text-align:center; }
-.item-table th:last-child, .item-table td:last-child { text-align:right; }
-.item-table td { padding:11px 12px; font-size:.9rem; border-top:1px solid var(--paper-line); }
-.item-table tr.fill-row td { color:transparent; height:24px; user-select:none; }
-.item-table tr.total-row td { border-top:1.5px solid var(--forest-deep); font-weight:800; font-size:.98rem; color:var(--forest-deep); }
-.item-table tr.paid-row td { font-weight:800; font-size:1.08rem; color:var(--stamp); background:#fbeee9; }
+.ref-line b { color:var(--ink); font-weight:700; }
+
+/* ── centered doc title ── */
+.doc-title { text-align:center; margin-top:22px; }
+.doc-title .th { font-weight:800; font-size:1.55rem; color:var(--forest-deep); letter-spacing:.01em; }
+.doc-title .en { font-size:.72rem; color:var(--ink-soft); letter-spacing:.16em; text-transform:uppercase; margin-top:3px; }
+
+/* ── boxed section (header bar + table body, single outer border) ── */
+.doc-box { margin-top:22px; border:1px solid var(--line-strong); }
+.doc-box-header {
+    background:var(--band); padding:8px 16px; font-weight:700; font-size:.86rem;
+    color:var(--forest-deep);
+}
+
+/* label / value rows */
+.kv-table { width:100%; border-collapse:collapse; }
+.kv-table td { padding:12px 16px; font-size:.88rem; vertical-align:top; }
+.kv-table td.k { width:40%; color:var(--ink-soft); }
+.kv-table td.v { text-align:right; font-weight:700; color:var(--ink); }
+.kv-table tr.money td.v { color:var(--forest-deep); }
+.kv-table tr.discount td.v { color:var(--stamp); }
+
+/* two-column table header, e.g. "รายละเอียด" | "ค่าใช้จ่าย" */
+.kv-table thead th {
+    background:var(--band); text-align:left; font-weight:700; font-size:.86rem;
+    color:var(--forest-deep); padding:10px 16px;
+}
+.kv-table thead th:last-child { text-align:right; }
+
+/* total / paid rows folded into the same table, like the reference */
+.kv-table tr.grand-row td { font-weight:800; color:var(--ink); padding-top:14px; }
+.kv-table tr.paid-row-table td { font-weight:800; background:var(--band-strong); color:var(--forest-deep); }
+.kv-table tr.paid-row-table td.v { color:var(--forest-deep); }
 
 .amount-words {
-    display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;
-    border:1px solid var(--forest-deep); border-top:none;
-    padding:10px 12px; font-size:.85rem;
+    padding:10px 16px; font-size:.82rem;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;
 }
 .amount-words .aw-label { color:var(--ink-soft); }
 .amount-words .aw-value { font-weight:700; color:var(--forest-deep); }
 
-.payment-method { font-size:.85rem; color:var(--ink-soft); margin-top:12px; }
+.payment-method { font-size:.82rem; color:var(--ink-soft); padding:10px 16px; }
 .payment-method b { color:var(--ink); }
 
-/* signatures */
-.signature-row { display:flex; justify-content:space-between; gap:24px; margin-top:52px; flex-wrap:wrap; }
-.signature-box { text-align:center; flex:1; min-width:180px; }
-.signature-line { border-bottom:1px dashed var(--gray-400); height:44px; }
-.signature-label { font-size:.8rem; color:var(--ink-soft); margin-top:6px; }
-.signature-sub { font-size:.72rem; color:var(--gray-400); margin-top:2px; }
-
+/* ── footer note, centered ── */
 .receipt-footer-note {
-    margin-top:28px; padding-top:14px; border-top:1px dashed var(--paper-line);
-    font-size:.74rem; color:var(--gray-600); text-align:center; line-height:1.6;
+    margin-top:26px; font-size:.76rem; color:var(--gray-600); text-align:center; line-height:1.7;
 }
 
-/* ── PRINT MODE: plain black & white, like an actual printed receipt ── */
+/* ── signature block, bottom-right like the reference ── */
+.sign-block { display:flex; justify-content:flex-end; margin-top:34px; }
+.sign-col { text-align:center; width:220px; }
+.sign-scribble { height:52px; display:flex; align-items:flex-end; justify-content:center; }
+.sign-scribble svg { width:150px; height:46px; stroke:var(--forest-deep); }
+.sign-rule { border-top:1px solid var(--ink); margin-top:2px; }
+.sign-caption { font-size:.78rem; font-weight:700; color:var(--ink); margin-top:6px; }
+.sign-sub { font-size:.72rem; color:var(--ink-soft); margin-top:1px; }
+
+/* ── PRINT MODE ── */
 @media print {
     @page { margin: 12mm; }
     .navbar, .breadcrumb, .print-bar { display:none !important; }
     * { box-shadow:none !important; text-shadow:none !important; }
     body { background:#fff !important; color:#000 !important; }
     .page-wrap { padding:0; max-width:100%; margin:0; }
+    .receipt-sheet { padding:0; }
 
-    .receipt-sheet { background:#fff !important; padding:0; }
-    .receipt-copy-tag {
-        background:none !important; color:#000 !important;
-        border:1px solid #000; clip-path:none;
-    }
-    .receipt-border { border:1.5px solid #000; outline:none; padding:24px 26px 20px; }
+    .issuer-name, .issuer-label, .doc-title .th, .brand-mark, .doc-box-header, .kv-table thead th,
+    .kv-table td.v, .kv-table tr.grand-row td, .amount-words .aw-value, .sign-caption { color:#000 !important; }
+    .issuer-address, .doc-title .en, .ref-line, .contact-line, .kv-table td.k,
+    .amount-words .aw-label, .payment-method, .receipt-footer-note, .sign-sub { color:#333 !important; }
 
-    .paid-stamp { border-color:#000 !important; color:#000 !important; opacity:.9; }
+    .doc-box { border-color:#000 !important; }
+    .doc-box-header, .kv-table thead th, .kv-table tr.grand-row td { background:#f0f0f0 !important; }
+    .kv-table tr.paid-row-table td { background:#e5e5e5 !important; color:#000 !important; }
+    .mini-icon { background:#000 !important; }
+
+    .paid-stamp { border-color:#000 !important; color:#000 !important; }
     .paid-stamp::before { border-color:#000 !important; }
+    .sign-scribble svg { stroke:#000 !important; }
+    .sign-rule { border-color:#000 !important; }
 
-    .receipt-top { border-bottom:2px solid #000; }
-    .issuer-mark { border-color:#000; color:#000; }
-    .issuer-name, .doctype-th, .meta-value, .amount-words .aw-value,
-    .item-table tr.total-row td, .item-table tr.paid-row td { color:#000 !important; }
-    .issuer-address, .doctype-en, .meta-label, .detail-label, .payment-method,
-    .signature-label, .signature-sub, .receipt-footer-note, .aw-label { color:#333 !important; }
-
-    .meta-strip, .meta-cell + .meta-cell { border-color:#000; }
-
-    .section-title { background:none !important; color:#000 !important; border:1px solid #000; padding:3px 10px; }
-
-    .item-table { border-color:#000; }
-    .item-table th { background:none !important; color:#000 !important; border-bottom:1px solid #000; }
-    .item-table td { border-top:1px solid #999; }
-    .item-table tr.total-row td { border-top:1.5px solid #000; }
-    .item-table tr.paid-row td { background:none !important; }
-    .item-table tr.fill-row td { color:transparent !important; }
-
-    .amount-words { border-color:#000; }
-
-    .signature-line { border-bottom:1px solid #000; }
-
-    .receipt-top, .meta-strip, .item-table, .amount-words, .signature-row { break-inside: avoid; }
+    .doc-header, .ref-line, .doc-box, .kv-table tr, .sign-block { break-inside: avoid; }
 }
 
 @media (max-width:560px) {
-    .detail-grid { grid-template-columns:1fr; }
-    .receipt-border { padding:24px 18px; }
-    .receipt-top { flex-direction:column; }
-    .doctype-block { text-align:left; }
-    .paid-stamp { top:auto; bottom:14px; right:14px; width:88px; height:88px; font-size:.66rem; }
-    .signature-row { flex-direction:column; align-items:center; }
+    .receipt-sheet { padding:26px 18px; }
+    .doc-header { flex-direction:column; }
+    .brand-col { text-align:left; }
+    .brand-col .brand-mark { justify-content:flex-start; }
+    .paid-stamp { bottom:auto; top:200px; right:14px; width:84px; height:84px; font-size:.62rem; }
+    .kv-table td.k { width:48%; }
+    .sign-block { justify-content:center; }
 }
 </style>
 </head>
@@ -274,128 +248,160 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
 
     <!-- ══ RECEIPT SHEET ══ -->
     <div class="receipt-sheet">
-        <span class="receipt-copy-tag">ต้นฉบับ · ORIGINAL</span>
 
-        <div class="receipt-border">
+        <!-- stamp -->
+        <div class="paid-stamp" th:if="${receipt.paymentStatus == 'PAID'}">
+            <span>ชำระเงินแล้ว<br>PAID</span>
+        </div>
 
-            <!-- stamp -->
-            <div class="paid-stamp" th:if="${receipt.paymentStatus == 'PAID'}">
-                <span>ชำระเงินแล้ว<br>PAID</span>
+        <!-- ── top header: issuer address (left) / brand + contact (right) ── -->
+        <div class="doc-header">
+            <div class="issuer-col">
+                <div class="issuer-label">ที่อยู่:</div>
+                <div class="issuer-name" th:text="${receipt.homestayName != null ? receipt.homestayName : '-'}"></div>
+                <div class="issuer-address" th:text="${receipt.homestayAddress != null ? receipt.homestayAddress : '-'}"></div>
             </div>
-
-            <!-- issuer + doctype -->
-            <div class="receipt-top">
-                <div class="issuer-block">
-                    <div class="issuer-mark">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
-                    </div>
-                    <div>
-                        <div class="issuer-name" th:text="${receipt.homestayName != null ? receipt.homestayName : '-'}"></div>
-                        <div class="issuer-address" th:text="${receipt.homestayAddress != null ? receipt.homestayAddress : '-'}"></div>
-                    </div>
+            <div class="brand-col">
+                <div class="brand-mark">
+                    <span class="mini-icon">
+                        <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
+                    </span>
+                    <span>ระบบท่องเที่ยวชุมชนชนเผ่า</span>
                 </div>
-                <div class="doctype-block">
-                    <div class="doctype-th">ใบเสร็จรับเงิน</div>
-                    <div class="doctype-en">Receipt / Payment Confirmation</div>
-                </div>
-            </div>
-
-            <!-- meta strip -->
-            <div class="meta-strip">
-                <div class="meta-cell">
-                    <div class="meta-label">เลขที่ใบเสร็จ</div>
-                    <div class="meta-value" th:text="${receipt.paymentId}"></div>
-                </div>
-                <div class="meta-cell">
-                    <div class="meta-label">วันที่ออกใบเสร็จ</div>
-                    <div class="meta-value" th:text="${receipt.paymentDate != null ? #dates.format(receipt.paymentDate,'dd MMMM yyyy') : '-'}"></div>
-                </div>
-                <div class="meta-cell">
-                    <div class="meta-label">สถานะ</div>
-                    <div class="meta-value" th:text="${receipt.paymentStatus}"></div>
-                </div>
-            </div>
-
-            <!-- payer info -->
-            <div class="section-block">
-                <span class="section-title">ข้อมูลผู้ชำระเงิน</span>
-                <div class="detail-grid">
-                   <div class="detail-item">
-    <div class="detail-label">ชื่อ-นามสกุล</div>
-    <div class="detail-value"
-         th:text="${(receipt.memberFirstname != null ? receipt.memberFirstname : '')
-                   + ' '
-                   + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></div>
-</div>
-<div class="detail-item">
-    <div class="detail-label">โทรศัพท์</div>
-    <div class="detail-value" th:text="${receipt.memberPhone != null ? receipt.memberPhone : '-'}"></div>
-</div>
-                    <div class="detail-item">
-                        <div class="detail-label">เลขที่การจองอ้างอิง</div>
-                        <div class="detail-value" th:text="${receipt.bookingId}"></div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">วันที่ทำรายการจอง</div>
-                        <div class="detail-value" th:text="${receipt.bookingDate != null ? #dates.format(receipt.bookingDate,'dd MMMM yyyy') : '-'}"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- itemized table -->
-            <div class="section-block">
-                <span class="section-title">รายการ</span>
-                <table class="item-table">
-                    <thead>
-                        <tr><th>ลำดับ</th><th>รายการ</th><th>จำนวนเงิน (บาท)</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td th:text="'ค่าที่พัก - ' + (${receipt.roomTypeName != null ? receipt.roomTypeName : '-'})"></td>
-                            <td th:text="${receipt.totalAmount != null ? #numbers.formatDecimal(receipt.totalAmount,0,'COMMA',2,'POINT') : '0.00'}"></td>
-                        </tr>
-                        <tr class="fill-row"><td>–</td><td>—</td><td>—</td></tr>
-                        <tr class="total-row">
-                            <td colspan="2">ยอดรวมทั้งสิ้น</td>
-                            <td th:text="${receipt.totalAmount != null ? #numbers.formatDecimal(receipt.totalAmount,0,'COMMA',2,'POINT') : '0.00'}"></td>
-                        </tr>
-                        <tr class="paid-row">
-                            <td colspan="2">ยอดที่ชำระแล้ว</td>
-                            <td th:text="${receipt.amount != null ? #numbers.formatDecimal(receipt.amount,0,'COMMA',2,'POINT') : '0.00'}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="amount-words" th:if="${receipt.amount != null}">
-                    <span class="aw-label">จำนวนเงินตัวอักษร</span>
-                    <span class="aw-value" id="bahtText" th:attr="data-amount=${receipt.amount}">-</span>
-                </div>
-                <div class="payment-method" th:if="${receipt.bankName != null}">
-                    ชำระผ่าน: <b th:text="${receipt.bankName}"></b>
-                    <span th:if="${receipt.accountName != null}" th:text="' บัญชี ' + ${receipt.accountName}"></span>
-                    <span th:if="${receipt.bankAccount != null}" th:text="' เลขที่ ' + ${receipt.bankAccount}"></span>
-                </div>
-            </div>
-
-            <!-- signatures -->
-           <div class="signature-box">
-    <div class="signature-line"></div>
-    <div class="signature-label">ผู้จ่ายเงิน</div>
-    <div class="signature-sub"
-         th:text="${(receipt.memberFirstname != null ? receipt.memberFirstname : '') + ' ' + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></div>
-</div>
-                <div class="signature-box">
-                    <div class="signature-line"></div>
-                    <div class="signature-label">ผู้รับเงิน</div>
-                    <div class="signature-sub" th:text="${receipt.homestayName != null ? receipt.homestayName : '-'}"></div>
-                </div>
-            </div>
-
-            <div class="receipt-footer-note">
-                เอกสารนี้ออกโดยระบบอัตโนมัติ ไม่จำเป็นต้องมีลายเซ็นหรือตราประทับ<br>
-                หากมีข้อสงสัยเกี่ยวกับการชำระเงิน กรุณาติดต่อผู้ดูแลระบบ
+                <div class="contact-line" th:if="${receipt.bankName != null}">ชำระผ่าน: <span th:text="${receipt.bankName}"></span></div>
             </div>
         </div>
+
+        <!-- ── booking no. / issue date, plain line ── -->
+        <div class="ref-line">
+            <span>หมายเลขการจอง: <b th:text="${receipt.bookingId}"></b></span>
+            <span>วันที่เรียกเก็บเงิน: <b th:text="${receipt.paymentDate != null ? #dates.format(receipt.paymentDate,'dd MMMM yyyy') : '-'}"></b></span>
+        </div>
+
+        <!-- ── centered title ── -->
+        <div class="doc-title">
+            <div class="th">ใบเสร็จรับเงิน</div>
+            <div class="en">Receipt / Payment Confirmation</div>
+        </div>
+
+        <!-- ── customer info box ── -->
+        <div class="doc-box">
+            <div class="doc-box-header">ข้อมูลลูกค้า</div>
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="k">ชื่อ</td>
+                        <td class="v"
+                            th:text="${(receipt.memberFirstname != null ? receipt.memberFirstname : '')
+                                      + ' '
+                                      + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></td>
+                    </tr>
+                    <tr>
+                        <td class="k">โทรศัพท์</td>
+                        <td class="v" th:text="${receipt.memberPhone != null ? receipt.memberPhone : '-'}"></td>
+                    </tr>
+                    <tr>
+                        <td class="k">เลขที่ใบเสร็จ</td>
+                        <td class="v" th:text="${receipt.paymentId}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ── stay details + totals box: real 2-column table, header = "รายละเอียด" / "ค่าใช้จ่าย" ── -->
+        <div class="doc-box">
+            <table class="kv-table">
+                <thead>
+                    <tr><th>รายละเอียด</th><th>ค่าใช้จ่าย</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="k">ชื่อโรงแรม</td>
+                        <td class="v" th:text="${receipt.homestayName != null ? receipt.homestayName : '-'}"></td>
+                    </tr>
+                    <tr>
+                        <td class="k">ช่วงเวลา</td>
+                        <td class="v"
+                            th:text="${(receipt.checkIn != null ? #dates.format(receipt.checkIn,'dd MMM yyyy') : '-')
+                                      + ' - '
+                                      + (receipt.checkOut != null ? #dates.format(receipt.checkOut,'dd MMM yyyy') : '-')}"></td>
+                    </tr>
+                    <tr>
+                        <td class="k">ประเภทห้อง</td>
+                        <td class="v" th:text="${receipt.roomTypeName != null ? receipt.roomTypeName : '-'}"></td>
+                    </tr>
+                    <tr>
+                        <td class="k">จำนวนห้อง</td>
+                        <td class="v" th:text="${receipt.numOfRooms != null ? receipt.numOfRooms : '-'}"></td>
+                    </tr>
+                    <tr>
+                        <td class="k">จำนวนผู้เข้าพัก</td>
+                        <td class="v"
+                            th:text="${(receipt.numOfAdults != null ? receipt.numOfAdults : 0) + ' ผู้ใหญ่'
+                                      + (receipt.numOfChildren != null and receipt.numOfChildren > 0
+                                         ? ', ' + receipt.numOfChildren + ' เด็ก' : '')}"></td>
+                    </tr>
+                    <tr class="money">
+                        <td class="k">ค่าห้องพักทั้งหมด</td>
+                        <td class="v"
+                            th:text="${receipt.roomSubtotal != null ? #numbers.formatDecimal(receipt.roomSubtotal,0,'COMMA',2,'POINT') + ' บาท' : '-'}"></td>
+                    </tr>
+                    <tr class="money" th:if="${receipt.wantInsurance != null and receipt.wantInsurance}">
+                        <td class="k">ค่าประกันภัยการเดินทาง</td>
+                        <td class="v"
+                            th:text="${receipt.subtotalInsurance != null ? #numbers.formatDecimal(receipt.subtotalInsurance,0,'COMMA',2,'POINT') + ' บาท' : '0.00 บาท'}"></td>
+                    </tr>
+                    <tr class="grand-row">
+                        <td>รวมค่าใช้จ่ายทั้งหมด</td>
+                        <td class="v" th:text="${receipt.totalAmount != null ? #numbers.formatDecimal(receipt.totalAmount,0,'COMMA',2,'POINT') + ' บาท' : '0.00 บาท'}"></td>
+                    </tr>
+                    <tr class="paid-row-table">
+                        <td>จำนวนเงินทั้งหมดที่ชำระแล้ว</td>
+                        <td class="v" th:text="${receipt.amount != null ? #numbers.formatDecimal(receipt.amount,0,'COMMA',2,'POINT') + ' บาท' : '0.00 บาท'}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="amount-words" th:if="${receipt.amount != null}">
+                <span class="aw-label">จำนวนเงินตัวอักษร</span>
+                <span class="aw-value" id="bahtText" th:attr="data-amount=${receipt.amount}">-</span>
+            </div>
+            <div class="payment-method" th:if="${receipt.bankName != null}">
+                ชำระผ่าน: <b th:text="${receipt.bankName}"></b>
+                <span th:if="${receipt.accountName != null}" th:text="' บัญชี ' + ${receipt.accountName}"></span>
+                <span th:if="${receipt.bankAccount != null}" th:text="' เลขที่ ' + ${receipt.bankAccount}"></span>
+            </div>
+        </div>
+
+        <!-- ── footer note ── -->
+        <div class="receipt-footer-note">
+            ใบเสร็จนี้เป็นใบเสร็จรับเงินอัตโนมัติ ไม่จำเป็นต้องมีลายเซ็นหรือตราประทับ<br>
+            หากมีข้อสงสัยเกี่ยวกับการชำระเงิน กรุณาติดต่อผู้ดูแลระบบ
+        </div>
+
+        <!-- ── signature bottom-right, like "Authorized Stamp & Signature" ── -->
+     <!-- ── signature bottom-right, like "Authorized Stamp & Signature" ── -->
+<div class="sign-block">
+    <div class="sign-col">
+        <div class="sign-scribble">
+            <!-- ถ้ามีรูปลายเซ็นจริง ให้แสดงรูป -->
+            <img th:if="${receipt.signatureImageUrl != null and !receipt.signatureImageUrl.isEmpty()}"
+                 th:src="${receipt.signatureImageUrl}"
+                 alt="ลายเซ็น"
+                 style="max-height:50px; max-width:170px; object-fit:contain;" />
+
+            <!-- ถ้าไม่มี ให้ fallback เป็น SVG scribble เดิม -->
+            <svg th:unless="${receipt.signatureImageUrl != null and !receipt.signatureImageUrl.isEmpty()}"
+                 viewBox="0 0 150 46" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 34 C 20 12, 30 40, 40 22 S 58 8, 66 26 S 82 40, 92 18 S 112 6, 120 24 S 136 38, 144 20" />
+            </svg>
+        </div>
+        <div class="sign-rule"></div>
+        <div class="sign-caption">ลายเซ็นผู้รับเงิน</div>
+        <div class="sign-sub" th:text="${receipt.homestayName != null ? receipt.homestayName : '-'}"></div>
+    </div>
+</div>
+
     </div>
 
 </div>
@@ -407,7 +413,6 @@ window.addEventListener('load', function () {
         setTimeout(function () { window.print(); }, 300);
     }
 
-    // ── convert amount to Thai baht text ──
     const el = document.getElementById('bahtText');
     if (el) {
         const raw = parseFloat(el.getAttribute('data-amount'));
@@ -438,7 +443,6 @@ function bahtText(number) {
         return result;
     }
 
-    // group into chunks of 6 digits (million cycles)
     let bahtWords = '';
     let remaining = baht.replace(/^0+(?=\d)/, '');
     const millionChunks = [];

@@ -491,11 +491,13 @@ img { display: block; }
 }
     </style>
 
-    <script th:inline="javascript">
+   <script th:inline="javascript">
       const ADULT_PRICE     = /*[[${tour.adultprice}]]*/ 850;
       const CHILD_PRICE     = /*[[${tour.childprice}]]*/ 500;
       const AVAILABLE_SEATS = /*[[${availableSeats}]]*/ 0;
       const INSURANCE_PRICE = /*[[${insurancePrice}]]*/ 100;
+      const ALLOW_MEETING_POINT = /*[[${tour.allowMeetingPoint}]]*/ true;  
+      const ALLOW_HOTEL_PICKUP  = /*[[${tour.allowHotelPickup}]]*/ false; 
     </script>
 
     <!-- Alpine ต้องโหลดก่อน Alpine.data() จึงใช้ script ธรรมดา (ไม่ defer) -->
@@ -512,9 +514,9 @@ img { display: block; }
             isBookingForOther: false,
             wantInsurance: true,
             submitted: false,
-            submitting: false,   // ⬅️ NEW: กันกดจองซ้ำ / โชว์สถานะกำลังบันทึก
+            submitting: false,
             fieldErrors: {},
-            pickupType: 'จุดรับส่วนกลาง',
+            pickupType: ALLOW_MEETING_POINT ? 'จุดรับส่วนกลาง' : (ALLOW_HOTEL_PICKUP ? 'โรงแรม/ที่พัก' : ''),  
             pickupLocation: '',
 
             get numOfGuest() { return this.numOfAdult + this.numOfChild; },
@@ -617,7 +619,6 @@ img { display: block; }
             },
 
             handleSubmit() {
-                // ⬇️ NEW: กันกดซ้ำ — ถ้ากำลังส่งฟอร์มอยู่แล้วไม่ต้องทำอะไรต่อ
                 if (this.submitting) return;
 
                 this.submitted = true;
@@ -640,7 +641,6 @@ img { display: block; }
                     return;
                 }
 
-                // ⬇️ NEW: ผ่าน validation แล้ว → ล็อกปุ่มทันทีก่อน submit จริง
                 this.submitting = true;
                 document.getElementById('bookingForm').submit();
             }
@@ -807,47 +807,128 @@ img { display: block; }
   </div>
 </div>
 
-            <div class="form-group full">
-  <label class="form-label">ประเภทจุดรับ</label>
-  <div class="radio-group" style="margin-top:0;">
-    <label class="radio-option" :class="{ 'radio-selected': pickupType === 'จุดรับส่วนกลาง' }">
-      <input type="radio" name="pickuptype" value="จุดรับส่วนกลาง" x-model="pickupType">
-      <span>📍 นัดพบที่จุดรวมพล (ไม่มีค่าใช้จ่ายเพิ่มเติม)</span>
-    </label>
+           <!-- ประเภทจุดรับ -->
+<div class="form-group full">
+    <label class="form-label">ประเภทจุดรับ</label>
 
-    <!-- ⬇️ TODO: แก้ที่อยู่ตรงนี้ให้เป็นจุดนัดพบจริงของบริษัท
-         ถ้าแต่ละทัวร์นัดคนละจุด แนะนำเพิ่มฟิลด์ meetingpoint ใน entity Tour
-         แล้วเปลี่ยนบรรทัดด้านล่างเป็น th:text="${tour.meetingpoint}" แทนข้อความตายตัว -->
-    <div class="meetingpoint-box" x-show="pickupType === 'จุดรับส่วนกลาง'" x-cloak>
-      📍 <strong>จุดนัดพบ:</strong> [ใส่ชื่อสถานที่/ที่อยู่จุดรวมพลจริงตรงนี้ เช่น "ลานจอดรถหน้าสำนักงานบริษัท เลขที่ ... ถ. ... อ.เมือง จ.เชียงใหม่"]<br>
-      🗺️ <a href="#" target="_blank">ดูแผนที่ / Google Maps</a>
+    <div class="radio-group" style="margin-top:0;">
+
+        <!-- จุดรับส่วนกลาง -->
+        <label class="radio-option"
+               th:if="${tour.allowMeetingPoint}"
+               :class="{ 'radio-selected': pickupType === 'จุดรับส่วนกลาง' }">
+
+            <input type="radio"
+                   name="pickuptype"
+                   value="จุดรับส่วนกลาง"
+                   x-model="pickupType">
+
+            <span>
+                📍 นัดพบที่จุดรวมพล
+                <span th:if="${tour.meetingTime != null}">
+                    เวลา <strong th:text="${tour.meetingTime}">06:30</strong> น.
+                </span>
+            </span>
+        </label>
+
+
+        <!-- รายละเอียดจุดนัดพบ -->
+        <div class="meetingpoint-box"
+             th:if="${tour.allowMeetingPoint}"
+             x-show="pickupType === 'จุดรับส่วนกลาง'"
+             x-cloak>
+
+            📍 <strong>จุดนัดพบ:</strong>
+
+            <span th:if="${tour.meetingPointDetail != null}"
+                  th:text="${tour.meetingPointDetail}">
+                รายละเอียดจุดนัดพบ
+            </span>
+
+            <span th:if="${tour.meetingPointDetail == null}">
+                ยังไม่ได้ระบุจุดนัดพบ
+            </span>
+
+            <br>
+
+            🗺️
+            <a href="#" target="_blank">ดูแผนที่ / Google Maps</a>
+        </div>
+
+
+        <!-- รับที่โรงแรม -->
+        <label class="radio-option"
+               th:if="${tour.allowHotelPickup}"
+               :class="{ 'radio-selected': pickupType === 'โรงแรม/ที่พัก' }">
+
+            <input type="radio"
+                   name="pickuptype"
+                   value="โรงแรม/ที่พัก"
+                   x-model="pickupType">
+
+            <span>
+                🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
+                <span th:if="${tour.hotelPickupArea != null}">
+                    (เฉพาะในเขตจังหวัด
+                    <strong th:text="${tour.hotelPickupArea}">เชียงใหม่</strong>)
+                </span>
+            </span>
+        </label>
+
     </div>
-
-    <label class="radio-option" :class="{ 'radio-selected': pickupType === 'โรงแรม/ที่พัก' }">
-      <input type="radio" name="pickuptype" value="โรงแรม/ที่พัก" x-model="pickupType">
-      <span>🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก (เฉพาะในเขตจังหวัดเชียงใหม่)</span>
-    </label>
-  </div>
 </div>
+
 
 <!-- กรณีให้ทัวร์ไปรับที่โรงแรม -->
-<div class="form-group full" x-show="pickupType === 'โรงแรม/ที่พัก'" x-cloak>
-  <label class="form-label">ชื่อ/ที่อยู่โรงแรม-ที่พัก <span class="req">*</span></label>
-  <input type="text" name="pickuplocation" x-model="pickupLocation"
-         placeholder="เช่น โรงแรม ดุสิต ดีทู เชียงใหม่, อ.เมือง จ.เชียงใหม่"
-         class="form-input"
-         :class="{ 'is-invalid': submitted && fieldErrors['pickuplocation'] }">
-  <div class="field-error" x-show="submitted && fieldErrors['pickuplocation']">
-    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-    <span x-text="fieldErrors['pickuplocation']"></span>
-  </div>
-  <div class="idcard-hint">⚠️ บริการรับส่งถึงที่พัก รองรับเฉพาะที่พักในเขตจังหวัดเชียงใหม่เท่านั้น กรุณาระบุคำว่า "เชียงใหม่" ในที่อยู่</div>
-</div>
-            </div>
-            <div class="time-notice">
-              ⏰ เวลานัดพบ <strong>06:30 น.</strong> — กรุณาพร้อมก่อน 10 นาที
-            </div>
+<div class="form-group full"
+     th:if="${tour.allowHotelPickup}"
+     x-show="pickupType === 'โรงแรม/ที่พัก'"
+     x-cloak>
 
+    <label class="form-label">
+        ชื่อ/ที่อยู่โรงแรม-ที่พัก <span class="req">*</span>
+    </label>
+
+    <input type="text"
+           name="pickuplocation"
+           x-model="pickupLocation"
+           placeholder="เช่น โรงแรม ดุสิต ดีทู เชียงใหม่, อ.เมือง จ.เชียงใหม่"
+           class="form-input"
+           :class="{ 'is-invalid': submitted && fieldErrors['pickuplocation'] }">
+
+    <div class="field-error"
+         x-show="submitted && fieldErrors['pickuplocation']">
+
+        <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1 1 1 0 00-1 1z"
+                  clip-rule="evenodd"/>
+        </svg>
+
+        <span x-text="fieldErrors['pickuplocation']"></span>
+    </div>
+
+    <div class="idcard-hint">
+        ⚠️ บริการรับส่งถึงที่พัก
+        รองรับเฉพาะที่พักในเขตจังหวัดเชียงใหม่เท่านั้น
+        กรุณาระบุคำว่า "เชียงใหม่" ในที่อยู่
+    </div>
+</div>
+
+            </div>
+<!-- เวลานัดพบ -->
+<div class="time-notice"
+     th:if="${tour.meetingTime != null}">
+
+    ⏰ เวลานัดพบ
+    <strong th:text="${tour.meetingTime}">06:30</strong> น.
+
+    <span th:if="${tour.arriveBeforeMinutes != null}">
+        — กรุณาพร้อมก่อน
+        <strong th:text="${tour.arriveBeforeMinutes}">10</strong> นาที
+    </span>
+
+</div>
             <!-- Counters -->
             <div class="passenger-row">
               <div class="passenger-card">
@@ -894,7 +975,6 @@ img { display: block; }
                     ทุกการจองต้องทำประกันให้ผู้เดินทางทุกท่าน
                   </div>
                 </div>
-                <!-- badge แทน toggle switch เดิม — กดปิดไม่ได้ ค่าถูกส่งด้วย hidden input เสมอ -->
                 <div class="insurance-included-badge">✅ รวมแล้ว</div>
                 <input type="hidden" name="wantinsurance" value="true">
               </div>
@@ -995,8 +1075,6 @@ img { display: block; }
                   </div>
                 </div>
 
-                <!-- เลขบัตรของผู้จองเอง (ต้องมาก่อนแขกคนอื่นเสมอ เพื่อให้ guestIdcard ตัวแรก
-                     ที่ส่งไป backend ตรงกับผู้จอง — ดู idcardOffset ใน BookingService) -->
                 <div class="form-group insurance-guest-idcard" style="margin-bottom:14px;">
                   <label class="form-label">เลขบัตรประชาชนของผู้จอง (สำหรับทำประกัน) <span class="req">*</span></label>
                   <input type="text" name="guestIdcard" placeholder="กรอกเลข 13 หลัก"
@@ -1151,8 +1229,6 @@ img { display: block; }
             </div>
           </div>
 
-         <!-- ⬇️ NEW: ปุ่มถูก disable ทันทีที่ submitting = true และเปลี่ยนข้อความ/ไอคอน
-              เป็นสถานะ "กำลังบันทึกการจอง..." พร้อม spinner หมุน -->
          <button type="button" class="btn-confirm"
         th:disabled="${availableSeats <= 0 or schedules == null or schedules.isEmpty()}"
         :disabled="submitting"
@@ -1187,9 +1263,6 @@ document.addEventListener('click', function(e) {
   if (w && !w.contains(e.target)) w.classList.remove('open');
 });
 
-/* ⬇️ เติมวันที่อัตโนมัติจาก query string ?tourdate=YYYY-MM-DD
-     ที่ต้องแนบมาจากลิงก์ในหน้ารายละเอียดทัวร์ เช่น:
-     <a th:href="@{/booking/tour/{id}(id=${tour.tourid}, tourdate=${selectedDate})}"> */
 window.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(window.location.search);
   const d = params.get('tourdate');

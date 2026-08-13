@@ -308,8 +308,10 @@ public Booking getTourBookingDetailForManager(String bookingId, String managerId
             String note,
             String pickuptype,
             String pickuplocation,
-            String guestFirstname,
-            String guestLastname) {
+              List<String> guestIds,          // ✅ เปลี่ยน
+        List<String> guestFirstnames,   // ✅ เปลี่ยน
+        List<String> guestLastnames,    // ✅ เปลี่ยน
+        List<String> guestIdcards) { 
 
         // ── 1. ดึง Booking ──────────────────────────────────
         Booking booking = bookingRepository
@@ -448,45 +450,50 @@ public Booking getTourBookingDetailForManager(String bookingId, String managerId
 
         bookingRepository.save(booking);
 
-        // ── 9. Guest ──────────────────────────────────────
-        if (Boolean.FALSE.equals(booking.getIsBookerGoing())
-                && guestFirstname != null
-                && !guestFirstname.isBlank()) {
+        // ── 9. Guest — อัปเดตด้วย guestId แบบตรงๆ ไม่พึ่ง index/ลำดับ ──
+    if (guestIds != null && !guestIds.isEmpty()) {
 
-            Set<Guest> guests = booking.getGuests();
-
-            if (guests != null && !guests.isEmpty()) {
-
-                Guest g = guests.iterator().next();
-
-                g.setFirstname(guestFirstname.trim());
-
-                g.setLastname(
-                        guestLastname != null
-                                ? guestLastname.trim()
-                                : "");
-
-                guestRepository.save(g);
-
-            } else {
-
-                Guest g = new Guest();
-
-                g.setGuestid(bookingIdGenerator.generateGuestId());
-
-                g.setFirstname(guestFirstname.trim());
-
-                g.setLastname(
-                        guestLastname != null
-                                ? guestLastname.trim()
-                                : "");
-
-                g.setBooking(booking);
-
-                guestRepository.save(g);
+        // โหลด guest ของ booking นี้เข้า map ตาม guestId เพื่อ lookup เร็วและแม่นยำ
+        Set<Guest> guests = booking.getGuests();
+        java.util.Map<String, Guest> guestById = new java.util.HashMap<>();
+        if (guests != null) {
+            for (Guest g : guests) {
+                guestById.put(g.getGuestid(), g);
             }
         }
+
+        for (int i = 0; i < guestIds.size(); i++) {
+            String gId = guestIds.get(i);
+            if (gId == null || gId.isBlank()) continue;
+
+            Guest g = guestById.get(gId);
+            if (g == null) {
+                // guestId ที่ส่งมาไม่ตรงกับ guest ของ booking นี้เลย — ข้าม ป้องกันแก้ guest คนอื่น
+                continue;
+            }
+
+            String fname = (guestFirstnames != null && i < guestFirstnames.size())
+                    ? guestFirstnames.get(i) : null;
+            String lname = (guestLastnames != null && i < guestLastnames.size())
+                    ? guestLastnames.get(i) : null;
+            String idcard = (guestIdcards != null && i < guestIdcards.size())
+                    ? guestIdcards.get(i) : null;
+
+            if (fname != null && !fname.isBlank()) {
+                g.setFirstname(fname.trim());
+            }
+            if (lname != null) {
+                g.setLastname(lname.trim());
+            }
+            if (Boolean.TRUE.equals(booking.getWantInsurance())
+                    && idcard != null && idcard.trim().length() == 13) {
+                g.setIdcardnumber(idcard.trim());
+            }
+
+            guestRepository.save(g);
+        }
     }
+}
 
     // ════════════════════════════════════════════════════════
     //  CANCEL TOUR BOOKING

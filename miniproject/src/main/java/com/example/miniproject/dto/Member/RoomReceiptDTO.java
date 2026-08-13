@@ -45,6 +45,8 @@ public class RoomReceiptDTO {
     private Double subtotalInsurance;
     private Date paymentDeadline;
 
+    private String signatureImageUrl;
+
     public RoomReceiptDTO() {}
 
     // ── getters / setters ─────────────────────────────────────────
@@ -129,4 +131,8 @@ public class RoomReceiptDTO {
 
 public Date getPaymentDeadline() { return paymentDeadline; }
 public void setPaymentDeadline(Date paymentDeadline) { this.paymentDeadline = paymentDeadline; }
+
+
+public String getSignatureImageUrl() { return signatureImageUrl; }
+public void setSignatureImageUrl(String signatureImageUrl) { this.signatureImageUrl = signatureImageUrl; }
 }
