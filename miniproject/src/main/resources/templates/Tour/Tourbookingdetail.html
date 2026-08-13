@@ -235,6 +235,36 @@
             color: #fff;
         }
 
+        .brand-logo-link {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-right: auto;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .brand-logo img {
+            height: 75px;
+            /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+            width: auto;
+            max-width: 180px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand-text {
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
         /* ═══ PAGE ═══ */
         .page {
             max-width: 1180px;
@@ -1011,14 +1041,16 @@
 
     <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
-        <a class="nav-brand" th:href="@{/}">
-            <i class="fas fa-mountain-sun"></i>
-            ระบบท่องเที่ยวชุมชนชนเผ่า
+        <a th:href="@{/}" class="brand-logo-link">
+            <div class="brand-logo">
+                <img th:src="@{/images/logo3.png}" alt="Logo">
+            </div>
+            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
 
         <div style="flex:1;"></div>
 
-        
+
         <div class="nav-dropdown" style="margin-left:1rem;">
             <div class="nav-dropdown-trigger">
                 <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
@@ -1222,8 +1254,7 @@
                                     th:text="${td.tourschedule != null and td.tourschedule.opendate != null ? #dates.format(td.tourschedule.opendate,'dd MMM yyyy') : '-'}">-</span>
                                 <th:block th:if="${td.tourschedule != null and td.tourschedule.enddate != null}">
                                     →
-                                    <span
-                                        th:text="${#dates.format(td.tourschedule.enddate,'dd MMM yyyy')}">-</span>
+                                    <span th:text="${#dates.format(td.tourschedule.enddate,'dd MMM yyyy')}">-</span>
                                 </th:block>
                             </div>
                         </div>
@@ -1263,8 +1294,7 @@
                     <div class="card-body">
                         <div class="summary-row" th:each="td : ${booking.tourDetails}"
                             th:if="${booking.tourDetails != null}">
-                            <div class="s-label"
-                                th:text="${(td.tour != null ? td.tour.tourmname : 'ทัวร์')}">
+                            <div class="s-label" th:text="${(td.tour != null ? td.tour.tourmname : 'ทัวร์')}">
                             </div>
                             <div class="s-value"
                                 th:text="${td.subtotaltour != null ? #numbers.formatDecimal(td.subtotaltour,1,'COMMA',0,'POINT') + ' ฿' : '0 ฿'}">
@@ -1357,12 +1387,10 @@
                         <button class="btn-confirm-booking" id="btnConfirmBooking"
                             th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
                             th:attr="data-bookingid=${booking.bookingid}"
-                            onclick="openConfirmModal(this.dataset.bookingid)"
-                            disabled>
+                            onclick="openConfirmModal(this.dataset.bookingid)" disabled>
                             <i class="fas fa-circle-check"></i> ยืนยันการจอง
                         </button>
-                        <button class="btn-cancel-booking"
-                            th:attr="data-bookingid=${booking.bookingid}"
+                        <button class="btn-cancel-booking" th:attr="data-bookingid=${booking.bookingid}"
                             onclick="openCancelModal(this.dataset.bookingid)">
                             <i class="fas fa-xmark"></i> ยกเลิกการจอง
                         </button>

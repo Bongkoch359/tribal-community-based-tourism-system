@@ -31,6 +31,7 @@
             --radius-card: 12px;
             --radius-sm: 6px;
             --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07);
+            --white: #ffffff;
         }
 
         body {
@@ -102,6 +103,36 @@
 
         .nav-dropdown:hover .chevron {
             transform: rotate(180deg);
+        }
+
+        .brand-logo-link {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-right: auto;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .brand-logo img {
+            height: 75px;
+            /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+            width: auto;
+            max-width: 180px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand-text {
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.05rem;
+            white-space: nowrap;
         }
 
         .dropdown-menu {
@@ -724,11 +755,12 @@
 
     <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
-        <a class="nav-brand" th:href="@{/}">
-            <i class="fas fa-mountain-sun"></i>
-            ระบบท่องเที่ยวชุมชนชนเผ่า
+        <a th:href="@{/}" class="brand-logo-link">
+            <div class="brand-logo">
+                <img th:src="@{/images/logo3.png}" alt="Logo">
+            </div>
+            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
-
         <div class="nav-dropdown">
             <div class="nav-dropdown-trigger">
                 <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
@@ -880,8 +912,7 @@
                         <div class="form-group">
                             <label class="form-label">หัวข้อโพสต์ <span class="req">*</span></label>
                             <input class="form-control" type="text" name="title"
-                                placeholder="เช่น แนะนำกิจกรรมทัวร์ชุมชนชนเผ่า..." th:value="${post?.title}"
-                                required />
+                                placeholder="เช่น แนะนำกิจกรรมทัวร์ชุมชนชนเผ่า..." th:value="${post?.title}" required />
                         </div>
 
                     </div>

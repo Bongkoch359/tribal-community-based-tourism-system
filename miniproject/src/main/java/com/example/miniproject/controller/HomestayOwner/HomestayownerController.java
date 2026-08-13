@@ -1,9 +1,9 @@
 package com.example.miniproject.controller.HomestayOwner;
 
 import com.example.miniproject.dto.Homestay.RegisterOwnerRequest;
-import com.example.miniproject.dto.Homestay.UpdateProfileRequest;
 import com.example.miniproject.dto.Homestay.HomestayDetailDto;
 import com.example.miniproject.dto.Homestay.HomestayDto;
+import com.example.miniproject.dto.Homestay.LoginRequest;
 import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.service.Homestay.HomestayOwnerService;
 import com.example.miniproject.service.Homestay.HomestayService;
@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,50 +37,92 @@ public class HomestayownerController {
     public String loginPage() {
         return "Homestay/loginowner";
     }
+    @PostMapping(value = "/owner/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> login(@RequestBody LoginRequest req, HttpSession session) {
+        try {
+            Homestayowner owner = ownerService.login(req.getEmail(), req.getPassword());
+
+            if ("SUSPENDED".equals(owner.getAccountstatus())) {
+                return ResponseEntity.ok(Map.of(
+                        "success", false,
+                        "message", "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ"));
+            }
+
+            session.setAttribute("ownerLogin", owner);
+            session.setAttribute("ownerid", owner.getOwnerid());
+            session.setAttribute("ownername", owner.getFirstname() + " " + owner.getLastname());
+
+            if (owner.getHomestays() != null && !owner.getHomestays().isEmpty()) {
+                session.setAttribute("homestayid", owner.getHomestays().get(0).getHomestayid());
+                session.setAttribute("homestayname", owner.getHomestays().get(0).getHomestayname());
+            } else {
+                session.setAttribute("homestayid", null);
+                session.setAttribute("homestayname", "ยังไม่มีโฮมสเตย์");
+            }
+
+            return ResponseEntity.ok(Map.of("success", true));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
 
     @GetMapping("/owner/register")
     public String registerPage() {
+
         return "Homestay/register";
     }
 
+    // ───── Edit Profile Page (server-render แบบเดียวกับ tour manager) ─────
+
     @GetMapping("/owner/profile-edit")
-    public String editProfile(HttpSession session) {
-        if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
+    public String editProfile(HttpSession session, Model model) {
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        if (ownerid == null)
+            return "redirect:/owner/login";
+
+        Homestayowner owner = ownerService.getProfile(ownerid);
+        model.addAttribute("loggedInOwner", owner);
         return "Homestay/editprofile";
     }
 
-    // ───── Register (multipart/form-data) ─────
+    // ═══════════════════════════════════════════════════
+    // ───── Register — form-submit (multipart) ─────
+    // ═══════════════════════════════════════════════════
     /*
-     *  JS ส่งมาในรูป FormData:
-     *    firstname, lastname, email, phone, password
-     *    homestays[0].homestayname, homestays[0].address,
-     *    homestays[0].description, homestays[0].images  (File)
-     *    homestays[1].homestayname, ...
+     * ฟอร์ม (single form ครอบ step1 + step2) ส่งมาแบบ multipart/form-data ปกติ:
+     * firstname, lastname, email, phone, password
+     * homestays[0].homestayname, homestays[0].address,
+     * homestays[0].description, homestays[0].images (File, multiple)
+     * homestays[1].homestayname, ...
+     * (index ถูกตั้งชื่อ input ให้เรียงลำดับใหม่ด้วย JS ฝั่ง client ก่อน submit
+     * จริง
+     * — ไม่มีการยิง fetch ใด ๆ ทั้งสิ้น เป็นการ submit ของ browser ตามปกติ)
      */
     @PostMapping(value = "/owner/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseBody
-    public ResponseEntity<?> register(RegisterOwnerRequest req) {
+    public String register(RegisterOwnerRequest req, RedirectAttributes redirectAttributes) {
         try {
-            // 1) บันทึก owner + homestay (ยังไม่มีรูป) → ได้ List<Integer> homestayIds
             List<Integer> homestayIds = ownerService.register(req);
 
-            // 2) บันทึกรูปภาพของแต่ละ homestay
             List<RegisterOwnerRequest.HomestayItem> items = req.getHomestays();
             if (items != null) {
                 for (int i = 0; i < items.size(); i++) {
                     RegisterOwnerRequest.HomestayItem item = items.get(i);
-                    if (item.getImages() == null || item.getImages().isEmpty()) continue;
+                    if (item.getImages() == null || item.getImages().isEmpty())
+                        continue;
 
-                    Integer hsId      = homestayIds.get(i);
-                    String  uploadDir = System.getProperty("user.dir") + "/uploads/homestays/" + hsId + "/";
+                    Integer hsId = homestayIds.get(i);
+                    String uploadDir = System.getProperty("user.dir") + "/uploads/homestays/" + hsId + "/";
                     Files.createDirectories(Paths.get(uploadDir));
 
                     List<String> savedPaths = new ArrayList<>();
                     for (MultipartFile file : item.getImages()) {
-                        if (file == null || file.isEmpty()) continue;
-                        String ext      = getExtension(file.getOriginalFilename());
+                        if (file == null || file.isEmpty())
+                            continue;
+                        String ext = getExtension(file.getOriginalFilename());
                         String filename = UUID.randomUUID().toString() + ext;
-                        Path   dest     = Paths.get(uploadDir + filename);
+                        Path dest = Paths.get(uploadDir + filename);
                         file.transferTo(dest);
                         savedPaths.add("/uploads/homestays/" + hsId + "/" + filename);
                     }
@@ -87,56 +130,65 @@ public class HomestayownerController {
                     if (!savedPaths.isEmpty()) {
                         Map<String, String> imgUpdate = new HashMap<>();
                         imgUpdate.put("images", String.join(",", savedPaths));
-                       homestayService.updateImages(hsId, imgUpdate);
+                        homestayService.updateImages(hsId, imgUpdate);
                     }
                 }
             }
 
-            return ResponseEntity.ok(Map.of("success", true));
+            redirectAttributes.addFlashAttribute("registerSuccess", true);
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("success", false, "message", e.getMessage()));
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("formData", req);
         } catch (IOException e) {
-            return ResponseEntity.internalServerError()
-                .body(Map.of("success", false, "message", "บันทึกรูปภาพไม่สำเร็จ: " + e.getMessage()));
+            redirectAttributes.addFlashAttribute("errorMessage", "บันทึกรูปภาพไม่สำเร็จ: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("formData", req);
         }
+        return "redirect:/owner/register";
     }
 
-    // ───── Login ─────
+    // ═══════════════════════════════════════════════════
+    // ───── Login — form-submit ─────
+    // ═══════════════════════════════════════════════════
 
     @PostMapping("/owner/login")
-    @ResponseBody
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body,
-                                   HttpSession session) {
+    public String login(@RequestParam String email,
+            @RequestParam String password,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         try {
-            Homestayowner owner = ownerService.login(
-                    body.get("email"),
-                    body.get("password")
-            );
+            Homestayowner owner = ownerService.login(email, password);
 
-            //เช็คก่อน set session
-        if ("SUSPENDED".equals(owner.getAccountstatus())) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, 
-                                 "message", "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ"));
-        }
-            session.setAttribute("ownerLogin",   owner);
-            session.setAttribute("ownerid",      owner.getOwnerid());
-            session.setAttribute("ownername",    owner.getFirstname() + " " + owner.getLastname());
+            if ("SUSPENDED".equals(owner.getAccountstatus())) {
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ");
+                redirectAttributes.addFlashAttribute("email", email);
+                return "redirect:/owner/login";
+            }
+
+            session.setAttribute("ownerLogin", owner);
+            session.setAttribute("ownerid", owner.getOwnerid());
+            session.setAttribute("ownername", owner.getFirstname() + " " + owner.getLastname());
 
             if (owner.getHomestays() != null && !owner.getHomestays().isEmpty()) {
-                session.setAttribute("homestayid",   owner.getHomestays().get(0).getHomestayid());
+                session.setAttribute("homestayid", owner.getHomestays().get(0).getHomestayid());
                 session.setAttribute("homestayname", owner.getHomestays().get(0).getHomestayname());
             } else {
-                session.setAttribute("homestayid",   null);
+                session.setAttribute("homestayid", null);
                 session.setAttribute("homestayname", "ยังไม่มีโฮมสเตย์");
             }
 
-            return ResponseEntity.ok(Map.of("success", true));
+            return "redirect:/owner/dashboard";
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", e.getMessage()));
+            String msg = e.getMessage();
+            if (msg != null && msg.contains("ยังไม่ได้รับการอนุมัติ")) {
+                redirectAttributes.addFlashAttribute("pendingMessage", msg);
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", msg);
+            }
+            redirectAttributes.addFlashAttribute("email", email);
+            return "redirect:/owner/login";
         }
     }
 
@@ -148,121 +200,121 @@ public class HomestayownerController {
         return "redirect:/owner/login";
     }
 
-    // ───── Get Profile ─────
+    // ═══════════════════════════════════════════════════
+    // ───── Update Profile (ข้อมูลส่วนตัว) — form-submit ─────
+    // ═══════════════════════════════════════════════════
 
-    @GetMapping("/owner/profile")
-    @ResponseBody
-    public ResponseEntity<?> getProfile(HttpSession session) {
+    @PostMapping("/owner/profile/update")
+    public String updateProfile(@RequestParam String firstname,
+            @RequestParam String lastname,
+            @RequestParam String email,
+            @RequestParam(required = false) String phone,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
         if (ownerid == null)
-            return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
+            return "redirect:/owner/login";
+
         try {
-            Homestayowner owner = ownerService.getProfile(ownerid);
-            return ResponseEntity.ok(toSafeMap(owner));
+            Homestayowner updated = ownerService.updateProfile(ownerid, firstname, lastname, email, phone);
+            session.setAttribute("ownername", updated.getFirstname() + " " + updated.getLastname());
+            redirectAttributes.addFlashAttribute("successMessage", "บันทึกข้อมูลส่วนตัวสำเร็จ");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(errorBody(e.getMessage()));
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+        return "redirect:/owner/profile-edit";
     }
 
-    // ───── Update Profile ─────
+    // ═══════════════════════════════════════════════════
+    // ───── Update Bank Info — form-submit ─────
+    // ═══════════════════════════════════════════════════
 
-    // ───── Update Profile (เฉพาะข้อมูลส่วนตัว) ─────
-
-@PutMapping("/owner/profile")
-@ResponseBody
-public ResponseEntity<?> updateProfile(@RequestBody Map<String, String> body,
-                                       HttpSession session) {
-    Integer ownerid = (Integer) session.getAttribute("ownerid");
-    if (ownerid == null)
-        return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
-    try {
-        Homestayowner updated = ownerService.updateProfile(
-                ownerid,
-                body.get("firstname"),
-                body.get("lastname"),
-                body.get("email"),
-                body.get("phone")
-        );
-        session.setAttribute("ownername", updated.getFirstname() + " " + updated.getLastname());
-        return ResponseEntity.ok(toSafeMap(updated));
-    } catch (RuntimeException e) {
-        return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
-    }
-}
-
-// ───── Update Bank Info ─────
-
-@PutMapping("/owner/profile/bank")
-@ResponseBody
-public ResponseEntity<?> updateBankInfo(@RequestBody Map<String, String> body,
-                                        HttpSession session) {
-    Integer ownerid = (Integer) session.getAttribute("ownerid");
-    if (ownerid == null)
-        return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
-    try {
-        Homestayowner updated = ownerService.updateBankInfo(
-                ownerid,
-                body.get("bankName"),
-                body.get("accountName"),
-                body.get("accountNumber"),
-                body.get("bankBranch")
-        );
-        return ResponseEntity.ok(toSafeMap(updated));
-    } catch (RuntimeException e) {
-        return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
-    }
-}
-
-// ───── Update Signature ─────
-
-@PostMapping(value = "/owner/profile/signature", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-@ResponseBody
-public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFile signature,
-                                         HttpSession session) {
-    Integer ownerid = (Integer) session.getAttribute("ownerid");
-    if (ownerid == null)
-        return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
-
-    if (signature == null || signature.isEmpty()) {
-        return ResponseEntity.badRequest().body(Map.of("success", false, "message", "กรุณาเลือกไฟล์ลายเซ็น"));
-    }
-
-    String contentType = signature.getContentType();
-    boolean validType = contentType != null &&
-            (contentType.equals("image/png") || contentType.equals("image/jpeg"));
-    if (!validType) {
-        return ResponseEntity.badRequest().body(Map.of("success", false, "message", "รองรับเฉพาะไฟล์ PNG หรือ JPG เท่านั้น"));
-    }
-    if (signature.getSize() > 2 * 1024 * 1024) {
-        return ResponseEntity.badRequest().body(Map.of("success", false, "message", "ขนาดไฟล์ต้องไม่เกิน 2MB"));
-    }
-
-    try {
-        String base64  = Base64.getEncoder().encodeToString(signature.getBytes());
-        String dataUrl = "data:" + contentType + ";base64," + base64;
-        Homestayowner updated = ownerService.updateSignature(ownerid, dataUrl);
-        return ResponseEntity.ok(Map.of("success", true, "signatureImageUrl", updated.getSignatureImageUrl()));
-    } catch (IOException e) {
-        return ResponseEntity.internalServerError()
-                .body(Map.of("success", false, "message", "อัปโหลดลายเซ็นไม่สำเร็จ: " + e.getMessage()));
-    }
-}
-    // ───── Change Password ─────
-
-    @PutMapping("/owner/change-password")
-    @ResponseBody
-    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body,
-                                            HttpSession session) {
+    @PostMapping("/owner/profile/update-bank")
+    public String updateBankInfo(@RequestParam String bankName,
+            @RequestParam String accountName,
+            @RequestParam String accountNumber,
+            @RequestParam(required = false) String bankBranch,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
         if (ownerid == null)
-            return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
+            return "redirect:/owner/login";
+
         try {
-            ownerService.changePassword(ownerid, body.get("currentPassword"), body.get("newPassword"));
-            return ResponseEntity.ok(Map.of("success", true, "message", "เปลี่ยนรหัสผ่านสำเร็จ"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", e.getMessage()));
+            ownerService.updateBankInfo(ownerid, bankName, accountName, accountNumber, bankBranch);
+            redirectAttributes.addFlashAttribute("successMessage", "บันทึกข้อมูลธนาคารสำเร็จ");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+        return "redirect:/owner/profile-edit";
+    }
+
+    // ═══════════════════════════════════════════════════
+    // ───── Update Signature — form-submit (multipart) ─────
+    // ═══════════════════════════════════════════════════
+
+    @PostMapping(value = "/owner/profile/update-signature", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String updateSignature(@RequestParam("signatureFile") MultipartFile signatureFile,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        if (ownerid == null)
+            return "redirect:/owner/login";
+
+        if (signatureFile == null || signatureFile.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "กรุณาเลือกไฟล์ลายเซ็น");
+            return "redirect:/owner/profile-edit";
+        }
+
+        String contentType = signatureFile.getContentType();
+        boolean validType = contentType != null &&
+                (contentType.equals("image/png") || contentType.equals("image/jpeg"));
+        if (!validType) {
+            redirectAttributes.addFlashAttribute("errorMessage", "รองรับเฉพาะไฟล์ PNG หรือ JPG เท่านั้น");
+            return "redirect:/owner/profile-edit";
+        }
+        if (signatureFile.getSize() > 2 * 1024 * 1024) {
+            redirectAttributes.addFlashAttribute("errorMessage", "ขนาดไฟล์ต้องไม่เกิน 2MB");
+            return "redirect:/owner/profile-edit";
+        }
+
+        try {
+            String base64 = Base64.getEncoder().encodeToString(signatureFile.getBytes());
+            String dataUrl = "data:" + contentType + ";base64," + base64;
+            ownerService.updateSignature(ownerid, dataUrl);
+            redirectAttributes.addFlashAttribute("successMessage", "อัปโหลดลายเซ็นสำเร็จ");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "อัปโหลดลายเซ็นไม่สำเร็จ: " + e.getMessage());
+        }
+        return "redirect:/owner/profile-edit";
+    }
+
+    // ═══════════════════════════════════════════════════
+    // ───── Change Password — form-submit ─────
+    // ═══════════════════════════════════════════════════
+
+    @PostMapping("/owner/change-password")
+    public String changePassword(@RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        if (ownerid == null)
+            return "redirect:/owner/login";
+
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน");
+            return "redirect:/owner/profile-edit";
+        }
+
+        try {
+            ownerService.changePassword(ownerid, currentPassword, newPassword);
+            redirectAttributes.addFlashAttribute("successMessage", "เปลี่ยนรหัสผ่านสำเร็จ");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/owner/profile-edit";
     }
 
     // ───── Homestays List ─────
@@ -270,7 +322,8 @@ public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFil
     @GetMapping("/owner/homestays")
     public String homestaysPage(HttpSession session, Model model) {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
-        if (ownerid == null) return "redirect:/owner/login";
+        if (ownerid == null)
+            return "redirect:/owner/login";
 
         Homestayowner owner = ownerService.getProfile(ownerid);
         List<HomestayDto> homestays = homestayService.getHomestaysByOwner(owner);
@@ -284,13 +337,15 @@ public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFil
 
     @GetMapping("/owner/homestays/{id}")
     public String viewHomestay(@PathVariable Integer id,
-                               HttpSession session,
-                               Model model) {
+            HttpSession session,
+            Model model) {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
-        if (ownerid == null) return "redirect:/owner/login";
+        if (ownerid == null)
+            return "redirect:/owner/login";
 
         HomestayDetailDto detail = homestayService.getHomestayDetail(id);
-        if (detail == null) return "redirect:/owner/homestays";
+        if (detail == null)
+            return "redirect:/owner/homestays";
 
         model.addAttribute("ownername", session.getAttribute("ownername"));
         model.addAttribute("detail", detail);
@@ -301,15 +356,18 @@ public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFil
 
     @GetMapping("/owner/homestays/{id}/edit")
     public String editHomestayPage(@PathVariable Integer id,
-                                   HttpSession session,
-                                   Model model) {
+            HttpSession session,
+            Model model) {
         Integer ownerid = (Integer) session.getAttribute("ownerid");
-        if (ownerid == null) return "redirect:/owner/login";
+        if (ownerid == null)
+            return "redirect:/owner/login";
 
-        if (!homestayService.isOwnedBy(id, ownerid)) return "redirect:/owner/homestays";
+        if (!homestayService.isOwnedBy(id, ownerid))
+            return "redirect:/owner/homestays";
 
         HomestayDetailDto detail = homestayService.getHomestayDetail(id);
-        if (detail == null) return "redirect:/owner/homestays";
+        if (detail == null)
+            return "redirect:/owner/homestays";
 
         model.addAttribute("ownername", session.getAttribute("ownername"));
         model.addAttribute("detail", detail);
@@ -322,11 +380,11 @@ public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFil
     @ResponseBody
     public ResponseEntity<?> updateHomestay(
             @PathVariable Integer id,
-            @RequestParam("homestayname")                          String homestayname,
-            @RequestParam("address")                               String address,
+            @RequestParam("homestayname") String homestayname,
+            @RequestParam("address") String address,
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "keepImages",  required = false) String keepImages,
-            @RequestParam(value = "newImages",   required = false) List<MultipartFile> newImages,
+            @RequestParam(value = "keepImages", required = false) String keepImages,
+            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
             HttpSession session) {
 
         Integer ownerid = (Integer) session.getAttribute("ownerid");
@@ -345,16 +403,18 @@ public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFil
             if (keepImages != null && !keepImages.isBlank()) {
                 for (String p : keepImages.split(",")) {
                     String trimmed = p.trim();
-                    if (!trimmed.isBlank()) allPaths.add(trimmed);
+                    if (!trimmed.isBlank())
+                        allPaths.add(trimmed);
                 }
             }
 
             if (newImages != null) {
                 for (MultipartFile file : newImages) {
-                    if (file == null || file.isEmpty()) continue;
-                    String ext      = getExtension(file.getOriginalFilename());
+                    if (file == null || file.isEmpty())
+                        continue;
+                    String ext = getExtension(file.getOriginalFilename());
                     String filename = UUID.randomUUID().toString() + ext;
-                    Path   dest     = Paths.get(uploadDir + filename);
+                    Path dest = Paths.get(uploadDir + filename);
                     file.transferTo(dest);
                     allPaths.add("/uploads/homestays/" + id + "/" + filename);
                 }
@@ -364,9 +424,9 @@ public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFil
 
             Map<String, String> req = new HashMap<>();
             req.put("homestayname", homestayname);
-            req.put("address",      address);
-            req.put("description",  description);
-            req.put("images",       imagesValue);
+            req.put("address", address);
+            req.put("description", description);
+            req.put("images", imagesValue);
             homestayService.updateHomestay(id, req);
 
             return ResponseEntity.ok(Map.of("success", true, "message", "บันทึกข้อมูลสำเร็จ"));
@@ -382,29 +442,8 @@ public ResponseEntity<?> updateSignature(@RequestParam("signature") MultipartFil
 
     // ───── Helpers ดึงนามสกุลไฟล์ ─────
     private String getExtension(String filename) {
-        if (filename == null || !filename.contains(".")) return ".jpg";
+        if (filename == null || !filename.contains("."))
+            return ".jpg";
         return filename.substring(filename.lastIndexOf('.')).toLowerCase();
-    }
-    //แปลง Object เป็นข้อมูลปลอดภัยสำหรับส่งออก
-    private Map<String, Object> toSafeMap(Homestayowner o) {
-    Map<String, Object> map = new HashMap<>();
-    map.put("ownerid",            o.getOwnerid());
-    map.put("firstname",          o.getFirstname());
-    map.put("lastname",           o.getLastname());
-    map.put("email",              o.getEmail());
-    map.put("phone",              o.getPhone());
-    map.put("bankName",           o.getBankName());
-    map.put("accountNumber",      o.getAccountNumber());
-    map.put("verificationstatus", o.getVerificationstatus());
-    map.put("accountstatus",      o.getAccountstatus());
-    map.put("bankBranch",         o.getBankBranch());
-    map.put("accountName",        o.getAccountName());
-    map.put("signatureImageUrl",  o.getSignatureImageUrl()); 
-    return map;
-}
-    private Map<String, String> errorBody(String message) {
-        Map<String, String> body = new HashMap<>();
-        body.put("message", message);
-        return body;
     }
 }

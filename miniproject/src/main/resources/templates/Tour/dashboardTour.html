@@ -219,6 +219,35 @@
         .dropdown-item.logout:hover {
             background: #fff5f5;
         }
+        .brand-logo-link {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-right: auto;
+    text-decoration: none;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.brand-logo img {
+    height: 75px;          /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+    width: auto;
+    max-width: 180px;
+    object-fit: contain;
+    display: block;
+}
+
+.brand-text {
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.05rem;
+    white-space: nowrap;
+}
+
 
         /* ─── BANK BANNER ─── */
         .bank-warning-banner {
@@ -751,9 +780,11 @@
 
     <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
-        <a class="nav-brand" th:href="@{/}">
-            <i class="fas fa-mountain-sun"></i>
-            ระบบท่องเที่ยวชุมชนชนเผ่า
+       <a th:href="@{/}" class="brand-logo-link">
+            <div class="brand-logo">
+                <img th:src="@{/images/logo3.png}" alt="Logo">
+            </div>
+            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
         <div style="flex:1;"></div>
         <a th:href="@{/manager/dashboard}" class="nav-link active"><i class="fas fa-globe"></i> ภาพรวม</a>

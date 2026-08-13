@@ -207,6 +207,37 @@
             color: #fff;
         }
 
+        .brand-logo-link {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-right: auto;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .brand-logo img {
+            height: 75px;
+            /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+            width: auto;
+            max-width: 180px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand-text {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+
         /* ─── PAGE ─── */
         .page {
             padding: 28px 28px 60px;
@@ -615,9 +646,11 @@
 
     <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
-        <a class="nav-brand" th:href="@{/}">
-            <i class="fas fa-mountain-sun"></i>
-            ระบบท่องเที่ยวชุมชนชนเผ่า
+        <a th:href="@{/}" class="brand-logo-link">
+            <div class="brand-logo">
+                <img th:src="@{/images/logo3.png}" alt="Logo">
+            </div>
+            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
 
         <div class="nav-dropdown">

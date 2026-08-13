@@ -1,29 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขโปรไฟล์ - ผู้จัดการชุมชน</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
-            --green-dark:  #3a7d1e;
-            --green-mid:   #65a30d;
+            --green-dark: #3a7d1e;
+            --green-mid: #65a30d;
             --green-light: #d9f99d;
-            --amber:       #f0a500;
-            --amber-hover: #4d7c0a;
-            --bg-page:     #f3fae8;
-            --bg-card:     #ffffff;
-            --border:      #e2ddd4;
-            --text-main:   #1c1c1a;
-            --text-muted:  #6b6b68;
-            --text-hint:   #9a9a96;
-            --radius-card: 12px;
-            --radius-sm:   6px;
-            --shadow-card: 0 1px 3px rgba(0,0,0,0.07);
+            --amber: #f0a500;
+            --amber-hover: #c27f00;
+            --bg-page: #f3fae8;
+            --bg-card: #ffffff;
+            --border: #e2ddd4;
+            --text-main: #1c1c1a;
+            --text-muted: #6b6b68;
+            --text-hint: #9a9a96;
+            --radius-card: 14px;
+            --radius-sm: 8px;
+            --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.06);
+            --white: #ffffff;
         }
 
         body {
@@ -45,94 +52,173 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
         }
-        .nav-brand {
-            color: #fff;
-            font-size: 1.05rem;
-            font-weight: 700;
+
+        .brand-logo-link {
             display: flex;
             align-items: center;
             gap: .6rem;
+            margin-right: auto;
             text-decoration: none;
-            white-space: nowrap;
         }
-        .nav-brand i { color: #fff; font-size: 1.2rem; }
-        .nav-link {
-            color: rgba(255,255,255,.7);
-            font-size: .92rem;
-            font-weight: 500;
-            padding: .45rem 1rem;
-            border-radius: 6px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: .45rem;
-            transition: all .2s;
-            white-space: nowrap;
-        }
-        .nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
-        .nav-link i { font-size: .9rem; }
-        .nav-spacer { flex: 1; }
 
-        .nav-dropdown { position: relative; margin-left: 1rem; }
+        .brand-logo img {
+            height: 62px;
+            width: auto;
+            max-width: 160px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand-text {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
         .nav-dropdown-trigger {
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: rgba(255,255,255,.85);
-            font-size: .92rem;
-            font-weight: 500;
+            gap: 10px;
             cursor: pointer;
-            padding: .4rem .6rem;
-            border-radius: 8px;
+            padding: .4rem .7rem;
+            border-radius: 10px;
             transition: background .2s;
             user-select: none;
         }
-        .nav-dropdown-trigger:hover { background: rgba(255,255,255,.1); }
-        .nav-dropdown-trigger .chevron { font-size: .75rem; color: rgba(255,255,255,.6); transition: transform .2s; }
-        .nav-dropdown:hover .chevron { transform: rotate(180deg); }
+
+        .nav-dropdown-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+        }
+
+        .nav-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--amber);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .82rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .nav-name-stack {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .nav-owner-name {
+            color: #fff;
+            font-size: .88rem;
+            font-weight: 600;
+        }
+
+        .nav-owner-role {
+            color: rgba(255, 255, 255, .65);
+            font-size: .72rem;
+        }
+
+        .nav-dropdown-trigger .chevron {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .6);
+            transition: transform .2s;
+            margin-left: 2px;
+        }
+
+        .nav-dropdown:hover .chevron {
+            transform: rotate(180deg);
+        }
+
         .dropdown-menu {
             display: none;
             position: absolute;
-            right: 0; top: calc(100% + 8px);
+            right: 0;
+            top: calc(100% + 8px);
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 8px 28px rgba(0,0,0,.15);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .15);
             border: 1px solid #e8e8e8;
             min-width: 200px;
             padding: 6px 0;
             z-index: 200;
         }
-        .dropdown-menu::before { content:''; position:absolute; top:-10px; left:0; right:0; height:10px; }
-        .nav-dropdown:hover .dropdown-menu { display: block; }
-        .dropdown-header { padding: .7rem 1rem .5rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
-        .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #1a2e1c; }
-        .dropdown-header .d-role { font-size: .78rem; color: #6b7c6e; margin-top: 1px; }
+
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 10px;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
         .dropdown-item {
-            display: flex; align-items: center; gap: .65rem;
-            padding: .6rem 1rem; font-size: .88rem; color: #333;
-            text-decoration: none; transition: background .15s;
-        }
-        .dropdown-item i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
-        .dropdown-item:hover { background: #eefcda; color: var(--green-dark); }
-        .dropdown-item:hover i { color: var(--green-dark); }
-        .dropdown-divider { border: none; border-top: 1px solid #f0f0f0; margin: 4px 0; }
-        .dropdown-item.logout { color: #c0392b; }
-        .dropdown-item.logout i { color: #c0392b; }
-        .dropdown-item.logout:hover { background: #fff5f5; }
-        .nav-avatar {
-            width: 36px; height: 36px;
-            background: var(--amber);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: .85rem; font-weight: 700; color: #fff;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .6rem 1rem;
+            font-size: .88rem;
+            color: #333;
+            text-decoration: none;
+            transition: background .15s;
         }
 
-        /* ─── PAGE ─── */
-        .page { padding: 28px 28px 60px; max-width: 720px; margin: auto; }
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
 
-        .back-link {
+        .dropdown-item:hover {
+            background: #eefcda;
+            color: var(--green-dark);
+        }
+
+        .dropdown-item:hover i {
+            color: var(--green-dark);
+        }
+
+        .dropdown-divider {
+            border: none;
+            border-top: 1px solid #f0f0f0;
+            margin: 4px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #c0392b;
+        }
+
+        .dropdown-item.logout i {
+            color: #c0392b;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff5f5;
+        }
+
+        /* ─── MAIN CONTAINER ─── */
+        .main-container {
+            padding: 28px 28px 60px;
+            max-width: 720px;
+            margin: auto;
+        }
+
+        .back-btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -140,192 +226,339 @@
             font-size: 13px;
             text-decoration: none;
             margin-bottom: 16px;
+            cursor: pointer;
             transition: color 0.15s;
         }
-        .back-link:hover { color: var(--green-dark); }
+
+        .back-btn:hover {
+            color: var(--green-dark);
+        }
+
+        .page-header {
+            margin-bottom: 20px;
+        }
 
         .page-title {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 21px;
+            font-weight: 700;
             color: var(--green-dark);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
+
         .page-subtitle {
             font-size: 13px;
             color: var(--text-muted);
-            margin-bottom: 24px;
         }
 
-        /* ─── ALERT ─── */
-        .alert {
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        .alert-error   { background: #fdecea; color: #b71c1c; border: 1px solid #ffcdd2; }
-
-        /* ─── CARD ─── */
-        .card {
+        /* ─── PROFILE CARD ─── */
+        .profile-card {
             background: var(--bg-card);
             border-radius: var(--radius-card);
             border: 1px solid var(--border);
-            padding: 20px 24px;
             box-shadow: var(--shadow-card);
-            margin-bottom: 16px;
-        }
-        .card-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-        .card-title i { color: var(--green-mid); font-size: 13px; }
-
-        /* ─── PROFILE HEADER CARD ─── */
-        .profile-header {
+            padding: 22px 24px;
             display: flex;
             align-items: center;
             gap: 18px;
-        }
-        .avatar-big {
-            width: 72px; height: 72px;
-            background: var(--green-mid);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; font-weight: 700; color: #fff;
-            flex-shrink: 0;
-            border: 3px solid #c8e6c9;
-        }
-        .profile-info-text .p-name { font-size: 17px; font-weight: 600; color: var(--text-main); }
-        .profile-info-text .p-email { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-        .profile-info-text .p-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            margin-top: 6px;
-            background: #e8f5e9; color: var(--green-mid);
-            font-size: 11px; font-weight: 600;
-            padding: 3px 10px; border-radius: 20px;
+            margin-bottom: 20px;
         }
 
-        /* ─── FORM ─── */
+        .avatar-wrapper .avatar {
+            width: 72px;
+            height: 72px;
+            background: var(--green-mid);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #fff;
+            border: 3px solid var(--green-light);
+        }
+
+        .profile-info .profile-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .profile-info .profile-email {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .badge-role {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+            background: #e8f5e9;
+            color: var(--green-mid);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        /* ─── FORM SECTIONS ─── */
+        .form-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            padding: 22px 24px;
+            margin-bottom: 18px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--green-light);
+            color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .bank-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #fff8e1;
+            border: 1.5px solid #f59e0b;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            color: #7c4a00;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .bank-alert-icon {
+            font-size: 1.3rem;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
         }
-        .form-group { margin-bottom: 14px; }
-        .form-group:last-child { margin-bottom: 0; }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
         .form-label {
             display: block;
-            font-size: 12px;
+            font-size: 12.5px;
             font-weight: 600;
             color: var(--text-muted);
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
-        .form-label .req { color: #e53935; }
-        .form-control {
+
+        .required {
+            color: #e53935;
+        }
+
+        .form-input {
             width: 100%;
-            padding: 9px 12px;
-            border: 1px solid var(--border);
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
             border-radius: var(--radius-sm);
             font-family: 'Sarabun', sans-serif;
             font-size: 14px;
             color: var(--text-main);
-            background: #f3fae8;
+            background: var(--bg-page);
             transition: border-color 0.15s, box-shadow 0.15s;
             outline: none;
         }
-        .form-control:focus {
+
+        .form-input:focus {
             border-color: var(--green-mid);
-            box-shadow: 0 0 0 3px rgba(45,106,53,0.1);
+            box-shadow: 0 0 0 3px rgba(101, 163, 13, .15);
             background: #fff;
         }
-        .form-control[readonly] {
-            background: #f3fae8;
+
+        .form-input[readonly] {
+            background: var(--bg-page);
             color: var(--text-hint);
             cursor: not-allowed;
         }
-        .form-hint {
-            font-size: 11px;
-            color: var(--text-hint);
-            margin-top: 4px;
+
+        .input-with-icon {
+            position: relative;
         }
 
-        /* ─── PASSWORD TOGGLE ─── */
-        .input-wrap { position: relative; }
-        .input-wrap .form-control { padding-right: 38px; }
-        .toggle-pw {
+        .input-with-icon .form-input {
+            padding-right: 38px;
+        }
+
+        .input-icon, .toggle-password {
             position: absolute;
-            right: 10px; top: 50%;
+            right: 12px;
+            top: 50%;
             transform: translateY(-50%);
-            background: none; border: none;
-            cursor: pointer;
             color: var(--text-hint);
-            font-size: 14px;
-            padding: 2px;
-            transition: color 0.15s;
+            font-size: 13px;
         }
-        .toggle-pw:hover { color: var(--green-mid); }
 
-        /* ─── LOCK NOTICE ─── */
-        .lock-notice {
+        .toggle-password {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            transition: color .15s;
+        }
+
+        .toggle-password:hover {
+            color: var(--green-mid);
+        }
+
+        .error-msg {
+            display: block;
+            font-size: 11.5px;
+            color: #b71c1c;
+            margin-top: 5px;
+            min-height: 14px;
+        }
+
+        .error-msg.ok {
+            color: #2e7d32;
+        }
+
+        .password-hint {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 8px;
             background: #fffbec;
             border: 1px solid #f5d88a;
             border-radius: var(--radius-sm);
             padding: 11px 14px;
             font-size: 13px;
             color: #7a5800;
+            margin-bottom: 4px;
         }
-        .lock-notice i { color: var(--amber); margin-top: 2px; flex-shrink: 0; }
 
-        /* ─── ACTION BAR ─── */
-        .action-bar {
+        .hint-icon {
+            color: var(--amber);
+            margin-top: 1px;
+        }
+
+        .signature-preview-wrap {
+            margin-bottom: 14px;
+        }
+
+        .signature-preview-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .signature-preview-wrap img {
+            max-width: 220px;
+            max-height: 110px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: #fafdf7;
+            padding: 6px;
+            display: block;
+        }
+
+        .section-save-row {
             display: flex;
             justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
-            margin-top: 8px;
+            margin-top: 16px;
         }
-        .btn-cancel {
-            padding: 9px 20px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: 'Sarabun', sans-serif;
-            font-size: 13px;
-            color: var(--text-muted);
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex; align-items: center; gap: 5px;
-            transition: background 0.15s;
-        }
-        .btn-cancel:hover { background: #f3fae8; }
+
         .btn-save {
-            padding: 9px 22px;
-            background: #f0a500;;
+            padding: 10px 22px;
+            background: var(--amber);
             color: #fff;
             border: none;
             border-radius: var(--radius-sm);
             font-family: 'Sarabun', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 13.5px;
+            font-weight: 700;
             cursor: pointer;
-            display: inline-flex; align-items: center; gap: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
             transition: background 0.15s;
         }
-        .btn-save:hover { background: #C27F00 }
+
+        .btn-save:hover {
+            background: var(--amber-hover);
+        }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%) translateY(20px);
+            background: #1a3d1f;
+            color: #d8f3dc;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease, transform .25s ease;
+            z-index: 999;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error {
+            background: #4a1616;
+            color: #ffd6d6;
+        }
+
+        .toast::before {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            content: '\f058';
+            color: #7ed957;
+        }
+
+        .toast.error::before {
+            content: '\f057';
+            color: #ff8a8a;
+        }
 
         /* ─── FOOTER ─── */
         .footer {
@@ -335,387 +568,300 @@
             color: #d8f3dc;
             font-size: 0.9rem;
         }
-        .footer-content { display: flex; justify-content: space-between; align-items: center; }
-        .footer a { color: #95d5b2; text-decoration: none; margin-left: 8px; }
-        .footer a:hover { text-decoration: underline; }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer a {
+            color: #95d5b2;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
 
         @media (max-width: 560px) {
-            .form-row { grid-template-columns: 1fr; }
-            .page { padding: 16px 16px 40px; }
-        }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
 
-        /* ─── BANK BADGE ─── */
-        .bank-filled {
-            display: inline-flex; align-items: center; gap: 5px;
-            background: #e8f5e9; color: var(--green-mid);
-            font-size: 11px; font-weight: 600;
-            padding: 3px 10px; border-radius: 20px;
-            margin-top: 4px;
+            .main-container {
+                padding: 16px 16px 40px;
+            }
+
+            .nav-name-stack {
+                display: none;
+            }
         }
-        .bank-empty {
-            display: inline-flex; align-items: center; gap: 5px;
-            background: #fff8e1; color: #f57f17;
-            font-size: 11px; font-weight: 600;
-            padding: 3px 10px; border-radius: 20px;
-            margin-top: 4px;
-        }
-        /* ═══ SUCCESS MODAL ═══ */
-.modal-backdrop {
-    position: fixed; inset: 0;
-    background: rgba(10,30,12,0.55);
-    backdrop-filter: blur(4px);
-    z-index: 500;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-.modal-backdrop.show { opacity: 1; pointer-events: all; }
-.modal-box {
-    background: #fff; border-radius: 20px;
-    padding: 40px 36px 32px; max-width: 380px; width: 90%;
-    text-align: center;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.22);
-    transform: scale(0.85) translateY(20px);
-    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
-    opacity: 0;
-}
-.modal-backdrop.show .modal-box { transform: scale(1) translateY(0); opacity: 1; }
-.checkmark-wrap {
-    width: 80px; height: 80px;
-    background: linear-gradient(135deg,#1a3d1f,#2d6a35);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-    box-shadow: 0 8px 24px rgba(26,61,31,0.35);
-    position: relative;
-}
-.checkmark-wrap::after {
-    content: ''; position: absolute; inset: -4px;
-    border-radius: 50%; border: 3px solid rgba(26,61,31,0.15);
-}
-.checkmark-ring {
-    position: absolute; inset: -8px; border-radius: 50%;
-    border: 2px solid rgba(26,61,31,0.08);
-    animation: ring-pulse 1.5s ease-out 0.4s both;
-}
-@keyframes ring-pulse {
-    0%   { transform: scale(0.9); opacity: 0; }
-    50%  { opacity: 1; }
-    100% { transform: scale(1.3); opacity: 0; }
-}
-.checkmark-icon {
-    font-size: 36px; color: #fff;
-    animation: pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
-}
-@keyframes pop-in {
-    from { transform: scale(0); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-}
-.modal-title { font-size: 20px; font-weight: 700; color: #2d6a2d; margin-bottom: 8px; }
-.modal-desc  { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 24px; }
-.modal-btn-row { display: flex; gap: 10px; justify-content: center; }
-.modal-btn-primary {
-    display: inline-flex; align-items: center; gap: 7px;
-    background: #2d6a2d; color: #fff;
-    padding: 10px 22px; border-radius: 8px;
-    font-size: 13px; font-weight: 700; font-family: 'Sarabun', sans-serif;
-    border: none; cursor: pointer;
-    transition: background 0.15s;
-}
-.modal-btn-primary:hover { background: #3d8c3d; }
-.modal-progress-bar {
-    height: 3px; background: #e8f4ea;
-    border-radius: 0 0 20px 20px;
-    margin: 24px -36px -32px; overflow: hidden;
-}
-.modal-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #65a30d, #2d6a2d);
-    border-radius: 3px; width: 100%; transform-origin: left;
-    animation: progress-drain 2s linear forwards;
-}
-@keyframes progress-drain {
-    from { transform: scaleX(1); }
-    to   { transform: scaleX(0); }
-}
     </style>
 </head>
+
 <body>
 
-<!-- ═══ NAVBAR ═══ -->
-<nav class="navbar">
-    <a class="nav-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun"></i>
-        ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
-
-    <div class="nav-spacer"></div>
-
-    <!-- Profile Dropdown -->
-    <div class="nav-dropdown">
-        <div class="nav-dropdown-trigger">
-            <div class="nav-avatar"
-                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
-                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
-                           : 'CM'">CM</div>
-            <span th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-            <i class="fas fa-chevron-down chevron"></i>
-        </div>
-        <div class="dropdown-menu">
-            <div class="dropdown-header">
-                <div class="d-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</div>
-                <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">manager@community.th</div>
+    <!-- ═══ NAVBAR ═══ -->
+    <nav class="navbar">
+        <a th:href="@{/}" class="brand-logo-link">
+            <div class="brand-logo">
+                <img th:src="@{/images/logo3.png}" alt="Logo">
             </div>
-            <a th:href="@{/manager/profile}" class="dropdown-item">
-                <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-            </a>
-            <hr class="dropdown-divider">
-            <a th:href="@{/logout}" class="dropdown-item logout">
-                <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-            </a>
-        </div>
-    </div>
-</nav>
-<!-- Thymeleaf pass message to JS -->
-<div id="serverMsg"
-     th:data-success="${successMessage}"
-     th:data-error="${errorMessage}"
-     style="display:none;"></div>
+            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+        </a>
 
-<!-- ═══ SUCCESS MODAL ═══ -->
-<div class="modal-backdrop" id="successModal">
-    <div class="modal-box">
-        <div class="checkmark-wrap">
-            <div class="checkmark-ring"></div>
-            <i class="fas fa-check checkmark-icon"></i>
-        </div>
-        <div class="modal-title" id="modalTitle">บันทึกสำเร็จ!</div>
-        <div class="modal-desc" id="modalDesc">ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว</div>
-        <div class="modal-btn-row">
-            <button class="modal-btn-primary" onclick="document.getElementById('successModal').classList.remove('show')">
-                <i class="fas fa-check"></i> ตกลง
-            </button>
-        </div>
-        <div class="modal-progress-bar">
-            <div class="modal-progress-fill" id="progressFill"></div>
-        </div>
-    </div>
-</div>
-
-<!-- ═══ PAGE ═══ -->
-<div class="page">
-
-    <a class="back-link" th:href="@{/manager/dashboard}">
-        <i class="fas fa-chevron-left" style="font-size:11px;"></i>
-        ย้อนกลับ
-    </a>
-
-    <div class="page-title">แก้ไขโปรไฟล์</div>
-    <div class="page-subtitle">อัปเดตข้อมูลส่วนตัวของบัญชีคุณ</div>
-
-    <!-- Profile Header -->
-    <div class="card">
-        <div class="profile-header">
-            <div class="avatar-big"
-                 th:text="${loggedInManager != null and loggedInManager.firstname != null}
+        <div class="nav-dropdown">
+            <div class="nav-dropdown-trigger">
+                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
                            ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
                            : 'CM'">CM</div>
-            <div class="profile-info-text">
-                <div class="p-name" th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : '-'">ชื่อ นามสกุล</div>
-                <div class="p-email" th:text="${loggedInManager != null} ? ${loggedInManager.email} : '-'">email@community.th</div>
-                <div class="p-badge">
+                <div class="nav-name-stack">
+                    <span class="nav-owner-name"
+                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                    <span class="nav-owner-role">ผู้จัดการท่องเที่ยวชุมชน</span>
+                </div>
+                <i class="fas fa-chevron-down chevron"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a th:href="@{/manager/profile}" class="dropdown-item">
+                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+                </a>
+                <hr class="dropdown-divider">
+                <a th:href="@{/logout}" class="dropdown-item logout">
+                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Thymeleaf pass message to JS -->
+    <div id="serverMsg" th:data-success="${successMessage}" th:data-error="${errorMessage}" style="display:none;"></div>
+
+    <main class="main-container">
+
+        <a class="back-btn" th:href="@{/manager/dashboard}">
+            <i class="fas fa-chevron-left" style="font-size:11px;"></i> ย้อนกลับ
+        </a>
+
+        <div class="page-header">
+            <h1 class="page-title">แก้ไขโปรไฟล์</h1>
+            <p class="page-subtitle">อัปเดตข้อมูลส่วนตัวและรหัสผ่านของบัญชีคุณ</p>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="avatar-wrapper">
+                <div class="avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
+                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
+                           : 'CM'">CM</div>
+            </div>
+            <div class="profile-info">
+                <p class="profile-name"
+                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : '-'">
+                    ชื่อ นามสกุล</p>
+                <p class="profile-email" th:text="${loggedInManager != null} ? ${loggedInManager.email} : '-'">
+                    email@community.th</p>
+                <span class="badge-role">
                     <i class="fas fa-shield-halved" style="font-size:10px;"></i>
                     ผู้จัดการท่องเที่ยวชุมชน
-                </div>
+                </span>
             </div>
         </div>
-    </div>
 
-    <!-- ═══ BANK FORM ═══ -->
-    <form th:action="@{/manager/profile/update-bank}" method="post" id="bankForm">
-        <div class="card">
-            <div class="card-title">
-                <i class="fas fa-building-columns"></i> ข้อมูลธนาคารสำหรับรับเงิน
-            </div>
-
-            <div class="lock-notice" style="margin-bottom:14px;">
-                <i class="fas fa-circle-info" style="color:#f0a500;"></i>
-                <span>ข้อมูลธนาคารใช้สำหรับรับชำระเงินจากนักท่องเที่ยว — กรอกให้ครบก่อนเปิดรับจอง</span>
-            </div>
-
-            <!-- Badge สถานะ -->
-            <div th:if="${loggedInManager?.bankName != null and loggedInManager?.accountNumber != null}">
-                <span class="bank-filled"><i class="fas fa-circle-check" style="font-size:10px;"></i> มีข้อมูลธนาคารแล้ว</span>
-            </div>
-            <div th:unless="${loggedInManager?.bankName != null and loggedInManager?.accountNumber != null}" style="margin-bottom:8px;">
-                <span class="bank-empty"><i class="fas fa-triangle-exclamation" style="font-size:10px;"></i> ยังไม่ได้กรอกข้อมูลธนาคาร</span>
-            </div>
-
-            <!-- แถว 1: ธนาคาร + สาขา -->
-            <div class="form-row" style="margin-top:14px;">
-                <div class="form-group">
-                    <label class="form-label">ธนาคาร <span class="req">*</span></label>
-                    <select class="form-control" name="bankName" id="bankNameSelect">
-                        <option value="">-- เลือกธนาคาร --</option>
-                        <option value="ธนาคารกสิกรไทย"      th:selected="${loggedInManager?.bankName == 'ธนาคารกสิกรไทย'}">ธนาคารกสิกรไทย (KBank)</option>
-                        <option value="ธนาคารไทยพาณิชย์"    th:selected="${loggedInManager?.bankName == 'ธนาคารไทยพาณิชย์'}">ธนาคารไทยพาณิชย์ (SCB)</option>
-                        <option value="ธนาคารกรุงเทพ"        th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงเทพ'}">ธนาคารกรุงเทพ (BBL)</option>
-                        <option value="ธนาคารกรุงไทย"        th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงไทย'}">ธนาคารกรุงไทย (KTB)</option>
-                        <option value="ธนาคารกรุงศรีอยุธยา"  th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงศรีอยุธยา'}">ธนาคารกรุงศรีอยุธยา (BAY)</option>
-                        <option value="ธนาคารทหารไทยธนชาต"   th:selected="${loggedInManager?.bankName == 'ธนาคารทหารไทยธนชาต'}">ธนาคารทหารไทยธนชาต (TTB)</option>
-                        <option value="ธนาคารออมสิน"         th:selected="${loggedInManager?.bankName == 'ธนาคารออมสิน'}">ธนาคารออมสิน (GSB)</option>
-                        <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร" th:selected="${loggedInManager?.bankName == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร'}">ธ.ก.ส. (BAAC)</option>
-                    </select>
-                    <div class="form-hint" id="bankNameHint"></div>
+        <!-- ═══ FORM 1: ข้อมูลส่วนตัว ═══ -->
+        <form th:action="@{/manager/profile/update}" method="post" id="profileForm">
+            <section class="form-section">
+                <div class="section-header">
+                    <span class="section-icon"><i class="fas fa-user"></i></span>
+                    <h2 class="section-title">ข้อมูลส่วนตัว</h2>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">สาขา</label>
-                    <input class="form-control" type="text" name="bankBranch" id="bankBranchInput"
-                           th:value="${loggedInManager?.bankBranch}"
-                           placeholder="เช่น สาขาเซ็นทรัลเชียงใหม่" maxlength="100"/>
-                    <div class="form-hint">ไม่บังคับ — ระบุสาขาหากต้องการ</div>
-                </div>
-            </div>
 
-            <!-- แถว 2: ชื่อบัญชี + เลขบัญชี -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">ชื่อบัญชี <span class="req">*</span></label>
-                    <input class="form-control" type="text" name="accountName" id="accountNameInput"
-                           th:value="${loggedInManager?.accountName}"
-                           placeholder="ชื่อ-นามสกุลตามสมุดบัญชี" maxlength="200"/>
-                    <div class="form-hint" id="accountNameHint"></div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">เลขบัญชีธนาคาร <span class="req">*</span></label>
-                    <input class="form-control" type="text" name="accountNumber" id="accountNumberInput"
-                           th:value="${loggedInManager?.accountNumber}"
-                           placeholder="000-0-00000-0" maxlength="20" inputmode="numeric"/>
-                    <div class="form-hint" id="accountHint"></div>
-                </div>
-            </div>
-
-            <div class="action-bar" style="margin-top:4px;">
-                <button type="submit" class="btn-save" id="bankSaveBtn">
-                    <i class="fas fa-floppy-disk"></i>
-                    บันทึกข้อมูลธนาคาร
-                </button>
-            </div>
-        </div>
-    </form>
-
-    <!-- ═══ SIGNATURE FORM ═══ -->
-<form th:action="@{/manager/profile/update-signature}" method="post"
-      enctype="multipart/form-data" id="signatureForm">
-    <div class="card">
-        <div class="card-title">
-            <i class="fas fa-signature"></i> ลายเซ็นสำหรับออกใบเสร็จ
-        </div>
-
-        <div class="lock-notice" style="margin-bottom:14px;">
-            <i class="fas fa-circle-info" style="color:#f0a500;"></i>
-            <span>ลายเซ็นนี้จะถูกนำไปแสดงในใบเสร็จรับเงินของทัวร์ที่คุณจัด</span>
-        </div>
-
-        <div th:if="${loggedInManager?.signatureImageUrl != null}" style="margin-bottom:14px;">
-            <div class="form-hint" style="margin-bottom:6px;">ลายเซ็นปัจจุบัน</div>
-            <img th:src="${loggedInManager.signatureImageUrl}"
-                 style="max-width:220px; max-height:110px; border:1px solid var(--border); border-radius:8px; background:#fafdf7; padding:6px;">
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">อัปโหลดไฟล์ลายเซ็นใหม่</label>
-            <input class="form-control" type="file" name="signatureFile"
-                   id="signatureFileInput" accept="image/png,image/jpeg">
-            <div class="form-hint">รองรับ PNG หรือ JPG ขนาดไม่เกิน 2MB (แนะนำพื้นหลังโปร่งใส)</div>
-        </div>
-
-        <div id="signaturePreviewWrap" style="display:none; margin-bottom:14px;">
-            <div class="form-hint" style="margin-bottom:6px;">ตัวอย่างไฟล์ที่เลือก</div>
-            <img id="signaturePreviewImg"
-                 style="max-width:220px; max-height:110px; border:1px solid var(--border); border-radius:8px; background:#fafdf7; padding:6px;">
-        </div>
-
-        <div class="action-bar" style="margin-top:4px;">
-            <button type="submit" class="btn-save">
-                <i class="fas fa-upload"></i>
-                อัปโหลดลายเซ็น
-            </button>
-        </div>
-    </div>
-</form>
-
-    <!-- ═══ PROFILE FORM ═══ -->
-    <form th:action="@{/manager/profile/update}" method="post" id="profileForm">
-
-        <!-- ข้อมูลส่วนตัว -->
-        <div class="card">
-            <div class="card-title">
-                <i class="fas fa-user"></i> ข้อมูลส่วนตัว
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">ชื่อ <span class="req">*</span></label>
-                    <input class="form-control" type="text" name="firstname" id="firstname"
-                           th:value="${loggedInManager?.firstname}"
-                           placeholder="ชื่อจริง" required/>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">นามสกุล <span class="req">*</span></label>
-                    <input class="form-control" type="text" name="lastname" id="lastname"
-                           th:value="${loggedInManager?.lastname}"
-                           placeholder="นามสกุล" required/>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">อีเมล <span class="req">*</span></label>
-                <input class="form-control" type="email" name="email" id="emailInput"
-                    th:value="${loggedInManager?.email}"
-                    placeholder="email@example.com" required/>
-                <div class="form-hint" id="emailHint"></div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">เบอร์โทรศัพท์</label>
-                    <input class="form-control" type="text" name="phone" id="phoneInput"
-                        th:value="${loggedInManager?.phone}"
-                        placeholder="0812345678" maxlength="10" inputmode="numeric"/>
-                    <div class="form-hint" id="phoneHint"></div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">ชนเผ่า / ชุมชน</label>
-                    <div class="input-wrap">
-                        <input class="form-control" type="text" name="tribe"
-                               th:value="${loggedInManager?.tribe}"
-                               readonly/>
-                        <i class="fas fa-lock toggle-pw" style="cursor:default;"></i>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="firstname">ชื่อ <span class="required">*</span></label>
+                        <input class="form-input" type="text" name="firstname" id="firstname"
+                            th:value="${loggedInManager?.firstname}" placeholder="ชื่อจริง" required>
+                        <span class="error-msg" id="firstnameError"></span>
                     </div>
-                    <div class="form-hint">กำหนดโดยผู้แลระบบเท่านั้น</div>
+                    <div class="form-group">
+                        <label class="form-label" for="lastname">นามสกุล <span class="required">*</span></label>
+                        <input class="form-input" type="text" name="lastname" id="lastname"
+                            th:value="${loggedInManager?.lastname}" placeholder="นามสกุล" required>
+                        <span class="error-msg" id="lastnameError"></span>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- ความปลอดภัย -->
-        <div class="card">
-            <div class="card-title">
-                <i class="fas fa-shield-halved"></i> ความปลอดภัย
-            </div>
-
-            <div class="lock-notice">
-                <i class="fas fa-lock"></i>
-                <span>กรอกรหัสผ่านเฉพาะเมื่อต้องการเปลี่ยน — หากไม่กรอกระบบจะคงรหัสเดิมไว้</span>
-            </div>
-
-            <div style="margin-top:14px;">
                 <div class="form-group">
-                    <label class="form-label">รหัสผ่านปัจจุบัน</label>
-                    <div class="input-wrap">
-                        <input class="form-control" type="password" name="currentPassword"
-                               id="currentPassword" placeholder="กรอกรหัสผ่านปัจจุบัน"/>
-                        <button type="button" class="toggle-pw" onclick="togglePw('currentPassword',this)">
+                    <label class="form-label" for="emailInput">อีเมล <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <input class="form-input" type="email" name="email" id="emailInput"
+                            th:value="${loggedInManager?.email}" placeholder="email@example.com" required>
+                        <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                    </div>
+                    <span class="error-msg" id="emailError"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="phoneInput">เบอร์โทรศัพท์</label>
+                        <div class="input-with-icon">
+                            <input class="form-input" type="text" name="phone" id="phoneInput"
+                                th:value="${loggedInManager?.phone}" placeholder="0812345678" maxlength="10"
+                                inputmode="numeric">
+                            <span class="input-icon"><i class="fas fa-phone"></i></span>
+                        </div>
+                        <span class="error-msg" id="phoneError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ชนเผ่า / ชุมชน</label>
+                        <div class="input-with-icon">
+                            <input class="form-input" type="text" name="tribe" th:value="${loggedInManager?.tribe}"
+                                readonly>
+                            <span class="input-icon"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <span class="error-msg" style="color:var(--text-hint);">กำหนดโดยผู้ดูแลระบบเท่านั้น</span>
+                    </div>
+                </div>
+
+                <div class="section-save-row">
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-check"></i> บันทึกข้อมูลส่วนตัว
+                    </button>
+                </div>
+            </section>
+        </form>
+
+        <!-- ═══ FORM 2: ข้อมูลบัญชีธนาคาร ═══ -->
+        <form th:action="@{/manager/profile/update-bank}" method="post" id="bankForm">
+            <section class="form-section">
+                <div class="section-header">
+                    <span class="section-icon"><i class="fas fa-building-columns"></i></span>
+                    <h2 class="section-title">ข้อมูลบัญชีธนาคาร</h2>
+                </div>
+
+                <div class="bank-alert"
+                    th:unless="${loggedInManager?.bankName != null and loggedInManager?.accountNumber != null}">
+                    <span class="bank-alert-icon"><i class="fas fa-triangle-exclamation"></i></span>
+                    <div>
+                        <strong>กรุณากรอกข้อมูลบัญชีธนาคาร</strong><br>
+                        <small>คุณยังไม่ได้กรอกข้อมูลธนาคาร จะไม่สามารถรับเงินได้จนกว่าจะกรอกข้อมูลนี้</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bankNameSelect">ธนาคาร <span class="required">*</span></label>
+                        <select class="form-input" name="bankName" id="bankNameSelect">
+                            <option value="">-- เลือกธนาคาร --</option>
+                            <option value="ธนาคารกสิกรไทย" th:selected="${loggedInManager?.bankName == 'ธนาคารกสิกรไทย'}">ธนาคารกสิกรไทย (KBank)</option>
+                            <option value="ธนาคารไทยพาณิชย์" th:selected="${loggedInManager?.bankName == 'ธนาคารไทยพาณิชย์'}">ธนาคารไทยพาณิชย์ (SCB)</option>
+                            <option value="ธนาคารกรุงเทพ" th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงเทพ'}">ธนาคารกรุงเทพ (BBL)</option>
+                            <option value="ธนาคารกรุงไทย" th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงไทย'}">ธนาคารกรุงไทย (KTB)</option>
+                            <option value="ธนาคารกรุงศรีอยุธยา" th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงศรีอยุธยา'}">ธนาคารกรุงศรีอยุธยา (BAY)</option>
+                            <option value="ธนาคารทหารไทยธนชาต" th:selected="${loggedInManager?.bankName == 'ธนาคารทหารไทยธนชาต'}">ธนาคารทหารไทยธนชาต (TTB)</option>
+                            <option value="ธนาคารออมสิน" th:selected="${loggedInManager?.bankName == 'ธนาคารออมสิน'}">ธนาคารออมสิน (GSB)</option>
+                            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร" th:selected="${loggedInManager?.bankName == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร'}">ธ.ก.ส. (BAAC)</option>
+                        </select>
+                        <span class="error-msg" id="bankNameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bankBranchInput">สาขา</label>
+                        <div class="input-with-icon">
+                            <input class="form-input" type="text" name="bankBranch" id="bankBranchInput"
+                                th:value="${loggedInManager?.bankBranch}" placeholder="เช่น สาขาเซ็นทรัลเชียงใหม่"
+                                maxlength="100">
+                            <span class="input-icon"><i class="fas fa-location-dot"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="accountNameInput">ชื่อบัญชี <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <input class="form-input" type="text" name="accountName" id="accountNameInput"
+                            th:value="${loggedInManager?.accountName}" placeholder="ชื่อ-นามสกุลตามสมุดบัญชี"
+                            maxlength="200">
+                        <span class="input-icon"><i class="fas fa-user"></i></span>
+                    </div>
+                    <span class="error-msg" id="accountNameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="accountNumberInput">เลขบัญชีธนาคาร <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <input class="form-input" type="text" name="accountNumber" id="accountNumberInput"
+                            th:value="${loggedInManager?.accountNumber}" placeholder="000-0-00000-0" maxlength="20"
+                            inputmode="numeric">
+                        <span class="input-icon"><i class="fas fa-credit-card"></i></span>
+                    </div>
+                    <span class="error-msg" id="accountNumberError"></span>
+                </div>
+
+                <div class="section-save-row">
+                    <button type="submit" class="btn-save" id="bankSaveBtn">
+                        <i class="fas fa-floppy-disk"></i> บันทึกข้อมูลธนาคาร
+                    </button>
+                </div>
+            </section>
+        </form>
+
+        <!-- ═══ FORM 3: ลายเซ็นสำหรับออกใบเสร็จ ═══ -->
+        <form th:action="@{/manager/profile/update-signature}" method="post" enctype="multipart/form-data" id="signatureForm">
+            <section class="form-section">
+                <div class="section-header">
+                    <span class="section-icon"><i class="fas fa-signature"></i></span>
+                    <h2 class="section-title">ลายเซ็นสำหรับออกใบเสร็จ</h2>
+                </div>
+
+                <div class="signature-preview-wrap" th:if="${loggedInManager?.signatureImageUrl != null}">
+                    <div class="signature-preview-label">ลายเซ็นปัจจุบัน</div>
+                    <img th:src="${loggedInManager.signatureImageUrl}" alt="ลายเซ็น">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="signatureFileInput">อัปโหลดไฟล์ลายเซ็นใหม่</label>
+                    <input class="form-input" type="file" name="signatureFile" id="signatureFileInput"
+                        accept="image/png,image/jpeg">
+                    <span class="error-msg" id="signatureError"></span>
+                    <small style="color:var(--text-hint); font-size:12px; margin-top:4px; display:block;">
+                        รองรับ PNG หรือ JPG ขนาดไม่เกิน 2MB (แนะนำพื้นหลังโปร่งใส)
+                    </small>
+                </div>
+
+                <div class="signature-preview-wrap" id="signaturePreviewWrap" style="display:none;">
+                    <div class="signature-preview-label">ตัวอย่างไฟล์ที่เลือก</div>
+                    <img id="signaturePreviewImg" alt="ตัวอย่างลายเซ็น">
+                </div>
+
+                <div class="section-save-row">
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-upload"></i> อัปโหลดลายเซ็น
+                    </button>
+                </div>
+            </section>
+        </form>
+
+        <!-- ═══ FORM 4: เปลี่ยนรหัสผ่าน ═══ -->
+        <form th:action="@{/manager/profile/update}" method="post" id="passwordForm">
+            <section class="form-section">
+                <div class="section-header">
+                    <span class="section-icon"><i class="fas fa-key"></i></span>
+                    <h2 class="section-title">เปลี่ยนรหัสผ่าน</h2>
+                </div>
+
+                <div class="password-hint">
+                    <span class="hint-icon"><i class="fas fa-circle-info"></i></span>
+                    กรอกรหัสผ่านเฉพาะเมื่อต้องการเปลี่ยน — หากไม่กรอกระบบจะคงรหัสเดิมไว้
+                </div>
+
+                <div class="form-group" style="margin-top:14px;">
+                    <label class="form-label" for="currentPassword">รหัสผ่านปัจจุบัน</label>
+                    <div class="input-with-icon">
+                        <input class="form-input" type="password" name="currentPassword" id="currentPassword"
+                            placeholder="กรอกรหัสผ่านปัจจุบัน">
+                        <button type="button" class="toggle-password" data-target="currentPassword">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
@@ -723,308 +869,266 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">รหัสผ่านใหม่</label>
-                        <div class="input-wrap">
-                            <input class="form-control" type="password" name="newPassword"
-                                   id="newPassword" placeholder="รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)"/>
-                            <button type="button" class="toggle-pw" onclick="togglePw('newPassword',this)">
+                        <label class="form-label" for="newPassword">รหัสผ่านใหม่</label>
+                        <div class="input-with-icon">
+                            <input class="form-input" type="password" name="newPassword" id="newPassword"
+                                placeholder="รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)">
+                            <button type="button" class="toggle-password" data-target="newPassword">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <span class="error-msg" id="newPasswordError"></span>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">ยืนยันรหัสผ่านใหม่</label>
-                        <div class="input-wrap">
-                            <input class="form-control" type="password" name="confirmPassword"
-                                   id="confirmPassword" placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง"/>
-                            <button type="button" class="toggle-pw" onclick="togglePw('confirmPassword',this)">
+                        <label class="form-label" for="confirmPassword">ยืนยันรหัสผ่านใหม่</label>
+                        <div class="input-with-icon">
+                            <input class="form-input" type="password" name="confirmPassword" id="confirmPassword"
+                                placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง">
+                            <button type="button" class="toggle-password" data-target="confirmPassword">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
-                        <div class="form-hint" id="pwMatchHint"></div>
+                        <span class="error-msg" id="confirmPasswordError"></span>
                     </div>
                 </div>
-            </div>
+
+                <div class="section-save-row">
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-key"></i> เปลี่ยนรหัสผ่าน
+                    </button>
+                </div>
+            </section>
+        </form>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast"></div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a></span>
         </div>
+    </footer>
 
-        <!-- Action Bar -->
-        <div class="action-bar">
-            <a class="btn-cancel" th:href="@{/manager/dashboard}">
-                <i class="fas fa-rotate-left"></i> รีเซ็ต
-            </a>
-            <button type="submit" class="btn-save">
-                <i class="fas fa-floppy-disk"></i>
-                บันทึกข้อมูล
-            </button>
-        </div>
+    <script>
+        // ─── Regex ───
+        const nameRegex = /^[ก-์a-zA-Z]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^0[689][0-9]{8}$/;
+        const accountRegex = /^[0-9\-]{10,20}$/;
 
-    </form>
+        // ─── Toast helper ───
+        function showToast(message, isError) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('error');
+            if (isError) toast.classList.add('error');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3200);
+        }
 
-</div>
+        // ─── Auto-show toast ถ้ามี successMessage / errorMessage จาก server ───
+        (function () {
+            const el = document.getElementById('serverMsg');
+            const success = el ? el.dataset.success : null;
+            const error = el ? el.dataset.error : null;
+            if (success && success !== 'null' && success.trim() !== '') {
+                showToast(success, false);
+            } else if (error && error !== 'null' && error.trim() !== '') {
+                showToast(error, true);
+            }
+        })();
 
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="footer-content">
-        <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-        <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a></span>
-    </div>
-</footer>
+        // ─── Toggle show/hide password ───
+        document.querySelectorAll('.toggle-password').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = document.getElementById(btn.dataset.target);
+                const icon = btn.querySelector('i');
+                if (target.type === 'password') {
+                    target.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    target.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
 
-<script>
-    // ─── Regex ───
-    const nameRegex    = /^[ก-์a-zA-Z]+$/;
-    const emailRegex   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex   = /^0[689][0-9]{8}$/;
-    const accountRegex = /^[0-9\-]{10,20}$/;
+        // ─── Real-time validation: ชื่อ / นามสกุล ───
+        function attachNameValidation(inputId, label) {
+            const input = document.getElementById(inputId);
+            const errorEl = document.getElementById(inputId + 'Error');
+            input.addEventListener('input', () => {
+                const v = input.value.trim();
+                if (!v) {
+                    errorEl.textContent = `กรุณากรอก${label}`;
+                    errorEl.classList.remove('ok');
+                } else if (!nameRegex.test(v)) {
+                    errorEl.textContent = `${label}ใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ไม่มีเว้นวรรคหรืออักขระพิเศษ`;
+                    errorEl.classList.remove('ok');
+                } else {
+                    errorEl.textContent = '';
+                }
+            });
+        }
+        attachNameValidation('firstname', 'ชื่อ');
+        attachNameValidation('lastname', 'นามสกุล');
 
-    // ─── DOM refs: bank ───
-    const bankSelect       = document.getElementById('bankNameSelect');
-    const bankHint         = document.getElementById('bankNameHint');
-    const bankBranchInput  = document.getElementById('bankBranchInput');
-    const accountNameInput = document.getElementById('accountNameInput');
-    const accountNameHint  = document.getElementById('accountNameHint');
-    const accountInput     = document.getElementById('accountNumberInput');
-    const accountHint      = document.getElementById('accountHint');
+        // ─── Real-time: อีเมล ───
+        const emailInput = document.getElementById('emailInput');
+        const emailError = document.getElementById('emailError');
+        emailInput.addEventListener('input', () => {
+            const v = emailInput.value.trim();
+            if (!v) {
+                emailError.textContent = 'กรุณากรอกอีเมล';
+            } else if (!emailRegex.test(v)) {
+                emailError.textContent = 'รูปแบบอีเมลไม่ถูกต้อง';
+            } else {
+                emailError.textContent = '';
+            }
+        });
 
-    // ─── Real-time: ชื่อบัญชี ───
-    if (accountNameInput) {
+        // ─── Real-time: เบอร์โทร ───
+        const phoneInput = document.getElementById('phoneInput');
+        const phoneError = document.getElementById('phoneError');
+        phoneInput.addEventListener('input', () => {
+            const v = phoneInput.value;
+            if (!v) {
+                phoneError.textContent = 'กรุณากรอกเบอร์โทร';
+            } else if (!phoneRegex.test(v)) {
+                phoneError.textContent = 'เบอร์โทรต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06 08 09 เท่านั้น';
+            } else {
+                phoneError.textContent = '';
+            }
+        });
+
+        // ─── Real-time: ชื่อบัญชี ───
+        const accountNameInput = document.getElementById('accountNameInput');
+        const accountNameError = document.getElementById('accountNameError');
         accountNameInput.addEventListener('input', () => {
-            const v = accountNameInput.value.trim();
-            if (!v) {
-                accountNameHint.textContent = 'กรุณากรอกชื่อบัญชี';
-                accountNameHint.style.color = '#b71c1c';
-            } else {
-                accountNameHint.textContent = '✓ ถูกต้อง';
-                accountNameHint.style.color = '#2e7d32';
-            }
+            accountNameError.textContent = accountNameInput.value.trim() ? '' : 'กรุณากรอกชื่อบัญชี';
         });
-    }
 
-    // ─── Real-time: เลขบัญชีธนาคาร ───
-    if (accountInput) {
-        accountInput.addEventListener('input', () => {
-            const v = accountInput.value.trim();
+        // ─── Real-time: เลขบัญชีธนาคาร ───
+        const accountNumberInput = document.getElementById('accountNumberInput');
+        const accountNumberError = document.getElementById('accountNumberError');
+        accountNumberInput.addEventListener('input', () => {
+            const v = accountNumberInput.value.trim();
             if (!v) {
-                accountHint.textContent = 'กรุณากรอกเลขบัญชีธนาคาร';
-                accountHint.style.color = '#b71c1c';
+                accountNumberError.textContent = 'กรุณากรอกเลขบัญชีธนาคาร';
             } else if (!accountRegex.test(v)) {
-                accountHint.textContent = 'เลขบัญชีต้องเป็นตัวเลข 10-20 หลัก (ใส่ขีด - ได้)';
-                accountHint.style.color = '#b71c1c';
+                accountNumberError.textContent = 'เลขบัญชีต้องเป็นตัวเลข 10-20 หลัก (ใส่ขีด - ได้)';
             } else {
-                accountHint.textContent = '✓ รูปแบบถูกต้อง';
-                accountHint.style.color = '#2e7d32';
+                accountNumberError.textContent = '';
             }
         });
-    }
 
-    // ─── Validate bank form ก่อน submit ───
-    document.getElementById('bankForm').addEventListener('submit', function(e) {
-        const bank    = bankSelect.value;
-        const accName = accountNameInput.value.trim();
-        const acc     = accountInput.value.trim();
-
-        if (!bank) {
-            e.preventDefault();
-            bankHint.textContent = 'กรุณาเลือกธนาคาร';
-            bankHint.style.color = '#b71c1c';
-            bankSelect.focus();
-            return;
+        // ─── Real-time: ยืนยันรหัสผ่านใหม่ ───
+        const newPw = document.getElementById('newPassword');
+        const confirmPw = document.getElementById('confirmPassword');
+        const confirmPwError = document.getElementById('confirmPasswordError');
+        function checkMatch() {
+            if (!confirmPw.value) { confirmPwError.textContent = ''; return; }
+            confirmPwError.textContent = newPw.value === confirmPw.value ? '' : 'รหัสผ่านไม่ตรงกัน';
         }
-        if (!accName) {
-            e.preventDefault();
-            accountNameHint.textContent = 'กรุณากรอกชื่อบัญชี';
-            accountNameHint.style.color = '#b71c1c';
-            accountNameInput.focus();
-            return;
-        }
-        if (!acc || !accountRegex.test(acc)) {
-            e.preventDefault();
-            accountHint.textContent = 'กรุณากรอกเลขบัญชีให้ถูกต้อง';
-            accountHint.style.color = '#b71c1c';
-            accountInput.focus();
-            return;
-        }
-    });
+        newPw.addEventListener('input', checkMatch);
+        confirmPw.addEventListener('input', checkMatch);
 
-    // ─── Toggle show/hide password ───
-    function togglePw(inputId, btn) {
-        const input = document.getElementById(inputId);
-        const icon  = btn.querySelector('i');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
-    }
+        // ─── Validate bank form ก่อน submit ───
+        document.getElementById('bankForm').addEventListener('submit', function (e) {
+            const bank = document.getElementById('bankNameSelect').value;
+            const accName = accountNameInput.value.trim();
+            const acc = accountNumberInput.value.trim();
 
-    // ─── Real-time: ชื่อ / นามสกุล ───
-    function attachNameValidation(inputId, label) {
-        const input = document.getElementById(inputId);
-        const hint  = document.createElement('div');
-        hint.className = 'form-hint';
-        hint.id = inputId + 'Hint';
-        input.parentNode.insertBefore(hint, input.nextSibling);
-
-        input.addEventListener('input', () => {
-            const v = input.value.trim();
-            if (!v) {
-                hint.textContent = `กรุณากรอก${label}`;
-                hint.style.color = '#b71c1c';
-            } else if (!nameRegex.test(v)) {
-                hint.textContent = `${label}ใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ไม่มีเว้นวรรคหรืออักขระพิเศษ`;
-                hint.style.color = '#b71c1c';
-            } else {
-                hint.textContent = '';
+            if (!bank) {
+                e.preventDefault();
+                document.getElementById('bankNameError').textContent = 'กรุณาเลือกธนาคาร';
+                return;
+            }
+            if (!accName) {
+                e.preventDefault();
+                accountNameError.textContent = 'กรุณากรอกชื่อบัญชี';
+                return;
+            }
+            if (!acc || !accountRegex.test(acc)) {
+                e.preventDefault();
+                accountNumberError.textContent = 'กรุณากรอกเลขบัญชีให้ถูกต้อง';
+                return;
             }
         });
-    }
-    attachNameValidation('firstname', 'ชื่อ');
-    attachNameValidation('lastname',  'นามสกุล');
 
-    // ─── Real-time: อีเมล ───
-    const emailInput = document.getElementById('emailInput');
-    const emailHint  = document.getElementById('emailHint');
-    emailInput.addEventListener('input', () => {
-        const v = emailInput.value.trim();
-        if (!v) {
-            emailHint.textContent = 'กรุณากรอกอีเมล';
-            emailHint.style.color = '#b71c1c';
-        } else if (!emailRegex.test(v)) {
-            emailHint.textContent = 'รูปแบบอีเมลไม่ถูกต้อง';
-            emailHint.style.color = '#b71c1c';
-        } else {
-            emailHint.textContent = '';
-        }
-    });
-
-    // ─── Real-time: เบอร์โทร ───
-    const phoneInput = document.getElementById('phoneInput');
-    const phoneHint  = document.getElementById('phoneHint');
-    phoneInput.addEventListener('input', () => {
-        const v = phoneInput.value;
-        if (!v) {
-            phoneHint.textContent = 'กรุณากรอกเบอร์โทร';
-            phoneHint.style.color = '#b71c1c';
-        } else if (!phoneRegex.test(v)) {
-            phoneHint.textContent = 'เบอร์โทรต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06 08 09 เท่านั้น';
-            phoneHint.style.color = '#b71c1c';
-        } else {
-            phoneHint.textContent = '✓ เบอร์โทรถูกต้อง';
-            phoneHint.style.color = '#2e7d32';
-        }
-    });
-
-    // ─── Real-time: confirm password ───
-    const newPw     = document.getElementById('newPassword');
-    const confirmPw = document.getElementById('confirmPassword');
-    const hint      = document.getElementById('pwMatchHint');
-
-    function checkMatch() {
-        if (!confirmPw.value) { hint.textContent = ''; hint.style.color = ''; return; }
-        if (newPw.value === confirmPw.value) {
-            hint.textContent = '✓ รหัสผ่านตรงกัน';
-            hint.style.color = '#2e7d32';
-        } else {
-            hint.textContent = '✗ รหัสผ่านไม่ตรงกัน';
-            hint.style.color = '#b71c1c';
-        }
-    }
-    newPw.addEventListener('input', checkMatch);
-    confirmPw.addEventListener('input', checkMatch);
-
-    // ─── Validate profileForm ก่อน submit ───
-    document.getElementById('profileForm').addEventListener('submit', function(e) {
-        const fn  = document.getElementById('firstname').value.trim();
-        const ln  = document.getElementById('lastname').value.trim();
-        const em  = emailInput.value.trim();
-        const ph  = phoneInput.value.trim();
-        const np  = newPw.value.trim();
-        const cp  = confirmPw.value.trim();
-        const cur = document.getElementById('currentPassword').value.trim();
-
-        if (!fn || !nameRegex.test(fn)) {
-            e.preventDefault();
-            alert('ชื่อต้องไม่ว่างและใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ไม่มีเว้นวรรคหรืออักขระพิเศษ');
-            return;
-        }
-        if (!ln || !nameRegex.test(ln)) {
-            e.preventDefault();
-            alert('นามสกุลต้องไม่ว่างและใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ไม่มีเว้นวรรคหรืออักขระพิเศษ');
-            return;
-        }
-        if (!em || !emailRegex.test(em)) {
-            e.preventDefault();
-            alert('กรุณากรอกอีเมลให้ถูกต้อง เช่น name@example.com');
-            return;
-        }
-        if (!ph) {
-            e.preventDefault();
-            alert('กรุณากรอกเบอร์โทร');
-            return;
-        }
-        if (!phoneRegex.test(ph)) {
-            e.preventDefault();
-            alert('เบอร์โทรต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06 08 09 เท่านั้น');
-            return;
-        }
-        if (np || cp || cur) {
-            if (!cur) {
-                e.preventDefault();
-                alert('กรุณากรอกรหัสผ่านปัจจุบันก่อน');
-                return;
-            }
-            if (np.length < 6) {
-                e.preventDefault();
-                alert('รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร');
-                return;
-            }
-            if (np !== cp) {
-                e.preventDefault();
-                alert('รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน');
-                return;
-            }
-        }
-    });
-     // ─── Preview ไฟล์ลายเซ็นก่อนอัปโหลด ───
-    const signatureFileInput = document.getElementById('signatureFileInput');
-    if (signatureFileInput) {
-        signatureFileInput.addEventListener('change', function(e) {
+        // ─── Preview ไฟล์ลายเซ็นก่อนอัปโหลด ───
+        const signatureFileInput = document.getElementById('signatureFileInput');
+        signatureFileInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             const wrap = document.getElementById('signaturePreviewWrap');
-            const img  = document.getElementById('signaturePreviewImg');
+            const img = document.getElementById('signaturePreviewImg');
             if (!file) { wrap.style.display = 'none'; return; }
 
             const reader = new FileReader();
-            reader.onload = function(ev) {
+            reader.onload = function (ev) {
                 img.src = ev.target.result;
                 wrap.style.display = 'block';
             };
             reader.readAsDataURL(file);
         });
-    }
 
-    // ─── Auto-show modal ถ้ามี successMessage ───
-(function() {
-    const el  = document.getElementById('serverMsg');
-    const msg = el ? el.dataset.success : null;
-    if (!msg || msg === 'null' || msg.trim() === '') return;
+        // ─── Validate profileForm ก่อน submit ───
+        document.getElementById('profileForm').addEventListener('submit', function (e) {
+            const fn = document.getElementById('firstname').value.trim();
+            const ln = document.getElementById('lastname').value.trim();
+            const em = emailInput.value.trim();
+            const ph = phoneInput.value.trim();
 
-    const modal = document.getElementById('successModal');
-    const desc  = document.getElementById('modalDesc');
-    const fill  = document.getElementById('progressFill');
+            if (!fn || !nameRegex.test(fn)) {
+                e.preventDefault();
+                document.getElementById('firstnameError').textContent = 'ชื่อต้องไม่ว่างและใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น';
+                return;
+            }
+            if (!ln || !nameRegex.test(ln)) {
+                e.preventDefault();
+                document.getElementById('lastnameError').textContent = 'นามสกุลต้องไม่ว่างและใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น';
+                return;
+            }
+            if (!em || !emailRegex.test(em)) {
+                e.preventDefault();
+                emailError.textContent = 'กรุณากรอกอีเมลให้ถูกต้อง เช่น name@example.com';
+                return;
+            }
+            if (!ph || !phoneRegex.test(ph)) {
+                e.preventDefault();
+                phoneError.textContent = 'เบอร์โทรต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06 08 09 เท่านั้น';
+                return;
+            }
+        });
 
-    desc.textContent = msg;
-    modal.classList.add('show');
+        // ─── Validate passwordForm ก่อน submit ───
+        document.getElementById('passwordForm').addEventListener('submit', function (e) {
+            const cur = document.getElementById('currentPassword').value.trim();
+            const np = newPw.value.trim();
+            const cp = confirmPw.value.trim();
 
-    fill.style.animation = 'none';
-    fill.offsetHeight;
-    fill.style.animation = 'progress-drain 2s linear forwards';
-
-    setTimeout(() => modal.classList.remove('show'), 1000);
-})();
-</script>
+            if (!cur || !np || !cp) {
+                e.preventDefault();
+                showToast('กรุณากรอกรหัสผ่านให้ครบทุกช่อง', true);
+                return;
+            }
+            if (np.length < 6) {
+                e.preventDefault();
+                document.getElementById('newPasswordError').textContent = 'รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร';
+                return;
+            }
+            if (np !== cp) {
+                e.preventDefault();
+                confirmPwError.textContent = 'รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน';
+                return;
+            }
+        });
+    </script>
 
 </body>
+
 </html>

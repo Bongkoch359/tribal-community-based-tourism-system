@@ -13,9 +13,11 @@
 <body>
     <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
-        <a class="nav-brand" th:href="@{/}">
-            <i class="fas fa-mountain-sun"></i>
-            ระบบท่องเที่ยวชุมชนชนเผ่า
+        <a th:href="@{/}" class="brand-logo-link">
+            <div class="brand-logo">
+                <img th:src="@{/images/logo3.png}" alt="Logo">
+            </div>
+            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
         <div class="nav-dropdown">
             <div class="nav-dropdown-trigger">
@@ -214,7 +216,8 @@
                         <label class="form-label">เขตพื้นที่ที่รับได้ <span class="req">*</span></label>
                         <input class="form-control" type="text" id="hotelPickupArea" name="hotelPickupArea"
                             placeholder="เช่น อำเภอเมือง (เชียงใหม่)" th:value="${tour?.hotelPickupArea}" />
-                        <small style="color:#888;">ระบุให้ละเอียดระดับ<strong>อำเภอ</strong> เช่น "อำเภอเมือง" แทนที่จะระบุทั้งจังหวัด
+                        <small style="color:#888;">ระบุให้ละเอียดระดับ<strong>อำเภอ</strong> เช่น "อำเภอเมือง"
+                            แทนที่จะระบุทั้งจังหวัด
                             เพื่อจำกัดพื้นที่ให้บริการรับส่งให้แม่นยำ ระบบจะรับส่งเฉพาะที่พักที่มีคำนี้ในที่อยู่เท่านั้น
                             สมาชิกต้องระบุคำนี้ในที่อยู่ตอนจอง</small>
                         <div class="field-error" id="err-hotelPickupArea">กรุณาระบุเขตพื้นที่ที่รับได้</div>

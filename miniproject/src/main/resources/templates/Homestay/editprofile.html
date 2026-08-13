@@ -8,49 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/edit-profile.css}" rel="stylesheet">
-    <style>
-        .bank-alert {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            background: #fff8e1;
-            border: 1.5px solid #f59e0b;
-            border-radius: 10px;
-            padding: 14px 16px;
-            margin-bottom: 18px;
-            color: #7c4a00;
-            font-size: 0.92rem;
-            line-height: 1.5;
-        }
-        .bank-alert-icon {
-            font-size: 1.3rem;
-            margin-top: 1px;
-            flex-shrink: 0;
-        }
-        .section-save-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 16px;
-        }
-        .signature-preview-wrap {
-            margin-bottom: 14px;
-            display: none;
-        }
-        .signature-preview-wrap img {
-            max-width: 220px;
-            max-height: 110px;
-            border: 1.5px solid var(--green-border);
-            border-radius: 8px;
-            background: #fafdf7;
-            padding: 6px;
-            display: block;
-        }
-        .signature-preview-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-    </style>
 </head>
 <body>
     <!-- ─── NAVBAR (เหมือนหน้าอื่นทุกประการ) ─── -->
@@ -62,9 +19,12 @@
         <div class="hs-nav-right">
             <div class="hs-profile-dropdown">
                 <div class="hs-profile-trigger">
-                    <div class="hs-avatar" id="navAvatar">HS</div>
+                    <div class="hs-avatar" th:text="${loggedInOwner != null and loggedInOwner.firstname != null}
+                               ? ${#strings.substring(loggedInOwner.firstname,0,1) + (#strings.length(loggedInOwner.lastname) > 0 ? #strings.substring(loggedInOwner.lastname,0,1) : '')}
+                               : 'HS'">HS</div>
                     <div>
-                        <span class="hs-owner-name" id="navOwnerName">เจ้าของ</span>
+                        <span class="hs-owner-name"
+                            th:text="${loggedInOwner != null} ? ${loggedInOwner.firstname + ' ' + loggedInOwner.lastname} : 'เจ้าของ'">เจ้าของ</span>
                         <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
                     </div>
                     <i class="fas fa-chevron-down hs-chevron"></i>
@@ -77,6 +37,9 @@
             </div>
         </div>
     </nav>
+
+    <!-- Thymeleaf ส่ง flash message ให้ JS อ่าน (แทนการเช็ค response ของ fetch) -->
+    <div id="serverMsg" th:data-success="${successMessage}" th:data-error="${errorMessage}" style="display:none;"></div>
 
     <main class="main-container">
 
@@ -92,19 +55,23 @@
         <!-- Profile Card -->
         <div class="profile-card">
             <div class="avatar-wrapper">
-                <div class="avatar" id="avatarCircle">
-                    <span id="avatarInitials">HO</span>
+                <div class="avatar">
+                    <span th:text="${loggedInOwner != null and loggedInOwner.firstname != null}
+                               ? ${#strings.substring(loggedInOwner.firstname,0,1) + (#strings.length(loggedInOwner.lastname) > 0 ? #strings.substring(loggedInOwner.lastname,0,1) : '')}
+                               : 'HO'">HO</span>
                 </div>
             </div>
             <div class="profile-info">
-                <p class="profile-name" id="profileName">กำลังโหลด...</p>
-                <p class="profile-email" id="profileEmail">-</p>
+                <p class="profile-name"
+                    th:text="${loggedInOwner != null} ? ${loggedInOwner.firstname + ' ' + loggedInOwner.lastname} : '-'">
+                    กำลังโหลด...</p>
+                <p class="profile-email" th:text="${loggedInOwner != null} ? ${loggedInOwner.email} : '-'">-</p>
                 <span class="badge-role">เจ้าของโฮมสเตย์</span>
             </div>
         </div>
 
         <!-- ═══ FORM 1: ข้อมูลส่วนตัว ═══ -->
-        <form id="personalForm" novalidate>
+        <form th:action="@{/owner/profile/update}" method="post" id="personalForm">
             <section class="form-section">
                 <div class="section-header">
                     <span class="section-icon"><i class="fas fa-user"></i></span>
@@ -114,12 +81,14 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="firstname">ชื่อ <span class="required">*</span></label>
-                        <input type="text" id="firstname" name="firstname" class="form-input" placeholder="ชื่อ" required>
+                        <input type="text" id="firstname" name="firstname" class="form-input"
+                            th:value="${loggedInOwner?.firstname}" placeholder="ชื่อ" required>
                         <span class="error-msg" id="firstnameError"></span>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="lastname">นามสกุล <span class="required">*</span></label>
-                        <input type="text" id="lastname" name="lastname" class="form-input" placeholder="นามสกุล" required>
+                        <input type="text" id="lastname" name="lastname" class="form-input"
+                            th:value="${loggedInOwner?.lastname}" placeholder="นามสกุล" required>
                         <span class="error-msg" id="lastnameError"></span>
                     </div>
                 </div>
@@ -127,7 +96,8 @@
                 <div class="form-group">
                     <label class="form-label" for="email">อีเมล <span class="required">*</span></label>
                     <div class="input-with-icon">
-                        <input type="email" id="email" name="email" class="form-input" placeholder="อีเมล" required>
+                        <input type="email" id="email" name="email" class="form-input"
+                            th:value="${loggedInOwner?.email}" placeholder="อีเมล" required>
                         <span class="input-icon"><i class="fas fa-envelope"></i></span>
                     </div>
                     <span class="error-msg" id="emailError"></span>
@@ -136,7 +106,8 @@
                 <div class="form-group">
                     <label class="form-label" for="phone">เบอร์โทรศัพท์</label>
                     <div class="input-with-icon">
-                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="0812345678" maxlength="10">
+                        <input type="tel" id="phone" name="phone" class="form-input"
+                            th:value="${loggedInOwner?.phone}" placeholder="0812345678" maxlength="10">
                         <span class="input-icon"><i class="fas fa-phone"></i></span>
                     </div>
                     <span class="error-msg" id="phoneError"></span>
@@ -151,7 +122,7 @@
         </form>
 
         <!-- ═══ FORM 2: ข้อมูลบัญชีธนาคาร ═══ -->
-        <form id="bankForm" novalidate>
+        <form th:action="@{/owner/profile/update-bank}" method="post" id="bankForm">
             <section class="form-section" id="bankSection">
                 <div class="section-header">
                     <span class="section-icon"><i class="fas fa-building-columns"></i></span>
@@ -159,7 +130,8 @@
                 </div>
 
                 <!-- Banner แจ้งเตือนกรณียังไม่กรอกข้อมูลธนาคาร -->
-                <div class="bank-alert" id="bankAlert" style="display:none;">
+                <div class="bank-alert"
+                    th:unless="${loggedInOwner?.bankName != null and loggedInOwner?.accountNumber != null}">
                     <span class="bank-alert-icon"><i class="fas fa-triangle-exclamation"></i></span>
                     <div>
                         <strong>กรุณากรอกข้อมูลบัญชีธนาคาร</strong><br>
@@ -172,25 +144,26 @@
                         <label class="form-label" for="bankName">ชื่อธนาคาร <span class="required">*</span></label>
                         <select id="bankName" name="bankName" class="form-input">
                             <option value="">-- เลือกธนาคาร --</option>
-                            <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ (BBL)</option>
-                            <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย (KBANK)</option>
-                            <option value="ธนาคารกรุงไทย">ธนาคารกรุงไทย (KTB)</option>
-                            <option value="ธนาคารทหารไทยธนชาต">ธนาคารทหารไทยธนชาต (TTB)</option>
-                            <option value="ธนาคารไทยพาณิชย์">ธนาคารไทยพาณิชย์ (SCB)</option>
-                            <option value="ธนาคารกรุงศรีอยุธยา">ธนาคารกรุงศรีอยุธยา (BAY)</option>
-                            <option value="ธนาคารออมสิน">ธนาคารออมสิน (GSB)</option>
-                            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร">ธนาคารเพื่อการเกษตรและสหกรณ์ (ธ.ก.ส.)</option>
-                            <option value="ธนาคารอาคารสงเคราะห์">ธนาคารอาคารสงเคราะห์ (GHB)</option>
-                            <option value="ธนาคารซีไอเอ็มบีไทย">ธนาคารซีไอเอ็มบีไทย (CIMB)</option>
-                            <option value="ธนาคารแลนด์ แอนด์ เฮ้าส์">ธนาคารแลนด์ แอนด์ เฮ้าส์ (LH Bank)</option>
-                            <option value="ธนาคารยูโอบี">ธนาคารยูโอบี (UOB)</option>
+                            <option value="ธนาคารกรุงเทพ" th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงเทพ'}">ธนาคารกรุงเทพ (BBL)</option>
+                            <option value="ธนาคารกสิกรไทย" th:selected="${loggedInOwner?.bankName == 'ธนาคารกสิกรไทย'}">ธนาคารกสิกรไทย (KBANK)</option>
+                            <option value="ธนาคารกรุงไทย" th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงไทย'}">ธนาคารกรุงไทย (KTB)</option>
+                            <option value="ธนาคารทหารไทยธนชาต" th:selected="${loggedInOwner?.bankName == 'ธนาคารทหารไทยธนชาต'}">ธนาคารทหารไทยธนชาต (TTB)</option>
+                            <option value="ธนาคารไทยพาณิชย์" th:selected="${loggedInOwner?.bankName == 'ธนาคารไทยพาณิชย์'}">ธนาคารไทยพาณิชย์ (SCB)</option>
+                            <option value="ธนาคารกรุงศรีอยุธยา" th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงศรีอยุธยา'}">ธนาคารกรุงศรีอยุธยา (BAY)</option>
+                            <option value="ธนาคารออมสิน" th:selected="${loggedInOwner?.bankName == 'ธนาคารออมสิน'}">ธนาคารออมสิน (GSB)</option>
+                            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร" th:selected="${loggedInOwner?.bankName == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร'}">ธนาคารเพื่อการเกษตรและสหกรณ์ (ธ.ก.ส.)</option>
+                            <option value="ธนาคารอาคารสงเคราะห์" th:selected="${loggedInOwner?.bankName == 'ธนาคารอาคารสงเคราะห์'}">ธนาคารอาคารสงเคราะห์ (GHB)</option>
+                            <option value="ธนาคารซีไอเอ็มบีไทย" th:selected="${loggedInOwner?.bankName == 'ธนาคารซีไอเอ็มบีไทย'}">ธนาคารซีไอเอ็มบีไทย (CIMB)</option>
+                            <option value="ธนาคารแลนด์ แอนด์ เฮ้าส์" th:selected="${loggedInOwner?.bankName == 'ธนาคารแลนด์ แอนด์ เฮ้าส์'}">ธนาคารแลนด์ แอนด์ เฮ้าส์ (LH Bank)</option>
+                            <option value="ธนาคารยูโอบี" th:selected="${loggedInOwner?.bankName == 'ธนาคารยูโอบี'}">ธนาคารยูโอบี (UOB)</option>
                         </select>
                         <span class="error-msg" id="bankNameError"></span>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="bankBranch">สาขา</label>
                         <div class="input-with-icon">
-                            <input type="text" id="bankBranch" name="bankBranch" class="form-input" placeholder="เช่น สาขาเชียงใหม่">
+                            <input type="text" id="bankBranch" name="bankBranch" class="form-input"
+                                th:value="${loggedInOwner?.bankBranch}" placeholder="เช่น สาขาเชียงใหม่">
                             <span class="input-icon"><i class="fas fa-location-dot"></i></span>
                         </div>
                     </div>
@@ -199,7 +172,8 @@
                 <div class="form-group">
                     <label class="form-label" for="accountName">ชื่อบัญชี <span class="required">*</span></label>
                     <div class="input-with-icon">
-                        <input type="text" id="accountName" name="accountName" class="form-input" placeholder="ชื่อ-นามสกุล ตามหน้าสมุดบัญชี">
+                        <input type="text" id="accountName" name="accountName" class="form-input"
+                            th:value="${loggedInOwner?.accountName}" placeholder="ชื่อ-นามสกุล ตามหน้าสมุดบัญชี">
                         <span class="input-icon"><i class="fas fa-user"></i></span>
                     </div>
                     <span class="error-msg" id="accountNameError"></span>
@@ -208,7 +182,8 @@
                 <div class="form-group">
                     <label class="form-label" for="accountNumber">เลขบัญชีธนาคาร <span class="required">*</span></label>
                     <div class="input-with-icon">
-                        <input type="text" id="accountNumber" name="accountNumber" class="form-input" placeholder="เช่น 1234567890" maxlength="30">
+                        <input type="text" id="accountNumber" name="accountNumber" class="form-input"
+                            th:value="${loggedInOwner?.accountNumber}" placeholder="เช่น 1234567890" maxlength="30">
                         <span class="input-icon"><i class="fas fa-credit-card"></i></span>
                     </div>
                     <span class="error-msg" id="accountNumberError"></span>
@@ -223,16 +198,17 @@
         </form>
 
         <!-- ═══ FORM 3: ลายเซ็นสำหรับออกใบเสร็จ ═══ -->
-        <form id="signatureForm" novalidate>
+        <form th:action="@{/owner/profile/update-signature}" method="post" enctype="multipart/form-data" id="signatureForm">
             <section class="form-section">
                 <div class="section-header">
                     <span class="section-icon"><i class="fas fa-signature"></i></span>
                     <h2 class="section-title">ลายเซ็นสำหรับออกใบเสร็จ</h2>
                 </div>
 
-                <div class="signature-preview-wrap" id="signaturePreviewWrap">
+                <div class="signature-preview-wrap" th:if="${loggedInOwner?.signatureImageUrl != null}"
+                    th:style="'display:block;'">
                     <div class="signature-preview-label">ลายเซ็นปัจจุบัน</div>
-                    <img id="signaturePreviewImg" src="" alt="ลายเซ็น">
+                    <img th:src="${loggedInOwner.signatureImageUrl}" alt="ลายเซ็น">
                 </div>
 
                 <div class="form-group">
@@ -244,6 +220,11 @@
                     </small>
                 </div>
 
+                <div class="signature-preview-wrap" id="signaturePreviewWrap">
+                    <div class="signature-preview-label">ตัวอย่างไฟล์ที่เลือก</div>
+                    <img id="signaturePreviewImg" src="" alt="ตัวอย่างลายเซ็น">
+                </div>
+
                 <div class="section-save-row">
                     <button type="submit" class="btn btn-save">
                         <i class="fas fa-upload"></i> อัปโหลดลายเซ็น
@@ -253,7 +234,7 @@
         </form>
 
         <!-- ═══ FORM 4: เปลี่ยนรหัสผ่าน ═══ -->
-        <form id="passwordForm" novalidate>
+        <form th:action="@{/owner/change-password}" method="post" id="passwordForm">
             <section class="form-section">
                 <div class="section-header">
                     <span class="section-icon"><i class="fas fa-key"></i></span>
@@ -318,241 +299,6 @@
         </div>
     </footer>
 
-    <script>
-        // ─────────────────────────────────────────
-        // Toast helper
-        // ─────────────────────────────────────────
-        function showToast(message, isError) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.remove('error');
-            if (isError) toast.classList.add('error');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2800);
-        }
-
-        // ─────────────────────────────────────────
-        // Toggle show/hide password
-        // ─────────────────────────────────────────
-        document.querySelectorAll('.toggle-password').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = document.getElementById(btn.dataset.target);
-                const icon = btn.querySelector('i');
-                if (target.type === 'password') {
-                    target.type = 'text';
-                    icon.classList.replace('fa-eye', 'fa-eye-slash');
-                } else {
-                    target.type = 'password';
-                    icon.classList.replace('fa-eye-slash', 'fa-eye');
-                }
-            });
-        });
-
-        // ─────────────────────────────────────────
-        // โหลดข้อมูลโปรไฟล์ตอนเปิดหน้า
-        // ─────────────────────────────────────────
-        async function loadProfile() {
-            try {
-                const res = await fetch('/owner/profile');
-                if (!res.ok) {
-                    if (res.status === 401) window.location.href = '/owner/login';
-                    return;
-                }
-                const data = await res.json();
-
-                document.getElementById('firstname').value = data.firstname || '';
-                document.getElementById('lastname').value  = data.lastname  || '';
-                document.getElementById('email').value     = data.email    || '';
-                document.getElementById('phone').value     = data.phone    || '';
-
-                if (data.bankName)     document.getElementById('bankName').value     = data.bankName;
-                if (data.bankBranch)   document.getElementById('bankBranch').value   = data.bankBranch;
-                if (data.accountName)  document.getElementById('accountName').value  = data.accountName;
-                if (data.accountNumber) document.getElementById('accountNumber').value = data.accountNumber;
-
-                const missing = !data.bankName || !data.accountNumber || !data.accountName;
-                document.getElementById('bankAlert').style.display = missing ? 'flex' : 'none';
-
-                if (data.signatureImageUrl) {
-                    document.getElementById('signaturePreviewImg').src = data.signatureImageUrl;
-                    document.getElementById('signaturePreviewWrap').style.display = 'block';
-                }
-
-                const fullName = ((data.firstname || '') + ' ' + (data.lastname || '')).trim();
-                document.getElementById('profileName').textContent  = fullName || '-';
-                document.getElementById('profileEmail').textContent = data.email || '-';
-                if (fullName) {
-                    document.getElementById('avatarInitials').textContent = fullName.substring(0, 2);
-                    document.getElementById('navOwnerName').textContent   = fullName;
-                    document.getElementById('navAvatar').textContent      = fullName.substring(0, 2);
-                }
-
-            } catch (err) {
-                showToast('โหลดข้อมูลโปรไฟล์ไม่สำเร็จ', true);
-            }
-        }
-        loadProfile();
-
-        // ─────────────────────────────────────────
-        // FORM 1: ข้อมูลส่วนตัว
-        // ─────────────────────────────────────────
-        document.getElementById('personalForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const firstname = document.getElementById('firstname').value.trim();
-            const lastname  = document.getElementById('lastname').value.trim();
-            const email     = document.getElementById('email').value.trim();
-            const phone     = document.getElementById('phone').value.trim();
-
-            if (!firstname) { document.getElementById('firstnameError').textContent = 'กรุณากรอกชื่อ'; return; }
-            document.getElementById('firstnameError').textContent = '';
-            if (!lastname) { document.getElementById('lastnameError').textContent = 'กรุณากรอกนามสกุล'; return; }
-            document.getElementById('lastnameError').textContent = '';
-            if (!email) { document.getElementById('emailError').textContent = 'กรุณากรอกอีเมล'; return; }
-            document.getElementById('emailError').textContent = '';
-
-            try {
-                const res = await fetch('/owner/profile', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ firstname, lastname, email, phone })
-                });
-                const data = await res.json();
-                if (!res.ok) {
-                    showToast(data.message || 'บันทึกข้อมูลส่วนตัวไม่สำเร็จ', true);
-                    return;
-                }
-                showToast('บันทึกข้อมูลส่วนตัวสำเร็จ');
-                loadProfile();
-            } catch (err) {
-                showToast('เกิดข้อผิดพลาดในการบันทึก', true);
-            }
-        });
-
-        // ─────────────────────────────────────────
-        // FORM 2: ข้อมูลธนาคาร
-        // ─────────────────────────────────────────
-        document.getElementById('bankForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const bankName      = document.getElementById('bankName').value;
-            const bankBranch    = document.getElementById('bankBranch').value.trim();
-            const accountName   = document.getElementById('accountName').value.trim();
-            const accountNumber = document.getElementById('accountNumber').value.trim();
-
-            if (!bankName) { document.getElementById('bankNameError').textContent = 'กรุณาเลือกธนาคาร'; return; }
-            document.getElementById('bankNameError').textContent = '';
-            if (!accountName) { document.getElementById('accountNameError').textContent = 'กรุณากรอกชื่อบัญชี'; return; }
-            document.getElementById('accountNameError').textContent = '';
-            if (!accountNumber) { document.getElementById('accountNumberError').textContent = 'กรุณากรอกเลขบัญชี'; return; }
-            document.getElementById('accountNumberError').textContent = '';
-
-            try {
-                const res = await fetch('/owner/profile/bank', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ bankName, bankBranch, accountName, accountNumber })
-                });
-                const data = await res.json();
-                if (!res.ok) {
-                    showToast(data.message || 'บันทึกข้อมูลธนาคารไม่สำเร็จ', true);
-                    return;
-                }
-                showToast('บันทึกข้อมูลธนาคารสำเร็จ');
-                loadProfile();
-            } catch (err) {
-                showToast('เกิดข้อผิดพลาดในการบันทึก', true);
-            }
-        });
-
-        // ─────────────────────────────────────────
-        // FORM 3: ลายเซ็น
-        // ─────────────────────────────────────────
-        document.getElementById('signatureFile').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (ev) {
-                document.getElementById('signaturePreviewImg').src = ev.target.result;
-                document.getElementById('signaturePreviewWrap').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        });
-
-        document.getElementById('signatureForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const fileInput = document.getElementById('signatureFile');
-            const errorEl = document.getElementById('signatureError');
-            errorEl.textContent = '';
-
-            if (!fileInput.files.length) {
-                errorEl.textContent = 'กรุณาเลือกไฟล์ลายเซ็นก่อน';
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('signature', fileInput.files[0]);
-
-            try {
-                const res = await fetch('/owner/profile/signature', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-                if (!res.ok || !data.success) {
-                    errorEl.textContent = data.message || 'อัปโหลดไม่สำเร็จ';
-                    return;
-                }
-                showToast('อัปโหลดลายเซ็นสำเร็จ');
-            } catch (err) {
-                errorEl.textContent = 'เกิดข้อผิดพลาดในการอัปโหลด';
-            }
-        });
-
-        // ─────────────────────────────────────────
-        // FORM 4: เปลี่ยนรหัสผ่าน
-        // ─────────────────────────────────────────
-        document.getElementById('passwordForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword     = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            document.getElementById('newPasswordError').textContent = '';
-            document.getElementById('confirmPasswordError').textContent = '';
-
-            if (!currentPassword || !newPassword || !confirmPassword) {
-                showToast('กรุณากรอกรหัสผ่านให้ครบทุกช่อง', true);
-                return;
-            }
-            if (newPassword.length < 6) {
-                document.getElementById('newPasswordError').textContent = 'รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร';
-                return;
-            }
-            if (newPassword !== confirmPassword) {
-                document.getElementById('confirmPasswordError').textContent = 'รหัสผ่านไม่ตรงกัน';
-                return;
-            }
-
-            try {
-                const res = await fetch('/owner/change-password', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ currentPassword, newPassword })
-                });
-                const data = await res.json();
-                if (!res.ok || !data.success) {
-                    showToast(data.message || 'เปลี่ยนรหัสผ่านไม่สำเร็จ', true);
-                    return;
-                }
-                showToast('เปลี่ยนรหัสผ่านสำเร็จ');
-                document.getElementById('passwordForm').reset();
-            } catch (err) {
-                showToast('เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน', true);
-            }
-        });
-    </script>
+<script th:src="@{/js/Homestay/edit-profile.js}"></script>
 </body>
 </html>

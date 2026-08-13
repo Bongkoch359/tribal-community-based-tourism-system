@@ -364,6 +364,10 @@
                 transform: scaleX(0);
             }
         }
+
+        .form-control.error {
+            border-color: #d32f2f !important;
+        }
     </style>
 </head>
 
@@ -421,10 +425,6 @@
         </a>
 
         <div class="page-title">เพิ่มที่พักใหม่</div>
-        <!-- <div class="page-subtitle">
-        สร้างข้อมูลประเภทที่พักใหม่สำหรับ:
-        <span class="homestay-tag" th:text="${homestayname}">บ้านระเบียงดาว</span>
-    </div> -->
 
         <form id="addRoomForm" th:action="@{/addroom}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="homestayid" th:value="${homestayid}">
@@ -434,7 +434,6 @@
                 <div class="section-head">
                     <i class="fas fa-bed" style="color:#2d6a2d;"></i>
                     <span class="label">ข้อมูลประเภทที่พัก</span>
-                    <span class="badge-tag">ROOMTYPE</span>
                 </div>
                 <div class="section-body">
 
@@ -491,20 +490,20 @@
                     </div>
 
                     <!-- คำอธิบาย -->
-                    <div class="form-group">
-                        <label class="form-label">รายละเอียดที่พัก</label>
-                        <textarea id="description" name="description" class="form-control"
-                            placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
-                        <span class="field-error" id="descriptionError"></span>
-                    </div>
+<div class="form-group">
+    <label class="form-label">รายละเอียดที่พัก <span class="req">*</span></label>
+    <textarea id="description" name="description" class="form-control"
+        placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
+    <span class="field-error" id="descriptionError"></span>
+</div>
 
                     <!-- เงื่อนไขการเข้าพัก -->
-                    <div class="form-group">
-                        <label class="form-label">เงื่อนไขการเข้าพัก</label>
-                        <textarea id="roomcondition" name="roomcondition" class="form-control"
-                            placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
-                        <span class="field-error" id="roomconditionError"></span>
-                    </div>
+<div class="form-group">
+    <label class="form-label">เงื่อนไขการเข้าพัก <span class="req">*</span></label>
+    <textarea id="roomcondition" name="roomcondition" class="form-control"
+        placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
+    <span class="field-error" id="roomconditionError"></span>
+</div>
 
                 </div>
             </div>
@@ -590,189 +589,8 @@
 
         </form>
     </div>
-
-    <script>
-        // ─── สิ่งอำนวยความสะดวก: ไอคอน (อ้างอิงชุดเดียวกับหน้าแก้ไข) ──────────────
-        const FAC_ICONS = {
-            'wifi': '📶',
-            'wi-fi': '📶',
-
-            'แอร์': '❄️',
-            'เครื่องปรับอากาศ': '❄️',
-
-            'น้ำอุ่น': '🚿',
-            'ฝักบัวน้ำอุ่น': '🚿',
-
-            'พัดลม': '🌀',
-
-            'ที่จอดรถ': '🚗',
-            'จอดรถ': '🚗',
-
-            'ทีวี': '📺',
-            'tv': '📺',
-
-            'อาหารเช้า': '🍳',
-
-            'ชุดชนเผ่าสำหรับถ่ายรูป': '👘'
-        };
-        function getFacIcon(name) {
-            const key = (name || '').toLowerCase().trim();
-            for (const [k, v] of Object.entries(FAC_ICONS)) {
-                if (key.includes(k)) return v;
-            }
-            return '✨';
-        }
-        document.querySelectorAll('.fac-icon[data-name]').forEach(el => {
-            el.textContent = getFacIcon(el.dataset.name);
-        });
-
-        // ─── ไฟล์รูปที่เลือกไว้ (DataTransfer list) ───────────────────────────────
-        let selectedFiles = [];
-
-        // ─── Drag & Drop / Click upload ──────────────────────────────────────────
-        function handleDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('dragover'); }
-        function handleDragLeave() { document.getElementById('dropZone').classList.remove('dragover'); }
-        function handleDrop(e) { e.preventDefault(); handleDragLeave(); handleFileSelect(e.dataTransfer.files); }
-
-        function handleFileSelect(files) {
-            const MAX = 5 * 1024 * 1024; // 5 MB
-            Array.from(files).forEach(file => {
-                if (file.size > MAX) { alert('ไฟล์ ' + file.name + ' ใหญ่เกิน 5 MB'); return; }
-                if (!file.type.startsWith('image/')) return;
-                selectedFiles.push(file);
-                addPreviewCard(file, selectedFiles.length - 1);
-            });
-            updateUI();
-        }
-
-        function addPreviewCard(file, index) {
-            const grid = document.getElementById('previewGrid');
-            const reader = new FileReader();
-            reader.onload = e => {
-                const card = document.createElement('div');
-                card.className = 'preview-card';
-                card.dataset.index = index;
-                card.innerHTML =
-                    `<img src="${e.target.result}" alt="preview">
-             <button type="button" class="remove-btn" onclick="removePreview(${index})">✕</button>
-             <span class="file-size-label">${(file.size / 1024).toFixed(0)} KB</span>`;
-                grid.appendChild(card);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removePreview(index) {
-            selectedFiles[index] = null;
-            const card = document.querySelector(`.preview-card[data-index="${index}"]`);
-            if (card) card.remove();
-            updateUI();
-        }
-
-        function updateUI() {
-            const count = selectedFiles.filter(f => f !== null).length;
-            const badge = document.getElementById('imageCountBadge');
-            const grid = document.getElementById('previewGrid');
-            if (count > 0) {
-                badge.style.display = 'inline';
-                badge.textContent = count + ' รูป';
-                grid.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-                grid.style.display = 'none';
-            }
-        }
-
-        // ─── Validate ────────────────────────────────────────────────────────────
-        function validate() {
-            const fields = [
-                { id: 'typename', errId: 'typenameError', label: 'ประเภทที่พัก' },
-                { id: 'bedtype', errId: 'bedtypeError', label: 'ประเภทเตียง' },
-                { id: 'pricepernight', errId: 'priceError', label: 'ราคาต่อคืน' },
-                { id: 'maxguest', errId: 'maxguestError', label: 'จำนวนผู้เข้าพัก' },
-                { id: 'totalrooms', errId: 'totalroomsError', label: 'จำนวนห้อง' },
-                { id: 'description', errId: 'descriptionError', label: 'คำอธิบาย' },
-                { id: 'roomcondition', errId: 'roomconditionError', label: 'เงื่อนไขการเข้าพัก' },
-                { id: 'status', errId: 'statusError', label: 'สถานะ' },
-            ];
-            let isValid = true;
-            for (const f of fields) {
-                const el = document.getElementById(f.id);
-                const errEl = document.getElementById(f.errId);
-                if (!el || !el.value || el.value.trim() === '' || el.value === '0') {
-                    if (errEl) errEl.textContent = 'กรุณากรอก' + f.label;
-                    if (isValid) { el && el.focus(); isValid = false; }
-                } else {
-                    if (errEl) errEl.textContent = '';
-                }
-            }
-            return isValid;
-        }
-
-        // ─── Submit → multipart/form-data ────────────────────────────────────────
-        async function submitForm() {
-            if (!validate()) return;
-
-            const fd = new FormData();
-            fd.append('homestayid', document.querySelector('input[name="homestayid"]').value);
-            fd.append('typename', document.getElementById('typename').value);
-            fd.append('bedtype', document.getElementById('bedtype').value);
-            fd.append('pricepernight', document.getElementById('pricepernight').value);
-            fd.append('maxguest', document.getElementById('maxguest').value);
-            fd.append('totalrooms', document.getElementById('totalrooms').value);
-            fd.append('description', document.getElementById('description').value);
-            fd.append('roomcondition', document.getElementById('roomcondition').value);
-            fd.append('status', document.getElementById('status').value);
-
-            document.querySelectorAll('input[name="facilitiesIds"]:checked').forEach(cb => {
-                fd.append('facilitiesIds', cb.value);
-            });
-            selectedFiles.filter(f => f !== null).forEach(file => {
-                fd.append('images', file);
-            });
-
-            const btn = document.querySelector('.btn-save');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
-
-            try {
-                const res = await fetch('/addroom', { method: 'POST', body: fd });
-                const data = await res.json();
-
-                if (data.success) {
-                    showSuccessModal();
-                } else {
-                    alert('เกิดข้อผิดพลาด: ' + (data.message || ''));
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
-                }
-            } catch (err) {
-                alert('ไม่สามารถเชื่อมต่อ server');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก';
-            }
-        }
-
-        function goToList() {
-            const homestayid = document.querySelector('input[name="homestayid"]').value;
-            window.location.href = '/owner/rooms?homestayid=' + homestayid;
-        }
-
-        function showSuccessModal() {
-            const modal = document.getElementById('successModal');
-            const fill = document.getElementById('progressFill');
-
-            modal.classList.add('show');
-
-
-            fill.style.animation = 'none';
-            fill.offsetHeight;
-            fill.style.animation = 'progress-drain 2s linear forwards';
-
-            setTimeout(() => {
-                goToList();
-            }, 2000);
-        }
-    </script>
+    
+<script th:src="@{/js/Homestay/addroom.js}"></script>
 </body>
 
 </html>

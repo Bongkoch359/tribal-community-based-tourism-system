@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>เข้าสู่ระบบผู้จัดการ – ท่องเที่ยวชุมชนชนเผ่า</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Sarabun', sans-serif;
@@ -38,10 +46,13 @@
       font-weight: 700;
       font-size: 1rem;
     }
-    .nav-brand i { font-size: 1.15rem; }
+
+    .nav-brand i {
+      font-size: 1.15rem;
+    }
 
     .nav-right a {
-      color: rgba(255,255,255,.85);
+      color: rgba(255, 255, 255, .85);
       font-size: .92rem;
       font-weight: 500;
       text-decoration: none;
@@ -50,8 +61,14 @@
       gap: 6px;
       transition: color .15s;
     }
-    .nav-right a:hover { color: #fff; }
-    .nav-right i { font-size: .85rem; }
+
+    .nav-right a:hover {
+      color: #fff;
+    }
+
+    .nav-right i {
+      font-size: .85rem;
+    }
 
     /* ─── PAGE BODY ─── */
     .page-body {
@@ -69,7 +86,7 @@
       padding: 40px 44px 44px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 4px 24px rgba(0,0,0,.10);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .10);
     }
 
     /* ─── AVATAR ─── */
@@ -83,22 +100,56 @@
       justify-content: center;
       margin: 0 auto 18px;
     }
+
     .login-avatar i {
       color: #ffffff;
       font-size: 42px;
     }
+
+    .brand-logo-link {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-right: auto;
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .brand-logo img {
+      height: 75px;
+      /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+      width: auto;
+      max-width: 180px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-text {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.05rem;
+      white-space: nowrap;
+    }
+
 
     /* ─── HEADER ─── */
     .form-card-header {
       text-align: center;
       margin-bottom: 28px;
     }
+
     .form-card-header h1 {
       font-size: 1.55rem;
       font-weight: 800;
       color: #1e2d1a;
       margin-bottom: 6px;
     }
+
     .form-card-header p {
       font-size: .92rem;
       color: #7a7060;
@@ -116,7 +167,10 @@
     }
 
     /* ─── FORM ─── */
-    .form-group { margin-bottom: 18px; }
+    .form-group {
+      margin-bottom: 18px;
+    }
+
     .form-label {
       display: block;
       font-size: .88rem;
@@ -124,6 +178,7 @@
       color: #3a3a3a;
       margin-bottom: 6px;
     }
+
     .form-control {
       width: 100%;
       border: 1.5px solid #d6d1c8;
@@ -136,16 +191,21 @@
       outline: none;
       transition: border-color .18s, box-shadow .18s;
     }
-    .form-control::placeholder { color: #b0a898; }
+
+    .form-control::placeholder {
+      color: #b0a898;
+    }
+
     .form-control:focus {
       border-color: #65a30d;
-      box-shadow: 0 0 0 3px rgba(101,163,13,.15);
+      box-shadow: 0 0 0 3px rgba(101, 163, 13, .15);
     }
 
     /* ─── SUBMIT ─── */
     .btn-submit {
       width: 100%;
-      background: #f0a500;;
+      background: #f0a500;
+      ;
       border: none;
       border-radius: 8px;
       padding: 13px;
@@ -158,64 +218,74 @@
       transition: background .18s;
       letter-spacing: .02em;
     }
-    .btn-submit:hover { background: #A86D00; }
-    .btn-submit:active { background: #3a7d1e; }
+
+    .btn-submit:hover {
+      background: #A86D00;
+    }
+
+    .btn-submit:active {
+      background: #3a7d1e;
+    }
 
     @media (max-width: 480px) {
-      .form-card { padding: 28px 20px 32px; }
+      .form-card {
+        padding: 28px 20px 32px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a class="nav-brand" href="/search">
-    <i class="fas fa-mountain-sun"></i>
-    ระบบท่องเที่ยวชุมชนชนเผ่า
-  </a>
-  <div class="nav-right">
-    <a href="/search">
-      <i class="fas fa-house"></i>
-      หน้าแรก
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a th:href="@{/}" class="brand-logo-link">
+      <div class="brand-logo">
+        <img th:src="@{/images/logo3.png}" alt="Logo">
+      </div>
+      <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
     </a>
-  </div>
-</nav>
-
-<!-- BODY -->
-<div class="page-body">
-  <div class="form-card">
-
-    <div class="login-avatar">
-      <i class="fas fa-user"></i>
+    <div class="nav-right">
+      <a href="/search">
+        <i class="fas fa-house"></i>
+        หน้าแรก
+      </a>
     </div>
+  </nav>
 
-    <div class="form-card-header">
-      <h1>เข้าสู่ระบบ</h1>
-      <p>ด้วยบัญชีผู้จัดการท่องเที่ยวชุมชน</p>
-    </div>
+  <!-- BODY -->
+  <div class="page-body">
+    <div class="form-card">
 
-    <!-- Error Message -->
-    <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
-
-    <form th:action="@{/manager/login}" method="post">
-      <div class="form-group">
-        <label class="form-label">อีเมล</label>
-        <input class="form-control" type="email" name="email"
-               placeholder="กรอกอีเมล" required/>
+      <div class="login-avatar">
+        <i class="fas fa-user"></i>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">รหัสผ่าน</label>
-        <input class="form-control" type="password" name="password"
-               placeholder="กรอกรหัสผ่าน" required/>
+      <div class="form-card-header">
+        <h1>เข้าสู่ระบบ</h1>
+        <p>ด้วยบัญชีผู้จัดการท่องเที่ยวชุมชน</p>
       </div>
 
-      <button type="submit" class="btn-submit">เข้าสู่ระบบ</button>
-    </form>
+      <!-- Error Message -->
+      <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
 
+      <form th:action="@{/manager/login}" method="post">
+        <div class="form-group">
+          <label class="form-label">อีเมล</label>
+          <input class="form-control" type="email" name="email" placeholder="กรอกอีเมล" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">รหัสผ่าน</label>
+          <input class="form-control" type="password" name="password" placeholder="กรอกรหัสผ่าน" required />
+        </div>
+
+        <button type="submit" class="btn-submit">เข้าสู่ระบบ</button>
+      </form>
+
+    </div>
   </div>
-</div>
 
 </body>
+
 </html>
