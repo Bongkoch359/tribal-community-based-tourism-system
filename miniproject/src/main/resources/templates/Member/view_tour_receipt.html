@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ใบเสร็จรับเงิน - ทัวร์</title>
+<title th:text="${receipt != null and receipt.bookingId != null ? 'ใบเสร็จ - ' + receipt.bookingId : 'ใบเสร็จรับเงิน - ทัวร์'}">ใบเสร็จ - BK08120002</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Kalam:wght@700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -80,51 +80,40 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
     padding:36px 40px 34px;
 }
 
-/* stamp — วางไว้ในมุมขวาบนของ header แทนการยึด bottom ตายตัว
-   เพื่อไม่ให้ทับตาราง/ลายเซ็นเวลาความสูงของใบเสร็จเปลี่ยนไป */
+/* stamp — placed in normal flow (right-aligned row), not floating over text */
+.paid-stamp-row { display:flex; justify-content:flex-end; margin-top:18px; }
 .paid-stamp {
-    position:absolute; top:36px; right:40px;
     width:104px; height:104px;
     border:3px solid var(--stamp); border-radius:50%;
     display:flex; align-items:center; justify-content:center; text-align:center;
     transform:rotate(-13deg);
     color:var(--stamp); font-weight:800; font-size:.74rem; letter-spacing:.03em;
     line-height:1.3; opacity:.85; pointer-events:none;
-    z-index:2;
+    position:relative;
 }
 .paid-stamp::before { content:""; position:absolute; inset:6px; border:1px solid var(--stamp); border-radius:50%; }
 .paid-stamp span { padding:0 8px; }
 
-/* ── top header: issuer left / logo+contact right ── */
-.doc-header { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap; }
+/* ── centered doc title (the single, top-level heading) ── */
+.doc-title { text-align:center; }
+.doc-title .th { font-weight:800; font-size:1.7rem; color:var(--forest-deep); letter-spacing:.01em; }
+.doc-title .en { font-size:.74rem; color:var(--ink-soft); letter-spacing:.16em; text-transform:uppercase; margin-top:4px; }
+
+/* ── info block below the title: issuer (left) / receipt meta (right) ── */
+.doc-header {
+    display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap;
+    margin-top:24px; padding-top:18px; border-top:1px solid var(--line);
+}
 .issuer-col .issuer-label { font-size:.78rem; font-weight:700; color:var(--ink-soft); margin-bottom:4px; }
 .issuer-col .issuer-name { font-weight:800; font-size:1rem; color:var(--forest-deep); }
-.issuer-col .issuer-address { font-size:.82rem; color:var(--ink-soft); margin-top:3px; line-height:1.55; max-width:320px; }
+.issuer-col .issuer-address { font-size:.82rem; color:var(--ink-soft); margin-top:3px; line-height:1.55; max-width:280px; }
 
-.brand-col { text-align:right; }
-.brand-col .brand-mark {
-    display:inline-flex; align-items:center; gap:8px; justify-content:flex-end;
-    font-weight:800; font-size:1.05rem; color:var(--forest-deep);
-}
-.brand-col .brand-mark .mini-icon {
-    width:30px; height:30px; background:var(--forest); border-radius:8px;
-    display:flex; align-items:center; justify-content:center;
-}
-.brand-col .brand-mark .mini-icon svg { width:16px; height:16px; }
-.brand-col .contact-line { font-size:.8rem; color:var(--ink-soft); margin-top:6px; }
-
-/* ── ref line: booking no / date, plain text, right + left ── */
-.ref-line {
-    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px 20px;
-    margin-top:18px; padding-top:14px; border-top:1px solid var(--line);
-    font-size:.82rem; color:var(--ink-soft);
-}
-.ref-line b { color:var(--ink); font-weight:700; }
-
-/* ── centered doc title ── */
-.doc-title { text-align:center; margin-top:22px; }
-.doc-title .th { font-weight:800; font-size:1.55rem; color:var(--forest-deep); letter-spacing:.01em; }
-.doc-title .en { font-size:.72rem; color:var(--ink-soft); letter-spacing:.16em; text-transform:uppercase; margin-top:3px; }
+/* right column: all receipt metadata grouped together, aligned as label/value pairs */
+.meta-col { text-align:right; font-size:.84rem; }
+.meta-col .meta-row { display:flex; justify-content:flex-end; gap:8px; margin-bottom:5px; }
+.meta-col .meta-row .meta-label { color:var(--ink-soft); }
+.meta-col .meta-row .meta-value { color:var(--ink); font-weight:400; }
+.meta-col .meta-row:last-child { margin-bottom:0; }
 
 /* ── boxed section (header bar + table body, single outer border) ── */
 .doc-box { margin-top:22px; border:1px solid var(--line-strong); }
@@ -133,7 +122,7 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
     color:var(--forest-deep);
 }
 
-/* label / value rows, no divider lines between rows */
+/* label / value rows */
 .kv-table { width:100%; border-collapse:collapse; }
 .kv-table td { padding:12px 16px; font-size:.88rem; vertical-align:top; }
 .kv-table td.k { width:40%; color:var(--ink-soft); }
@@ -163,11 +152,6 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
 .payment-method { font-size:.82rem; color:var(--ink-soft); padding:10px 16px; }
 .payment-method b { color:var(--ink); }
 
-/* ── footer note, centered ── */
-.receipt-footer-note {
-    margin-top:26px; font-size:.76rem; color:var(--gray-600); text-align:center; line-height:1.7;
-}
-
 /* ── signature block, bottom-right like the reference ── */
 .sign-block { display:flex; justify-content:flex-end; margin-top:34px; }
 .sign-col { text-align:center; width:220px; }
@@ -186,30 +170,29 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
     .page-wrap { padding:0; max-width:100%; margin:0; }
     .receipt-sheet { padding:0; }
 
-    .issuer-name, .issuer-label, .doc-title .th, .brand-mark, .doc-box-header, .kv-table thead th,
+    .issuer-name, .issuer-label, .doc-title .th, .meta-col .meta-value, .doc-box-header, .kv-table thead th,
     .kv-table td.v, .kv-table tr.grand-row td, .amount-words .aw-value, .sign-caption { color:#000 !important; }
-    .issuer-address, .doc-title .en, .ref-line, .contact-line, .kv-table td.k,
-    .amount-words .aw-label, .payment-method, .receipt-footer-note, .sign-sub { color:#333 !important; }
+    .issuer-address, .doc-title .en, .meta-col .meta-label, .kv-table td.k,
+    .amount-words .aw-label, .payment-method, .sign-sub { color:#333 !important; }
 
     .doc-box { border-color:#000 !important; }
     .doc-box-header, .kv-table thead th, .kv-table tr.grand-row td { background:#f0f0f0 !important; }
     .kv-table tr.paid-row-table td { background:#e5e5e5 !important; color:#000 !important; }
-    .mini-icon { background:#000 !important; }
 
     .paid-stamp { border-color:#000 !important; color:#000 !important; }
     .paid-stamp::before { border-color:#000 !important; }
     .sign-scribble svg { stroke:#000 !important; }
     .sign-rule { border-color:#000 !important; }
 
-    .doc-header, .ref-line, .doc-box, .kv-table tr, .sign-block { break-inside: avoid; }
+    .doc-header, .doc-box, .kv-table tr, .sign-block { break-inside: avoid; }
 }
 
 @media (max-width:560px) {
     .receipt-sheet { padding:26px 18px; }
     .doc-header { flex-direction:column; }
-    .brand-col { text-align:left; }
-    .brand-col .brand-mark { justify-content:flex-start; }
-    .paid-stamp { top:26px; right:16px; width:84px; height:84px; font-size:.62rem; }
+    .meta-col { text-align:left; }
+    .meta-col .meta-row { justify-content:flex-start; }
+    .paid-stamp { width:84px; height:84px; font-size:.62rem; }
     .kv-table td.k { width:48%; }
     .sign-block { justify-content:center; }
 }
@@ -251,39 +234,37 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
     <!-- ══ RECEIPT SHEET ══ -->
     <div class="receipt-sheet">
 
-        <!-- stamp -->
-        <div class="paid-stamp" th:if="${receipt.paymentStatus == 'PAID'}">
-            <span>ชำระเงินแล้ว<br>PAID</span>
-        </div>
-
-        <!-- ── top header: issuer address (left) / brand + contact (right) ── -->
-        <div class="doc-header">
-            <div class="issuer-col">
-                <div class="issuer-label">ที่อยู่:</div>
-                <div class="issuer-name" th:text="${receipt.communityManagerName != null ? receipt.communityManagerName : '-'}"></div>
-                <div class="issuer-address" th:text="${receipt.communityManagerAddress != null ? receipt.communityManagerAddress : '-'}"></div>
-            </div>
-            <div class="brand-col">
-                <div class="brand-mark">
-                    <span class="mini-icon">
-                        <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
-                    </span>
-                    <span>ระบบท่องเที่ยวชุมชนเผ่า</span>
-                </div>
-                <div class="contact-line" th:if="${receipt.bankName != null}">ชำระผ่าน: <span th:text="${receipt.bankName}"></span></div>
-            </div>
-        </div>
-
-        <!-- ── booking no. / issue date, plain line ── -->
-        <div class="ref-line">
-            <span>หมายเลขการจอง: <b th:text="${receipt.bookingId}"></b></span>
-           <span th:text="${receipt.paymentDate != null ? #dates.format(receipt.paymentDate, 'dd MMMM yyyy') : '-'}"></span>
-        </div>
-
-        <!-- ── centered title ── -->
+        <!-- ── single big centered title, the first thing on the sheet ── -->
         <div class="doc-title">
             <div class="th">ใบเสร็จรับเงิน</div>
             <div class="en">Tour Receipt / Payment Confirmation</div>
+        </div>
+
+        <!-- ── issuer (left) / all receipt metadata grouped together (right) — below the title ── -->
+        <div class="doc-header">
+            <div class="issuer-col">
+                <div class="issuer-label">ผู้ออกใบเสร็จ:</div>
+                <div class="issuer-name" th:text="${receipt.communityManagerName != null ? receipt.communityManagerName : '-'}"></div>
+                <div class="issuer-address" th:text="${receipt.communityManagerAddress != null ? receipt.communityManagerAddress : '-'}"></div>
+            </div>
+            <div class="meta-col">
+                <div class="meta-row">
+                    <span class="meta-label">เลขที่ใบเสร็จ:</span>
+                    <span class="meta-value" th:text="${receipt.paymentId != null ? receipt.paymentId : '-'}"></span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">หมายเลขการจอง:</span>
+                    <span class="meta-value" th:text="${receipt.bookingId}"></span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">วันที่เรียกเก็บเงิน:</span>
+                    <span class="meta-value" th:text="${receipt.paymentDate != null ? #dates.format(receipt.paymentDate,'dd MMMM yyyy') : '-'}"></span>
+                </div>
+                <div class="meta-row" th:if="${receipt.bankName != null}">
+                    <span class="meta-label">ชำระผ่าน:</span>
+                    <span class="meta-value" th:text="${receipt.bankName}"></span>
+                </div>
+            </div>
         </div>
 
         <!-- ── customer info box ── -->
@@ -301,10 +282,6 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
                     <tr>
                         <td class="k">โทรศัพท์</td>
                         <td class="v" th:text="${receipt.memberPhone != null ? receipt.memberPhone : '-'}"></td>
-                    </tr>
-                    <tr>
-                        <td class="k">เลขที่ใบเสร็จ</td>
-                        <td class="v" th:text="${receipt.paymentId}"></td>
                     </tr>
                 </tbody>
             </table>
@@ -326,10 +303,8 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
                         <td class="v" th:text="${receipt.tourDuration != null ? receipt.tourDuration : '-'}"></td>
                     </tr>
                     <tr>
-                       <tr>
-    <td class="k">วันที่ออกเดินทาง</td>
-    <td class="v" th:text="${receipt.scheduleOpenDate != null ? #dates.format(receipt.scheduleOpenDate, 'dd MMM yyyy') : '-'}"></td>
-</tr>
+                        <td class="k">วันที่ออกเดินทาง</td>
+                        <td class="v" th:text="${receipt.scheduleOpenDate != null ? #dates.format(receipt.scheduleOpenDate, 'dd MMM yyyy') : '-'}"></td>
                     </tr>
                     <tr>
                         <td class="k">จำนวนผู้เดินทาง</td>
@@ -379,10 +354,11 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
             </div>
         </div>
 
-        <!-- ── footer note ── -->
-        <div class="receipt-footer-note">
-            เอกสารนี้ออกโดยระบบอัตโนมัติ ไม่จำเป็นต้องมีลายเซ็นหรือตราประทับ<br>
-            หากมีข้อสงสัยเกี่ยวกับการชำระเงิน กรุณาติดต่อผู้ดูแลระบบ
+        <!-- ── PAID stamp, in normal flow, right-aligned so it never overlaps text ── -->
+        <div class="paid-stamp-row" th:if="${receipt.paymentStatus == 'PAID'}">
+            <div class="paid-stamp">
+                <span>ชำระเงินแล้ว<br>PAID</span>
+            </div>
         </div>
 
         <!-- ── signature bottom-right ── -->
@@ -393,7 +369,7 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
                     <img th:if="${receipt.signatureImageUrl != null and !receipt.signatureImageUrl.isEmpty()}"
                          th:src="${receipt.signatureImageUrl}"
                          alt="ลายเซ็น"
-                         style="max-height:50px; max-width:200px; object-fit:contain;" />
+                         style="max-height:50px; max-width:170px; object-fit:contain;" />
 
                     <!-- ถ้าไม่มี ให้ fallback เป็น SVG scribble เดิม -->
                     <svg th:unless="${receipt.signatureImageUrl != null and !receipt.signatureImageUrl.isEmpty()}"
@@ -402,16 +378,9 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
                     </svg>
                 </div>
                 <div class="sign-rule"></div>
-               
-        <div class="sign-caption">
-            ลายเซ็นผู้รับเงิน
-        </div>
-
-        <div class="sign-sub"
-             th:text="${receipt.communityManagerName != null
-                       ? receipt.communityManagerName
-                       : '-'}">
-        </div>
+                <div class="sign-caption">ลายเซ็นผู้รับเงิน</div>
+                <div class="sign-sub" th:text="${receipt.communityManagerName != null ? receipt.communityManagerName : '-'}"></div>
+            </div>
         </div>
 
     </div>
