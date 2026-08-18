@@ -22,6 +22,7 @@ public class HomestayService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+    
 
     public List<Homestay> getHomestaysByOwnerId(Integer ownerid) {
     return homestayRepository.findByOwner_Ownerid(ownerid);
@@ -80,7 +81,6 @@ public class HomestayService {
     homestayRepository.save(h);
 }
     
-
 @Transactional
 public Homestay getHomestayDetailForMember(Integer homestayid) {
     Homestay h = homestayRepository.findById(homestayid).orElse(null);

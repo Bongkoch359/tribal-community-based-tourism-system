@@ -5,6 +5,7 @@ import com.example.miniproject.dto.Homestay.HomestayDetailDto;
 import com.example.miniproject.dto.Homestay.HomestayDto;
 import com.example.miniproject.dto.Homestay.LoginRequest;
 import com.example.miniproject.entity.Homestayowner;
+import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
 import com.example.miniproject.service.Homestay.HomestayOwnerService;
 import com.example.miniproject.service.Homestay.HomestayService;
 import org.springframework.ui.Model;
@@ -27,6 +28,8 @@ import java.util.*;
 public class HomestayownerController {
 
     @Autowired
+    private HomestayOwnerRepository ownerRepository;
+    @Autowired
     private HomestayOwnerService ownerService;
     @Autowired
     private HomestayService homestayService;
@@ -37,6 +40,7 @@ public class HomestayownerController {
     public String loginPage() {
         return "Homestay/loginowner";
     }
+
     @PostMapping(value = "/owner/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<?> login(@RequestBody LoginRequest req, HttpSession session) {
@@ -74,7 +78,14 @@ public class HomestayownerController {
         return "Homestay/register";
     }
 
-    // ───── Edit Profile Page (server-render แบบเดียวกับ tour manager) ─────
+    @GetMapping("/owner/check-email")
+    @ResponseBody
+    public Map<String, Boolean> checkEmail(@RequestParam String email) {
+        boolean exists = ownerRepository.existsByEmail(email); // ปรับตาม repository จริง
+        return Map.of("exists", exists);
+    }
+
+    // ───── Edit Profile Page ─────
 
     @GetMapping("/owner/profile-edit")
     public String editProfile(HttpSession session, Model model) {
@@ -90,18 +101,10 @@ public class HomestayownerController {
     // ═══════════════════════════════════════════════════
     // ───── Register — form-submit (multipart) ─────
     // ═══════════════════════════════════════════════════
-    /*
-     * ฟอร์ม (single form ครอบ step1 + step2) ส่งมาแบบ multipart/form-data ปกติ:
-     * firstname, lastname, email, phone, password
-     * homestays[0].homestayname, homestays[0].address,
-     * homestays[0].description, homestays[0].images (File, multiple)
-     * homestays[1].homestayname, ...
-     * (index ถูกตั้งชื่อ input ให้เรียงลำดับใหม่ด้วย JS ฝั่ง client ก่อน submit
-     * จริง
-     * — ไม่มีการยิง fetch ใด ๆ ทั้งสิ้น เป็นการ submit ของ browser ตามปกติ)
-     */
+
     @PostMapping(value = "/owner/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String register(RegisterOwnerRequest req, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public ResponseEntity<?> register(RegisterOwnerRequest req) {
         try {
             List<Integer> homestayIds = ownerService.register(req);
 
@@ -135,16 +138,13 @@ public class HomestayownerController {
                 }
             }
 
-            redirectAttributes.addFlashAttribute("registerSuccess", true);
+            return ResponseEntity.ok(Map.of("success", true));
 
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            redirectAttributes.addFlashAttribute("formData", req);
+            return ResponseEntity.ok(Map.of("success", false, "message", e.getMessage()));
         } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "บันทึกรูปภาพไม่สำเร็จ: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("formData", req);
+            return ResponseEntity.ok(Map.of("success", false, "message", "บันทึกรูปภาพไม่สำเร็จ: " + e.getMessage()));
         }
-        return "redirect:/owner/register";
     }
 
     // ═══════════════════════════════════════════════════

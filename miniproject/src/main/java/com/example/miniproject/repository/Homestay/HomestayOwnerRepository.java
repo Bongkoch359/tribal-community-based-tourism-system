@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, Integer> {
+    
 
      List<Homestayowner> findByAccountstatus(String accountstatus);
     List<Homestayowner> findByVerificationstatus(Boolean verificationstatus);
@@ -23,6 +24,7 @@ public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, In
            "FROM Homestayowner o WHERE o.email = :email")
     boolean existsByEmail(@Param("email") String email);
 
+   
  
     // ตรวจสอบว่า email มีอยู่แล้วหรือยัง (ยกเว้น owner ตัวเอง)
     @Query("SELECT COUNT(o) > 0 FROM Homestayowner o WHERE o.email = :email AND o.ownerid <> :ownerid")

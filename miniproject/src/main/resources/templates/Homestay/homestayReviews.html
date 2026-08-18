@@ -10,6 +10,69 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/Homestay/homestay-review.css}" rel="stylesheet">
+
+    <!--
+        สไตล์เพิ่มเติมสำหรับ layout ใหม่:
+        - .reviews-layout      = ครอบ 2 คอลัมน์ (ซ้าย sticky / ขวาเลื่อนตามปกติ)
+        - .reviews-sidebar     = คอลัมน์ซ้าย "สรุปคะแนน" ให้ sticky อยู่นิ่ง
+        - .reviews-main        = คอลัมน์ขวา รวม "กรองรีวิว" + รายการรีวิวไว้ด้วยกัน
+        ถ้ามี class ชื่อซ้ำใน homestay-review.css อยู่แล้ว ให้ลบ block นี้ทิ้งแล้ว
+        ย้ายไปเขียนในไฟล์ css จริงแทนได้เลยครับ (เนื้อหาเหมือนกัน)
+    -->
+    <style>
+        .reviews-layout {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .reviews-sidebar {
+            flex: 0 0 280px;
+            position: sticky;
+            top: 20px;
+            align-self: flex-start;
+        }
+
+        .reviews-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .reviews-main .panel {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .reviews-layout {
+                flex-direction: column;
+            }
+
+            .reviews-sidebar {
+                position: static;
+                width: 100%;
+            }
+        }
+
+        /* ลดช่องว่างด้านบนที่เหลือเยอะเกินไป + จัดปุ่มย้อนกลับให้อยู่แถวเดียวกับหัวข้อ */
+        .page-content {
+            padding-top: 5px !important;
+        }
+
+        .page-header-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .page-header-row .back-btn {
+            margin-bottom: 0;
+        }
+
+        .page-header-row .page-title {
+            margin: 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -42,10 +105,12 @@
     <div class="page">
         <div class="page-content">
 
-            <a class="back-btn" th:href="@{/owner/homestays}">
-                <i class="fas fa-chevron-left"></i> ย้อนกลับ
-            </a>
-            <h1 class="page-title">รีวิวโฮมสเตย์</h1>
+            <div class="page-header-row">
+                <a class="back-btn" th:href="@{/owner/homestays}">
+                    <i class="fas fa-chevron-left"></i> ย้อนกลับ
+                </a>
+                <h1 class="page-title">รีวิวโฮมสเตย์</h1>
+            </div>
 
             <!-- ===== การ์ดสรุปโฮมสเตย์ ===== -->
             <div class="summary-card">
@@ -66,77 +131,86 @@
                 </div>
             </div>
 
-            <!-- ===== เนื้อหา: sidebar + list ===== -->
-            <div class="top-panels-row">
-                <div class="panel">
-                    <div class="panel-title">สรุปคะแนน</div>
-                    <div class="rating-row" th:each="s : ${#numbers.sequence(5, 1)}">
-                        <span class="stars-label" th:text="'★ ' + ${s}"></span>
-                        <span class="bar-track">
-                            <span class="bar-fill"
-                                th:style="'width:' + (${totalCount} > 0 ? (${starCounts.get(s)} != null ? ${starCounts.get(s)} : 0) * 100 / ${totalCount} : 0) + '%'"></span>
-                        </span>
-                        <span class="rating-count"
-                            th:text="${starCounts.get(s)} != null ? ${starCounts.get(s)} : 0"></span>
-                    </div>
-                </div>
+            <!-- ===== เนื้อหา: sidebar (sticky) + main (กรอง+รีวิว เลื่อนด้วยกัน) ===== -->
+            <div class="reviews-layout">
 
-                <div class="panel">
-                    <div class="panel-title">กรองรีวิว</div>
-                    <div class="filter-row">
-                        <a class="filter-chip" th:href="@{/owner/homestay/{id}/reviews(id=${homestayId})}"
-                            th:classappend="${selectedStar == null} ? 'active' : ''">
-                            ทั้งหมด (<span th:text="${totalCount}"></span>)
-                        </a>
-                        <a class="filter-chip" th:each="s : ${#numbers.sequence(5, 1)}"
-                            th:href="@{/owner/homestay/{id}/reviews(id=${homestayId}, star=${s})}"
-                            th:classappend="${selectedStar != null and selectedStar == s} ? 'active' : ''">
-                            <span th:text="${s} + ' ★'"></span>
-                            (<span th:text="${starCounts.get(s)} != null ? ${starCounts.get(s)} : 0"></span>)
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- รายการรีวิว -->
-            <div>
-                <div th:if="${#lists.isEmpty(reviews)}" class="empty-state">
-                    ยังไม่มีรีวิวในหมวดนี้
-                </div>
-
-                <div class="review-card" th:each="review, iter : ${reviews}">
-                    <div class="review-head">
-                        <div class="avatar-circle" th:classappend="'avatar-' + ${iter.index % 5}"
-                            th:text="${#strings.substring(review.booking.member.firstname, 0, 1)} + ${#strings.substring(review.booking.member.lastname, 0, 1)}">
-                            สท
+                <!-- ฝั่งซ้าย: สรุปคะแนน (อยู่นิ่ง ไม่เลื่อนตาม) -->
+                <div class="reviews-sidebar">
+                    <div class="panel">
+                        <div class="panel-title">สรุปคะแนน</div>
+                        <div class="rating-row" th:each="s : ${#numbers.sequence(5, 1)}">
+                            <span class="stars-label" th:text="'★ ' + ${s}"></span>
+                            <span class="bar-track">
+                                <span class="bar-fill"
+                                    th:style="'width:' + (${totalCount} > 0 ? (${starCounts.get(s)} != null ? ${starCounts.get(s)} : 0) * 100 / ${totalCount} : 0) + '%'"></span>
+                            </span>
+                            <span class="rating-count"
+                                th:text="${starCounts.get(s)} != null ? ${starCounts.get(s)} : 0"></span>
                         </div>
-                        <div>
-                            <span class="reviewer-name"
-                                th:text="${review.booking.member.firstname} + ' ' + ${review.booking.member.lastname}">สมหญิง
-                                แก้วใจ</span>
-                            <span class="verified-badge">✓ จองผ่านระบบ</span>
-                            <div class="review-meta" th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}">18
-                                มี.ค. 2567</div>
+                    </div>
+                </div>
+
+                <!-- ฝั่งขวา: กรองรีวิว + รายการรีวิว (เลื่อนไปด้วยกัน) -->
+                <div class="reviews-main">
+
+                    <div class="panel">
+                        <div class="panel-title">กรองรีวิว</div>
+                        <div class="filter-row">
+                            <a class="filter-chip" th:href="@{/owner/homestay/{id}/reviews(id=${homestayId})}"
+                                th:classappend="${selectedStar == null} ? 'active' : ''">
+                                ทั้งหมด (<span th:text="${totalCount}"></span>)
+                            </a>
+                            <a class="filter-chip" th:each="s : ${#numbers.sequence(5, 1)}"
+                                th:href="@{/owner/homestay/{id}/reviews(id=${homestayId}, star=${s})}"
+                                th:classappend="${selectedStar != null and selectedStar == s} ? 'active' : ''">
+                                <span th:text="${s} + ' ★'"></span>
+                                (<span th:text="${starCounts.get(s)} != null ? ${starCounts.get(s)} : 0"></span>)
+                            </a>
                         </div>
                     </div>
 
-                    <div class="review-stars">
-                        <span th:each="i : ${#numbers.sequence(1, 5)}"
-                            th:text="${i <= review.rating} ? '★' : '☆'"></span>
+                    <!-- รายการรีวิว -->
+                    <div>
+                        <div th:if="${#lists.isEmpty(reviews)}" class="empty-state">
+                            ยังไม่มีรีวิวในหมวดนี้
+                        </div>
+
+                        <div class="review-card" th:each="review, iter : ${reviews}">
+                            <div class="review-head">
+                                <div class="avatar-circle" th:classappend="'avatar-' + ${iter.index % 5}"
+                                    th:text="${#strings.substring(review.booking.member.firstname, 0, 1)} + ${#strings.substring(review.booking.member.lastname, 0, 1)}">
+                                    สท
+                                </div>
+                                <div>
+                                    <span class="reviewer-name"
+                                        th:text="${review.booking.member.firstname} + ' ' + ${review.booking.member.lastname}">สมหญิง
+                                        แก้วใจ</span>
+                                    <span class="verified-badge">✓ จองผ่านระบบ</span>
+                                    <div class="review-meta" th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}">18
+                                        มี.ค. 2567</div>
+                                </div>
+                            </div>
+
+                            <div class="review-stars">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                    th:text="${i <= review.rating} ? '★' : '☆'"></span>
+                            </div>
+
+                            <div class="review-comment" th:text="${review.comment}">
+
+                            </div>
+                            <div th:if="${review.reviewimages != null and !#strings.isEmpty(review.reviewimages)}"
+                                class="review-images-row">
+                                <img th:each="imgPath : ${#strings.arraySplit(review.reviewimages, ',')}"
+                                    class="review-image" th:src="@{${imgPath}}" alt="รูปรีวิว">
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="review-comment" th:text="${review.comment}">
-                        ที่พักสะอาดมากค่ะ เจ้าของใจดีต้อนรับอบอุ่น อาหารเช้าอร่อยมาก บรรยากาศดร่อมรอบๆ สวยงาม
-                        เงียบสงบ เหมาะพักผ่อนมากเลยค่ะ
-                    </div>
-
-                    <img th:if="${review.reviewimage != null}" class="review-image" th:src="${review.reviewimage}"
-                        alt="รูปรีวิว">
                 </div>
             </div>
 
         </div>
-    </div>
     </div>
 
     <!-- ─── FOOTER ─── -->

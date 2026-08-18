@@ -49,7 +49,8 @@ function validateLastname() {
     if (val.length < 2 || val.length > 20) { showError(input, 'lastnameError', 'นามสกุลต้องมีความยาว 2–20 ตัวอักษร'); return false; }
     showValid(input, 'lastnameError'); return true;
 }
-function validateEmail() {
+// เปลี่ยน validateEmail เป็น async และเพิ่มการเช็คซ้ำกับ backend
+async function validateEmail() {
     const input = document.getElementById('email');
     const val = input.value;
     if (val === '') { showError(input, 'emailError', 'อีเมลต้องไม่เป็นค่าว่าง'); return false; }
@@ -57,7 +58,25 @@ function validateEmail() {
     if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(val)) { showError(input, 'emailError', 'รูปแบบอีเมลไม่ถูกต้อง (เช่น example@email.com)'); return false; }
     const localPart = val.split('@')[0];
     if (localPart.length < 5 || localPart.length > 20) { showError(input, 'emailError', 'อีเมล (ก่อน @) ต้องมีความยาว 5–20 ตัวอักษร'); return false; }
-    showValid(input, 'emailError'); return true;
+
+    // เช็คอีเมลซ้ำกับระบบ
+    input.classList.add('is-checking'); // ใส่ style spinner เองได้ถ้าต้องการ
+    try {
+        const res = await fetch(`/owner/check-email?email=${encodeURIComponent(val)}`);
+        const data = await res.json();
+        if (data.exists) {
+            showError(input, 'emailError', 'อีเมลนี้มีผู้ใช้งานแล้ว กรุณาใช้อีเมลอื่น');
+            return false;
+        }
+    } catch (err) {
+        console.error('ตรวจสอบอีเมลไม่สำเร็จ', err);
+        // เช็คไม่ได้ (เช่น เน็ตหลุด) ปล่อยผ่านไปก่อน แล้วให้ backend เช็คซ้ำตอน submit จริง
+    } finally {
+        input.classList.remove('is-checking');
+    }
+
+    showValid(input, 'emailError');
+    return true;
 }
 function validatePhone() {
     const input = document.getElementById('phone');
@@ -92,18 +111,9 @@ function validateAgree() {
     hideSpan('agreeError'); return true;
 }
 
-function validateStep1() {
-    const ok = [
-        validateFirstname(), validateLastname(), validateEmail(), validatePhone(),
-        validatePassword(), validateConfirmPassword(), validateAgree()
-    ].every(Boolean);
-    if (ok) {
-        goToPage(2);
-    } else {
-        const first = document.querySelector('#page-1 .is-invalid');
-        if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); first.focus(); }
-    }
-}
+// หมายเหตุ: validateStep1 (เวอร์ชัน async ที่รอเช็คอีเมลซ้ำด้วย) ถูกย้ายไปประกาศ
+// ที่เดียวในส่วน "STEP 1 — LIVE VALIDATION" ท้ายไฟล์ เพื่อไม่ให้มีการประกาศซ้ำชื่อ
+
 // ============================================================
 //  TERMS & CONDITIONS MODAL
 // ============================================================
@@ -423,7 +433,7 @@ document.querySelectorAll('.toggle-pw').forEach(icon => {
 const step1Fields = [
     { id: 'firstname',       fn: validateFirstname       },
     { id: 'lastname',        fn: validateLastname        },
-    { id: 'email',           fn: validateEmail           },
+    { id: 'email',           fn: validateEmail           }, // async ก็ใช้ตรงนี้ได้ปกติ
     { id: 'phone',           fn: validatePhone           },
     { id: 'password',        fn: validatePassword        },
     { id: 'confirmPassword', fn: validateConfirmPassword },
@@ -439,6 +449,20 @@ document.getElementById('password')?.addEventListener('input', () => {
     const cp = document.getElementById('confirmPassword');
     if (cp && cp.value !== '') validateConfirmPassword();
 });
+
+async function validateStep1() {
+    const results = await Promise.all([
+        validateFirstname(), validateLastname(), validateEmail(), validatePhone(),
+        validatePassword(), validateConfirmPassword(), validateAgree()
+    ]);
+    const ok = results.every(Boolean);
+    if (ok) {
+        goToPage(2);
+    } else {
+        const first = document.querySelector('#page-1 .is-invalid');
+        if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); first.focus(); }
+    }
+}
 
 // ============================================================
 //  INIT

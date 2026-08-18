@@ -25,46 +25,51 @@ public class HomestayOwnerService {
 
     // ───── Register ─────
 
-   @Transactional
-public List<Integer> register(RegisterOwnerRequest req) {
-
-    if (ownerRepository.existsByEmail(req.getEmail())) {
-        throw new IllegalArgumentException("อีเมลนี้ถูกใช้งานแล้ว");
+    // เช็คว่าอีเมลถูกใช้แล้วหรือยัง (สำหรับหน้าลงทะเบียน)
+    public boolean isEmailTaken(String email) {
+        return ownerRepository.existsByEmail(email);
     }
 
-    Homestayowner owner = new Homestayowner();
-    owner.setFirstname(req.getFirstname());
-    owner.setLastname(req.getLastname());
-    owner.setEmail(req.getEmail());
-    owner.setPhone(req.getPhone());
-    owner.setPassword(req.getPassword());
-    owner.setVerificationstatus(false);
-    owner.setAccountstatus("pending");
+    @Transactional
+    public List<Integer> register(RegisterOwnerRequest req) {
 
-    Homestayowner saved = ownerRepository.save(owner);
-
-    // เพิ่มตรงนี้
-    List<Integer> homestayIds = new ArrayList<>();
-
-    if (req.getHomestays() != null) {
-        for (RegisterOwnerRequest.HomestayItem dto : req.getHomestays()) {
-
-            Homestay h = new Homestay();
-            h.setOwner(saved);
-            h.setHomestayname(dto.getHomestayname());
-            h.setDescription(dto.getDescription());
-            h.setAddress(dto.getAddress());
-            h.setStatus("pending");
-
-            Homestay savedHomestay = homestayRepository.save(h);
-
-            // เก็บ id
-            homestayIds.add(savedHomestay.getHomestayid());
+        if (ownerRepository.existsByEmail(req.getEmail())) {
+            throw new IllegalArgumentException("อีเมลนี้ถูกใช้งานแล้ว");
         }
-    }
 
-    return homestayIds;
-}
+        Homestayowner owner = new Homestayowner();
+        owner.setFirstname(req.getFirstname());
+        owner.setLastname(req.getLastname());
+        owner.setEmail(req.getEmail());
+        owner.setPhone(req.getPhone());
+        owner.setPassword(req.getPassword());
+        owner.setVerificationstatus(false);
+        owner.setAccountstatus("pending");
+
+        Homestayowner saved = ownerRepository.save(owner);
+
+        // เพิ่มตรงนี้
+        List<Integer> homestayIds = new ArrayList<>();
+
+        if (req.getHomestays() != null) {
+            for (RegisterOwnerRequest.HomestayItem dto : req.getHomestays()) {
+
+                Homestay h = new Homestay();
+                h.setOwner(saved);
+                h.setHomestayname(dto.getHomestayname());
+                h.setDescription(dto.getDescription());
+                h.setAddress(dto.getAddress());
+                h.setStatus("pending");
+
+                Homestay savedHomestay = homestayRepository.save(h);
+
+                // เก็บ id
+                homestayIds.add(savedHomestay.getHomestayid());
+            }
+        }
+
+        return homestayIds;
+    }
 
     // ───── Login ─────
 
@@ -100,51 +105,51 @@ public List<Integer> register(RegisterOwnerRequest req) {
 
     // ───── Update Profile (เฉพาะข้อมูลส่วนตัว) ─────
 
-@Transactional
-public Homestayowner updateProfile(int ownerid, String firstname, String lastname,
-                                    String email, String phone) {
+    @Transactional
+    public Homestayowner updateProfile(int ownerid, String firstname, String lastname,
+            String email, String phone) {
 
-    Homestayowner owner = ownerRepository.findById(ownerid)
-            .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
+        Homestayowner owner = ownerRepository.findById(ownerid)
+                .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
 
-    if (!owner.getEmail().equals(email) && ownerRepository.existsByEmail(email)) {
-        throw new IllegalArgumentException("อีเมลนี้ถูกใช้งานแล้ว");
+        if (!owner.getEmail().equals(email) && ownerRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("อีเมลนี้ถูกใช้งานแล้ว");
+        }
+
+        owner.setFirstname(firstname != null ? firstname.trim() : null);
+        owner.setLastname(lastname != null ? lastname.trim() : null);
+        owner.setEmail(email != null ? email.trim() : null);
+        owner.setPhone(phone != null ? phone.trim() : null);
+
+        return ownerRepository.save(owner);
     }
 
-    owner.setFirstname(firstname != null ? firstname.trim() : null);
-    owner.setLastname(lastname != null ? lastname.trim() : null);
-    owner.setEmail(email != null ? email.trim() : null);
-    owner.setPhone(phone != null ? phone.trim() : null);
+    // ───── Update Bank Info ─────
 
-    return ownerRepository.save(owner);
-}
+    @Transactional
+    public Homestayowner updateBankInfo(int ownerid, String bankName, String accountName,
+            String accountNumber, String bankBranch) {
 
-// ───── Update Bank Info ─────
+        Homestayowner owner = ownerRepository.findById(ownerid)
+                .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
 
-@Transactional
-public Homestayowner updateBankInfo(int ownerid, String bankName, String accountName,
-                                     String accountNumber, String bankBranch) {
+        owner.setBankName(bankName != null ? bankName.trim() : null);
+        owner.setAccountName(accountName != null ? accountName.trim() : null);
+        owner.setAccountNumber(accountNumber != null ? accountNumber.trim() : null);
+        owner.setBankBranch(bankBranch != null ? bankBranch.trim() : null);
 
-    Homestayowner owner = ownerRepository.findById(ownerid)
-            .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
+        return ownerRepository.save(owner);
+    }
 
-    owner.setBankName(bankName != null ? bankName.trim() : null);
-    owner.setAccountName(accountName != null ? accountName.trim() : null);
-    owner.setAccountNumber(accountNumber != null ? accountNumber.trim() : null);
-    owner.setBankBranch(bankBranch != null ? bankBranch.trim() : null);
+    // ───── Update Signature ─────
 
-    return ownerRepository.save(owner);
-}
-
-// ───── Update Signature ─────
-
-@Transactional
-public Homestayowner updateSignature(int ownerid, String signatureBase64) {
-    Homestayowner owner = ownerRepository.findById(ownerid)
-            .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
-    owner.setSignatureImageUrl(signatureBase64);
-    return ownerRepository.save(owner);
-}
+    @Transactional
+    public Homestayowner updateSignature(int ownerid, String signatureBase64) {
+        Homestayowner owner = ownerRepository.findById(ownerid)
+                .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
+        owner.setSignatureImageUrl(signatureBase64);
+        return ownerRepository.save(owner);
+    }
 
     // ───── Change Password ─────
 
@@ -169,7 +174,5 @@ public Homestayowner updateSignature(int ownerid, String signatureBase64) {
         owner.setPassword(newPassword);
         ownerRepository.save(owner);
     }
-
-    
 
 }
