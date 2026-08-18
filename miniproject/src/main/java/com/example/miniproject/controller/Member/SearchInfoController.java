@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +23,8 @@ import com.example.miniproject.service.Member.TourService;
 @RequestMapping("/search")
 public class SearchInfoController {
 
+    private static final Logger log = LoggerFactory.getLogger(SearchInfoController.class);
+
     @Autowired
     private SearchInfoService searchInfoService;
 
@@ -28,18 +32,18 @@ public class SearchInfoController {
     private ReviewRepository reviewRepository;
 
     @Autowired
-    private TourService tourService; // ← เพิ่มตรงนี้ (ไม่ใช่ searchInfoService)
+    private TourService tourService;
 
     @GetMapping
     public String searchPage(
             @RequestParam(defaultValue = "")         String  keyword,
             @RequestParam(defaultValue = "")         String  date,
-            @RequestParam(required = false)          String  startDate,  
+            @RequestParam(required = false)          String  startDate,
             @RequestParam(required = false)          String  endDate,
             @RequestParam(defaultValue = "1")         Integer numGuest,
             @RequestParam(defaultValue = "activity") String  type,
-            @RequestParam(required = false)          String  managerId, 
-             @RequestParam(required = false)          String  tourTypeId,
+            @RequestParam(required = false)          String  managerId,
+            @RequestParam(required = false)          String  tourTypeId,
             Model model) {
 
         if (numGuest < 1) {
@@ -52,36 +56,50 @@ public class SearchInfoController {
             type = "tour";
         }
 
-       
-        // 1. สั่งดึงข้อมูลของทุกแท็บมารอไว้พร้อมกันเลย (ไม่ต้องใช้ if-else บีบแล้ว)
+        // 1. ดึงข้อมูลของทุกแท็บ — ห่อ try-catch แยกแต่ละส่วน
+        //    เพื่อกัน IllegalArgumentException จาก validation วันที่ (searchTour/searchHomestay)
+        //    ไม่ให้พุ่งขึ้นมาจน controller error ทั้งหน้า (whitelabel 500)
         List<Activitypost> activities = searchInfoService.searchActivity(keyword);
-        List<Tour>         tours;
-        List<Homestay>     homestays  = searchInfoService.searchHomestay(keyword, numGuest, startDate, endDate);
 
-        // 2. แยกเฉพาะตรรกะของ Tour ที่มีเงื่อนไข managerId เพิ่มเติมเท่านั้น
-        if (managerId != null && !managerId.isEmpty()) {
-            tours = searchInfoService.getToursByManagerId(managerId); 
-        } else {
-            tours = searchInfoService.searchTour(keyword, numGuest, startDate, endDate, tourTypeId);
+        List<Homestay> homestays;
+        try {
+            homestays = searchInfoService.searchHomestay(keyword, numGuest, startDate, endDate);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            homestays = new ArrayList<>();
         }
 
-        tourService.injectBookedSeats(tours); // ← เพิ่มบรรทัดนี้
+        // 2. แยกเฉพาะตรรกะของ Tour ที่มีเงื่อนไข managerId เพิ่มเติมเท่านั้น
+        List<Tour> tours;
+        if (managerId != null && !managerId.isEmpty()) {
+            tours = searchInfoService.getToursByManagerId(managerId);
+        } else {
+            try {
+                tours = searchInfoService.searchTour(keyword, numGuest, startDate, endDate, tourTypeId);
+            } catch (IllegalArgumentException e) {
+                // ถ้า homestay error ไปก่อนหน้าแล้ว ไม่ต้อง overwrite ข้อความเดิม
+                if (model.getAttribute("errorMessage") == null) {
+                    model.addAttribute("errorMessage", e.getMessage());
+                }
+                tours = new ArrayList<>();
+            }
+        }
 
-    // ===== DEBUG LOG เพิ่มตรงนี้ =====
-    // ✅ ตัด " | status=" + t.getStatus() ออก เพราะ Tour ไม่มี field status แล้ว
-    //    สถานะ "จองได้ไหม" ตอนนี้อ่านจาก Tourschedule แทน (ดูรายละเอียดใน getSchedulesByTour)
-    System.out.println("========== DEBUG SEARCH ==========");
-    System.out.println("keyword   : " + keyword);
-    System.out.println("type      : " + type);
-    System.out.println("numGuest  : " + numGuest);
-    System.out.println("startDate : " + startDate);
-    System.out.println("endDate   : " + endDate);
-    System.out.println("tours     : " + tours.size() + " รายการ");
-    tours.forEach(t -> System.out.println("  -> " + t.getTourid() 
-        + " | " + t.getTourmname()));
-    System.out.println("===================================");
-    // ===================================
-    
+        tourService.injectBookedSeats(tours);
+
+        // เปลี่ยนจาก System.out.println เป็น logger — debug log จะไม่ไปโผล่ปนกับ log จริงบน production
+        // และควบคุมเปิด/ปิดได้ผ่าน log level (DEBUG) โดยไม่ต้องแก้โค้ด
+        if (log.isDebugEnabled()) {
+            log.debug("========== DEBUG SEARCH ==========");
+            log.debug("keyword   : {}", keyword);
+            log.debug("type      : {}", type);
+            log.debug("numGuest  : {}", numGuest);
+            log.debug("startDate : {}", startDate);
+            log.debug("endDate   : {}", endDate);
+            log.debug("tours     : {} รายการ", tours.size());
+            tours.forEach(t -> log.debug("  -> {} | {}", t.getTourid(), t.getTourmname()));
+            log.debug("===================================");
+        }
 
         // 3. ส่งข้อมูลและสเตททั้งหมดเข้าสู่ Model เพื่อแสดงผลและคงค่าไว้บนฟอร์มหน้าเว็บ
         model.addAttribute("activities",    activities);
@@ -89,13 +107,13 @@ public class SearchInfoController {
         model.addAttribute("homestays",     homestays);
         model.addAttribute("keyword",       keyword);
         model.addAttribute("date",          date);
-        model.addAttribute("startDate",     startDate); 
+        model.addAttribute("startDate",     startDate);
         model.addAttribute("endDate",       endDate);
         model.addAttribute("numGuest",      numGuest);
         model.addAttribute("currentType",   type);
-        model.addAttribute("tourTypeId", tourTypeId);
-        model.addAttribute("tourTypes", tourService.getAllTourTypes());
-        
+        model.addAttribute("tourTypeId",    tourTypeId);
+        model.addAttribute("tourTypes",     tourService.getAllTourTypes());
+
         // นับจำนวนนับตามกลุ่มข้อมูลที่ดึงได้จริงของแท็บนั้นๆ
         model.addAttribute("activityCount", activities.size());
         model.addAttribute("tourCount",     tours.size());
@@ -133,7 +151,6 @@ public class SearchInfoController {
         model.addAttribute("actReviewCount",  actReviewCount);
         model.addAttribute("hsRating",        hsRating);
         model.addAttribute("hsReviewCount",   hsReviewCount);
-        
 
         return "Member/member_search";
     }

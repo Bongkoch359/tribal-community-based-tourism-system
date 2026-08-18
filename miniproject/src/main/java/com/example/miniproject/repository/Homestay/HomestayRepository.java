@@ -66,15 +66,18 @@ List<Object[]> findLowestRatedHomestays(org.springframework.data.domain.Pageable
            OR LOWER(h.homestayname) LIKE LOWER(CONCAT('%', :keyword, '%'))
            OR LOWER(h.address) LIKE LOWER(CONCAT('%', :keyword, '%')))
     AND r.status = 'เปิดจอง'
+    AND (:guests IS NULL OR :guests <= 1 OR r.maxguest >= :guests)
     AND (:startDate IS NULL OR :endDate IS NULL OR NOT EXISTS (
         SELECT d FROM Bookingroomdetail d
         WHERE d.roomtype = r
+        AND d.booking.bookingStatus <> com.example.miniproject.entity.enums.BookingStatus.CANCEL
         AND NOT (d.checkoutdate <= :startDate OR d.checkindate >= :endDate)
     ))
     ORDER BY h.homestayname ASC
 """)
 List<Homestay> searchWithDate(
     @Param("keyword")   String keyword,
+    @Param("guests")    Integer guests,
     @Param("startDate") java.sql.Date startDate,
     @Param("endDate")   java.sql.Date endDate
 );

@@ -9,10 +9,10 @@ const tabCfg = {
     guestLabel: 'จำนวนคน',
   },
   tour: {
-    label: 'ค้นหาทัวร์ชุมชน',
-    placeholder: 'ชื่อทัวร์ หรือสถานที่ เช่น อมก๋อย, แม่แจ่ม',
-    guestLabel: 'จำนวนผู้เดินทาง',
-  },
+  label: 'ค้นหาทัวร์ชุมชน',
+  placeholder: 'ชื่อทัวร์ เช่น ทัวร์เดินป่าดอยอินทนนท์',  
+  guestLabel: 'จำนวนผู้เดินทาง',
+},
   homestay: {
     label: 'ค้นหาโฮมสเตย์',
     placeholder: 'ชื่อโฮมสเตย์ หรือสถานที่ เช่น อมก๋อย, ปาย',
@@ -65,26 +65,32 @@ function switchTab(type, isUserClick = true) {
   const checkoutBox   = document.getElementById('checkout-wrapper');
   const guestWrapper  = document.getElementById('guest-wrapper');
   const tourTypeBox   = document.getElementById('tourtype-wrapper');
+function setBoxState(box, show) {
+  if (!box) return;
+  box.style.display = show ? 'flex' : 'none';
+  box.querySelectorAll('input, select').forEach(el => {
+    el.disabled = !show;
+  });
+}
 
-  // ซ่อนทั้งหมดก่อน
-  if (dateTourStart) dateTourStart.style.display = 'none';
-  if (dateTourEnd)    dateTourEnd.style.display    = 'none';
-  if (checkinBox)     checkinBox.style.display     = 'none';
-  if (checkoutBox)    checkoutBox.style.display    = 'none';
-  if (guestWrapper)   guestWrapper.style.display   = 'none';
-  if (tourTypeBox)    tourTypeBox.style.display    = 'none';
+// ซ่อนทั้งหมดก่อน (และ disable ไปด้วย)
+setBoxState(dateTourStart, false);
+setBoxState(dateTourEnd, false);
+setBoxState(checkinBox, false);
+setBoxState(checkoutBox, false);
+setBoxState(guestWrapper, false);
+setBoxState(tourTypeBox, false);
 
-  if (type === 'tour') {
-    if (dateTourStart) dateTourStart.style.display = 'flex';
-    if (dateTourEnd)    dateTourEnd.style.display    = 'flex';
-    if (guestWrapper)   guestWrapper.style.display   = 'flex';
-    if (tourTypeBox)    tourTypeBox.style.display    = 'flex';
-  } else if (type === 'homestay') {
-    // แยก 2 กล่องอิสระ
-    if (checkinBox)  checkinBox.style.display  = 'flex';
-    if (checkoutBox) checkoutBox.style.display = 'flex';
-    if (guestWrapper)guestWrapper.style.display= 'flex';
-  }
+if (type === 'tour') {
+  setBoxState(dateTourStart, true);
+  setBoxState(dateTourEnd, true);
+  setBoxState(guestWrapper, true);
+  setBoxState(tourTypeBox, true);
+} else if (type === 'homestay') {
+  setBoxState(checkinBox, true);
+  setBoxState(checkoutBox, true);
+  setBoxState(guestWrapper, true);
+}
 
   // 6. Update URL
   try {
