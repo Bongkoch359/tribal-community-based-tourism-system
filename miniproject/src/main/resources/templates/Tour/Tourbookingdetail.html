@@ -35,6 +35,7 @@
             --text-main: #1c1c1a;
             --text-muted: #6b6b68;
             --text-hint: #9a9a96;
+            --white: #ffffff;
             --radius-card: 14px;
             --radius-sm: 8px;
             --shadow-card: 0 2px 14px rgba(0, 0, 0, .07);
@@ -310,19 +311,28 @@
             color: var(--green-mid);
         }
 
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
-            align-items: start;
-        }
+       .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;   /* สำคัญมาก - อย่าลบ */
+}
 
-        .detail-left,
-        .detail-right {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+.detail-left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* ฝั่งซ้ายปล่อยเป็น flow ปกติ เลื่อนตามหน้า */
+}
+
+.detail-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 103px;          /* = navbar 83px + เว้นระยะ 20px ให้เท่าระดับกับ "ข้อมูลผู้จอง" */
+    align-self: start;   /* กันไม่ให้ grid ยืดความสูงคอลัมน์ */
+}
 
         .card {
             background: var(--bg-card);
@@ -763,47 +773,6 @@
             margin-top: 2px;
         }
 
-        /* ─── VERIFY CHECKBOX ─── */
-        .verify-check {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            background: #f7f9f4;
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-bottom: 14px;
-            cursor: pointer;
-            transition: border-color .2s, background .2s;
-        }
-
-        .verify-check:hover {
-            border-color: var(--green-mid);
-        }
-
-        .verify-check.checked {
-            background: var(--green-light);
-            border-color: var(--green-mid);
-        }
-
-        .verify-check input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            margin-top: 1px;
-            accent-color: var(--green-dark);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .verify-check label {
-            font-size: .88rem;
-            color: var(--text-main);
-            font-weight: 500;
-            line-height: 1.5;
-            cursor: pointer;
-            user-select: none;
-        }
-
         .btn-confirm-booking {
             width: 100%;
             background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
@@ -1025,15 +994,18 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 768px) {
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
+       @media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .detail-right {
-                order: -1;
-            }
-        }
+    .detail-right {
+        order: -1;
+        position: static;   /* ปิด sticky บนมือถือ */
+        max-height: none;
+        overflow-y: visible;
+    }
+}
     </style>
 </head>
 
@@ -1092,6 +1064,53 @@
 
             <!-- ═══ LEFT COLUMN ═══ -->
             <div class="detail-left">
+
+                <!-- ข้อมูลผู้จอง -->
+                <div class="card" th:if="${booking.member != null}">
+                    <div class="card-header"><i class="fas fa-user"></i> ข้อมูลผู้จอง</div>
+                    <div class="card-body">
+                        <div class="member-header">
+                            <div class="member-avatar" th:text="${booking.member.firstname != null and #strings.length(booking.member.firstname) >= 2}
+                                       ? ${#strings.substring(booking.member.firstname,0,2)} : 'MR'">MR</div>
+                            <div class="member-info">
+                                <div class="member-name"
+                                    th:text="${booking.member.firstname + ' ' + booking.member.lastname}">ทูนมาส์ รัตดี
+                                </div>
+                                <div class="member-role">Member (ผู้จอง)</div>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span
+                                th:text="${booking.member.email != null ? booking.member.email : '-'}">mail@gmail.com</span>
+                        </div>
+                        <div class="contact-item" th:if="${booking.member.phone != null}">
+                            <i class="fas fa-phone"></i>
+                            <span th:text="${booking.member.phone}">089-123-4567</span>
+                        </div>
+
+                        <div th:if="${booking.guests != null and !booking.guests.isEmpty()}"
+                            style="margin-top:16px;padding-top:14px;border-top:1px solid #f2f0ea;">
+                            <div class="note-label" style="color:var(--green-dark);">
+                                <i class="fas fa-users"></i> ผู้ร่วมเดินทาง
+                            </div>
+                            <div class="guest-item" th:each="g,stat : ${booking.guests}" style="margin-top:6px;">
+                                <div class="guest-avatar"
+                                    th:classappend="${stat.index % 3 == 0} ? 'g-color1' : (${stat.index % 3 == 1} ? 'g-color2' : 'g-color3')"
+                                    th:text="${g.firstname != null and #strings.length(g.firstname) >= 2}
+                                       ? ${#strings.substring(g.firstname,0,2)} : 'G'">G</div>
+                                <div>
+                                    <div class="guest-name"
+                                        th:text="${(g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '')}">
+                                        ผู้ร่วมเดินทาง</div>
+                                    <div class="guest-type"
+                                        th:if="${g.idcardnumber != null and !#strings.isEmpty(g.idcardnumber)}"
+                                        th:text="'เลขบัตร ' + ${g.idcardnumber}">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- ข้อมูลการจอง -->
                 <div class="card">
@@ -1181,49 +1200,6 @@
                                 (ดูรายชื่อผู้ร่วมทัวร์ด้านขวา)</span>
                         </div>
 
-                    </div>
-                </div>
-
-                <!-- หลักฐานการชำระเงิน -->
-                <div class="card" th:if="${booking.payment != null}">
-                    <div class="card-header"><i class="fas fa-receipt"></i> หลักฐานการชำระเงิน</div>
-                    <div class="card-body">
-                        <div class="slip-wrap">
-                            <div class="slip-thumb"
-                                th:if="${booking.payment.paymentslip != null and !#strings.isEmpty(booking.payment.paymentslip)}"
-                                onclick="openSlip(this.querySelector('img').src)">
-                                <img th:src="${#strings.startsWith(booking.payment.paymentslip,'/')}
-                  ? @{${booking.payment.paymentslip}}
-                  : @{'/uploads/slips/' + ${booking.payment.paymentslip}}" alt="สลิปการชำระเงิน">
-                            </div>
-                            <div class="slip-thumb"
-                                th:if="${booking.payment.paymentslip == null or #strings.isEmpty(booking.payment.paymentslip)}">
-                                <div class="slip-missing"><i class="fas fa-image"
-                                        style="font-size:1.4rem;display:block;margin-bottom:6px;"></i>ยังไม่มีสลิป</div>
-                            </div>
-                            <div class="slip-meta">
-                                <span th:switch="${booking.payment.paymentStatus?.name()}">
-                                    <span th:case="'PAID'" class="pay-status s-confirmed"><span
-                                            class="status-dot"></span> ชำระแล้ว</span>
-                                    <span th:case="'PENDING'" class="pay-status s-waiting"><span
-                                            class="status-dot"></span> รอตรวจสอบ</span>
-                                    <span th:case="*" class="pay-status badge-default"
-                                        th:text="${booking.payment.paymentStatus}">-</span>
-                                </span>
-                                <div class="info-row" style="padding-top:4px;">
-                                    <div class="info-label" style="min-width:90px;">จำนวนเงิน</div>
-                                    <div class="info-value"
-                                        th:text="${booking.payment.amount != null ? #numbers.formatDecimal(booking.payment.amount,1,'COMMA',0,'POINT') + ' ฿' : '-'}">
-                                        -</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="info-label" style="min-width:90px;">วันที่ชำระ</div>
-                                    <div class="info-value"
-                                        th:text="${booking.payment.paymentdate != null ? #dates.format(booking.payment.paymentdate,'dd MMM yyyy HH:mm') : '-'}">
-                                        -</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -1321,46 +1297,44 @@
             <!-- ═══ RIGHT COLUMN ═══ -->
             <div class="detail-right">
 
-                <div class="card" th:if="${booking.member != null}">
+                <!-- หลักฐานการชำระเงิน -->
+                <div class="card" th:if="${booking.payment != null}">
+                    <div class="card-header"><i class="fas fa-receipt"></i> หลักฐานการชำระเงิน</div>
                     <div class="card-body">
-                        <div class="member-header">
-                            <div class="member-avatar" th:text="${booking.member.firstname != null and #strings.length(booking.member.firstname) >= 2}
-                                       ? ${#strings.substring(booking.member.firstname,0,2)} : 'MR'">MR</div>
-                            <div class="member-info">
-                                <div class="member-name"
-                                    th:text="${booking.member.firstname + ' ' + booking.member.lastname}">ทูนมาส์ รัตดี
-                                </div>
-                                <div class="member-role">Member (ผู้จอง)</div>
+                        <div class="slip-wrap">
+                            <div class="slip-thumb"
+                                th:if="${booking.payment.paymentslip != null and !#strings.isEmpty(booking.payment.paymentslip)}"
+                                onclick="openSlip(this.querySelector('img').src)">
+                                <img th:src="${#strings.startsWith(booking.payment.paymentslip,'/')}
+                  ? @{${booking.payment.paymentslip}}
+                  : @{'/uploads/slips/' + ${booking.payment.paymentslip}}" alt="สลิปการชำระเงิน">
                             </div>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <span
-                                th:text="${booking.member.email != null ? booking.member.email : '-'}">mail@gmail.com</span>
-                        </div>
-                        <div class="contact-item" th:if="${booking.member.phone != null}">
-                            <i class="fas fa-phone"></i>
-                            <span th:text="${booking.member.phone}">089-123-4567</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ผู้ร่วมเดินทาง -->
-                <div class="card" th:if="${booking.guests != null and !booking.guests.isEmpty()}">
-                    <div class="card-header"><i class="fas fa-users"></i> ผู้ร่วมเดินทาง</div>
-                    <div class="card-body">
-                        <div class="guest-item" th:each="g,stat : ${booking.guests}">
-                            <div class="guest-avatar"
-                                th:classappend="${stat.index % 3 == 0} ? 'g-color1' : (${stat.index % 3 == 1} ? 'g-color2' : 'g-color3')"
-                                th:text="${g.firstname != null and #strings.length(g.firstname) >= 2}
-                                       ? ${#strings.substring(g.firstname,0,2)} : 'G'">G</div>
-                            <div>
-                                <div class="guest-name"
-                                    th:text="${(g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '')}">
-                                    ผู้ร่วมเดินทาง</div>
-                                <div class="guest-type"
-                                    th:if="${g.idcardnumber != null and !#strings.isEmpty(g.idcardnumber)}"
-                                    th:text="'เลขบัตร ' + ${g.idcardnumber}">-</div>
+                            <div class="slip-thumb"
+                                th:if="${booking.payment.paymentslip == null or #strings.isEmpty(booking.payment.paymentslip)}">
+                                <div class="slip-missing"><i class="fas fa-image"
+                                        style="font-size:1.4rem;display:block;margin-bottom:6px;"></i>ยังไม่มีสลิป</div>
+                            </div>
+                            <div class="slip-meta">
+                                <span th:switch="${booking.payment.paymentStatus?.name()}">
+                                    <span th:case="'PAID'" class="pay-status s-confirmed"><span
+                                            class="status-dot"></span> ชำระแล้ว</span>
+                                    <span th:case="'PENDING'" class="pay-status s-waiting"><span
+                                            class="status-dot"></span> รอตรวจสอบ</span>
+                                    <span th:case="*" class="pay-status badge-default"
+                                        th:text="${booking.payment.paymentStatus}">-</span>
+                                </span>
+                                <div class="info-row" style="padding-top:4px;">
+                                    <div class="info-label" style="min-width:90px;">จำนวนเงิน</div>
+                                    <div class="info-value"
+                                        th:text="${booking.payment.amount != null ? #numbers.formatDecimal(booking.payment.amount,1,'COMMA',0,'POINT') + ' ฿' : '-'}">
+                                        -</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label" style="min-width:90px;">วันที่ชำระ</div>
+                                    <div class="info-value"
+                                        th:text="${booking.payment.paymentdate != null ? #dates.format(booking.payment.paymentdate,'dd MMM yyyy HH:mm') : '-'}">
+                                        -</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1375,19 +1349,10 @@
                             กรุณาตรวจสอบหลักฐานการชำระเงินก่อนยืนยันการจอง
                         </div>
 
-                        <div class="verify-check" id="verifyCheckWrap"
-                            th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
-                            onclick="if(event.target.tagName!=='INPUT'){document.getElementById('verifySlipCheck').click();}">
-                            <input type="checkbox" id="verifySlipCheck" onchange="toggleConfirmBtn(this.checked)">
-                            <label for="verifySlipCheck" onclick="event.stopPropagation();">
-                                ฉันตรวจสอบยอดเงินและหลักฐานการชำระเงินถูกต้องแล้ว
-                            </label>
-                        </div>
-
                         <button class="btn-confirm-booking" id="btnConfirmBooking"
                             th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
                             th:attr="data-bookingid=${booking.bookingid}"
-                            onclick="openConfirmModal(this.dataset.bookingid)" disabled>
+                            onclick="openConfirmModal(this.dataset.bookingid)">
                             <i class="fas fa-circle-check"></i> ยืนยันการจอง
                         </button>
                         <button class="btn-cancel-booking" th:attr="data-bookingid=${booking.bookingid}"
@@ -1452,13 +1417,6 @@
 
     <script th:inline="javascript">
         let pendingBookingId = null;
-
-        function toggleConfirmBtn(checked) {
-            const btn = document.getElementById('btnConfirmBooking');
-            const wrap = document.getElementById('verifyCheckWrap');
-            if (btn) btn.disabled = !checked;
-            if (wrap) wrap.classList.toggle('checked', checked);
-        }
 
         function openConfirmModal(bookingId) {
             pendingBookingId = bookingId;

@@ -618,6 +618,10 @@ function applyPickupRules() {
     clearErr('meetingPointDetail', 'err-meetingPointDetail');
     clearErr('hotelPickupArea', 'err-hotelPickupArea');
     document.getElementById('err-pickupOption')?.classList.remove('show');
+
+    // ✅ สร้างแผนที่ตอนเพิ่งเปิดใช้งาน checkbox (Leaflet ไม่ต้องรอ API โหลดเหมือน Google Maps)
+    if (allowMeetingPointChk.checked) initMeetingMap();
+    if (allowHotelPickupChk.checked) initHotelMap();
 }
 
 allowMeetingPointChk.addEventListener('change', applyPickupRules);
@@ -626,6 +630,166 @@ meetingPointDetailInput.addEventListener('input', () => clearErr('meetingPointDe
 hotelPickupAreaInput.addEventListener('input', () => clearErr('hotelPickupArea', 'err-hotelPickupArea'));
 
 window.addEventListener('DOMContentLoaded', applyPickupRules);
+
+/* ═══════════════════════════════════════════
+   LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่ (จุดรวมพล / เขตรับที่โรงแรม)
+   ฟรี ไม่ต้องมี API Key ไม่เก็บ lat/lng ลง backend
+   ใช้ Nominatim (OSM) สำหรับค้นหาสถานที่ + reverse geocode
+   (หมายเหตุ: ไฟล์นี้ใช้ initMeetingMap()/initHotelMap() เวอร์ชัน Leaflet
+    เท่านั้น — เวอร์ชัน Google Maps เดิมถูกลบออกแล้วเพื่อกันการประกาศ
+    ฟังก์ชันซ้ำที่ทำให้ตัวหลังทับตัวก่อนหน้าโดยไม่รู้ตัว)
+═══════════════════════════════════════════ */
+const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเชียงใหม่ (ปรับตามพื้นที่ให้บริการจริงได้)
+const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
+
+let meetingMap, meetingMarker;
+let hotelMap, hotelMarker;
+
+function createLeafletMap(divId) {
+    const map = L.map(divId, { center: DEFAULT_MAP_CENTER, zoom: 13 });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    return map;
+}
+
+function reverseGeocode(lat, lng, callback) {
+    fetch(`${NOMINATIM_BASE}/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=th`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.display_name) callback(data.display_name);
+        })
+        .catch(() => {});
+}
+
+function searchPlaces(query, callback) {
+    if (!query || query.trim().length < 3) { callback([]); return; }
+    const params = new URLSearchParams({
+        format: 'jsonv2',
+        q: query,
+        countrycodes: 'th',
+        'accept-language': 'th',
+        limit: '5'
+    });
+    fetch(`${NOMINATIM_BASE}/search?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => callback(data || []))
+        .catch(() => callback([]));
+}
+
+/* ── ผูก search box + suggestion dropdown ให้แต่ละช่อง input ── */
+function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
+    inputEl.addEventListener('input', () => {
+        clearTimeout(timerRef.id);
+        const query = inputEl.value;
+        timerRef.id = setTimeout(() => {
+            suggestBoxEl.innerHTML = '<div class="search-suggest-loading">กำลังค้นหา...</div>';
+            suggestBoxEl.style.display = 'block';
+            searchPlaces(query, (results) => {
+                if (results.length === 0) {
+                    suggestBoxEl.style.display = 'none';
+                    return;
+                }
+                suggestBoxEl.innerHTML = '';
+                results.forEach(place => {
+                    const item = document.createElement('div');
+                    item.className = 'search-suggest-item';
+                    item.textContent = place.display_name;
+                    item.addEventListener('click', () => {
+                        inputEl.value = place.display_name;
+                        suggestBoxEl.style.display = 'none';
+                        onSelect(parseFloat(place.lat), parseFloat(place.lon), place.display_name);
+                    });
+                    suggestBoxEl.appendChild(item);
+                });
+                suggestBoxEl.style.display = 'block';
+            });
+        }, 500); // debounce 500ms ตามนโยบายการใช้งาน Nominatim (ไม่ยิง request ถี่เกินไป)
+    });
+
+    // ปิด dropdown เมื่อคลิกที่อื่น
+    document.addEventListener('click', (e) => {
+        if (!inputEl.contains(e.target) && !suggestBoxEl.contains(e.target)) {
+            suggestBoxEl.style.display = 'none';
+        }
+    });
+}
+
+/* ── จุดรวมพล ── */
+function initMeetingMap() {
+    if (meetingMap) return; // สร้างครั้งเดียวพอ
+
+    meetingMap = createLeafletMap('meetingPointMap');
+    meetingMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(meetingMap);
+
+    meetingMarker.on('dragend', () => {
+        const pos = meetingMarker.getLatLng();
+        reverseGeocode(pos.lat, pos.lng, (address) => {
+            meetingPointDetailInput.value = address;
+            clearErr('meetingPointDetail', 'err-meetingPointDetail');
+        });
+    });
+
+    meetingMap.on('click', (e) => {
+        meetingMarker.setLatLng(e.latlng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => {
+            meetingPointDetailInput.value = address;
+            clearErr('meetingPointDetail', 'err-meetingPointDetail');
+        });
+    });
+
+    setTimeout(() => meetingMap.invalidateSize(), 200); // กัน bug แผนที่เบี้ยวตอนเพิ่งโผล่จาก display:none
+
+    attachPlaceSearch(
+        meetingPointDetailInput,
+        document.getElementById('meetingPointSuggest'),
+        (lat, lng) => {
+            meetingMap.setView([lat, lng], 16);
+            meetingMarker.setLatLng([lat, lng]);
+            clearErr('meetingPointDetail', 'err-meetingPointDetail');
+        },
+        { id: null }
+    );
+}
+
+/* ── เขตรับที่โรงแรม ── */
+function initHotelMap() {
+    if (hotelMap) return;
+
+    hotelMap = createLeafletMap('hotelPickupMap');
+    hotelMap.setZoom(12);
+    hotelMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(hotelMap);
+
+    hotelMarker.on('dragend', () => {
+        const pos = hotelMarker.getLatLng();
+        reverseGeocode(pos.lat, pos.lng, (address) => {
+            hotelPickupAreaInput.value = address;
+            clearErr('hotelPickupArea', 'err-hotelPickupArea');
+        });
+    });
+
+    hotelMap.on('click', (e) => {
+        hotelMarker.setLatLng(e.latlng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => {
+            hotelPickupAreaInput.value = address;
+            clearErr('hotelPickupArea', 'err-hotelPickupArea');
+        });
+    });
+
+    setTimeout(() => hotelMap.invalidateSize(), 200);
+
+    attachPlaceSearch(
+        hotelPickupAreaInput,
+        document.getElementById('hotelPickupSuggest'),
+        (lat, lng) => {
+            hotelMap.setView([lat, lng], 14);
+            hotelMarker.setLatLng([lat, lng]);
+            clearErr('hotelPickupArea', 'err-hotelPickupArea');
+        },
+        { id: null }
+    );
+}
 
 // เผื่อมีค่าเดิมติดมาจาก server (เช่น validation error แล้ว reload หน้าเดิม / โหมดแก้ไข)
 window.addEventListener('DOMContentLoaded', () => {

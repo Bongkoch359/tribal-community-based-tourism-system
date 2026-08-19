@@ -173,15 +173,209 @@ function applyPickupRules() {
     meetingPointDetailGroup.style.display = allowMeetingPointChk.checked ? 'block' : 'none';
     hotelPickupAreaGroup.style.display = allowHotelPickupChk.checked ? 'block' : 'none';
     if (pickupOptionErr) pickupOptionErr.style.display = 'none';
+
+    // ✅ เพิ่มใหม่: สร้างแผนที่ตอนเปิดใช้งาน checkbox (Leaflet ไม่ต้องรอ API โหลด)
+    if (allowMeetingPointChk.checked) initMeetingMap();
+    if (allowHotelPickupChk.checked) initHotelMap();
 }
 allowMeetingPointChk.addEventListener('change', applyPickupRules);
 allowHotelPickupChk.addEventListener('change', applyPickupRules);
 window.addEventListener('DOMContentLoaded', applyPickupRules);
 
+/* ═══════════════════════════════════════════
+   LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่ (จุดรวมพล / เขตรับที่โรงแรม)
+   ฟรี ไม่ต้องมี API Key ไม่เก็บ lat/lng ลง backend
+   ใช้ Nominatim (OSM) สำหรับค้นหาสถานที่ + reverse geocode
+═══════════════════════════════════════════ */
+const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเชียงใหม่
+const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
+
+let meetingMap, meetingMarker;
+let hotelMap, hotelMarker;
+
+function createLeafletMap(divId) {
+    const map = L.map(divId, { center: DEFAULT_MAP_CENTER, zoom: 13 });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    return map;
+}
+
+// ✅ ถ้าฟอร์มมีที่อยู่เดิม (โหมดแก้ไขทัวร์) ให้พยายาม geocode หาพิกัดมาปักหมุดตั้งต้นให้เลย
+function geocodeAddressToLatLng(address, callback) {
+    if (!address || address.trim() === '') { callback(null); return; }
+    const params = new URLSearchParams({
+        format: 'jsonv2',
+        q: address,
+        countrycodes: 'th',
+        'accept-language': 'th',
+        limit: '1'
+    });
+    fetch(`${NOMINATIM_BASE}/search?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data[0]) {
+                callback([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+            } else {
+                callback(null);
+            }
+        })
+        .catch(() => callback(null));
+}
+
+function reverseGeocode(lat, lng, callback) {
+    fetch(`${NOMINATIM_BASE}/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=th`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.display_name) callback(data.display_name);
+        })
+        .catch(() => {});
+}
+
+function searchPlaces(query, callback) {
+    if (!query || query.trim().length < 3) { callback([]); return; }
+    const params = new URLSearchParams({
+        format: 'jsonv2',
+        q: query,
+        countrycodes: 'th',
+        'accept-language': 'th',
+        limit: '5'
+    });
+    fetch(`${NOMINATIM_BASE}/search?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => callback(data || []))
+        .catch(() => callback([]));
+}
+
+function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
+    inputEl.addEventListener('input', () => {
+        clearTimeout(timerRef.id);
+        const query = inputEl.value;
+        timerRef.id = setTimeout(() => {
+            suggestBoxEl.innerHTML = '<div class="search-suggest-loading">กำลังค้นหา...</div>';
+            suggestBoxEl.style.display = 'block';
+            searchPlaces(query, (results) => {
+                if (results.length === 0) {
+                    suggestBoxEl.style.display = 'none';
+                    return;
+                }
+                suggestBoxEl.innerHTML = '';
+                results.forEach(place => {
+                    const item = document.createElement('div');
+                    item.className = 'search-suggest-item';
+                    item.textContent = place.display_name;
+                    item.addEventListener('click', () => {
+                        inputEl.value = place.display_name;
+                        suggestBoxEl.style.display = 'none';
+                        onSelect(parseFloat(place.lat), parseFloat(place.lon));
+                    });
+                    suggestBoxEl.appendChild(item);
+                });
+                suggestBoxEl.style.display = 'block';
+            });
+        }, 500);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!inputEl.contains(e.target) && !suggestBoxEl.contains(e.target)) {
+            suggestBoxEl.style.display = 'none';
+        }
+    });
+}
+
+/* ── จุดรวมพล ── */
+function initMeetingMap() {
+    if (meetingMap) return; // สร้างครั้งเดียวพอ
+
+    meetingMap = createLeafletMap('meetingPointMap');
+    meetingMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(meetingMap);
+
+    // ✅ โหมดแก้ไข: ถ้ามีที่อยู่เดิมอยู่แล้ว ให้ลอง geocode หาพิกัดมาปักหมุดตั้งต้นให้ตรงจุดจริง
+    if (meetingPointDetailInput.value.trim() !== '') {
+        geocodeAddressToLatLng(meetingPointDetailInput.value, (latlng) => {
+            if (latlng) {
+                meetingMap.setView(latlng, 16);
+                meetingMarker.setLatLng(latlng);
+            }
+        });
+    }
+
+    meetingMarker.on('dragend', () => {
+        const pos = meetingMarker.getLatLng();
+        reverseGeocode(pos.lat, pos.lng, (address) => {
+            meetingPointDetailInput.value = address;
+        });
+    });
+
+    meetingMap.on('click', (e) => {
+        meetingMarker.setLatLng(e.latlng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => {
+            meetingPointDetailInput.value = address;
+        });
+    });
+
+    setTimeout(() => meetingMap.invalidateSize(), 200); // กัน bug แผนที่เบี้ยวตอนเพิ่งโผล่จาก display:none
+
+    attachPlaceSearch(
+        meetingPointDetailInput,
+        document.getElementById('meetingPointSuggest'),
+        (lat, lng) => {
+            meetingMap.setView([lat, lng], 16);
+            meetingMarker.setLatLng([lat, lng]);
+        },
+        { id: null }
+    );
+}
+
+/* ── เขตรับที่โรงแรม ── */
+function initHotelMap() {
+    if (hotelMap) return;
+
+    hotelMap = createLeafletMap('hotelPickupMap');
+    hotelMap.setZoom(12);
+    hotelMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(hotelMap);
+
+    if (hotelPickupAreaInput.value.trim() !== '') {
+        geocodeAddressToLatLng(hotelPickupAreaInput.value, (latlng) => {
+            if (latlng) {
+                hotelMap.setView(latlng, 14);
+                hotelMarker.setLatLng(latlng);
+            }
+        });
+    }
+
+    hotelMarker.on('dragend', () => {
+        const pos = hotelMarker.getLatLng();
+        reverseGeocode(pos.lat, pos.lng, (address) => {
+            hotelPickupAreaInput.value = address;
+        });
+    });
+
+    hotelMap.on('click', (e) => {
+        hotelMarker.setLatLng(e.latlng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => {
+            hotelPickupAreaInput.value = address;
+        });
+    });
+
+    setTimeout(() => hotelMap.invalidateSize(), 200);
+
+    attachPlaceSearch(
+        hotelPickupAreaInput,
+        document.getElementById('hotelPickupSuggest'),
+        (lat, lng) => {
+            hotelMap.setView([lat, lng], 14);
+            hotelMarker.setLatLng([lat, lng]);
+        },
+        { id: null }
+    );
+}
+
 // ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
 // ✅ tourtype เป็น entity แล้ว ต้องอ่านชื่อผ่าน .typename และกัน null (ทัวร์ที่ยังไม่ผูกประเภท)
 (function initTourType() {
-    const savedType = /*[[${tour.tourtype != null ? tour.tourtype.typename : ''}]]*/ '';
+     const savedType = (typeof tourSavedType !== 'undefined') ? tourSavedType : '';
     if (!savedType) return;
     if (KNOWN_TYPES.includes(savedType)) {
         tourtypeSelect.value = savedType;

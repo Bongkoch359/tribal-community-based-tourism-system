@@ -668,7 +668,7 @@
             <div class="page-title">
                 <i class="fas fa-calendar-check"></i>
                 รายการจองโฮมสเตย์
-                <span class="count-chip" th:text="${bookings.size()} + ' รายการ'">0 รายการ</span>
+                <!-- <span class="count-chip" th:text="${bookings.size()} + ' รายการ'">0 รายการ</span> -->
             </div>
         </div>
 
@@ -689,21 +689,22 @@
                 <i class="fas fa-clock" style="color:#e07b00;font-size:1.1rem;"></i>
                 <div>
                     <div class="pill-label">รอตรวจสอบ</div>
-                    <div class="pill-count" th:text="${countWaiting}">0</div>
+                    <!-- <div class="pill-count" th:text="${countWaiting}">0</div> -->
                 </div>
             </a>
-            <a class="stat-pill pill-confirmed" href="javascript:void(0)" onclick="filterBookings('CONFIRMED', this)">
+            <a class="stat-pill pill-confirmed" href="javascript:void(0)"
+                onclick="filterBookings(['CONFIRMED','COMPLETED'], this)">
                 <i class="fas fa-circle-check" style="color:#1a6b52;font-size:1.1rem;"></i>
                 <div>
                     <div class="pill-label">ยืนยันแล้ว</div>
-                    <div class="pill-count" th:text="${countConfirmed}">0</div>
+                    <!-- <div class="pill-count" th:text="${countConfirmed}">0</div> -->
                 </div>
             </a>
             <a class="stat-pill pill-cancel" href="javascript:void(0)" onclick="filterBookings('CANCEL', this)">
                 <i class="fas fa-circle-xmark" style="color:#c0392b;font-size:1.1rem;"></i>
                 <div>
                     <div class="pill-label">ยกเลิก</div>
-                    <div class="pill-count" th:text="${countCancel}">0</div>
+                    <!-- <div class="pill-count" th:text="${countCancel}">0</div> -->
                 </div>
             </a>
         </div>
@@ -782,17 +783,22 @@
 
                         <!-- สถานะ -->
                         <td>
-                            <span th:switch="${b['bookingStatus']}">
-                                <span th:case="'PENDING'" class="status-badge s-pending"><span
-                                        class="status-dot"></span> รอดำเนินการ</span>
-                                <span th:case="'WAITING_APPROVAL'" class="status-badge s-waiting"><span
-                                        class="status-dot"></span> รอตรวจสอบ</span>
-                                <span th:case="'CONFIRMED'" class="status-badge s-confirmed"><span
-                                        class="status-dot"></span> ยืนยันแล้ว</span>
-                                <span th:case="'CANCEL'" class="status-badge s-cancel"><span class="status-dot"></span>
-                                    ยกเลิก</span>
-                                <span th:case="*" class="status-badge" th:text="${b['bookingStatus']}">-</span>
+                            <span th:if="${b['bookingStatus'] == 'PENDING'}" class="status-badge s-pending">
+                                <span class="status-dot"></span> รอดำเนินการ
                             </span>
+                            <span th:if="${b['bookingStatus'] == 'WAITING_APPROVAL'}" class="status-badge s-waiting">
+                                <span class="status-dot"></span> รอตรวจสอบ
+                            </span>
+                            <span th:if="${b['bookingStatus'] == 'CONFIRMED' or b['bookingStatus'] == 'COMPLETED'}"
+                                class="status-badge s-confirmed">
+                                <span class="status-dot"></span> ยืนยันแล้ว
+                            </span>
+                            <span th:if="${b['bookingStatus'] == 'CANCEL'}" class="status-badge s-cancel">
+                                <span class="status-dot"></span> ยกเลิก
+                            </span>
+                            <span th:if="${b['bookingStatus'] != 'PENDING' and b['bookingStatus'] != 'WAITING_APPROVAL'
+                  and b['bookingStatus'] != 'CONFIRMED' and b['bookingStatus'] != 'COMPLETED'
+                  and b['bookingStatus'] != 'CANCEL'}" class="status-badge" th:text="${b['bookingStatus']}">-</span>
                         </td>
 
                         <!-- จัดการ -->
@@ -837,8 +843,11 @@
             const pills = document.querySelectorAll('.stat-pill');
             const noResults = document.getElementById('noFilterResults');
 
-            // กดสถานะเดิมซ้ำ = ยกเลิกฟิลเตอร์ กลับไปแสดงทั้งหมด
-            if (currentFilter === status) {
+            const statusList = Array.isArray(status) ? status : [status];
+            const filterKey = statusList.join(',');
+
+            // กดสถานะเดิมซ้ำ = ยกเลิกฟิลเตอร์
+            if (currentFilter === filterKey) {
                 currentFilter = null;
                 pills.forEach(p => p.classList.remove('active'));
                 rows.forEach(r => r.style.display = '');
@@ -846,13 +855,13 @@
                 return;
             }
 
-            currentFilter = status;
+            currentFilter = filterKey;
             pills.forEach(p => p.classList.remove('active'));
             el.classList.add('active');
 
             let visibleCount = 0;
             rows.forEach(r => {
-                const match = r.dataset.status === status;
+                const match = statusList.includes(r.dataset.status);
                 r.style.display = match ? '' : 'none';
                 if (match) visibleCount++;
             });
@@ -921,20 +930,18 @@
         // ให้ไปแสดงสถานะแรกที่มีข้อมูลอยู่แทน (ยืนยันแล้ว > ยกเลิก)
         document.addEventListener('DOMContentLoaded', () => {
             const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
-            if (rows.length === 0) return; // ไม่มีข้อมูลเลย ไม่ต้องทำอะไร
+            if (rows.length === 0) return;
 
-            const priorityOrder = ['WAITING_APPROVAL', 'CONFIRMED', 'CANCEL'];
-            const pillMap = {
-                'WAITING_APPROVAL': document.querySelector('.stat-pill.pill-waiting'),
-                'CONFIRMED': document.querySelector('.stat-pill.pill-confirmed'),
-                'CANCEL': document.querySelector('.stat-pill.pill-cancel')
-            };
+            const priorityOrder = [
+                { key: 'WAITING_APPROVAL', statuses: ['WAITING_APPROVAL'], pill: document.querySelector('.stat-pill.pill-waiting') },
+                { key: 'CONFIRMED', statuses: ['CONFIRMED', 'COMPLETED'], pill: document.querySelector('.stat-pill.pill-confirmed') },
+                { key: 'CANCEL', statuses: ['CANCEL'], pill: document.querySelector('.stat-pill.pill-cancel') }
+            ];
 
-            for (const status of priorityOrder) {
-                const hasAny = Array.from(rows).some(r => r.dataset.status === status);
+            for (const item of priorityOrder) {
+                const hasAny = Array.from(rows).some(r => item.statuses.includes(r.dataset.status));
                 if (hasAny) {
-                    // currentFilter ยังเป็น null ตอนนี้ filterBookings จะ apply ให้เลย
-                    filterBookings(status, pillMap[status]);
+                    filterBookings(item.statuses, item.pill);
                     break;
                 }
             }

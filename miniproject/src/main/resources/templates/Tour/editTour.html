@@ -7,6 +7,8 @@
     <title>แก้ไขทัวร์</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <link th:href="@{/css/Tour/edit_tour.css}" rel="stylesheet">
     <style>
         .hs-navbar-brand {
@@ -287,33 +289,11 @@
                         </div>
 
                     </div>
-
-
-                    <!-- รายละเอียด -->
-                    <div class="card">
-                        <div class="card-title">รายละเอียดทัวร์</div>
-                        <div class="form-group">
-                            <label>รายละเอียด <span class="req">*</span></label>
-                            <textarea name="tourdetail" rows="6" placeholder="อธิบายโปรแกรมทัวร์..." required
-                                th:text="${tour.tourdetail}"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- เงื่อนไข -->
-                    <div class="card">
-                        <div class="card-title">เงื่อนไขการจอง</div>
-                        <div class="form-group">
-                            <label>เงื่อนไข <span class="req">*</span></label>
-                            <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม..." required
-                                th:text="${tour.conditiontour}"></textarea>
-                        </div>
-                    </div>
-
                     <!-- จุดรับ / นัดพบ -->
                     <div class="card">
                         <div class="card-title">จุดรับ / นัดพบ <span class="req">*</span></div>
                         <p class="hint" style="margin-bottom:14px;">
-                            เลือกได้มากกว่า 1 ช่องทาง 
+                            เลือกได้มากกว่า 1 ช่องทาง
                         </p>
 
                         <div class="form-group" style="display:flex; align-items:flex-start; gap:8px;">
@@ -325,9 +305,16 @@
                         </div>
                         <div class="form-group" id="meetingPointDetailGroup" style="display:none;">
                             <label>สถานที่จุดรวมพล <span class="req">*</span></label>
-                            <input type="text" id="meetingPointDetail" name="meetingPointDetail"
-                                placeholder="เช่น ลานจอดรถหน้าตลาดวโรรส อ.เมือง จ.เชียงใหม่"
-                                th:value="${tour.meetingPointDetail}" />
+                            <div class="search-input-wrap">
+                                <input type="text" id="meetingPointDetail" name="meetingPointDetail"
+                                    placeholder="เช่น ลานจอดรถหน้าตลาดวโรรส อ.เมือง จ.เชียงใหม่"
+                                    th:value="${tour.meetingPointDetail}" autocomplete="off" />
+                                <div class="search-suggest-box" id="meetingPointSuggest"></div>
+                            </div>
+
+                            <div class="map-box" id="meetingPointMap"></div>
+                            <p class="hint">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
+                                หรือคลิก/ลากหมุดบนแผนที่เพื่อให้ระบบเติมที่อยู่ให้อัตโนมัติ</p>
                         </div>
 
                         <div class="form-group" style="display:flex; align-items:flex-start; gap:8px; margin-top:10px;">
@@ -366,6 +353,28 @@
                         </div>
                     </div>
 
+                    <!-- รายละเอียด -->
+                    <div class="card">
+                        <div class="card-title">รายละเอียดทัวร์</div>
+                        <div class="form-group">
+                            <label>รายละเอียด <span class="req">*</span></label>
+                            <textarea name="tourdetail" rows="6" placeholder="อธิบายโปรแกรมทัวร์..." required
+                                th:text="${tour.tourdetail}"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- เงื่อนไข -->
+                    <div class="card">
+                        <div class="card-title">เงื่อนไขการจอง</div>
+                        <div class="form-group">
+                            <label>เงื่อนไข <span class="req">*</span></label>
+                            <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม..." required
+                                th:text="${tour.conditiontour}"></textarea>
+                        </div>
+                    </div>
+
+
+
                     <!-- Action buttons -->
                     <div class="btn-row">
                         <a class="btn btn-cancel" th:href="@{/manager/tours/{id}(id=${tour.tourid})}">
@@ -382,11 +391,6 @@
         </form>
     </div>
 
-    <!-- ═══════════════════════════════════════════
-     ข้อมูลรอบทัวร์เริ่มต้น + URL ของ endpoint ต่างๆ
-    ส่งเป็นค่า primitive เท่านั้น (ไม่ serialize ทั้ง entity ตรงๆ)
-     เพื่อเลี่ยงปัญหา circular reference ตอน Jackson แปลง entity เป็น JSON
-═══════════════════════════════════════════ -->
     <script th:inline="javascript">
         // รอบทัวร์ทั้งหมดของทัวร์นี้ (primitive fields เท่านั้น)
         window.scheduleData = [
@@ -404,15 +408,15 @@
         const tourNumberOfDays = /*[[${tour.numberOfDays}]]*/ 1;
         const tourMaxSeats = /*[[${tour.maxSeatstour}]]*/ 0;
 
-        // URL ของ endpoint เดิมใน TourScheduleController (ไม่มีการแก้ backend เลย)
         const scheduleAddUrl = /*[[@{/manager/tours/{id}/schedules(id=${tour.tourid})}]]*/ '';
         const scheduleBulkStatusUrl = /*[[@{/manager/tours/{id}/schedules/bulk-status(id=${tour.tourid})}]]*/ '';
-        // ใช้ __SID__ เป็น placeholder แล้วแทนที่ด้วย scheduleid จริงตอนเรียกใช้งาน
         const scheduleDeleteUrlTemplate = /*[[@{/manager/tours/{id}/schedules/__SID__/delete(id=${tour.tourid})}]]*/ '';
+
+        // ✅ บรรทัดที่ต้องเพิ่ม — ยังไม่มีในไฟล์ตอนนี้
+        const tourSavedType = /*[[${tour.tourtype != null ? tour.tourtype.typename : ''}]]*/ '';
     </script>
 
     <script src="/js/Tour/edit_tour.js"></script>
-
 </body>
 
 </html>

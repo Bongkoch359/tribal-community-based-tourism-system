@@ -573,7 +573,7 @@ public class TourController {
             tourService.updateTour(tourid, updated,
                     tourtype != null && !tourtype.isBlank() ? tourtype.trim() : null);
             redirectAttributes.addFlashAttribute("successMessage", "แก้ไขทัวร์สำเร็จ");
-            return "redirect:/manager/tours/" + tourid;
+            return "redirect:/manager/tours" ;
         } catch (Exception e) {
             model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
             model.addAttribute("tour", existing);

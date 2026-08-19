@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link th:href="@{/css/Tour/add_tour.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 </head>
 
 <body>
@@ -181,72 +183,10 @@
                         </div>
                     </div>
                 </div>
-                <!-- ── การ์ด: จุดรับ / นัดพบ ── -->
-                <div class="card">
-                    <div class="card-title">จุดรับ / นัดพบ <span class="req">*</span></div>
-                    <div style="font-size:12px;color:var(--text-hint);margin-bottom:14px;">
-                        เลือกได้มากกว่า 1 ช่องทาง สมาชิกที่จองจะเห็นเฉพาะตัวเลือกที่เปิดไว้ที่นี่
-                    </div>
-
-                    <!-- ตัวเลือก 1: นัดพบที่จุดรวมพล -->
-                    <div class="form-group" style="display:flex; align-items:flex-start; gap:8px;">
-                        <input type="checkbox" id="allowMeetingPointChk" name="allowMeetingPoint" value="true"
-                            style="margin-top:4px;" th:checked="${tour?.allowMeetingPoint}" />
-                        <label class="form-label" for="allowMeetingPointChk" style="margin-bottom:0;">
-                            📍 นัดพบที่จุดรวมพล 
-                        </label>
-                    </div>
-                    <div class="form-group" id="meetingPointDetailGroup" style="display:none;">
-                        <label class="form-label">สถานที่จุดรวมพล <span class="req">*</span></label>
-                        <input class="form-control" type="text" id="meetingPointDetail" name="meetingPointDetail"
-                            placeholder="เช่น ลานจอดรถหน้าตลาดวโรรส อ.เมือง จ.เชียงใหม่"
-                            th:value="${tour?.meetingPointDetail}" />
-                        <div class="field-error" id="err-meetingPointDetail">กรุณาระบุสถานที่จุดรวมพล</div>
-                    </div>
-
-                    <!-- ตัวเลือก 2: รับที่โรงแรม/ที่พัก -->
-                    <div class="form-group" style="display:flex; align-items:flex-start; gap:8px; margin-top:10px;">
-                        <input type="checkbox" id="allowHotelPickupChk" name="allowHotelPickup" value="true"
-                            style="margin-top:4px;" th:checked="${tour?.allowHotelPickup}" />
-                        <label class="form-label" for="allowHotelPickupChk" style="margin-bottom:0;">
-                            🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
-                        </label>
-                    </div>
-                    <div class="form-group" id="hotelPickupAreaGroup" style="display:none;">
-                        <label class="form-label">เขตพื้นที่ที่รับได้ <span class="req">*</span></label>
-                        <input class="form-control" type="text" id="hotelPickupArea" name="hotelPickupArea"
-                            placeholder="เช่น อำเภอเมือง (เชียงใหม่)" th:value="${tour?.hotelPickupArea}" />
-                        <small style="color:#888;">ระบุให้ละเอียด<strong></strong> เช่น "อำเภอเมือง"
-                            แทนที่จะระบุทั้งจังหวัด
-                            เพื่อจำกัดพื้นที่ให้บริการรับส่งให้แม่นยำ ระบบจะรับส่งเฉพาะที่พักที่มีคำนี้ในที่อยู่เท่านั้น
-                            สมาชิกต้องระบุคำนี้ในที่อยู่ตอนจอง</small>
-                        <div class="field-error" id="err-hotelPickupArea">กรุณาระบุเขตพื้นที่ที่รับได้</div>
-                    </div>
-                    <div class="field-error" id="err-pickupOption">กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง</div>
-
-                    <!-- เวลานัดพบ -->
-                    <div class="form-row" style="margin-top:14px;">
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label class="form-label">เวลานัดพบ <span class="req">*</span></label>
-                            <input class="form-control" type="time" id="meetingTime" name="meetingTime"
-                                th:value="${tour?.meetingTime}" />
-                            <div class="field-error" id="err-meetingTime">กรุณาระบุเวลานัดพบ</div>
-                        </div>
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label class="form-label">กรุณาพร้อมก่อนเวลา</label>
-                            <div class="input-suffix-wrap">
-                                <input class="form-control" type="number" id="arriveBeforeMinutes"
-                                    name="arriveBeforeMinutes" placeholder="10" min="0"
-                                    th:value="${tour?.arriveBeforeMinutes}" />
-                                <span class="input-suffix">นาที</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- ── การ์ด 3: ราคาทัวร์ ── -->
                 <div class="card">
-                    <div class="card-title">ราคาทัวร์ (TOURPRICE)</div>
+                    <div class="card-title">ราคาทัวร์</div>
                     <div class="form-row">
                         <div class="form-group" style="margin-bottom:0;">
                             <label class="form-label">ราคาผู้ใหญ่ <span class="req">*</span></label>
@@ -271,7 +211,75 @@
                         </div>
                     </div>
                 </div>
+                <!-- ── การ์ด: จุดรับ / นัดพบ ── -->
+                <div class="card">
+                    <div class="card-title">จุดรับ / นัดพบ <span class="req">*</span></div>
+                    <div style="font-size:12px;color:var(--text-hint);margin-bottom:14px;">
+                        เลือกได้มากกว่า 1 ช่องทาง สมาชิกที่จองจะเห็นเฉพาะตัวเลือกที่เปิดไว้ที่นี่
+                    </div>
 
+                    <!-- ตัวเลือก 1: นัดพบที่จุดรวมพล -->
+                    <div class="form-group" style="display:flex; align-items:flex-start; gap:8px;">
+                        <input type="checkbox" id="allowMeetingPointChk" name="allowMeetingPoint" value="true"
+                            style="margin-top:4px;" th:checked="${tour?.allowMeetingPoint}" />
+                        <label class="form-label" for="allowMeetingPointChk" style="margin-bottom:0;">
+                            📍 นัดพบที่จุดรวมพล
+                        </label>
+                    </div>
+                    <div class="form-group" id="meetingPointDetailGroup" style="display:none;">
+                        <label class="form-label">สถานที่จุดรวมพล <span class="req">*</span></label>
+                        <div class="search-input-wrap">
+                            <input class="form-control" type="text" id="meetingPointDetail" name="meetingPointDetail"
+                                placeholder="เช่น ลานจอดรถหน้าตลาดวโรรส อ.เมือง จ.เชียงใหม่"
+                                th:value="${tour?.meetingPointDetail}" autocomplete="off" />
+                            <div class="search-suggest-box" id="meetingPointSuggest"></div>
+                        </div>
+                        <div class="field-error" id="err-meetingPointDetail">กรุณาระบุสถานที่จุดรวมพล</div>
+
+                        <div class="map-box" id="meetingPointMap"></div>
+                        <small style="color:#888;">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
+                            หรือคลิก/ลากหมุดบนแผนที่เพื่อให้ระบบเติมที่อยู่ให้อัตโนมัติ</small>
+                    </div>
+
+                    <!-- ตัวเลือก 2: รับที่โรงแรม/ที่พัก -->
+                    <div class="form-group" style="display:flex; align-items:flex-start; gap:8px; margin-top:10px;">
+                        <input type="checkbox" id="allowHotelPickupChk" name="allowHotelPickup" value="true"
+                            style="margin-top:4px;" th:checked="${tour?.allowHotelPickup}" />
+                        <label class="form-label" for="allowHotelPickupChk" style="margin-bottom:0;">
+                            🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
+                        </label>
+                    </div>
+                    <div class="form-group" id="hotelPickupAreaGroup" style="display:none;">
+                        <label class="form-label">เขตพื้นที่ที่รับได้  <span class="req">*</span></label>
+                        <div class="search-input-wrap">
+                            <input class="form-control" type="text" id="hotelPickupArea" name="hotelPickupArea"
+                                placeholder="เฉพาะเขต อำเภอเมือง (เชียงใหม่)" th:value="${tour?.hotelPickupArea}"
+                                autocomplete="off" />
+                            <div class="search-suggest-box" id="hotelPickupSuggest"></div>
+                        </div>
+                        
+                    </div>
+                    <div class="field-error" id="err-pickupOption">กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง</div>
+
+                    <!-- เวลานัดพบ -->
+                    <div class="form-row" style="margin-top:14px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">เวลานัดพบ <span class="req">*</span></label>
+                            <input class="form-control" type="time" id="meetingTime" name="meetingTime"
+                                th:value="${tour?.meetingTime}" />
+                            <div class="field-error" id="err-meetingTime">กรุณาระบุเวลานัดพบ</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">กรุณาพร้อมก่อนเวลา</label>
+                            <div class="input-suffix-wrap">
+                                <input class="form-control" type="number" id="arriveBeforeMinutes"
+                                    name="arriveBeforeMinutes" placeholder="10" min="0"
+                                    th:value="${tour?.arriveBeforeMinutes}" />
+                                <span class="input-suffix">นาที</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- ── การ์ด: รอบทัวร์ (วันที่เปิดทัวร์) ── -->
                 <div class="card">
                     <div class="card-title">รอบทัวร์ (วันที่เปิดทัวร์) <span class="req">*</span></div>

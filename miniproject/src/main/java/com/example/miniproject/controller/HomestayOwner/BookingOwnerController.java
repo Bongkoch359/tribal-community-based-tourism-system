@@ -74,7 +74,10 @@ public class BookingOwnerController {
         // นับสถิติ
         long countAll      = bookings.size();
         long countWaiting  = bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.WAITING_APPROVAL).count();
-        long countConfirmed= bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED).count();
+        long countConfirmed = bookings.stream()
+        .filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED
+                  || b.getBookingStatus() == BookingStatus.COMPLETED)
+        .count();
         long countCancel   = bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.CANCEL).count();
 
         model.addAttribute("ownername",      ownername != null ? ownername : "Owner");
