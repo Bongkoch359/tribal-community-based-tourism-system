@@ -12,6 +12,8 @@ import com.example.miniproject.service.Homestay.HomestayService;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,16 +38,17 @@ public class ViewHomestayDetailController {
     @Autowired
     private BookingroomdetailRepository bookingroomdetailRepository;
 
-    // ✅ เพิ่ม inject
     @Autowired
     private BookingRepository bookingRepository;
 
     @GetMapping("/{id}")
     public String homestayDetail(
             @PathVariable Integer id,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
-            HttpSession session,     // ✅ เพิ่ม
+            // ✅ เปลี่ยนชื่อ param ให้ตรงกับ query string ที่หน้า search ส่งมา (checkin/checkout/guest)
+            @RequestParam(required = false) String checkin,
+            @RequestParam(required = false) String checkout,
+            @RequestParam(required = false) Integer guest,
+            HttpSession session,
             Model model) {
 
         Homestay homestay = homestayService.getHomestayDetailForMember(id);
@@ -63,18 +66,28 @@ public class ViewHomestayDetailController {
         Double        avgRating   = homestayService.getAvgRating(id);
         Long          reviewCount = homestayService.getReviewCount(id);
 
-        java.sql.Date sd, ed;
+        // ✅ แปลงเป็น LocalDate ก่อน เพื่อคำนวณ nights ได้ตรงๆ แล้วค่อยแปลงเป็น java.sql.Date สำหรับ query
+        LocalDate checkinDate, checkoutDate;
         try {
-            sd = (startDate != null && !startDate.isBlank())
-                    ? java.sql.Date.valueOf(startDate)
-                    : java.sql.Date.valueOf(java.time.LocalDate.now());
-            ed = (endDate != null && !endDate.isBlank())
-                    ? java.sql.Date.valueOf(endDate)
-                    : java.sql.Date.valueOf(java.time.LocalDate.now().plusDays(1));
+            checkinDate = (checkin != null && !checkin.isBlank())
+                    ? LocalDate.parse(checkin)
+                    : LocalDate.now();
+            checkoutDate = (checkout != null && !checkout.isBlank())
+                    ? LocalDate.parse(checkout)
+                    : checkinDate.plusDays(1);
+
+            // กันกรณี checkout <= checkin ให้ fallback เป็น checkin + 1 คืน
+            if (!checkoutDate.isAfter(checkinDate)) {
+                checkoutDate = checkinDate.plusDays(1);
+            }
         } catch (Exception e) {
-            sd = java.sql.Date.valueOf(java.time.LocalDate.now());
-            ed = java.sql.Date.valueOf(java.time.LocalDate.now().plusDays(1));
+            checkinDate  = LocalDate.now();
+            checkoutDate = checkinDate.plusDays(1);
         }
+
+        java.sql.Date sd = java.sql.Date.valueOf(checkinDate);
+        java.sql.Date ed = java.sql.Date.valueOf(checkoutDate);
+        long nights = ChronoUnit.DAYS.between(checkinDate, checkoutDate);
 
         Map<String, Integer> availableRooms = new HashMap<>();
         for (Roomtype room : homestay.getRoomtypes()) {
@@ -92,21 +105,27 @@ public class ViewHomestayDetailController {
         model.addAttribute("reviewCount",    reviewCount);
         model.addAttribute("availableRooms", availableRooms);
 
-        // ✅ ส่วนที่เพิ่ม: การจองที่เข้าพักเสร็จแล้วแต่ยังไม่ได้รีวิว
+        // ✅ ส่ง attribute ที่หน้า view ต้องใช้จริง (ตรงชื่อกับ .html)
+        model.addAttribute("checkinParam",  sd);
+        model.addAttribute("checkoutParam", ed);
+        model.addAttribute("guestParam",    guest != null ? guest : 1);
+        model.addAttribute("nights",        nights);
+
+        // ส่วนที่เพิ่ม: การจองที่เข้าพักเสร็จแล้วแต่ยังไม่ได้รีวิว
         Member member = (Member) session.getAttribute("loggedInMember");
         if (member != null) {
             List<Booking> pendingReviews = bookingRepository
                     .findCompletedBookingsWithoutReview(member.getMemberid(), id);
 
             Map<String, java.sql.Date> checkoutDateMap = pendingReviews.stream()
-    .collect(Collectors.toMap(
-        Booking::getBookingid,
-        b -> b.getRoomDetails().stream()
-                .filter(rd -> rd.getRoomtype().getHomestay().getHomestayid() == id)  // ✅ แก้ตรงนี้
-                .map(Bookingroomdetail::getCheckoutdate)
-                .max(java.sql.Date::compareTo)
-                .orElse(null)
-    ));
+                .collect(Collectors.toMap(
+                    Booking::getBookingid,
+                    b -> b.getRoomDetails().stream()
+                            .filter(rd -> rd.getRoomtype().getHomestay().getHomestayid() == id)
+                            .map(Bookingroomdetail::getCheckoutdate)
+                            .max(java.sql.Date::compareTo)
+                            .orElse(null)
+                ));
 
             model.addAttribute("pendingReviewBookings", pendingReviews);
             model.addAttribute("checkoutDateMap", checkoutDateMap);

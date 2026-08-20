@@ -7,14 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* ── Primary: ม่วง / ขาว ── */
-    --primary-900: #4a2a7a;
-    --primary-700: #6d3fa8;
-    --primary-600: #844FC1;
-    --primary-500: #9a68d1;
-    --primary-400: #b58ade;
-    --primary-100: #ece1f8;
-    --primary-50:  #f6f1fc;
+    /* ── Primary: ฟ้าเขียว (Turquoise/Teal) / ขาว ── */
+    --primary-900: #0c4a52;
+    --primary-700: #0e7c86;
+    --primary-600: #14a3ae;
+    --primary-500: #35bcc4;
+    --primary-400: #6fd3d9;
+    --primary-100: #d7f4f5;
+    --primary-50:  #eefbfb;
     --white-bg: #F8F9FA;
 
     /* ── Supporting colors ── */
@@ -250,7 +250,7 @@
   }
 
   .stat-card:hover {
-    box-shadow: 0 10px 26px rgba(75,63,168,0.12);
+    box-shadow: 0 10px 26px rgba(20,163,174,0.14);
     transform: translateY(-2px);
   }
 
@@ -294,7 +294,7 @@
 
   .menu-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(75,63,168,0.14);
+    box-shadow: 0 12px 32px rgba(20,163,174,0.16);
     border-color: var(--primary-400);
   }
 
@@ -646,7 +646,7 @@
       labels: ['อนุมัติแล้ว', 'รอพิจารณา', 'ปฏิเสธแล้ว'],
       datasets: [{
         data: [homestayData.approved, homestayData.pending, homestayData.rejected],
-        backgroundColor: ['#844FC1', '#3B86D1', '#d6395c'],
+        backgroundColor: ['#14a3ae', '#3B86D1', '#d6395c'],
         borderWidth: 0
       }]
     },
