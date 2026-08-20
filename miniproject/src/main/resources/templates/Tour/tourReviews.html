@@ -231,14 +231,17 @@
             margin: 0;
         }
 
+
         /* ── Summary card (ข้อมูลทัวร์ + คะแนนรวม) ── */
         .summary-card {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            background: var(--bg-hero);
-            border: 1px solid var(--border);
+            background: #ffffff;
+            /* เดิมเป็น var(--bg-hero) เปลี่ยนเป็น #ffffff */
+            border: 1px solid #e5e7eb;
+            /* เดิมเป็น var(--border) ปรับให้เป็นเส้นเทาอ่อนคลีนๆ */
             border-radius: var(--radius-card);
             padding: 18px 22px;
             margin-bottom: 22px;
@@ -372,8 +375,11 @@
             gap: 6px;
             margin-bottom: 14px;
             padding-left: 8px;
-            border-left: 3px solid var(--amber);
+            border-left: 3px solid #f59e0b;
+            /* เดิมเป็น var(--amber) */
         }
+
+
 
         /* rating bars (สรุปคะแนน) */
         .rating-row {
@@ -413,7 +419,7 @@
         .bar-fill {
             height: 100%;
             display: block;
-            background: var(--amber);
+            background: #f59e0b; /* เดิมเป็น var(--amber) */
             border-radius: 4px;
             transition: width .4s ease;
         }
@@ -490,11 +496,11 @@
             margin-bottom: 10px;
         }
 
-        .avatar-circle {
+       .avatar-circle {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--amber);
+            background: #FFC79C; /* เดิมเป็น var(--amber) */
             color: #fff;
             display: flex;
             align-items: center;
@@ -568,7 +574,7 @@
 
         /* ── Star colors ── */
         .star-gold {
-            color: var(--amber);
+            color: #f59e0b;
         }
 
         .star-empty {
@@ -685,7 +691,7 @@
             <div class="summary-left">
                 <!-- tour.images เก็บเป็นชื่อไฟล์ คั่นด้วย "||" ต้อง split เอารูปแรก แล้วเติม /uploads/tours/ นำหน้าเอง -->
                 <img th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
-                     th:src="@{'/uploads/tours/' + ${#strings.arraySplit(tour.images, '\|\|')[0]}}" alt="รูปทัวร์">
+                    th:src="@{'/uploads/tours/' + ${#strings.arraySplit(tour.images, '\|\|')[0]}}" alt="รูปทัวร์">
                 <div th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}" class="thumb-fallback">
                     <i class="fas fa-mountain-sun"></i>
                 </div>
@@ -716,15 +722,15 @@
                 <div class="panel">
                     <div class="panel-title">สรุปคะแนน</div>
                     <!-- loop จาก entrySet ของ ratingCounts ตรง ๆ (Map เรียง 5→1 มาจาก Service แล้ว) -->
-                    <div class="rating-row" th:each="entry : ${ratingCounts}"
-                         th:with="star=${entry.key}, cnt=${entry.value},
+                    <div class="rating-row" th:each="entry : ${ratingCounts}" th:with="star=${entry.key}, cnt=${entry.value},
                                   pct=${reviews.size() > 0 ? (cnt * 100.0 / reviews.size()) : 0}">
                         <span class="stars-label">
                             <span th:text="${star}">5</span>
                             <i class="fas fa-star star-gold"></i>
                         </span>
                         <span class="bar-track">
-                            <span class="bar-fill" th:style="'width:' + ${#numbers.formatDecimal(pct, 1, 0)} + '%'"></span>
+                            <span class="bar-fill"
+                                th:style="'width:' + ${#numbers.formatDecimal(pct, 1, 0)} + '%'"></span>
                         </span>
                         <span class="rating-count" th:text="${cnt}">0</span>
                     </div>
@@ -743,7 +749,7 @@
                         </span>
                         <th:block th:each="entry : ${ratingCounts}" th:with="star=${entry.key}, cnt=${entry.value}">
                             <span class="filter-chip" th:attr="data-star=${star}"
-                                  onclick="filterReviews(this.dataset.star, this)">
+                                onclick="filterReviews(this.dataset.star, this)">
                                 <i class="fas fa-star star-gold"></i>
                                 <span th:text="${star} + ' ดาว (' + ${cnt} + ')'">5 ดาว (0)</span>
                             </span>
@@ -768,7 +774,8 @@
                                 <span class="verified-badge">
                                     <i class="fas fa-circle-check"></i> จองผ่านระบบ
                                 </span>
-                                <div class="review-meta" th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}">-</div>
+                                <div class="review-meta" th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}">-
+                                </div>
                             </div>
                         </div>
 
@@ -780,7 +787,8 @@
                         </div>
 
                         <!-- Comment -->
-                        <div class="review-comment" th:if="${review.comment != null and !#strings.isEmpty(review.comment)}"
+                        <div class="review-comment"
+                            th:if="${review.comment != null and !#strings.isEmpty(review.comment)}"
                             th:text="${review.comment}">-</div>
                         <div class="review-comment" style="color:var(--text-hint); font-style:italic;"
                             th:unless="${review.comment != null and !#strings.isEmpty(review.comment)}">

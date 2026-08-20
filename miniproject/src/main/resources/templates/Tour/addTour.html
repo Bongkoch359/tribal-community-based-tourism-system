@@ -73,8 +73,9 @@
             <i class="fas fa-arrow-left"></i> ย้อนกลับ
         </a>
 
-        <div class="page-title">เพิ่มทัวร์</div>
-        <div class="page-subtitle">กรอกข้อมูลให้ครบถ้วนเพื่อเผยแพร่ทัวร์ให้นักท่องเที่ยวจอง</div>
+        <div class="page-title">
+            เพิ่มทัวร์ <span class="page-subtitle">กรอกข้อมูลให้ครบถ้วนเพื่อเผยแพร่ทัวร์ให้นักท่องเที่ยวจอง</span>
+        </div>
 
         <div th:if="${errorMessage}" class="alert-error"> <i class="fas fa-circle-exclamation"></i> <span
                 th:text="${errorMessage}"></span></div>
@@ -119,7 +120,7 @@
                         <div class="form-group" id="customTypeGroup" style="display:none; margin-bottom:0;">
                             <label class="form-label">ระบุชื่อประเภททัวร์ <span class="req">*</span></label>
                             <input class="form-control" type="text" id="tourtypeCustom"
-                                placeholder="เช่น ทัวร์เกษตรอินทรีย์ 4 วัน 3 คืน" />
+                                placeholder="เช่น ทัวร์หมู่บ้าน " />
                             <div class="field-error" id="err-tourtypeCustom">กรุณาระบุชื่อประเภททัวร์</div>
                         </div>
                     </div>
@@ -215,7 +216,7 @@
                 <div class="card">
                     <div class="card-title">จุดรับ / นัดพบ <span class="req">*</span></div>
                     <div style="font-size:12px;color:var(--text-hint);margin-bottom:14px;">
-                        เลือกได้มากกว่า 1 ช่องทาง สมาชิกที่จองจะเห็นเฉพาะตัวเลือกที่เปิดไว้ที่นี่
+                        เลือกได้มากกว่า 1 ช่องทาง
                     </div>
 
                     <!-- ตัวเลือก 1: นัดพบที่จุดรวมพล -->
@@ -223,18 +224,18 @@
                         <input type="checkbox" id="allowMeetingPointChk" name="allowMeetingPoint" value="true"
                             style="margin-top:4px;" th:checked="${tour?.allowMeetingPoint}" />
                         <label class="form-label" for="allowMeetingPointChk" style="margin-bottom:0;">
-                            📍 นัดพบที่จุดรวมพล
+                            📍 จุดนัดพบ
                         </label>
                     </div>
                     <div class="form-group" id="meetingPointDetailGroup" style="display:none;">
-                        <label class="form-label">สถานที่จุดรวมพล <span class="req">*</span></label>
+                        <label class="form-label">สถานที่จุดนัดพบ <span class="req">*</span></label>
                         <div class="search-input-wrap">
                             <input class="form-control" type="text" id="meetingPointDetail" name="meetingPointDetail"
                                 placeholder="เช่น ลานจอดรถหน้าตลาดวโรรส อ.เมือง จ.เชียงใหม่"
                                 th:value="${tour?.meetingPointDetail}" autocomplete="off" />
                             <div class="search-suggest-box" id="meetingPointSuggest"></div>
                         </div>
-                        <div class="field-error" id="err-meetingPointDetail">กรุณาระบุสถานที่จุดรวมพล</div>
+                        <div class="field-error" id="err-meetingPointDetail">กรุณาระบุสถานที่จุดนัดพบ</div>
 
                         <div class="map-box" id="meetingPointMap"></div>
                         <small style="color:#888;">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
@@ -246,18 +247,18 @@
                         <input type="checkbox" id="allowHotelPickupChk" name="allowHotelPickup" value="true"
                             style="margin-top:4px;" th:checked="${tour?.allowHotelPickup}" />
                         <label class="form-label" for="allowHotelPickupChk" style="margin-bottom:0;">
-                            🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
+                            🏨 บริการรับจากโรงแรม/ที่พัก
                         </label>
                     </div>
                     <div class="form-group" id="hotelPickupAreaGroup" style="display:none;">
-                        <label class="form-label">เขตพื้นที่ที่รับได้  <span class="req">*</span></label>
+                        <label class="form-label">เขตพื้นที่ที่รับได้ <span class="req">*</span></label>
                         <div class="search-input-wrap">
                             <input class="form-control" type="text" id="hotelPickupArea" name="hotelPickupArea"
-                                placeholder="เฉพาะเขต อำเภอเมือง (เชียงใหม่)" th:value="${tour?.hotelPickupArea}"
+                                placeholder="เช่น เฉพาะเขต อำเภอเมือง (เชียงใหม่)" th:value="${tour?.hotelPickupArea}"
                                 autocomplete="off" />
                             <div class="search-suggest-box" id="hotelPickupSuggest"></div>
                         </div>
-                        
+
                     </div>
                     <div class="field-error" id="err-pickupOption">กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง</div>
 
