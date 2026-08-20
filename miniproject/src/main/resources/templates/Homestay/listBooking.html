@@ -687,24 +687,23 @@
             <a class="stat-pill pill-waiting" href="javascript:void(0)"
                 onclick="filterBookings('WAITING_APPROVAL', this)">
                 <i class="fas fa-clock" style="color:#e07b00;font-size:1.1rem;"></i>
-                <div>
-                    <div class="pill-label">รอตรวจสอบ</div>
-                    <!-- <div class="pill-count" th:text="${countWaiting}">0</div> -->
+                <div class="pill-label">
+                    รอตรวจสอบ <span class="pill-count" th:text="${countWaiting}">0</span>
                 </div>
             </a>
+
             <a class="stat-pill pill-confirmed" href="javascript:void(0)"
                 onclick="filterBookings(['CONFIRMED','COMPLETED'], this)">
                 <i class="fas fa-circle-check" style="color:#1a6b52;font-size:1.1rem;"></i>
-                <div>
-                    <div class="pill-label">ยืนยันแล้ว</div>
-                    <!-- <div class="pill-count" th:text="${countConfirmed}">0</div> -->
+                <div class="pill-label">
+                    ยืนยันแล้ว <span class="pill-count" th:text="${countConfirmed}">0</span>
                 </div>
             </a>
+
             <a class="stat-pill pill-cancel" href="javascript:void(0)" onclick="filterBookings('CANCEL', this)">
                 <i class="fas fa-circle-xmark" style="color:#c0392b;font-size:1.1rem;"></i>
-                <div>
-                    <div class="pill-label">ยกเลิก</div>
-                    <!-- <div class="pill-count" th:text="${countCancel}">0</div> -->
+                <div class="pill-label">
+                    ยกเลิก <span class="pill-count" th:text="${countCancel}">0</span>
                 </div>
             </a>
         </div>

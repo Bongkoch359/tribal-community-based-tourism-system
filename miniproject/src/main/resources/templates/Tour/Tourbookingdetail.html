@@ -311,28 +311,31 @@
             color: var(--green-mid);
         }
 
-       .detail-grid {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 20px;
-    align-items: start;   /* สำคัญมาก - อย่าลบ */
-}
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            align-items: start;
+            /* สำคัญมาก - อย่าลบ */
+        }
 
-.detail-left {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    /* ฝั่งซ้ายปล่อยเป็น flow ปกติ เลื่อนตามหน้า */
-}
+        .detail-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            /* ฝั่งซ้ายปล่อยเป็น flow ปกติ เลื่อนตามหน้า */
+        }
 
-.detail-right {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    position: sticky;
-    top: 103px;          /* = navbar 83px + เว้นระยะ 20px ให้เท่าระดับกับ "ข้อมูลผู้จอง" */
-    align-self: start;   /* กันไม่ให้ grid ยืดความสูงคอลัมน์ */
-}
+        .detail-right {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 103px;
+            /* = navbar 83px + เว้นระยะ 20px ให้เท่าระดับกับ "ข้อมูลผู้จอง" */
+            align-self: start;
+            /* กันไม่ให้ grid ยืดความสูงคอลัมน์ */
+        }
 
         .card {
             background: var(--bg-card);
@@ -994,18 +997,19 @@
             text-decoration: underline;
         }
 
-       @media (max-width: 768px) {
-    .detail-grid {
-        grid-template-columns: 1fr;
-    }
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
 
-    .detail-right {
-        order: -1;
-        position: static;   /* ปิด sticky บนมือถือ */
-        max-height: none;
-        overflow-y: visible;
-    }
-}
+            .detail-right {
+                order: -1;
+                position: static;
+                /* ปิด sticky บนมือถือ */
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
     </style>
 </head>
 
@@ -1382,12 +1386,25 @@
             </div>
         </div>
     </div>
-
     <!-- MODAL: ยกเลิก -->
     <div class="modal-overlay" id="cancelModal">
         <div class="modal-box">
             <h3><i class="fas fa-circle-xmark" style="color:var(--red-text);"></i> ยกเลิกการจอง</h3>
             <p>คุณต้องการ <strong>ยกเลิก</strong> การจองนี้ใช่หรือไม่?<br>การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+
+            <div style="margin-bottom:18px;">
+                <label for="cancelReasonInput"
+                    style="display:block;font-size:.88rem;font-weight:600;color:var(--text-main);margin-bottom:6px;">
+                    เหตุผลในการยกเลิก <span style="color:var(--red-text);">*</span>
+                </label>
+                <textarea id="cancelReasonInput" rows="3"
+                    placeholder="กรุณาระบุเหตุผล เช่น จำนวนผู้เข้าร่วมไม่ถึงขั้นต่ำ, ไม่ได้รับการชำระเงิน ฯลฯ"
+                    style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Sarabun',sans-serif;font-size:.9rem;resize:vertical;"></textarea>
+                <div id="cancelReasonError" style="display:none;color:var(--red-text);font-size:.8rem;margin-top:5px;">
+                    กรุณากรอกเหตุผลก่อนยืนยันการยกเลิก
+                </div>
+            </div>
+
             <div class="modal-actions">
                 <button class="btn-modal-cancel" onclick="closeModal('cancelModal')">ปิด</button>
                 <button class="btn-modal-confirm-red" onclick="doCancel()"><i class="fas fa-xmark"></i>
@@ -1422,10 +1439,7 @@
             pendingBookingId = bookingId;
             document.getElementById('confirmModal').classList.add('open');
         }
-        function openCancelModal(bookingId) {
-            pendingBookingId = bookingId;
-            document.getElementById('cancelModal').classList.add('open');
-        }
+
         function closeModal(id) {
             document.getElementById(id).classList.remove('open');
         }
@@ -1434,17 +1448,34 @@
             document.getElementById('slipLightbox').classList.add('open');
         }
 
+        function openCancelModal(bookingId) {
+            pendingBookingId = bookingId;
+            document.getElementById('cancelReasonInput').value = '';
+            document.getElementById('cancelReasonError').style.display = 'none';
+            document.getElementById('cancelModal').classList.add('open');
+        }
+
+        async function doCancel() {
+            const reasonInput = document.getElementById('cancelReasonInput');
+            const reason = reasonInput.value.trim();
+
+            if (!reason) {
+                document.getElementById('cancelReasonError').style.display = 'block';
+                reasonInput.focus();
+                return;
+            }
+
+            closeModal('cancelModal');
+            await postAction('/manager/bookings/cancel', 'ยกเลิกการจองแล้ว', { reason });
+        }
+
         async function doConfirm() {
             closeModal('confirmModal');
             await postAction('/manager/bookings/confirm', 'ยืนยันการจองสำเร็จ');
         }
-        async function doCancel() {
-            closeModal('cancelModal');
-            await postAction('/manager/bookings/cancel', 'ยกเลิกการจองแล้ว');
-        }
 
-        async function postAction(url, successMsg) {
-            const params = new URLSearchParams({ bookingid: pendingBookingId });
+        async function postAction(url, successMsg, extraParams = {}) {
+            const params = new URLSearchParams({ bookingid: pendingBookingId, ...extraParams });
             try {
                 const res = await fetch(url, { method: 'POST', body: params });
                 const data = await res.json();

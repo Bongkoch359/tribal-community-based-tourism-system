@@ -114,10 +114,12 @@ public class TourBookingManagerController {
     }
 
     // ─── ยกเลิกการจองทัวร์ (เรียกจากปุ่มในหน้ารายละเอียด ผ่าน fetch/AJAX) ───
+    // ─── ยกเลิกการจองทัวร์ (เรียกจากปุ่มในหน้ารายละเอียด ผ่าน fetch/AJAX) ───
     @PostMapping("/cancel")
     @ResponseBody
     public Map<String, Object> cancelBooking(
             @RequestParam("bookingid") String bookingId,
+            @RequestParam("reason") String reason,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -129,8 +131,14 @@ public class TourBookingManagerController {
             return result;
         }
 
+        if (reason == null || reason.isBlank()) {
+            result.put("success", false);
+            result.put("message", "กรุณาระบุเหตุผลในการยกเลิก");
+            return result;
+        }
+
         try {
-            tourBookingService.cancelTourBookingByManager(bookingId, manager.getManagerid());
+            tourBookingService.cancelTourBookingByManager(bookingId, manager.getManagerid(), reason);
             result.put("success", true);
         } catch (RuntimeException e) {
             result.put("success", false);

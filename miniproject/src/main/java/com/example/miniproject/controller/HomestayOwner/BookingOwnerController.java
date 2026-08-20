@@ -24,19 +24,19 @@ public class BookingOwnerController {
     @Autowired
     private HomestayService homestayService;
 
-
     // ─── GET: รายการจองทั้งหมด ────────────────────────────────────────────────
     @GetMapping("/owner/bookings")
     public String listBookings(
-            @RequestParam(value = "homestayid",  required = false) Integer homestayid,
-            @RequestParam(value = "status",      required = false) String status,
+            @RequestParam(value = "homestayid", required = false) Integer homestayid,
+            @RequestParam(value = "status", required = false) String status,
             HttpSession session,
             Model model) {
 
-        if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
+        if (session.getAttribute("ownerid") == null)
+            return "redirect:/owner/login";
 
-        Integer ownerid   = (Integer) session.getAttribute("ownerid");
-        String  ownername = (String)  session.getAttribute("ownername");
+        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownername = (String) session.getAttribute("ownername");
 
         // ดึงโฮมสเตย์ทั้งหมดของเจ้าของ
         List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
@@ -59,8 +59,10 @@ public class BookingOwnerController {
         // แปลง status string → enum
         BookingStatus statusEnum = null;
         if (status != null && !status.isBlank()) {
-            try { statusEnum = BookingStatus.valueOf(status); }
-            catch (IllegalArgumentException ignored) {}
+            try {
+                statusEnum = BookingStatus.valueOf(status);
+            } catch (IllegalArgumentException ignored) {
+            }
         }
 
         // ดึงการจอง
@@ -72,24 +74,25 @@ public class BookingOwnerController {
         List<Map<String, Object>> bookingViews = buildBookingViews(bookings);
 
         // นับสถิติ
-        long countAll      = bookings.size();
-        long countWaiting  = bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.WAITING_APPROVAL).count();
+        long countAll = bookings.size();
+        long countWaiting = bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.WAITING_APPROVAL)
+                .count();
         long countConfirmed = bookings.stream()
-        .filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED
-                  || b.getBookingStatus() == BookingStatus.COMPLETED)
-        .count();
-        long countCancel   = bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.CANCEL).count();
+                .filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED
+                        || b.getBookingStatus() == BookingStatus.COMPLETED)
+                .count();
+        long countCancel = bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.CANCEL).count();
 
-        model.addAttribute("ownername",      ownername != null ? ownername : "Owner");
-        model.addAttribute("homestayid",     homestayid);
-        model.addAttribute("homestayname",   homestayname);
-        model.addAttribute("myHomestays",    myHomestays);
-        model.addAttribute("bookings",       bookingViews);
-        model.addAttribute("activeStatus",   status != null ? status : "");
-        model.addAttribute("countAll",       countAll);
-        model.addAttribute("countWaiting",   countWaiting);
+        model.addAttribute("ownername", ownername != null ? ownername : "Owner");
+        model.addAttribute("homestayid", homestayid);
+        model.addAttribute("homestayname", homestayname);
+        model.addAttribute("myHomestays", myHomestays);
+        model.addAttribute("bookings", bookingViews);
+        model.addAttribute("activeStatus", status != null ? status : "");
+        model.addAttribute("countAll", countAll);
+        model.addAttribute("countWaiting", countWaiting);
         model.addAttribute("countConfirmed", countConfirmed);
-        model.addAttribute("countCancel",    countCancel);
+        model.addAttribute("countCancel", countCancel);
 
         return "Homestay/listBooking";
     }
@@ -101,15 +104,17 @@ public class BookingOwnerController {
             HttpSession session,
             Model model) {
 
-        if (session.getAttribute("ownerid") == null) return "redirect:/owner/login";
+        if (session.getAttribute("ownerid") == null)
+            return "redirect:/owner/login";
 
         Booking booking = bookingOwnerService.getBookingDetail(bookingid);
-        if (booking == null) return "redirect:/owner/bookings";
+        if (booking == null)
+            return "redirect:/owner/bookings";
 
         String ownername = (String) session.getAttribute("ownername");
 
         model.addAttribute("ownername", ownername != null ? ownername : "Owner");
-        model.addAttribute("booking",   booking);
+        model.addAttribute("booking", booking);
 
         return "Homestay/bookingDetail";
     }
@@ -118,7 +123,7 @@ public class BookingOwnerController {
     @PostMapping("/owner/bookings/confirm")
     @ResponseBody
     public ResponseEntity<?> confirmBooking(
-            @RequestParam("bookingid")  String  bookingid,
+            @RequestParam("bookingid") String bookingid,
             @RequestParam("homestayid") Integer homestayid,
             HttpSession session) {
 
@@ -133,26 +138,30 @@ public class BookingOwnerController {
         }
     }
 
-    // ─── POST: ยกเลิกการจอง (โดย owner) ────────────────────────────────────
+    // ─── POST: ยกเลิกการจอง  ────────────────────────────────────
     @PostMapping("/owner/bookings/cancel")
     @ResponseBody
     public ResponseEntity<?> cancelBooking(
-            @RequestParam("bookingid")  String  bookingid,
+            @RequestParam("bookingid") String bookingid,
             @RequestParam("homestayid") Integer homestayid,
+            @RequestParam("reason") String reason,
             HttpSession session) {
 
         if (session.getAttribute("ownerid") == null)
             return ResponseEntity.status(401).body(Map.of("success", false, "message", "กรุณาเข้าสู่ระบบ"));
 
+        if (reason == null || reason.isBlank())
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "กรุณาระบุเหตุผลในการยกเลิก"));
+
         try {
-            bookingOwnerService.cancelBookingByOwner(bookingid, homestayid);
+            bookingOwnerService.cancelBookingByOwner(bookingid, homestayid, reason);
             return ResponseEntity.ok(Map.of("success", true));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
-    // ─── helper: แปลง Booking → Map สำหรับ Thymeleaf ────────────────────────
+        // ─── helper: แปลง Booking → Map สำหรับ Thymeleaf ────────────────────────
     private List<Map<String, Object>> buildBookingViews(List<Booking> bookings) {
         return bookings.stream().map(b -> {
             Map<String, Object> m = new LinkedHashMap<>();
@@ -198,4 +207,4 @@ public class BookingOwnerController {
             return m;
         }).collect(Collectors.toList());
     }
-}
+} 

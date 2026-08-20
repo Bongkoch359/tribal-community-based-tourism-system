@@ -24,6 +24,7 @@
             --amber-hover: #4d7c0a;
             --bg-page: #f3fae8;
             --bg-card: #ffffff;
+            --bg-hero: #f4f1e7;
             --border: #e2ddd4;
             --text-main: #1c1c1a;
             --text-muted: #6b6b68;
@@ -32,10 +33,7 @@
             --radius-sm: 6px;
             --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07);
             --red: #c0392b;
-
-            :root {
-                --white: #ffffff;
-            }
+            --white: #ffffff;
         }
 
         body {
@@ -57,21 +55,6 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
-        }
-
-        .nav-brand {
-            color: #fff;
-            font-size: 1.05rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: .6rem;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-
-        .nav-brand i {
-            font-size: 1.2rem;
         }
 
         .nav-dropdown {
@@ -196,7 +179,6 @@
 
         .brand-logo img {
             height: 75px;
-            /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
             width: auto;
             max-width: 180px;
             object-fit: contain;
@@ -213,7 +195,7 @@
         /* ── Layout ── */
         .page {
             padding: 28px 28px 60px;
-            max-width: 1100px;
+            max-width: 1180px;
             margin: auto;
         }
 
@@ -236,89 +218,178 @@
             background: var(--bg-page);
         }
 
-        .page-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 22px;
-            flex-wrap: wrap;
-        }
-
         .page-title {
             font-size: 22px;
             font-weight: 700;
             color: var(--green-dark);
+            margin-bottom: 18px;
         }
 
-        .page-subtitle {
-            font-size: 13px;
+        /* ── Hero card (ข้อมูลทัวร์ + คะแนนรวม) ── */
+        .hero-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: var(--bg-hero);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-card);
+            padding: 18px 22px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .hero-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .hero-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--green-light);
+        }
+
+        .hero-thumb-fallback {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: var(--green-light);
+            color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .hero-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .hero-meta {
+            font-size: 12.5px;
             color: var(--text-muted);
             margin-top: 3px;
-        }
-
-        /* ── Summary card ── */
-        .summary-bar {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 24px;
+            display: flex;
             align-items: center;
-            background: var(--bg-card);
-            border-radius: var(--radius-card);
-            border: 1px solid var(--border);
-            padding: 20px 24px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-card);
+            gap: 5px;
         }
 
-        .avg-score-wrap {
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+            color: var(--green-dark);
+            background: var(--green-light);
+            border-radius: 20px;
+            padding: 2px 10px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .hero-score {
             text-align: center;
-            padding-right: 24px;
-            border-right: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
-        .avg-score {
-            font-size: 52px;
+        .hero-score .score-num {
+            font-size: 34px;
             font-weight: 700;
             color: var(--green-dark);
             line-height: 1;
         }
 
-        .avg-stars {
+        .hero-score .star-row {
             display: flex;
-            gap: 3px;
+            gap: 2px;
             justify-content: center;
-            margin: 6px 0 4px;
+            margin: 6px 0 3px;
         }
 
-        .avg-stars i {
-            font-size: 18px;
+        .hero-score .star-row i {
+            font-size: 14px;
         }
 
-        .avg-count {
-            font-size: 12px;
+        .hero-score .score-count {
+            font-size: 11.5px;
             color: var(--text-hint);
         }
 
-        .rating-bars {
-            flex: 1;
+        /* ── Content grid: sidebar + review list ── */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 760px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
             display: flex;
             flex-direction: column;
+            gap: 16px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .side-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-card);
+            padding: 16px 18px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .side-box-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
             gap: 6px;
+            margin-bottom: 14px;
+            padding-left: 8px;
+            border-left: 3px solid var(--amber);
+        }
+
+        /* rating bars */
+        .rating-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .rating-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-size: 12px;
         }
 
         .rating-row .star-label {
-            width: 24px;
-            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            width: 34px;
             color: var(--text-muted);
             font-weight: 600;
+        }
+
+        .rating-row .star-label i {
+            font-size: 10px;
         }
 
         .rating-row .bar-track {
@@ -337,48 +408,55 @@
         }
 
         .rating-row .bar-count {
-            width: 28px;
+            width: 20px;
+            text-align: right;
             color: var(--text-hint);
         }
 
-        /* ── Filter / sort ── */
-        .filter-row {
+        /* filter list */
+        .filter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .filter-row label {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .filter-row select {
-            padding: 7px 12px;
+            gap: 8px;
+            width: 100%;
+            text-align: left;
+            padding: 9px 12px;
             border: 1px solid var(--border);
+            background: #fff;
             border-radius: var(--radius-sm);
             font-family: 'Sarabun', sans-serif;
             font-size: 13px;
-            background: #fff;
             color: var(--text-main);
-            outline: none;
             cursor: pointer;
+            transition: all .15s;
         }
 
-        .filter-row select:focus {
-            border-color: var(--green-mid);
-        }
-
-        .count-badge {
-            margin-left: auto;
+        .filter-btn i {
             font-size: 12px;
-            color: var(--text-muted);
+        }
+
+        .filter-btn .star-gold {
+            color: var(--amber);
+        }
+
+        .filter-btn:hover {
             background: var(--bg-page);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 3px 12px;
+        }
+
+        .filter-btn.active {
+            background: var(--green-dark);
+            border-color: var(--green-dark);
+            color: #fff;
+        }
+
+        .filter-btn.active .star-gold {
+            color: #fff;
         }
 
         /* ── Review card ── */
@@ -399,23 +477,16 @@
         .review-card-header {
             display: flex;
             align-items: flex-start;
-            justify-content: space-between;
             gap: 12px;
             margin-bottom: 10px;
         }
 
-        .reviewer-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         .reviewer-avatar {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: var(--green-light);
-            color: var(--green-dark);
+            background: var(--amber);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -424,36 +495,49 @@
             flex-shrink: 0;
         }
 
+        .reviewer-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
         .reviewer-name {
+            font-weight: 700;
+            font-size: 14.5px;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
             font-weight: 600;
-            font-size: 14px;
+            color: var(--green-dark);
+            background: var(--green-light);
+            border-radius: 20px;
+            padding: 2px 9px;
         }
 
-        .reviewer-meta {
-            font-size: 12px;
-            color: var(--text-hint);
-            margin-top: 1px;
-        }
-
-        .review-right {
-            text-align: right;
-            flex-shrink: 0;
+        .review-sub-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
         }
 
         .star-row {
             display: flex;
             gap: 2px;
-            justify-content: flex-end;
         }
 
         .star-row i {
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .review-date {
-            font-size: 11px;
+            font-size: 11.5px;
             color: var(--text-hint);
-            margin-top: 3px;
         }
 
         .review-comment {
@@ -466,7 +550,7 @@
 
         .review-image {
             width: 100%;
-            max-width: 280px;
+            max-width: 220px;
             border-radius: 8px;
             object-fit: cover;
             border: 1px solid var(--border);
@@ -477,19 +561,6 @@
 
         .review-image:hover {
             opacity: .88;
-        }
-
-        .booking-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 11px;
-            color: var(--text-hint);
-            background: var(--bg-page);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 2px 8px;
-            margin-top: 8px;
         }
 
         /* ── Star colors ── */
@@ -506,6 +577,9 @@
             text-align: center;
             padding: 60px 20px;
             color: var(--text-hint);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-card);
         }
 
         .empty-state i {
@@ -600,104 +674,140 @@
             <i class="fas fa-arrow-left"></i> ย้อนกลับ
         </a>
 
-        <div class="page-header">
-            <div>
-                <div class="page-title">รีวิวทัวร์</div>
-                <div class="page-subtitle" th:text="${tour.tourmname}">ชื่อทัวร์</div>
-            </div>
-        </div>
+        <div class="page-title">รีวิวทัวร์</div>
 
-        <!-- ── Summary bar ── -->
-        <div class="summary-bar" th:if="${reviews != null and !reviews.isEmpty()}">
-            <div class="avg-score-wrap">
-                <div class="avg-score" th:text="${#numbers.formatDecimal(avgRating, 1, 1)}">0.0</div>
-                <div class="avg-stars">
+        <!-- ── Hero card: ข้อมูลทัวร์ + คะแนนรวม ── -->
+        <div class="hero-card">
+            <div class="hero-left">
+                <!-- tour.images เก็บเป็นชื่อไฟล์ คั่นด้วย "||" (เช่น "a.jpg||b.png||c.jpg")
+                     ต้อง split ด้วย || แล้วเติม /uploads/tours/ นำหน้าเอง เพราะ field เก็บแค่ชื่อไฟล์ -->
+                <img th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
+                     class="hero-thumb"
+                     th:src="@{'/uploads/tours/' + ${#strings.arraySplit(tour.images, '\|\|')[0]}}" alt="รูปทัวร์">
+                <div th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}" class="hero-thumb-fallback">
+                    <i class="fas fa-mountain-sun"></i>
+                </div>
+                <div>
+                    <div class="hero-name" th:text="${tour.tourmname}">ชื่อทัวร์</div>
+                    <div class="hero-meta" th:if="${tour.meetingPointDetail != null and !#strings.isEmpty(tour.meetingPointDetail)}">
+                        <i class="fas fa-location-dot"></i>
+                        <span th:text="${tour.meetingPointDetail}">สถานที่</span>
+                    </div>
+                    <div class="hero-tag" th:if="${tour.tourtype != null}">
+                        <i class="fas fa-tag"></i>
+                        <span th:text="${tour.tourtype.typename}">ประเภททัวร์</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-score" th:if="${reviews != null and !reviews.isEmpty()}">
+                <div class="score-num" th:text="${#numbers.formatDecimal(avgRating, 1, 1)}">0.0</div>
+                <div class="star-row">
                     <th:block th:each="i : ${#numbers.sequence(1, 5)}">
                         <i class="fas fa-star" th:classappend="${i <= avgRating} ? 'star-gold' : 'star-empty'"></i>
                     </th:block>
                 </div>
-                <div class="avg-count" th:text="${reviews.size()} + ' รีวิว'">0 รีวิว</div>
+                <div class="score-count" th:text="'จาก ' + ${reviews.size()} + ' รีวิว'">จาก 0 รีวิว</div>
             </div>
-            <div class="rating-bars">
-                <th:block th:each="star : ${#numbers.sequence(5, 1, -1)}">
-                    <div class="rating-row" th:with="cnt=${ratingCounts[star] != null ? ratingCounts[star] : 0},
-                              pct=${reviews.size() > 0 ? (cnt * 100.0 / reviews.size()) : 0}">
-                        <span class="star-label" th:text="${star}">5</span>
-                        <i class="fas fa-star star-gold" style="font-size:11px;"></i>
-                        <div class="bar-track">
-                            <div class="bar-fill" th:style="'width:' + ${#numbers.formatDecimal(pct, 1, 0)} + '%'">
+        </div>
+
+        <!-- ── Content: sidebar + review list ── -->
+        <div class="content-grid" th:if="${reviews != null and !reviews.isEmpty()}">
+
+            <!-- ── Sidebar ── -->
+            <aside class="sidebar">
+
+                <!-- สรุปคะแนน -->
+                <div class="side-box">
+                    <div class="side-box-title">สรุปคะแนน</div>
+                    <div class="rating-bars">
+                        <!-- loop จาก entrySet ของ ratingCounts ตรง ๆ (Map ที่ Service เตรียมมาเรียง 5→1 อยู่แล้ว)
+                             ไม่ lookup ด้วย key ผ่าน bracket [] อีกต่อไป เพราะ Thymeleaf lookup แบบนั้นพลาดได้ -->
+                        <th:block th:each="entry : ${ratingCounts}"
+                                  th:with="star=${entry.key}, cnt=${entry.value},
+                                           pct=${reviews.size() > 0 ? (cnt * 100.0 / reviews.size()) : 0}">
+                            <div class="rating-row">
+                                <span class="star-label">
+                                    <span th:text="${star}">5</span>
+                                    <i class="fas fa-star star-gold"></i>
+                                </span>
+                                <div class="bar-track">
+                                    <div class="bar-fill" th:style="'width:' + ${#numbers.formatDecimal(pct, 1, 0)} + '%'"></div>
+                                </div>
+                                <span class="bar-count" th:text="${cnt}">0</span>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+
+                <!-- กรองรีวิว -->
+                <div class="side-box">
+                    <div class="side-box-title">กรองรีวิว</div>
+                    <div class="filter-list" id="filterList">
+                        <button type="button" class="filter-btn active" data-star="0" onclick="filterReviews(0, this)">
+                            <i class="fas fa-list"></i>
+                            <span th:text="'ทั้งหมด (' + ${reviews.size()} + ')'">ทั้งหมด (0)</span>
+                        </button>
+                        <th:block th:each="entry : ${ratingCounts}" th:with="star=${entry.key}, cnt=${entry.value}">
+                            <button type="button" class="filter-btn" th:attr="data-star=${star}"
+                                    onclick="filterReviews(this.dataset.star, this)">
+                                <i class="fas fa-star star-gold"></i>
+                                <span th:text="${star} + ' ดาว (' + ${cnt} + ')'">5 ดาว (0)</span>
+                            </button>
+                        </th:block>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- ── Review list ── -->
+            <main>
+                <div class="review-list" id="reviewList">
+
+                    <div class="review-card" th:each="review : ${reviews}" th:attr="data-rating=${review.rating}">
+
+                        <div class="review-card-header">
+                            <div class="reviewer-avatar" th:text="${review.booking.member.firstname != null}
+                                       ? ${#strings.substring(review.booking.member.firstname, 0, 1)}
+                                       : 'U'">U</div>
+                            <div>
+                                <div class="reviewer-name-row">
+                                    <span class="reviewer-name"
+                                        th:text="${review.booking.member.firstname + ' ' + review.booking.member.lastname}">
+                                        ผู้รีวิว</span>
+                                    <span class="verified-badge">
+                                        <i class="fas fa-circle-check"></i> จองผ่านระบบ
+                                    </span>
+                                </div>
+                                <div class="review-sub-row">
+                                    <div class="star-row">
+                                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                            <i class="fas fa-star"
+                                                th:classappend="${i <= review.rating} ? 'star-gold' : 'star-empty'"></i>
+                                        </th:block>
+                                    </div>
+                                    <span class="review-date" th:text="${#temporals.format(review.reviewdate, 'd MMM yyyy')}">-</span>
+                                </div>
                             </div>
                         </div>
-                        <span class="bar-count" th:text="${cnt}">0</span>
-                    </div>
-                </th:block>
-            </div>
-        </div>
 
-        <!-- ── Filter ── -->
-        <div class="filter-row" th:if="${reviews != null and !reviews.isEmpty()}">
-            <label><i class="fas fa-filter"></i> กรองตามคะแนน:</label>
-            <select id="filterSelect" onchange="filterReviews()">
-                <option value="0">ทั้งหมด</option>
-                <option value="5">5 ดาว</option>
-                <option value="4">4 ดาว</option>
-                <option value="3">3 ดาว</option>
-                <option value="2">2 ดาว</option>
-                <option value="1">1 ดาว</option>
-            </select>
-            <span class="count-badge" id="countBadge" th:text="${reviews.size()} + ' รายการ'">0 รายการ</span>
-        </div>
-
-        <!-- ── Review list ── -->
-        <div class="review-list" id="reviewList" th:if="${reviews != null and !reviews.isEmpty()}">
-
-            <div class="review-card" th:each="review : ${reviews}" th:attr="data-rating=${review.rating}">
-
-                <div class="review-card-header">
-                    <div class="reviewer-info">
-                        <!-- Avatar: อักษรแรกของชื่อ member -->
-                        <div class="reviewer-avatar" th:text="${review.booking.member.firstname != null}
-                                   ? ${#strings.substring(review.booking.member.firstname, 0, 1)}
-                                   : 'U'">U</div>
-                        <div>
-                            <div class="reviewer-name"
-                                th:text="${review.booking.member.firstname + ' ' + review.booking.member.lastname}">
-                                ผู้รีวิว</div>
-                            <div class="reviewer-meta" th:text="'การจอง: ' + ${review.booking.bookingid}">-</div>
+                        <!-- Comment -->
+                        <div class="review-comment" th:if="${review.comment != null and !#strings.isEmpty(review.comment)}"
+                            th:text="${review.comment}">-</div>
+                        <div class="review-comment" style="color:var(--text-hint); font-style:italic;"
+                            th:unless="${review.comment != null and !#strings.isEmpty(review.comment)}">
+                            ไม่มีความคิดเห็น
                         </div>
-                    </div>
-                    <div class="review-right">
-                        <div class="star-row">
-                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                                <i class="fas fa-star"
-                                    th:classappend="${i <= review.rating} ? 'star-gold' : 'star-empty'"></i>
-                            </th:block>
+
+                        <!-- Review image(s) -->
+                        <div th:if="${review.reviewimages != null and !#strings.isEmpty(review.reviewimages)}">
+                            <img class="review-image"
+                                th:src="${#strings.arraySplit(review.reviewimages, ',')[0]}"
+                                alt="รูปรีวิว" onclick="openLightbox(this.src)">
                         </div>
-                        <div class="review-date" th:text="${#temporals.format(review.reviewdate, 'd MMM yyyy')}">-</div>
+
                     </div>
                 </div>
-
-                <!-- Comment -->
-                <div class="review-comment" th:if="${review.comment != null and !#strings.isEmpty(review.comment)}"
-                    th:text="${review.comment}">-</div>
-                <div class="review-comment" style="color:var(--text-hint); font-style:italic;"
-                    th:unless="${review.comment != null and !#strings.isEmpty(review.comment)}">
-                    ไม่มีความคิดเห็น
-                </div>
-
-                <!-- Review image -->
-                <div th:if="${review.reviewimage != null and !#strings.isEmpty(review.reviewimage)}">
-                    <img class="review-image" th:src="${review.reviewimage}" alt="รูปรีวิว"
-                        onclick="openLightbox(this.src)">
-                </div>
-
-                <!-- Booking tag -->
-                <div class="booking-tag">
-                    <i class="fas fa-ticket"></i>
-                    <span th:text="'รหัสจอง ' + ${review.booking.bookingid}">-</span>
-                </div>
-
-            </div>
+            </main>
         </div>
 
         <!-- ── Empty state ── -->
@@ -724,17 +834,16 @@
         }
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-        function filterReviews() {
-            const val = parseInt(document.getElementById('filterSelect').value);
+        function filterReviews(star, btnEl) {
+            const val = parseInt(star);
             const cards = document.querySelectorAll('#reviewList .review-card');
-            let shown = 0;
             cards.forEach(card => {
                 const r = parseInt(card.dataset.rating);
                 const show = val === 0 || r === val;
                 card.style.display = show ? '' : 'none';
-                if (show) shown++;
             });
-            document.getElementById('countBadge').textContent = shown + ' รายการ';
+            document.querySelectorAll('#filterList .filter-btn').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
         }
     </script>
 

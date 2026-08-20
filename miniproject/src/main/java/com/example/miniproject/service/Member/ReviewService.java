@@ -14,6 +14,7 @@ import java.nio.file.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -103,11 +104,25 @@ public class ReviewService {
 
     // ══════════════════════════════════════════════════════
     //  นับจำนวนรีวิวแต่ละดาว  →  Map<Integer(ดาว), Long(จำนวน)>
+    //  คืน map ที่มีครบ 5,4,3,2,1 เสมอ (ค่าเริ่มต้น 0) เรียงลำดับตายตัวด้วย LinkedHashMap
+    //  กันปัญหา Thymeleaf lookup ratingCounts[star] แล้วได้ null/0 ผิด ๆ
     // ══════════════════════════════════════════════════════
     public Map<Integer, Long> getRatingCountsByTourId(String tourid) {
         List<Review> reviews = reviewRepository.findByTourId(tourid);
-        return reviews.stream()
+
+        // เตรียม map เริ่มต้นให้มีครบทุกดาว 5 → 1 ค่าเริ่มต้น 0
+        Map<Integer, Long> counts = new LinkedHashMap<>();
+        for (int star = 5; star >= 1; star--) {
+            counts.put(star, 0L);
+        }
+
+        // ทับด้วยจำนวนจริงที่นับได้ (แค่ update ค่า ไม่ได้ insert key ใหม่ ลำดับเดิมไม่เปลี่ยน)
+        Map<Integer, Long> actual = reviews.stream()
+                .filter(r -> r.getRating() != null)
                 .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
+        counts.putAll(actual);
+
+        return counts;
     }
 
 

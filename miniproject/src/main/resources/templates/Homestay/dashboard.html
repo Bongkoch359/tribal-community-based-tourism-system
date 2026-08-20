@@ -399,6 +399,7 @@
                                 <span th:case="'PENDING'" class="badge badge-pending">รอดำเนินการ</span>
                                 <span th:case="'WAITING_APPROVAL'" class="badge badge-waiting">รอตรวจสอบ</span>
                                 <span th:case="'CONFIRMED'" class="badge badge-confirmed">ยืนยันแล้ว</span>
+                                <span th:case="'COMPLETED'" class="badge badge-confirmed">เสร็จสิ้น</span>
                                 <span th:case="'CANCEL'" class="badge badge-cancel">ยกเลิก</span>
                                 <span th:case="*" class="badge badge-other" th:text="${b.bookingStatus}">-</span>
                             </span>

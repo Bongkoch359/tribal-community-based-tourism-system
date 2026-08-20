@@ -104,7 +104,11 @@ public Booking getTourBookingDetailForManager(String bookingId, String managerId
 
     /** ยกเลิกการจองทัวร์ (manager) — ยกเลิกซ้ำ หรือยกเลิกรายการที่ยืนยันแล้วไม่ได้ */
     @Transactional
-    public void cancelTourBookingByManager(String bookingId, String managerId) {
+    public void cancelTourBookingByManager(String bookingId, String managerId, String reason) {
+        if (reason == null || reason.isBlank()) {
+            throw new IllegalArgumentException("กรุณาระบุเหตุผลในการยกเลิก");
+        }
+
         Booking booking = bookingRepository
                 .findTourBookingDetailForManager(bookingId, managerId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง หรือไม่มีสิทธิ์เข้าถึงการจองนี้"));
@@ -117,6 +121,7 @@ public Booking getTourBookingDetailForManager(String bookingId, String managerId
         }
 
         booking.setBookingStatus(BookingStatus.CANCEL);
+        booking.setCancelReason(reason.trim());
         bookingRepository.save(booking);
     }
 

@@ -1,4 +1,4 @@
-package  com.example.miniproject.entity;
+package com.example.miniproject.entity;
 
 import com.example.miniproject.entity.enums.BookingType;
 import com.example.miniproject.entity.enums.BookingStatus;
@@ -6,70 +6,71 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
-
 import jakarta.persistence.*;
+
 @Entity
 @Table(name = "Booking")
 public class Booking {
-	 @Id
-   @Column(name = "bookingid", length = 10)
-    private String bookingid; 
+	@Id
+	@Column(name = "bookingid", length = 10)
+	private String bookingid;
 
 	@Enumerated(EnumType.STRING)
-    @Column(name = "booking_type", length = 50)
-    private BookingType bookingType;	
+	@Column(name = "booking_type", length = 50)
+	private BookingType bookingType;
 
-	private	Integer	numofguest;
+	private Integer numofguest;
 
-	private	Boolean	isBookerGoing;
-    @Column(name = "bookingdate")
-    private Date bookingdate;
+	private Boolean isBookerGoing;
+	@Column(name = "bookingdate")
+	private Date bookingdate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "booking_status", length = 50)
-    private BookingStatus bookingStatus;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "booking_status", length = 50)
+	private BookingStatus bookingStatus;
 
-    @Column(name = "note")
-    private String note;
+	@Column(name = "note")
+	private String note;
 
-    @Column(name = "pickuptype",length = 100)
-    private String pickuptype;
+	@Column(name = "pickuptype", length = 100)
+	private String pickuptype;
 
-    @Column(name = "pickuplocation",length = 255)
-    private String pickuplocation;
-	private	Double totalamount;
+	@Column(name = "pickuplocation", length = 255)
+	private String pickuplocation;
+	private Double totalamount;
+	@Column(name = "cancel_reason", length = 500)
+	private String cancelReason;
 
 	// ── ประกัน (checkbox เดียว ครอบคลุมทุกคนในการจอง) ──
-@Column(name = "want_insurance")
-private Boolean wantInsurance = false;
+	@Column(name = "want_insurance")
+	private Boolean wantInsurance = false;
 
-@Column(name = "insurance_fee_per_person")
-private Double insuranceFeePerPerson;   // เก็บราคา ณ วันที่จอง กันราคาเปลี่ยนทีหลัง
+	@Column(name = "insurance_fee_per_person")
+	private Double insuranceFeePerPerson; // เก็บราคา ณ วันที่จอง กันราคาเปลี่ยนทีหลัง
 
-@Column(name = "subtotal_insurance")
-private Double subtotalInsurance;       // = insuranceFeePerPerson * numofguest (ถ้าติ๊ก)
+	@Column(name = "subtotal_insurance")
+	private Double subtotalInsurance; // = insuranceFeePerPerson * numofguest (ถ้าติ๊ก)
 
+	// relationship
+	@ManyToOne
+	@JoinColumn(name = "memberid")
+	private Member member;
 
-    // relationship
-    @ManyToOne
-    @JoinColumn(name = "memberid")
-    private Member member;
-    
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-    private Payment payment;
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-    private Review review;
+	@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+	private Payment payment;
+	@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+	private Review review;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
-    private Set<Guest> guests;
-    
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+	private Set<Guest> guests;
+
 	// ===== TOUR DETAILS =====
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
-    private List<Bookingtourdetail> tourDetails;
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+	private List<Bookingtourdetail> tourDetails;
 
-    // ===== ROOM DETAILS =====
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
-    private List<Bookingroomdetail> roomDetails;
+	// ===== ROOM DETAILS =====
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+	private List<Bookingroomdetail> roomDetails;
 
 	public Booking() {
 		// TODO Auto-generated constructor stub
@@ -83,8 +84,6 @@ private Double subtotalInsurance;       // = insuranceFeePerPerson * numofguest 
 		this.bookingid = bookingid;
 	}
 
-
-
 	public Date getBookingdate() {
 		return bookingdate;
 	}
@@ -92,7 +91,6 @@ private Double subtotalInsurance;       // = insuranceFeePerPerson * numofguest 
 	public void setBookingdate(Date bookingdate) {
 		this.bookingdate = bookingdate;
 	}
-
 
 	public BookingType getBookingType() {
 		return bookingType;
@@ -205,15 +203,38 @@ private Double subtotalInsurance;       // = insuranceFeePerPerson * numofguest 
 	public void setIsBookerGoing(Boolean isBookerGoing) {
 		this.isBookerGoing = isBookerGoing;
 	}
+
+	public Boolean getWantInsurance() {
+		return wantInsurance;
+	}
+
+	public void setWantInsurance(Boolean wantInsurance) {
+		this.wantInsurance = wantInsurance;
+	}
+
+	public Double getInsuranceFeePerPerson() {
+		return insuranceFeePerPerson;
+	}
+
+	public void setInsuranceFeePerPerson(Double insuranceFeePerPerson) {
+		this.insuranceFeePerPerson = insuranceFeePerPerson;
+	}
+
+	public Double getSubtotalInsurance() {
+		return subtotalInsurance;
+	}
+
+	public void setSubtotalInsurance(Double subtotalInsurance) {
+		this.subtotalInsurance = subtotalInsurance;
+	}
+
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	public void setCancelReason(String cancelReason) {
+		this.cancelReason = cancelReason;
+	}
 	
-
-	public Boolean getWantInsurance() { return wantInsurance; }
-public void setWantInsurance(Boolean wantInsurance) { this.wantInsurance = wantInsurance; }
-
-public Double getInsuranceFeePerPerson() { return insuranceFeePerPerson; }
-public void setInsuranceFeePerPerson(Double insuranceFeePerPerson) { this.insuranceFeePerPerson = insuranceFeePerPerson; }
-
-public Double getSubtotalInsurance() { return subtotalInsurance; }
-public void setSubtotalInsurance(Double subtotalInsurance) { this.subtotalInsurance = subtotalInsurance; }
 
 }
