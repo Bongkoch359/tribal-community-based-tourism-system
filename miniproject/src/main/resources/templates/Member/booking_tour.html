@@ -824,10 +824,8 @@ img { display: block; }
                    x-model="pickupType">
 
             <span>
-                📍 นัดพบที่จุดรวมพล
-                <span th:if="${tour.meetingTime != null}">
-                    เวลา <strong th:text="${tour.meetingTime}">06:30</strong> น.
-                </span>
+                📍 นัดพบที่จุดนัดพบ
+                
             </span>
         </label>
 
@@ -851,8 +849,17 @@ img { display: block; }
 
             <br>
 
+            
             🗺️
-            <a href="#" target="_blank">ดูแผนที่ / Google Maps</a>
+<a th:if="${tour.meetingPointDetail != null and !#strings.isEmpty(tour.meetingPointDetail)}"
+   th:href="'https://www.google.com/maps/search/?api=1&query=' + ${#uris.escapeQueryParam(tour.meetingPointDetail)}"
+   target="_blank" rel="noopener">
+   ดูแผนที่ / Google Maps
+</a>
+<span th:if="${tour.meetingPointDetail == null or #strings.isEmpty(tour.meetingPointDetail)}"
+      style="color:var(--neutral-400); font-size:12px;">
+   ยังไม่ได้ระบุจุดนัดพบ
+</span>
         </div>
 
 
@@ -868,10 +875,10 @@ img { display: block; }
 
             <span>
                 🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
-                <span th:if="${tour.hotelPickupArea != null}">
-                    (เฉพาะในเขตจังหวัด
-                    <strong th:text="${tour.hotelPickupArea}">เชียงใหม่</strong>)
-                </span>
+                <span th:if="${tour.hotelPickupArea != null and !#strings.isEmpty(tour.hotelPickupArea)}">
+    (เฉพาะในเขตจังหวัด
+    <strong th:text="${tour.hotelPickupArea}">เชียงใหม่</strong>)
+</span>
             </span>
         </label>
 
@@ -921,11 +928,11 @@ img { display: block; }
      th:if="${tour.meetingTime != null}">
 
     ⏰ เวลานัดพบ
-    <strong th:text="${tour.meetingTime}">06:30</strong> น.
+    <strong th:text="${tour.meetingTime}"></strong> น.
 
     <span th:if="${tour.arriveBeforeMinutes != null}">
         — กรุณาพร้อมก่อน
-        <strong th:text="${tour.arriveBeforeMinutes}">10</strong> นาที
+        <strong th:text="${tour.arriveBeforeMinutes}"></strong> นาที
     </span>
 
 </div>

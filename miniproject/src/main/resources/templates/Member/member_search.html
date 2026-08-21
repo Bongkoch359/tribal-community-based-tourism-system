@@ -42,7 +42,7 @@
     <a href="/search" class="navbar-brand">
 
         <div class="brand-logo">
-            <img th:src="@{/images/logo3.png}" alt="Logo">
+            <img th:src="@{/images/logo5.png}" alt="Logo">
 
         </div>
 
@@ -596,9 +596,9 @@
       <th:block th:each="h,iterStat : ${homestays}" th:if="${iterStat.index < 4}">
         <a th:href="@{/homestay/{id}(id=${h.homestayid})}" class="fcard" data-type="homestay">
           <div class="fcard-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
-            <img th:if="${imgs != null and imgs.length > 0}"
-                 th:src="@{{path}(path=${imgs[0]})}"
-                 alt="ภาพโฮมสเตย์" loading="lazy"/>
+           <img th:if="${imgs != null and imgs.length > 0}"
+     th:src="@{${imgs[0]}}"
+     alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="fcard-badge badge-homestay">โฮมสเตย์</span>
 
           </div>
@@ -833,9 +833,9 @@
       <th:block th:each="h : ${homestays}">
         <div class="card">
           <div class="fcard-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
-            <img th:if="${imgs != null and imgs.length > 0}"
-                 th:src="@{{path}(path=${imgs[0]})}"
-                 alt="ภาพโฮมสเตย์" loading="lazy"/>
+           <img th:if="${imgs != null and imgs.length > 0}"
+     th:src="@{${imgs[0]}}"
+     alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="card-badge badge-homestay">โฮมสเตย์</span>
 
           </div>
