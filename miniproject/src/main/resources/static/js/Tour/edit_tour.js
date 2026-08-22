@@ -565,12 +565,15 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         });
     }
 
-    function statusClass(status) {
-        if (status === 'เปิดรับจอง') return 'st-open';
-        if (status === 'เต็ม') return 'st-full';
-        if (status === 'ปิด') return 'st-closed';
-        return '';
-    }
+    function statusClass(status, dateISO) {
+    // วันที่ผ่านไปแล้ว (ก่อนวันนี้) ให้ถือเป็น "ปิด/ผ่านไปแล้ว" เสมอ ไม่ว่า status ใน DB จะเป็นอะไร
+    if (dateISO < todayISO) return 'st-past';
+
+    if (status === 'เปิดรับจอง') return 'st-open';
+    if (status === 'เต็ม') return 'st-full';
+    if (status === 'ปิด') return 'st-closed';
+    return '';
+}
 
     // ── วาดปฏิทินของเดือนที่กำลังดูอยู่ ──
     function renderCalendar() {
@@ -591,7 +594,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
             const schedule = scheduleByDate[dateISO];
 
             const cell = document.createElement('div');
-            cell.className = 'cal-cell' + (schedule ? ' ' + statusClass(schedule.status) : '');
+            cell.className = 'cal-cell' + (schedule ? ' ' + statusClass(schedule.status, dateISO) : (dateISO < todayISO ? ' st-past' : ''));
             if (dateISO === todayISO) cell.classList.add('cal-today');
             cell.dataset.date = dateISO;
 

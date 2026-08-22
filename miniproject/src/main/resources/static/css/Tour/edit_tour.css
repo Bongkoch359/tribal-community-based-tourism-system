@@ -64,7 +64,7 @@ textarea:focus-visible,
     height: 76px;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1100;   /* เดิม 100 → เปลี่ยนเป็นสูงกว่า Leaflet (สูงสุดปกติ ~1000) */
     box-shadow: 0 2px 16px rgba(20, 35, 10, .28);
 }
 
@@ -249,15 +249,40 @@ textarea:focus-visible,
 }
 
 .page-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
+    display: block;
     margin-bottom: 26px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
 }
+.page-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.back-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--green-light);
+    color: var(--green-dark);
+    text-decoration: none;
+    flex-shrink: 0;
+    font-size: 13px;
+    transition: background .15s, transform .12s;
+}
+
+.back-icon-btn:hover {
+    background: #c7e88f;
+    transform: translateX(-2px);
+}
+
+
 
 .page-title {
     font-size: 25px;
@@ -267,9 +292,7 @@ textarea:focus-visible,
 }
 
 .page-subtitle {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    margin-top: 5px;
+    margin-left: 44px;  /* 32px (ความกว้างลูกศร) + 12px (gap) */
 }
 
 .page-subtitle span {
@@ -310,6 +333,14 @@ textarea:focus-visible,
     grid-template-columns: 330px 1fr;
     gap: 22px;
     align-items: start;
+}
+.left-col {
+    position: sticky;
+    top: 92px;
+    align-self: start;
+}
+.right-col {
+    min-width: 0;
 }
 
 /* ── Card ── */
@@ -832,7 +863,13 @@ input[type="file"] {
     border-color: #9c9990;
     color: #55524a;
 }
-
+.cal-cell.st-past {
+    background: #f1f0ec;
+    border-color: #d8d4c8;
+    color: #a8a49a;
+    opacity: .65;
+    cursor: not-allowed;
+}
 .cal-cell.cal-today {
     border-color: var(--amber);
     border-width: 2px;

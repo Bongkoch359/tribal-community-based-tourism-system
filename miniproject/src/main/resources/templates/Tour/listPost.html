@@ -365,15 +365,36 @@
         }
 
         .tab-btn.active {
-            background: var(--green-dark);
-            color: #fff;
-            border-color: var(--green-dark);
+            background: #d6e4f0;
+            color: #1c4e80;
+            border-color: #3d7dbf;
+            font-weight: 700;
         }
-       .tab-btn.active.tab-news {
-            background: var(--amber);
-            color: #fff;
-            border-color: var(--amber);
+
+        .tab-btn.active.tab-news {
+            background: #fff3e0;
+            color: #c05a00;
+            border-color: #e07b00;
         }
+
+        .tab-btn .tab-count {
+            display: inline-block;
+            min-width: 18px;
+            padding: 1px 6px;
+            margin-left: 4px;
+            border-radius: 10px;
+            background: var(--bg-page);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .tab-btn.active .tab-count {
+            background: rgba(255, 255, 255, 0.6);
+            color: inherit;
+        }
+
         /* ─── TABLE CARD ─── */
         .table-card {
             background: var(--bg-card);
@@ -841,9 +862,14 @@
         <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
 
         <!-- Filter Tabs -->
+        <!-- Filter Tabs -->
         <div class="filter-tabs">
-           <button class="tab-btn active" onclick="filterPosts('TOUR', this)">โพสต์ทัวร์</button>
-            <button class="tab-btn tab-news" onclick="filterPosts('NEWS', this)" id="news">ข่าวสารทั่วไป</button>
+            <button class="tab-btn active" onclick="filterPosts('TOUR', this)">
+                โพสต์ทัวร์ <span class="tab-count" id="count-tour">0</span>
+            </button>
+            <button class="tab-btn tab-news" onclick="filterPosts('NEWS', this)" id="news">
+                ข่าวสารทั่วไป <span class="tab-count" id="count-news">0</span>
+            </button>
         </div>
 
         <!-- Table -->
@@ -1025,6 +1051,30 @@
         // ปิด modal เมื่อคลิกนอกกล่อง
         document.getElementById('deleteModal').addEventListener('click', function (e) {
             if (e.target === this) closeDeleteModal();
+        });
+        // ─── นับจำนวนโพสต์แต่ละประเภท แล้วเติมลง badge ───
+        function computePostCounts() {
+            let tourCount = 0;
+            let newsCount = 0;
+            document.querySelectorAll('.post-row').forEach(row => {
+                const hasTour = row.getAttribute('data-hastour') === 'true';
+                if (hasTour) tourCount++;
+                else newsCount++;
+            });
+            const tourBadge = document.getElementById('count-tour');
+            const newsBadge = document.getElementById('count-news');
+            if (tourBadge) tourBadge.textContent = tourCount;
+            if (newsBadge) newsBadge.textContent = newsCount;
+        }
+
+        // แสดงผลตาม tab เริ่มต้น ("มีทัวร์") ตอนโหลดหน้า
+        document.addEventListener('DOMContentLoaded', function () {
+            computePostCounts();
+            document.querySelectorAll('.post-row').forEach(row => {
+                const hasTour = row.getAttribute('data-hastour') === 'true';
+                row.style.display = hasTour ? '' : 'none';
+            });
+            toggleTourColumn('TOUR');
         });
     </script>
 

@@ -353,19 +353,22 @@
         }
 
         .tab-btn.active {
-            background: var(--green-dark);
-            color: #fff;
-            border-color: var(--green-dark);
+            background: #d1e7dd;
+            color: #0d3d30;
+            border-color: #2a9068;
+            font-weight: 700;
         }
 
         .tab-btn.active.tab-full {
-            background: var(--amber);
-            border-color: var(--amber);
+            background: #fff3e0;
+            color: #c05a00;
+            border-color: #e07b00;
         }
 
         .tab-btn.active.tab-closed {
-            background: var(--red);
-            border-color: var(--red);
+            background: #f8d7da;
+            color: #842029;
+            border-color: #e53935;
         }
 
         .tab-btn .tab-count {
@@ -771,16 +774,20 @@
             <span th:text="${successMessage}"></span>
         </div>
 
-        <!-- Filter Tabs by Status (คำนวณจากสถานะรอบทัวร์ ) -->
-        <div class="filter-tabs">
-           <button class="tab-btn active" onclick="filterTours('เปิดรับจอง', this)" id="tab-open">
-                🟢 เปิดรับจอง
+        <!-- Filter Tabs by Status (คำนวณจากสถานะรอบทัวร์) -->
+        <div class="filter-tabs" id="filterTabs">
+            <button class="tab-btn active" data-status="เปิดรับจอง" onclick="filterTours('เปิดรับจอง', this)"
+                id="tab-open">
+                <i class="fas fa-circle-check"></i> เปิดรับจอง
+                <span class="tab-count" id="count-open">0</span>
             </button>
-            <button class="tab-btn tab-full" onclick="filterTours('เต็ม', this)" id="tab-full">
-                🟡 เต็ม
+            <button class="tab-btn tab-full" data-status="เต็ม" onclick="filterTours('เต็ม', this)" id="tab-full">
+                <i class="fas fa-users"></i> เต็ม
+                <span class="tab-count" id="count-full">0</span>
             </button>
-            <button class="tab-btn tab-closed" onclick="filterTours('ปิด', this)" id="tab-closed">
-                🔴 ปิด
+            <button class="tab-btn tab-closed" data-status="ปิด" onclick="filterTours('ปิด', this)" id="tab-closed">
+                <i class="fas fa-ban"></i> ปิด
+                <span class="tab-count" id="count-closed">0</span>
             </button>
         </div>
 
@@ -821,7 +828,7 @@
                             <div style="font-size:12px;color:#888;" th:text="${tour.getTourDuration()}">-</div>
                         </td>
 
-                        
+
                         <!-- ประเภททัวร์ -->
                         <td>
                             <span th:if="${tour.tourtype != null and tour.tourtype.typename == 'ทัวร์รายวัน'}"
@@ -927,6 +934,29 @@
         });
 
         /* ═══════════════════════════════════════════
+    นับจำนวนทัวร์แต่ละสถานะ แล้วเติมลง badge
+ ═══════════════════════════════════════════ */
+        function computeStatusCounts() {
+            const rows = document.querySelectorAll('.tour-row');
+            const counts = {};
+            rows.forEach(row => {
+                const s = row.getAttribute('data-status') || '';
+                counts[s] = (counts[s] || 0) + 1;
+            });
+
+            const badgeMap = {
+                'เปิดรับจอง': 'count-open',
+                'เต็ม': 'count-full',
+                'ปิด': 'count-closed',
+            };
+
+            Object.keys(badgeMap).forEach(status => {
+                const el = document.getElementById(badgeMap[status]);
+                if (el) el.textContent = counts[status] || 0;
+            });
+        }
+
+        /* ═══════════════════════════════════════════
            FILTER TABS — กรองตามสถานะ
         ═══════════════════════════════════════════ */
         function filterTours(status, btn) {
@@ -952,6 +982,11 @@
             }
         }
 
+        // แสดงผลตาม tab เริ่มต้น ("เปิดรับจอง") ตอนโหลดหน้า + นับจำนวนแต่ละสถานะ
+        document.addEventListener('DOMContentLoaded', function () {
+            computeStatusCounts();
+            filterTours('เปิดรับจอง', document.getElementById('tab-open'));
+        });
         // แสดงผลตาม tab เริ่มต้น ("เปิดรับจอง") ตอนโหลดหน้า
         document.addEventListener('DOMContentLoaded', function () {
             filterTours('เปิดรับจอง', document.getElementById('tab-open'));
