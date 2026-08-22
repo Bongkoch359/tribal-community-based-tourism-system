@@ -45,7 +45,8 @@ public class BookingOwnerService {
     }
 
     // ─── ยกเลิกการจอง (owner ยกเลิก) ─────────────────────────────────────────
-    // ─── ยกเลิกการจอง (owner ยกเลิก) ─────────────────────────────────────────
+    // ─── ยกเลิกการจอง (owner ยกเลิก) — ยกเลิกซ้ำ, ยกเลิกที่ยืนยันแล้ว
+    //     หรือยกเลิกที่เสร็จสิ้นแล้วไม่ได้ ─────────────────────────────────────
     @Transactional
     public void cancelBookingByOwner(String bookingId, Integer homestayId, String reason) {
         if (reason == null || reason.isBlank()) {
@@ -62,6 +63,9 @@ public class BookingOwnerService {
         }
         if (booking.getBookingStatus() == BookingStatus.CONFIRMED) {
             throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้");
+        }
+        if (booking.getBookingStatus() == BookingStatus.COMPLETED) {
+            throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่เสร็จสิ้นแล้วได้");
         }
 
         booking.setBookingStatus(BookingStatus.CANCEL);
