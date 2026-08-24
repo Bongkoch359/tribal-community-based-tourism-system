@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/list-room.css}" rel="stylesheet">
 </head>
+
 <body>
 
     <!-- ─── NAVBAR ─── -->
@@ -72,9 +73,21 @@
             </select>
         </div>
 
-        <!-- ── Filter Bar (dynamic, ตามสถานะ) ── -->
+        <!-- ── Filter Bar (สถานะ + จำนวน) ── -->
         <div class="filter-bar" id="filterBar">
-            <!-- ปุ่มกรองสถานะจะถูก generate อัตโนมัติจาก JS (ไม่มีปุ่ม "ทั้งหมด") -->
+            <button class="filter-btn active active-available" data-status="เปิดจอง"
+                onclick="filterRooms('เปิดจอง', this)">
+                <i class="fas fa-circle-check"></i> เปิดจอง
+                <span class="count-badge" id="count-available">0</span>
+            </button>
+            <button class="filter-btn" data-status="เต็ม" onclick="filterRooms('เต็ม', this)">
+                <i class="fas fa-ban"></i> เต็ม
+                <span class="count-badge" id="count-full">0</span>
+            </button>
+            <button class="filter-btn" data-status="ปิดปรับปรุง" onclick="filterRooms('ปิดปรับปรุง', this)">
+                <i class="fas fa-screwdriver-wrench"></i> ปิดปรับปรุง
+                <span class="count-badge" id="count-maintenance">0</span>
+            </button>
         </div>
 
         <!-- Table -->

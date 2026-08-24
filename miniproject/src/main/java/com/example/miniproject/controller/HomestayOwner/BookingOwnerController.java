@@ -78,8 +78,10 @@ public class BookingOwnerController {
         long countWaiting = bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.WAITING_APPROVAL)
                 .count();
         long countConfirmed = bookings.stream()
-                .filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED
-                        || b.getBookingStatus() == BookingStatus.COMPLETED)
+                .filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED)
+                .count();
+        long countCompleted = bookings.stream()
+                .filter(b -> b.getBookingStatus() == BookingStatus.COMPLETED)
                 .count();
         long countCancel = bookings.stream().filter(b -> b.getBookingStatus() == BookingStatus.CANCEL).count();
 
@@ -92,6 +94,7 @@ public class BookingOwnerController {
         model.addAttribute("countAll", countAll);
         model.addAttribute("countWaiting", countWaiting);
         model.addAttribute("countConfirmed", countConfirmed);
+        model.addAttribute("countCompleted", countCompleted);
         model.addAttribute("countCancel", countCancel);
 
         return "Homestay/listBooking";
@@ -207,4 +210,4 @@ public class BookingOwnerController {
             return m;
         }).collect(Collectors.toList());
     }
-} 
+}

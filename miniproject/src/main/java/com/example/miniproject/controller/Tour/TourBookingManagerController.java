@@ -58,9 +58,24 @@ public class TourBookingManagerController {
 
         List<Booking> bookings = tourBookingService.getTourBookingsByManager(manager.getManagerid(), filterStatus);
 
+        // ── นับจำนวนแต่ละสถานะ (ไม่ผูกกับ tab ที่กำลังดูอยู่ ใช้ทั้งหมดของ manager) ──
+        List<Booking> allBookings = tourBookingService.getTourBookingsByManager(manager.getManagerid(), null);
+        long countWaiting = allBookings.stream()
+                .filter(b -> b.getBookingStatus() == BookingStatus.WAITING_APPROVAL).count();
+        long countConfirmed = allBookings.stream()
+                .filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED).count();
+        long countCompleted = allBookings.stream()
+                .filter(b -> b.getBookingStatus() == BookingStatus.COMPLETED).count();
+        long countCancel = allBookings.stream()
+                .filter(b -> b.getBookingStatus() == BookingStatus.CANCEL).count();
+
         model.addAttribute("bookings", bookings);
         model.addAttribute("currentStatus", tabKey);
         model.addAttribute("loggedInManager", manager);
+        model.addAttribute("countWaiting", countWaiting);
+        model.addAttribute("countConfirmed", countConfirmed);
+        model.addAttribute("countCompleted", countCompleted);
+        model.addAttribute("countCancel", countCancel);
         return "Tour/listTourBooking";
     }
 
@@ -113,7 +128,6 @@ public class TourBookingManagerController {
         return result;
     }
 
-    // ─── ยกเลิกการจองทัวร์ (เรียกจากปุ่มในหน้ารายละเอียด ผ่าน fetch/AJAX) ───
     // ─── ยกเลิกการจองทัวร์ (เรียกจากปุ่มในหน้ารายละเอียด ผ่าน fetch/AJAX) ───
     @PostMapping("/cancel")
     @ResponseBody

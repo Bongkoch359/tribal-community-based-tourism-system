@@ -36,9 +36,9 @@
             --text-muted: #888;
             --text-hint: #aaa;
             --white: #ffffff;
-            --radius-card: 14px;
+            --radius-card: 12px;
             --radius-sm: 8px;
-            --shadow-card: 0 2px 14px rgba(0, 0, 0, .07);
+            --shadow-card: 0 2px 10px rgba(0, 0, 0, .06);
         }
 
         body {
@@ -48,6 +48,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            font-size: 14px;
         }
 
         /* ═══ NAVBAR (เหมือนหน้า Tour) ═══ */
@@ -56,7 +57,7 @@
             display: flex;
             align-items: center;
             padding: 0 2rem;
-            height: 83px;
+            height: 72px;
             gap: .25rem;
             position: sticky;
             top: 0;
@@ -79,9 +80,9 @@
         }
 
         .brand-logo img {
-            height: 75px;
+            height: 62px;
             width: auto;
-            max-width: 180px;
+            max-width: 170px;
             object-fit: contain;
             display: block;
         }
@@ -89,7 +90,7 @@
         .brand-text {
             color: var(--white);
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 1rem;
             white-space: nowrap;
         }
 
@@ -207,23 +208,23 @@
         }
 
         .nav-avatar {
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             background: var(--amber);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: .85rem;
+            font-size: .8rem;
             font-weight: 700;
             color: #fff;
         }
 
         /* ═══ PAGE ═══ */
         .page {
-            max-width: 1180px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 28px 24px 60px;
+            padding: 32px 20px 40px;
             flex: 1;
             width: 100%;
         }
@@ -231,58 +232,84 @@
         .btn-back {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
+            justify-content: center;
             color: var(--green-dark);
             background: var(--green-light);
             border: none;
-            padding: 7px 16px;
-            border-radius: var(--radius-sm);
-            font-family: 'Sarabun', sans-serif;
-            font-size: .9rem;
-            font-weight: 600;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             cursor: pointer;
             text-decoration: none;
             transition: background .2s;
-            margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
         .btn-back:hover {
-            background: #c3e6cb;
+            background: #b9d8c9;
+        }
+
+        /* ─── Page header bar: title + status pill + booking date ─── */
+        .page-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
         }
 
         .page-title {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--green-dark);
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 22px;
+            gap: 8px;
         }
 
         .page-title i {
             color: var(--green-mid);
+            font-size: 1.05rem;
+        }
+
+        .page-subdate {
+            font-size: .78rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .page-header-status {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            width: 280px;
         }
 
         .detail-grid {
             display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
+            grid-template-columns: 1fr 280px;
+            gap: 16px;
             align-items: start;
         }
 
         .detail-left {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 14px;
         }
 
         .detail-right {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 14px;
             position: sticky;
-            top: 103px;
+            top: 84px;
             align-self: start;
         }
 
@@ -297,48 +324,83 @@
         .card-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 14px 20px;
+            gap: 8px;
+            padding: 9px 16px;
             border-bottom: 1px solid var(--border);
-            font-size: .95rem;
+            font-size: .84rem;
             font-weight: 700;
             color: var(--green-dark);
         }
 
         .card-header i {
             color: var(--green-mid);
-            font-size: 1rem;
+            font-size: .88rem;
         }
 
         .card-body {
-            padding: 20px;
+            padding: 14px 16px;
         }
 
+        /* ─── compact field grid: label on top (small/muted), value below (bold) ─── */
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px 18px;
+        }
+
+        .field-grid.cols-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field-label {
+            font-size: .74rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .field-value {
+            font-size: .87rem;
+            color: var(--text-main);
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .field-value.big {
+            font-size: .98rem;
+            color: var(--green-dark);
+            font-weight: 700;
+        }
+
+        /* legacy row (kept for a couple of long-form rows) */
         .info-row {
             display: flex;
             gap: 10px;
-            padding: 10px 0;
-            border-bottom: 1px solid #f2f0ea;
+            padding: 6px 0;
             align-items: flex-start;
         }
 
-        .info-row:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
         .info-label {
-            min-width: 150px;
-            font-size: .88rem;
+            min-width: 120px;
+            font-size: .78rem;
             color: var(--text-muted);
             font-weight: 500;
             padding-top: 1px;
         }
 
         .info-value {
-            font-size: .92rem;
+            font-size: .85rem;
             color: var(--text-main);
-            font-weight: 500;
+            font-weight: 600;
             flex: 1;
         }
 
@@ -347,10 +409,10 @@
         .pickup-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
+            gap: 5px;
+            padding: 3px 11px;
             border-radius: 20px;
-            font-size: .85rem;
+            font-size: .78rem;
             font-weight: 600;
         }
 
@@ -375,8 +437,8 @@
         }
 
         .status-dot {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
         }
 
@@ -407,6 +469,15 @@
             background: var(--green-dark);
         }
 
+        .s-completed {
+            background: #e3e9ee;
+            color: #4a6072;
+        }
+
+        .s-completed .status-dot {
+            background: #4a6072;
+        }
+
         .s-cancel {
             background: var(--red-light);
             color: var(--red-text);
@@ -416,14 +487,26 @@
             background: var(--red-text);
         }
 
+        .status-badge.lg {
+            font-size: .95rem;
+            padding: 8px 18px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        }
+
+        .status-badge.lg .status-dot {
+            width: 8px;
+            height: 8px;
+        }
+
         .member-avatar {
-            width: 48px;
-            height: 48px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
             color: #fff;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: .82rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -436,62 +519,39 @@
 
         .member-name {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: .92rem;
             color: var(--green-dark);
         }
 
         .member-role {
-            font-size: .78rem;
+            font-size: .72rem;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .member-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
             gap: 10px;
-            padding: 8px 0;
-            border-top: 1px solid #f2f0ea;
-            font-size: .88rem;
-            color: #444;
-        }
-
-        .contact-item i {
-            width: 18px;
-            text-align: center;
-            color: var(--green-mid);
-            font-size: .9rem;
+            margin-bottom: 10px;
         }
 
         .guest-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 9px 0;
-            border-bottom: 1px solid #f2f0ea;
-        }
-
-        .guest-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
+            gap: 8px;
+            padding: 6px 0;
         }
 
         .guest-avatar {
-            width: 34px;
-            height: 34px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: .8rem;
+            font-size: .7rem;
             color: #fff;
             flex-shrink: 0;
         }
@@ -509,49 +569,71 @@
         }
 
         .guest-name {
-            font-size: .9rem;
+            font-size: .84rem;
             font-weight: 600;
             color: var(--green-dark);
         }
 
         .guest-type {
-            font-size: .78rem;
+            font-size: .72rem;
             color: var(--text-muted);
-            margin-top: 1px;
+            margin-left: 4px;
         }
 
         .booking-note {
-            background: #f3fae8;
+            background: #eef6f1;
             border-left: 3px solid var(--green-mid);
             border-radius: 0 8px 8px 0;
-            padding: 12px 14px;
-            font-size: .88rem;
+            padding: 9px 12px;
+            font-size: .82rem;
             color: var(--green-dark);
-            line-height: 1.6;
-            margin-top: 4px;
+            line-height: 1.5;
         }
 
         .note-label {
             font-weight: 700;
-            font-size: .8rem;
+            font-size: .72rem;
             text-transform: uppercase;
-            letter-spacing: .5px;
-            margin-bottom: 4px;
+            letter-spacing: .4px;
+            margin-bottom: 3px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+        }
+
+        /* highlighted guest-count box, top corner of a card */
+        .highlight-box {
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 12px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .highlight-box .hb-num {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            line-height: 1.1;
+        }
+
+        .highlight-box .hb-label {
+            font-size: .68rem;
+            color: var(--text-muted);
+            white-space: nowrap;
         }
 
         .room-tag {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
+            gap: 4px;
+            padding: 2px 9px;
             border-radius: 20px;
-            font-size: .82rem;
+            font-size: .76rem;
             font-weight: 600;
-            margin-right: 6px;
-            margin-bottom: 6px;
+            margin-right: 5px;
+            margin-bottom: 5px;
             background: var(--amber-light);
             color: var(--amber-text);
         }
@@ -559,9 +641,9 @@
         .night-badge {
             background: var(--green-light);
             color: var(--green-dark);
-            font-size: .78rem;
+            font-size: .72rem;
             font-weight: 700;
-            padding: 2px 9px;
+            padding: 2px 8px;
             border-radius: 20px;
             display: inline-block;
         }
@@ -569,34 +651,40 @@
         .amenity-tag {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             background: var(--bg-page);
             color: #4a5040;
             border-radius: 20px;
-            padding: 4px 10px;
-            font-size: .8rem;
+            padding: 3px 9px;
+            font-size: .74rem;
             font-weight: 500;
-            margin: 3px 3px 3px 0;
+            margin: 2px 3px 2px 0;
         }
 
         .amenity-tag i {
-            font-size: .75rem;
+            font-size: .7rem;
             color: var(--green-mid);
         }
 
         .tags-row {
             display: flex;
             flex-wrap: wrap;
-            margin-top: 6px;
+            margin-top: 4px;
+        }
+
+        .room-block+.room-block {
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+            margin-top: 12px;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 9px 0;
+            padding: 6px 0;
             border-bottom: 1px solid #f2f0ea;
-            font-size: .9rem;
+            font-size: .84rem;
         }
 
         .summary-row:last-child {
@@ -617,10 +705,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 0 0;
-            margin-top: 4px;
+            padding: 10px 0 0;
+            margin-top: 2px;
             border-top: 2px solid var(--border);
-            font-size: 1rem;
+            font-size: .92rem;
             font-weight: 700;
         }
 
@@ -629,25 +717,30 @@
         }
 
         .summary-total .s-value {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             color: var(--green-dark);
         }
 
         /* ─── PAYMENT SLIP ─── */
-        .slip-wrap {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-            flex-wrap: wrap;
+        .pay-amount {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--green-dark);
+            margin-bottom: 10px;
+        }
+
+        .pay-amount .cur {
+            font-size: .85rem;
+            font-weight: 700;
+            margin-right: 3px;
         }
 
         .slip-thumb {
-            width: 130px;
-            height: 170px;
+            width: 100%;
+            height: 140px;
             border-radius: 10px;
             overflow: hidden;
             border: 1px solid var(--border);
-            flex-shrink: 0;
             cursor: zoom-in;
             background: var(--bg-page);
             display: flex;
@@ -663,14 +756,13 @@
 
         .slip-missing {
             color: var(--text-hint);
-            font-size: .8rem;
+            font-size: .78rem;
             text-align: center;
-            padding: 10px;
+            padding: 8px;
         }
 
         .slip-meta {
-            flex: 1;
-            min-width: 160px;
+            margin-top: 10px;
         }
 
         .pay-status {
@@ -679,7 +771,7 @@
             gap: 5px;
             padding: 3px 10px;
             border-radius: 20px;
-            font-size: .8rem;
+            font-size: .76rem;
             font-weight: 600;
             margin-bottom: 8px;
         }
@@ -708,16 +800,16 @@
         /* ─── ACTIONS ─── */
         .action-note {
             background: var(--amber-light);
-            border: 1px solid #ffe0a0;
+            border: 1px solid #ffdcae;
             border-radius: 8px;
-            padding: 10px 14px;
-            font-size: .82rem;
+            padding: 8px 12px;
+            font-size: .76rem;
             color: var(--amber-text);
             display: flex;
             align-items: flex-start;
-            gap: 8px;
-            margin-bottom: 14px;
-            line-height: 1.5;
+            gap: 7px;
+            margin-bottom: 10px;
+            line-height: 1.45;
         }
 
         .action-note i {
@@ -731,21 +823,21 @@
             color: #fff;
             border: none;
             border-radius: 10px;
-            padding: 13px;
+            padding: 11px;
             font-family: 'Sarabun', sans-serif;
-            font-size: 1rem;
+            font-size: .92rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
             transition: all .2s;
-            box-shadow: 0 3px 12px rgba(58, 125, 30, .3);
+            box-shadow: 0 3px 10px rgba(13, 61, 48, .28);
         }
 
         .btn-confirm-booking:hover {
-            background: linear-gradient(135deg, #2d611a, var(--green-mid));
+            background: linear-gradient(135deg, #082a20, var(--green-mid));
             transform: translateY(-1px);
         }
 
@@ -763,17 +855,17 @@
             color: var(--red-text);
             border: 1.5px solid #f0c2c2;
             border-radius: 10px;
-            padding: 11px;
+            padding: 9px;
             font-family: 'Sarabun', sans-serif;
-            font-size: .92rem;
+            font-size: .86rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
             transition: all .2s;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .btn-cancel-booking:hover {
@@ -798,24 +890,24 @@
         .modal-box {
             background: #fff;
             border-radius: 16px;
-            padding: 32px;
-            max-width: 420px;
+            padding: 28px;
+            max-width: 400px;
             width: 90%;
             box-shadow: 0 8px 40px rgba(0, 0, 0, .2);
         }
 
         .modal-box h3 {
-            font-size: 1.15rem;
+            font-size: 1.08rem;
             font-weight: 700;
             color: var(--green-dark);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .modal-box p {
-            font-size: .95rem;
+            font-size: .88rem;
             color: #555;
-            margin-bottom: 24px;
-            line-height: 1.6;
+            margin-bottom: 20px;
+            line-height: 1.55;
         }
 
         .modal-actions {
@@ -829,9 +921,9 @@
             color: #444;
             border: none;
             border-radius: 8px;
-            padding: 9px 20px;
+            padding: 8px 18px;
             font-family: 'Sarabun', sans-serif;
-            font-size: .9rem;
+            font-size: .86rem;
             font-weight: 600;
             cursor: pointer;
         }
@@ -845,15 +937,15 @@
             color: #fff;
             border: none;
             border-radius: 8px;
-            padding: 9px 20px;
+            padding: 8px 18px;
             font-family: 'Sarabun', sans-serif;
-            font-size: .9rem;
+            font-size: .86rem;
             font-weight: 600;
             cursor: pointer;
         }
 
         .btn-modal-confirm-green:hover {
-            background: #2d611a;
+            background: #082a20;
         }
 
         .btn-modal-confirm-red {
@@ -861,9 +953,9 @@
             color: #fff;
             border: none;
             border-radius: 8px;
-            padding: 9px 20px;
+            padding: 8px 18px;
             font-family: 'Sarabun', sans-serif;
-            font-size: .9rem;
+            font-size: .86rem;
             font-weight: 600;
             cursor: pointer;
         }
@@ -892,17 +984,17 @@
         .toast {
             background: #fff;
             color: var(--text-main);
-            padding: 30px 40px;
+            padding: 26px 36px;
             border-radius: 16px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 600;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             text-align: center;
-            min-width: 260px;
+            min-width: 240px;
             transform: scale(.85);
             opacity: 0;
             transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
@@ -914,7 +1006,7 @@
         }
 
         .toast i.toast-icon {
-            font-size: 2.6rem;
+            font-size: 2.4rem;
             color: var(--green-dark);
         }
 
@@ -924,10 +1016,10 @@
 
         .footer {
             margin-top: auto;
-            padding: 1rem 2rem;
+            padding: .8rem 2rem;
             background: var(--green-dark);
-            color: #d8f3dc;
-            font-size: .9rem;
+            color: #cfe8dd;
+            font-size: .84rem;
         }
 
         .footer-content {
@@ -937,7 +1029,7 @@
         }
 
         .footer a {
-            color: #95d5b2;
+            color: #8fc9ac;
             text-decoration: none;
             margin-left: 8px;
         }
@@ -956,6 +1048,10 @@
                 position: static;
                 max-height: none;
                 overflow-y: visible;
+            }
+
+            .field-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1000,11 +1096,41 @@
 
     <div class="page">
 
-        <a class="btn-back" th:href="@{/owner/bookings}">
-            <i class="fas fa-arrow-left"></i> ย้อนกลับ
-        </a>
-        <div class="page-title">
-            <i class="fas fa-file-lines"></i> รายละเอียดการจอง
+        <!-- ═══ HEADER: back + title + booking date (left) / status (right) ═══ -->
+        <div class="page-header-bar">
+            <div>
+                <div class="page-title">
+                    <a class="btn-back" th:href="@{/owner/bookings}">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <i class="fas fa-file-lines"></i> รายละเอียดการจอง
+                    <span th:text="'#' + ${booking.bookingid}"
+                        style="font-family:monospace;color:var(--text-main);">#BK-H001</span>
+                </div>
+                <div class="page-subdate">
+                    <i class="fas fa-clock"></i>
+                    ส่งคำขอเมื่อ:
+                    <span th:text="${booking.bookingdate != null}
+                               ? ${#dates.format(booking.bookingdate,'dd MMMM yyyy, HH:mm')} + ' น.'
+                               : '-'">29 มกราคม 2567, 14:30 น.</span>
+                </div>
+            </div>
+            <div class="page-header-status">
+                <span style="font-size:.8rem;color:var(--text-muted);font-weight:600;">สถานะ</span>
+                <span th:switch="${booking.bookingStatus?.name()}">
+                    <span th:case="'PENDING'" class="status-badge lg s-pending"><span class="status-dot"></span>
+                        รอดำเนินการ</span>
+                    <span th:case="'WAITING_APPROVAL'" class="status-badge lg s-waiting"><span
+                            class="status-dot"></span> รอตรวจสอบ</span>
+                    <span th:case="'CONFIRMED'" class="status-badge lg s-confirmed"><span class="status-dot"></span>
+                        ยืนยันแล้ว</span>
+                    <span th:case="'CANCEL'" class="status-badge lg s-cancel"><span class="status-dot"></span>
+                        ยกเลิก</span>
+                    <span th:case="'COMPLETED'" class="status-badge lg s-completed"><span class="status-dot"></span>
+                        เสร็จสิ้น</span>
+                    <span th:case="*" class="status-badge lg badge-default" th:text="${booking.bookingStatus}">-</span>
+                </span>
+            </div>
         </div>
 
         <div class="detail-grid">
@@ -1025,34 +1151,40 @@
                                 </div>
                                 <div class="member-role">Member (ผู้จอง)</div>
                             </div>
+                            <div class="highlight-box" th:if="${booking.numofguest != null}">
+                                <div class="hb-num" th:text="${booking.numofguest}">3</div>
+                                <div class="hb-label">ผู้เข้าพัก</div>
+                            </div>
                         </div>
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <span
-                                th:text="${booking.member.email != null ? booking.member.email : '-'}">mail@gmail.com</span>
-                        </div>
-                        <div class="contact-item" th:if="${booking.member.phone != null}">
-                            <i class="fas fa-phone"></i>
-                            <span th:text="${booking.member.phone}">089-123-4567</span>
+
+                        <div class="field-grid">
+                            <div class="field">
+                                <span class="field-label"><i class="fas fa-envelope"></i> อีเมล</span>
+                                <span class="field-value"
+                                    th:text="${booking.member.email != null ? booking.member.email : '-'}">mail@gmail.com</span>
+                            </div>
+                            <div class="field" th:if="${booking.member.phone != null}">
+                                <span class="field-label"><i class="fas fa-phone"></i> เบอร์โทรศัพท์</span>
+                                <span class="field-value" th:text="${booking.member.phone}">089-123-4567</span>
+                            </div>
                         </div>
 
                         <div th:if="${booking.guests != null and !booking.guests.isEmpty()}"
-                            style="margin-top:16px;padding-top:14px;border-top:1px solid #f2f0ea;">
+                            style="margin-top:12px;padding-top:10px;border-top:1px solid #f2f0ea;">
                             <div class="note-label" style="color:var(--green-dark);">
                                 <i class="fas fa-users"></i> ผู้ร่วมเดินทาง
                             </div>
-                            <div class="guest-item" th:each="g,stat : ${booking.guests}" style="margin-top:6px;">
+                            <div class="guest-item" th:each="g,stat : ${booking.guests}">
                                 <div class="guest-avatar"
                                     th:classappend="${stat.index % 3 == 0} ? 'g-color1' : (${stat.index % 3 == 1} ? 'g-color2' : 'g-color3')"
                                     th:text="${g.firstname != null and #strings.length(g.firstname) >= 2}
                                        ? ${#strings.substring(g.firstname,0,2)} : 'G'">G</div>
                                 <div>
-                                    <div class="guest-name"
+                                    <span class="guest-name"
                                         th:text="${(g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '')}">
-                                        ผู้ร่วมเดินทาง</div>
-                                    <div class="guest-type"
+                                        ผู้ร่วมเดินทาง</span><span class="guest-type"
                                         th:if="${g.idcardnumber != null and !#strings.isEmpty(g.idcardnumber)}"
-                                        th:text="'เลขบัตร ' + ${g.idcardnumber}">-</div>
+                                        th:text="'เลขบัตร ' + ${g.idcardnumber}"> -</span>
                                 </div>
                             </div>
                         </div>
@@ -1063,89 +1195,60 @@
                 <div class="card">
                     <div class="card-header"><i class="fas fa-calendar-check"></i> ข้อมูลการจอง</div>
                     <div class="card-body">
+                        <div class="field-grid">
 
-                        <div class="info-row">
-                            <div class="info-label">รหัสการจอง</div>
-                            <div class="info-value" style="font-family:monospace;" th:text="${booking.bookingid}">
-                                BK-H001</div>
-                        </div>
+                            <div class="field">
+                                <span class="field-label">รหัสการจอง</span>
+                                <span class="field-value" style="font-family:monospace;"
+                                    th:text="${booking.bookingid}">BK-H001</span>
+                            </div>
 
-                        <div class="info-row">
-                            <div class="info-label">ประเภทการจอง</div>
-                            <div class="info-value">
-                                <span th:switch="${booking.bookingType?.name()}">
-                                    <span th:case="'ACCOMMODATION'" class="booking-type-badge badge-accommodation">
-                                        <i class="fas fa-house"></i> ที่พัก
+                            <div class="field">
+                                <span class="field-label">ประเภทการจอง</span>
+                                <span class="field-value">
+                                    <span th:switch="${booking.bookingType?.name()}">
+                                        <span th:case="'ACCOMMODATION'" class="booking-type-badge badge-accommodation">
+                                            <i class="fas fa-house"></i> ที่พัก
+                                        </span>
+                                        <span th:case="'TOUR'" class="booking-type-badge badge-tour">
+                                            <i class="fas fa-campground"></i> ทัวร์
+                                        </span>
+                                        <span th:case="*" class="booking-type-badge badge-default"
+                                            th:text="${booking.bookingType}">-</span>
                                     </span>
-                                    <span th:case="'TOUR'" class="booking-type-badge badge-tour">
-                                        <i class="fas fa-campground"></i> ทัวร์
-                                    </span>
-                                    <span th:case="*" class="booking-type-badge badge-default"
-                                        th:text="${booking.bookingType}">-</span>
                                 </span>
                             </div>
-                        </div>
 
-                        <div class="info-row">
-                            <div class="info-label">วันที่จอง</div>
-                            <div class="info-value" th:text="${booking.bookingdate != null}
-                                       ? ${#dates.format(booking.bookingdate,'dd MMMM yyyy - HH:mm น.')}
-                                       : '-'">29 มกราคม 2567 - 14:30 น.</div>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-label">จำนวนผู้เข้าพัก</div>
-                            <div class="info-value"
-                                th:text="${booking.numofguest != null ? booking.numofguest + ' คน' : '-'}">3 คน</div>
-                        </div>
-
-                        <div class="info-row" th:if="${booking.note != null and !#strings.isEmpty(booking.note)}">
-                            <div class="info-label">หมายเหตุ</div>
-                            <div class="info-value" th:text="${booking.note}">-</div>
-                        </div>
-
-                        <div class="info-row"
-                            th:if="${booking.pickuptype != null and !#strings.isEmpty(booking.pickuptype)}">
-                            <div class="info-label">ประเภทการรับลูกค้า</div>
-                            <div class="info-value">
-                                <span class="pickup-badge"><i class="fas fa-route"></i> <span
-                                        th:text="${booking.pickuptype}"></span></span>
-                            </div>
-                        </div>
-                        <div class="info-row"
-                            th:if="${booking.pickuplocation != null and !#strings.isEmpty(booking.pickuplocation)}">
-                            <div class="info-label">สถานที่รับ</div>
-                            <div class="info-value" th:text="${booking.pickuplocation}">-</div>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-label">ยอดรวมทั้งหมด</div>
-                            <div class="info-value" style="font-weight:700;font-size:1rem;color:var(--green-dark);">
-                                <span
+                            <div class="field">
+                                <span class="field-label">ยอดรวมทั้งหมด</span>
+                                <span class="field-value big"
                                     th:text="${booking.totalamount != null ? #numbers.formatDecimal(booking.totalamount,1,'COMMA',0,'POINT') + ' ฿' : '0 ฿'}">1,600
                                     ฿</span>
                             </div>
-                        </div>
 
-                        <div class="info-row">
-                            <div class="info-label">สถานะ</div>
-                            <div class="info-value">
-                                <span th:switch="${booking.bookingStatus?.name()}">
-                                    <span th:case="'PENDING'" class="status-badge s-pending"><span
-                                            class="status-dot"></span> รอดำเนินการ</span>
-                                    <span th:case="'WAITING_APPROVAL'" class="status-badge s-waiting"><span
-                                            class="status-dot"></span> รอตรวจสอบ</span>
-                                    <span th:case="'CONFIRMED'" class="status-badge s-confirmed"><span
-                                            class="status-dot"></span> ยืนยันแล้ว</span>
-                                    <span th:case="'CANCEL'" class="status-badge s-cancel"><span
-                                            class="status-dot"></span> ยกเลิก</span>
-                                    <span th:case="*" class="status-badge badge-default"
-                                        th:text="${booking.bookingStatus}">-</span>
+                            <div class="field"
+                                th:if="${booking.pickuptype != null and !#strings.isEmpty(booking.pickuptype)}">
+                                <span class="field-label">ประเภทการรับลูกค้า</span>
+                                <span class="field-value">
+                                    <span class="pickup-badge"><i class="fas fa-route"></i> <span
+                                            th:text="${booking.pickuptype}"></span></span>
                                 </span>
                             </div>
+
+                            <div class="field full"
+                                th:if="${booking.pickuplocation != null and !#strings.isEmpty(booking.pickuplocation)}">
+                                <span class="field-label">สถานที่รับ</span>
+                                <span class="field-value" th:text="${booking.pickuplocation}">-</span>
+                            </div>
+
+                            <div class="field full" th:if="${booking.note != null and !#strings.isEmpty(booking.note)}">
+                                <span class="field-label">หมายเหตุ</span>
+                                <span class="field-value" th:text="${booking.note}">-</span>
+                            </div>
+
                         </div>
 
-                        <div th:if="${booking.isBookerGoing != null}" class="booking-note" style="margin-top:6px;">
+                        <div th:if="${booking.isBookerGoing != null}" class="booking-note" style="margin-top:10px;">
                             <div class="note-label"><i class="fas fa-circle-info"></i> ใครเข้าพัก</div>
                             <span th:if="${booking.isBookerGoing == true}"
                                 th:text="${booking.member != null ? booking.member.firstname + ' ' + booking.member.lastname + ' เข้าพักด้วยตนเอง' : 'สมาชิกเข้าพักด้วยตนเอง'}"></span>
@@ -1159,57 +1262,62 @@
                 <!-- รายละเอียดห้องพัก -->
                 <div class="card" th:if="${booking.roomDetails != null and !booking.roomDetails.isEmpty()}">
                     <div class="card-header"><i class="fas fa-bed"></i> รายละเอียดห้องพัก</div>
-                    <div class="card-body" th:each="rd, rdStat : ${booking.roomDetails}"
-                        th:style="${!rdStat.last} ? 'border-bottom:1px solid #f0ebd9;padding-bottom:16px;margin-bottom:16px;' : ''">
+                    <div class="card-body">
+                        <div class="room-block" th:each="rd, rdStat : ${booking.roomDetails}">
 
-                        <div class="tags-row" th:if="${rd.roomtype != null}" style="margin-bottom:10px;">
-                            <span class="room-tag" th:if="${rd.roomtype.typename != null}">
-                                <i class="fas fa-door-open"></i> <span th:text="${rd.roomtype.typename}"></span>
-                            </span>
-                            <span class="night-badge" th:if="${rd.checkindate != null and rd.checkoutdate != null}"
-                                th:text="${rd.checkoutdate.toLocalDate().toEpochDay() - rd.checkindate.toLocalDate().toEpochDay()} + ' คืน'">2
-                                คืน</span>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-label">เช็คอิน / เช็คเอาท์</div>
-                            <div class="info-value">
-                                <span
-                                    th:text="${rd.checkindate != null ? #dates.format(rd.checkindate,'dd MMM yyyy') : '-'}">-</span>
-                                →
-                                <span
-                                    th:text="${rd.checkoutdate != null ? #dates.format(rd.checkoutdate,'dd MMM yyyy') : '-'}">-</span>
+                            <div class="tags-row" th:if="${rd.roomtype != null}" style="margin-bottom:8px;">
+                                <span class="room-tag" th:if="${rd.roomtype.typename != null}">
+                                    <i class="fas fa-door-open"></i> <span th:text="${rd.roomtype.typename}"></span>
+                                </span>
+                                <span class="night-badge" th:if="${rd.checkindate != null and rd.checkoutdate != null}"
+                                    th:text="${rd.checkoutdate.toLocalDate().toEpochDay() - rd.checkindate.toLocalDate().toEpochDay()} + ' คืน'">2
+                                    คืน</span>
                             </div>
-                        </div>
 
-                        <div class="info-row">
-                            <div class="info-label">ผู้เข้าพัก</div>
-                            <div class="info-value"
-                                th:text="${(rd.numofadults != null ? rd.numofadults : 0)} + ' ผู้ใหญ่, ' + ${(rd.numofChcldren != null ? rd.numofChcldren : 0)} + ' เด็ก · ' + ${(rd.numofrooms != null ? rd.numofrooms : 1)} + ' ห้อง'">
-                                -</div>
-                        </div>
+                            <div class="field-grid">
+                                <div class="field">
+                                    <span class="field-label">เช็คอิน / เช็คเอาท์</span>
+                                    <span class="field-value">
+                                        <span
+                                            th:text="${rd.checkindate != null ? #dates.format(rd.checkindate,'dd MMM yyyy') : '-'}">-</span>
+                                        →
+                                        <span
+                                            th:text="${rd.checkoutdate != null ? #dates.format(rd.checkoutdate,'dd MMM yyyy') : '-'}">-</span>
+                                    </span>
+                                </div>
 
-                        <div class="tags-row" th:if="${rd.roomtype != null}">
-                            <span class="amenity-tag" th:if="${rd.roomtype.pricepernight != null}">
-                                <i class="fas fa-tag"></i>
-                                <span
-                                    th:text="${#numbers.formatDecimal(rd.roomtype.pricepernight,1,'COMMA',0,'POINT')} + ' ฿/คืน'"></span>
-                            </span>
-                            <span class="amenity-tag" th:if="${rd.roomtype.maxguest != null}">
-                                <i class="fas fa-users"></i> <span
-                                    th:text="'สูงสุด ' + ${rd.roomtype.maxguest} + ' คน'"></span>
-                            </span>
-                            <span th:each="fc : ${rd.roomtype.facilities}" class="amenity-tag">
-                                <i class="fas fa-check-circle"></i>
-                                <span th:text="${fc.facilitiesname != null ? fc.facilitiesname : fc}"></span>
-                            </span>
-                        </div>
+                                <div class="field">
+                                    <span class="field-label">ผู้เข้าพัก</span>
+                                    <span class="field-value"
+                                        th:text="${(rd.numofadults != null ? rd.numofadults : 0)} + ' ผู้ใหญ่, ' + ${(rd.numofChcldren != null ? rd.numofChcldren : 0)} + ' เด็ก · ' + ${(rd.numofrooms != null ? rd.numofrooms : 1)} + ' ห้อง'">
+                                        -</span>
+                                </div>
 
-                        <div class="info-row" style="padding-top:8px;">
-                            <div class="info-label">ยอดรวมห้องนี้</div>
-                            <div class="info-value" style="font-weight:700;color:var(--green-dark);"
-                                th:text="${rd.subtotalroom != null ? #numbers.formatDecimal(rd.subtotalroom,1,'COMMA',0,'POINT') + ' ฿' : '-'}">
-                                -</div>
+                                <div class="field full" th:if="${rd.roomtype != null}">
+                                    <div class="tags-row" style="margin-top:0;">
+                                        <span class="amenity-tag" th:if="${rd.roomtype.pricepernight != null}">
+                                            <i class="fas fa-tag"></i>
+                                            <span
+                                                th:text="${#numbers.formatDecimal(rd.roomtype.pricepernight,1,'COMMA',0,'POINT')} + ' ฿/คืน'"></span>
+                                        </span>
+                                        <span class="amenity-tag" th:if="${rd.roomtype.maxguest != null}">
+                                            <i class="fas fa-users"></i> <span
+                                                th:text="'สูงสุด ' + ${rd.roomtype.maxguest} + ' คน'"></span>
+                                        </span>
+                                        <span th:each="fc : ${rd.roomtype.facilities}" class="amenity-tag">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span
+                                                th:text="${fc.facilitiesname != null ? fc.facilitiesname : fc}"></span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <span class="field-label">ยอดรวมห้องนี้</span>
+                                    <span class="field-value big"
+                                        th:text="${rd.subtotalroom != null ? #numbers.formatDecimal(rd.subtotalroom,1,'COMMA',0,'POINT') + ' ฿' : '-'}">-</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1252,39 +1360,40 @@
                 <div class="card" th:if="${booking.payment != null}">
                     <div class="card-header"><i class="fas fa-receipt"></i> หลักฐานการชำระเงิน</div>
                     <div class="card-body">
-                        <div class="slip-wrap">
-                            <div class="slip-thumb"
-                                th:if="${booking.payment.paymentslip != null and !#strings.isEmpty(booking.payment.paymentslip)}"
-                                onclick="openSlip(this.querySelector('img').src)">
-                                <img th:src="${#strings.startsWith(booking.payment.paymentslip,'/')}
+
+                        <span th:switch="${booking.payment.paymentStatus?.name()}">
+                            <span th:case="'PAID'" class="pay-status s-confirmed"><span class="status-dot"></span>
+                                ชำระแล้ว</span>
+                            <span th:case="'PENDING'" class="pay-status s-waiting"><span class="status-dot"></span>
+                                รอตรวจสอบ</span>
+                            <span th:case="*" class="pay-status badge-default"
+                                th:text="${booking.payment.paymentStatus}">-</span>
+                        </span>
+
+                        <div class="pay-amount">
+                            <span class="cur">฿</span><span
+                                th:text="${booking.payment.amount != null ? #numbers.formatDecimal(booking.payment.amount,1,'COMMA',0,'POINT') : '0'}">1,600</span>
+                        </div>
+
+                        <div class="slip-thumb"
+                            th:if="${booking.payment.paymentslip != null and !#strings.isEmpty(booking.payment.paymentslip)}"
+                            onclick="openSlip(this.querySelector('img').src)">
+                            <img th:src="${#strings.startsWith(booking.payment.paymentslip,'/')}
                   ? @{${booking.payment.paymentslip}}
                   : @{'/uploads/slips/' + ${booking.payment.paymentslip}}" alt="สลิปการชำระเงิน">
-                            </div>
-                            <div class="slip-thumb"
-                                th:if="${booking.payment.paymentslip == null or #strings.isEmpty(booking.payment.paymentslip)}">
-                                <div class="slip-missing"><i class="fas fa-image"
-                                        style="font-size:1.4rem;display:block;margin-bottom:6px;"></i>ยังไม่มีสลิป</div>
-                            </div>
-                            <div class="slip-meta">
-                                <span th:switch="${booking.payment.paymentStatus?.name()}">
-                                    <span th:case="'PAID'" class="pay-status s-confirmed"><span
-                                            class="status-dot"></span> ชำระแล้ว</span>
-                                    <span th:case="'PENDING'" class="pay-status s-waiting"><span
-                                            class="status-dot"></span> รอตรวจสอบ</span>
-                                    <span th:case="*" class="pay-status badge-default"
-                                        th:text="${booking.payment.paymentStatus}">-</span>
-                                </span>
-                                <div class="info-row" style="padding-top:4px;">
-                                    <div class="info-label" style="min-width:90px;">จำนวนเงิน</div>
-                                    <div class="info-value"
-                                        th:text="${booking.payment.amount != null ? #numbers.formatDecimal(booking.payment.amount,1,'COMMA',0,'POINT') + ' ฿' : '-'}">
-                                        -</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="info-label" style="min-width:90px;">วันที่ชำระ</div>
-                                    <div class="info-value"
-                                        th:text="${booking.payment.paymentdate != null ? #dates.format(booking.payment.paymentdate,'dd MMM yyyy HH:mm') : '-'}">
-                                        -</div>
+                        </div>
+                        <div class="slip-thumb"
+                            th:if="${booking.payment.paymentslip == null or #strings.isEmpty(booking.payment.paymentslip)}">
+                            <div class="slip-missing"><i class="fas fa-image"
+                                    style="font-size:1.3rem;display:block;margin-bottom:6px;"></i>ยังไม่มีสลิป</div>
+                        </div>
+
+                        <div class="slip-meta">
+                            <div class="field-grid cols-1">
+                                <div class="field">
+                                    <span class="field-label">วันที่ชำระ</span>
+                                    <span class="field-value"
+                                        th:text="${booking.payment.paymentdate != null ? #dates.format(booking.payment.paymentdate,'dd MMM yyyy HH:mm') : '-'}">-</span>
                                 </div>
                             </div>
                         </div>
@@ -1346,8 +1455,7 @@
                     style="display:block;font-size:.88rem;font-weight:600;color:var(--text-main);margin-bottom:6px;">
                     กรุณาระบุเหตุผลในการยกเลิก <span style="color:var(--red-text);">*</span>
                 </label>
-                <textarea id="cancelReasonInput" rows="3"
-                    placeholder=" เช่น ยอดชำระเงินไม่ตรงกับยอดที่ต้องชำระ ฯลฯ"
+                <textarea id="cancelReasonInput" rows="3" placeholder=" เช่น ยอดชำระเงินไม่ตรงกับยอดที่ต้องชำระ ฯลฯ"
                     style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Sarabun',sans-serif;font-size:.9rem;resize:vertical;"></textarea>
                 <div id="cancelReasonError" style="display:none;color:var(--red-text);font-size:.8rem;margin-top:5px;">
                     กรุณากรอกเหตุผลก่อนยืนยันการยกเลิก

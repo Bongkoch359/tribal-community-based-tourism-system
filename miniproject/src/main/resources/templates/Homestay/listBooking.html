@@ -350,6 +350,11 @@
             background: #f0faf7;
         }
 
+        .stat-pill.pill-completed.active {
+            border-color: #3d7dbf;
+            background: #f0f6fc;
+        }
+
         .stat-pill.pill-cancel.active {
             border-color: #c0392b;
             background: #fdecea;
@@ -372,6 +377,10 @@
 
         .stat-pill.pill-confirmed .pill-count {
             color: #1a6b52;
+        }
+
+        .stat-pill.pill-completed .pill-count {
+            color: #3d7dbf;
         }
 
         .stat-pill.pill-cancel .pill-count {
@@ -521,6 +530,15 @@
 
         .s-confirmed .status-dot {
             background: #2a9068;
+        }
+
+        .s-completed {
+            background: #d6e4f0;
+            color: #1c4e80;
+        }
+
+        .s-completed .status-dot {
+            background: #3d7dbf;
         }
 
         .s-cancel {
@@ -693,10 +711,18 @@
             </a>
 
             <a class="stat-pill pill-confirmed" href="javascript:void(0)"
-                onclick="filterBookings(['CONFIRMED','COMPLETED'], this)">
+                onclick="filterBookings('CONFIRMED', this)">
                 <i class="fas fa-circle-check" style="color:#1a6b52;font-size:1.1rem;"></i>
                 <div class="pill-label">
                     ยืนยันแล้ว <span class="pill-count" th:text="${countConfirmed}">0</span>
+                </div>
+            </a>
+
+            <a class="stat-pill pill-completed" href="javascript:void(0)"
+                onclick="filterBookings('COMPLETED', this)">
+                <i class="fas fa-flag-checkered" style="color:#3d7dbf;font-size:1.1rem;"></i>
+                <div class="pill-label">
+                    เสร็จสิ้นแล้ว <span class="pill-count" th:text="${countCompleted}">0</span>
                 </div>
             </a>
 
@@ -788,9 +814,13 @@
                             <span th:if="${b['bookingStatus'] == 'WAITING_APPROVAL'}" class="status-badge s-waiting">
                                 <span class="status-dot"></span> รอตรวจสอบ
                             </span>
-                            <span th:if="${b['bookingStatus'] == 'CONFIRMED' or b['bookingStatus'] == 'COMPLETED'}"
+                            <span th:if="${b['bookingStatus'] == 'CONFIRMED'}"
                                 class="status-badge s-confirmed">
                                 <span class="status-dot"></span> ยืนยันแล้ว
+                            </span>
+                            <span th:if="${b['bookingStatus'] == 'COMPLETED'}"
+                                class="status-badge s-completed">
+                                <span class="status-dot"></span> เสร็จสิ้นแล้ว
                             </span>
                             <span th:if="${b['bookingStatus'] == 'CANCEL'}" class="status-badge s-cancel">
                                 <span class="status-dot"></span> ยกเลิก
@@ -933,7 +963,8 @@
 
             const priorityOrder = [
                 { key: 'WAITING_APPROVAL', statuses: ['WAITING_APPROVAL'], pill: document.querySelector('.stat-pill.pill-waiting') },
-                { key: 'CONFIRMED', statuses: ['CONFIRMED', 'COMPLETED'], pill: document.querySelector('.stat-pill.pill-confirmed') },
+                { key: 'CONFIRMED', statuses: ['CONFIRMED'], pill: document.querySelector('.stat-pill.pill-confirmed') },
+                { key: 'COMPLETED', statuses: ['COMPLETED'], pill: document.querySelector('.stat-pill.pill-completed') },
                 { key: 'CANCEL', statuses: ['CANCEL'], pill: document.querySelector('.stat-pill.pill-cancel') }
             ];
 

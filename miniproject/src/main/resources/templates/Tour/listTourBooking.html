@@ -359,6 +359,20 @@
             border-color: #e53935;
         }
 
+        .tab-btn.active.tab-completed {
+            background: #d6e4f0;
+            color: #1c4e80;
+            border-color: #3d7dbf;
+        }
+
+        .tab-btn i {
+            font-size: 14px;
+        }
+
+        .tab-btn .tab-count {
+            font-weight: 700;
+        }
+
         /* ─── TABLE CARD ─── */
         .table-card {
             background: var(--bg-card);
@@ -474,6 +488,15 @@
 
         .badge-pending .badge-dot {
             background: #f0a500;
+        }
+
+        .badge-completed {
+            background: #d6e4f0;
+            color: #1c4e80;
+        }
+
+        .badge-completed .badge-dot {
+            background: #3d7dbf;
         }
 
         /* ─── ACTION BUTTON ─── */
@@ -627,15 +650,23 @@
         <div class="filter-tabs">
             <a th:href="@{/manager/bookings(status='WAITING_APPROVAL')}" class="tab-btn tab-waiting"
                 th:classappend="${currentStatus == 'WAITING_APPROVAL'} ? ' active'">
-                🟡 รอตรวจสอบ
+                <i class="fas fa-clock" style="color:#e07b00;"></i>
+                รอตรวจสอบ <span class="tab-count" th:text="${countWaiting}">0</span>
             </a>
             <a th:href="@{/manager/bookings(status='CONFIRMED')}" class="tab-btn"
                 th:classappend="${currentStatus == 'CONFIRMED'} ? ' active'">
-                🟢 ยืนยันแล้ว
+                <i class="fas fa-circle-check" style="color:#2a9068;"></i>
+                ยืนยันแล้ว <span class="tab-count" th:text="${countConfirmed}">0</span>
+            </a>
+            <a th:href="@{/manager/bookings(status='COMPLETED')}" class="tab-btn tab-completed"
+                th:classappend="${currentStatus == 'COMPLETED'} ? ' active'">
+                <i class="fas fa-flag-checkered" style="color:#3d7dbf;"></i>
+                เสร็จสิ้นแล้ว <span class="tab-count" th:text="${countCompleted}">0</span>
             </a>
             <a th:href="@{/manager/bookings(status='CANCEL')}" class="tab-btn tab-cancel"
                 th:classappend="${currentStatus == 'CANCEL'} ? ' active'">
-                🔴 ยกเลิก
+                <i class="fas fa-circle-xmark" style="color:#e53935;"></i>
+                ยกเลิก <span class="tab-count" th:text="${countCancel}">0</span>
             </a>
         </div>
 
@@ -691,7 +722,7 @@
 
                         <!-- ยอดเงิน -->
                         <td class="amount"
-                            th:text="${#numbers.formatDecimal(b.totalamount,0,'COMMA',0,'POINT')} + ' ฿'">1,400 ฿</td>
+                            th:text="${#numbers.formatDecimal(b.totalamount,0,'COMMA',0,'POINT')} + ' ฿'"></td>
 
                         <!-- สถานะ -->
                         <td>
@@ -702,6 +733,8 @@
                                         class="badge-dot"></span>รอชำระเงิน</span>
                                 <span th:case="'CONFIRMED'" class="badge badge-confirmed"><span
                                         class="badge-dot"></span>ยืนยันแล้ว</span>
+                                <span th:case="'COMPLETED'" class="badge badge-completed"><span
+                                        class="badge-dot"></span>เสร็จสิ้นแล้ว</span>
                                 <span th:case="'CANCEL'" class="badge badge-cancel"><span
                                         class="badge-dot"></span>ยกเลิก</span>
                                 <span th:case="*" class="badge badge-pending"><span class="badge-dot"></span><span
