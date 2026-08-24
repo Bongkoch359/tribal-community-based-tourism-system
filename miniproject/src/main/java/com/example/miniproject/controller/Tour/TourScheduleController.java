@@ -31,12 +31,8 @@ public class TourScheduleController {
     @Autowired
     private TourScheduleService tourScheduleService;
 
-    // computeOverallStatus() และ ALLOWED_MANUAL_STATUS อยู่ใน TourScheduleService
-    // ที่เดียวแล้ว (ใช้ร่วมกับ TourController) — เรียกผ่าน
-    // tourScheduleService.computeOverallStatus(...) และ TourScheduleService.ALLOWED_MANUAL_STATUS
-
-    // ─── แสดงหน้าจัดการรอบทัวร์ (แยกต่างหากจากหน้าแก้ไขข้อมูลทัวร์) ─────────────────
-
+    // ─── แสดงหน้าจัดการรอบทัวร์ (แยกต่างหากจากหน้าแก้ไขข้อมูลทัวร์)
+    // ─────────────────
     @GetMapping
     public String manageSchedules(@PathVariable("tourid") String tourid,
             @RequestParam(value = "success", required = false) String success,
@@ -54,11 +50,13 @@ public class TourScheduleController {
         }
 
         List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
-        tour.setOverallStatus(tourScheduleService.computeOverallStatus(schedules));
+        Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
+        // ✅ แก้จุดนี้: ส่ง tour และ bookedMap เข้าไปด้วย
+        tour.setOverallStatus(tourScheduleService.computeOverallStatus(schedules, tour, bookedMap));
 
         model.addAttribute("tour", tour);
         model.addAttribute("schedules", schedules);
-        model.addAttribute("bookedSeatsMap", tourScheduleService.getBookedSeatsMap(tourid));
+        model.addAttribute("bookedSeatsMap", bookedMap);
         model.addAttribute("loggedInManager", manager);
         if ("created".equals(success)) {
             model.addAttribute("successMessage", "สร้างทัวร์สำเร็จ! ตอนนี้เพิ่มวันที่เปิดทัวร์ได้เลย");
@@ -85,7 +83,7 @@ public class TourScheduleController {
             return "redirect:/manager/tours?error=forbidden";
         }
 
-        //  ทัวร์รายวัน (numberOfDays == 1) → วันที่เริ่มกับวันที่จบต้องเท่ากันเสมอ
+        // ทัวร์รายวัน (numberOfDays == 1) → วันที่เริ่มกับวันที่จบต้องเท่ากันเสมอ
         // บังคับที่ backend ด้วย ไม่พึ่ง JS ฝั่งหน้าเว็บอย่างเดียว
         java.time.LocalDate finalEnddate = enddate;
         if (tour.getNumberOfDays() != null && tour.getNumberOfDays() == 1) {
@@ -102,9 +100,10 @@ public class TourScheduleController {
         Tourschedule createdSchedule = tourScheduleService.createSchedule(tour, Date.valueOf(opendate),
                 Date.valueOf(finalEnddate));
 
-        //  ตั้งสถานะเริ่มต้นตามที่เลือก (ถ้าไม่ระบุหรือค่าไม่ถูกต้อง
+        // ตั้งสถานะเริ่มต้นตามที่เลือก (ถ้าไม่ระบุหรือค่าไม่ถูกต้อง
         // จะใช้ค่าเริ่มต้นจาก service คือ "เปิดรับจอง")
-        if (createdSchedule != null && status != null && TourScheduleService.ALLOWED_MANUAL_STATUS.contains(status.trim())) {
+        if (createdSchedule != null && status != null
+                && TourScheduleService.ALLOWED_MANUAL_STATUS.contains(status.trim())) {
             tourScheduleService.updateStatus(createdSchedule.getScheduleid(), status.trim());
         }
 
@@ -134,7 +133,8 @@ public class TourScheduleController {
         return "redirect:/manager/tours/" + tourid + "/schedules";
     }
 
-    // ─── ลบวันที่เปิดทัวร์ (เฉพาะรอบที่ยังไม่มีคนจอง) ───────────────────────────────
+    // ─── ลบวันที่เปิดทัวร์ (เฉพาะรอบที่ยังไม่มีคนจอง)
+    // ───────────────────────────────
 
     @PostMapping("/{scheduleid}/delete")
     public String deleteSchedule(@PathVariable("tourid") String tourid,
@@ -161,7 +161,8 @@ public class TourScheduleController {
         return "redirect:/manager/tours/" + tourid + "/schedules";
     }
 
-    // ─── อัปเดตสถานะรอบทัวร์หลายรอบพร้อมกัน ตามช่วงวันที่ (ใช้กับปฏิทินแบบลากเลือกช่วง) ───
+    // ─── อัปเดตสถานะรอบทัวร์หลายรอบพร้อมกัน ตามช่วงวันที่
+    // (ใช้กับปฏิทินแบบลากเลือกช่วง) ───
 
     @PostMapping("/bulk-status")
     @ResponseBody

@@ -18,6 +18,9 @@ import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.BookingroomdetailRepository;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Controller
 public class DashboardController {
@@ -101,6 +104,49 @@ public class DashboardController {
                                 ? bookingRepository.findTop5ByHomestayId(homestayid)
                                 : new java.util.ArrayList<>();
 
+                // ─── กิจกรรมวันนี้: เช็คอิน / เช็คเอาท์ / ทำความสะอาด ───
+                long checkinsToday = (homestayid != null)
+                                ? bookingRepository.countCheckinsTodayByHomestayId(homestayid, today)
+                                : 0;
+                long checkoutsToday = (homestayid != null)
+                                ? bookingRepository.countCheckoutsTodayByHomestayId(homestayid, today)
+                                : 0;
+                // ห้องที่ต้องทำความสะอาด = ห้องที่เพิ่งเช็คเอาท์วันนี้
+                long cleaningToday = checkoutsToday;
+
+                // ─── แนวโน้มรายได้ 7 วันล่าสุด (เติม 0 ในวันที่ไม่มีรายได้) ───
+                java.sql.Date sevenDaysAgo = java.sql.Date.valueOf(
+                                java.time.LocalDate.now().minusDays(6));
+
+                Map<java.time.LocalDate, Double> revenueByDate = new LinkedHashMap<>();
+                for (int i = 6; i >= 0; i--) {
+                        revenueByDate.put(java.time.LocalDate.now().minusDays(i), 0.0);
+                }
+                if (homestayid != null) {
+                        List<Object[]> rows = bookingRepository.sumRevenueByDayByHomestayId(homestayid,
+                                        sevenDaysAgo);
+                        for (Object[] row : rows) {
+                                java.sql.Date d = (java.sql.Date) row[0];
+                                Double amount = ((Number) row[1]).doubleValue();
+                                revenueByDate.put(d.toLocalDate(), amount);
+                        }
+                }
+
+                List<Map<String, Object>> revenueTrend = new ArrayList<>();
+                double maxDailyRevenue = revenueByDate.values().stream()
+                                .max(Double::compareTo).orElse(0.0);
+                java.time.format.DateTimeFormatter dayFmt = java.time.format.DateTimeFormatter.ofPattern("dd/MM");
+                for (Map.Entry<java.time.LocalDate, Double> e : revenueByDate.entrySet()) {
+                        Map<String, Object> point = new LinkedHashMap<>();
+                        point.put("label", e.getKey().format(dayFmt));
+                        point.put("amount", e.getValue());
+                        int heightPct = maxDailyRevenue > 0
+                                        ? (int) Math.round((e.getValue() / maxDailyRevenue) * 100)
+                                        : 0;
+                        point.put("heightPct", Math.max(heightPct, e.getValue() > 0 ? 6 : 2));
+                        revenueTrend.add(point);
+                }
+
                 model.addAttribute("ownername", session.getAttribute("ownername"));
                 model.addAttribute("homestayname", homestayname);
                 model.addAttribute("homestayid", homestayid);
@@ -111,6 +157,10 @@ public class DashboardController {
                 model.addAttribute("pendingBookings", pendingBookings);
                 model.addAttribute("totalRevenue", totalRevenue);
                 model.addAttribute("recentBookings", recentBookings);
+                model.addAttribute("checkinsToday", checkinsToday);
+                model.addAttribute("checkoutsToday", checkoutsToday);
+                model.addAttribute("cleaningToday", cleaningToday);
+                model.addAttribute("revenueTrend", revenueTrend);
 
                 // ── ตรวจสอบข้อมูลธนาคาร + ลายเซ็น ──
                 try {

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.miniproject.entity.Booking;
+import com.example.miniproject.entity.Bookingroomdetail;
 import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.entity.enums.BookingType;
 
@@ -77,6 +78,48 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
             "ORDER BY b.bookingdate DESC " +
             "LIMIT 5")
     List<Booking> findTop5ByHomestayId(@Param("homestayId") Integer homestayId);
+
+    // ─── กิจกรรมวันนี้: เช็คอิน / เช็คเอาท์ ───────────────────────────
+
+    /** จำนวนห้องที่มีแขก "เช็คอิน" วันนี้ (นับตามรายละเอียดห้อง ไม่ใช่นับ booking) */
+    @Query("SELECT COUNT(rd) FROM Bookingroomdetail rd " +
+            "JOIN rd.roomtype rt " +
+            "JOIN rd.booking b " +
+            "WHERE rt.homestay.homestayid = :homestayId " +
+            "AND rd.checkindate = :today " +
+            "AND b.bookingStatus IN (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
+            "                         com.example.miniproject.entity.enums.BookingStatus.COMPLETED)")
+    long countCheckinsTodayByHomestayId(@Param("homestayId") Integer homestayId,
+            @Param("today") java.sql.Date today);
+
+    /** จำนวนห้องที่มีแขก "เช็คเอาท์" วันนี้ (= ห้องที่ต้องทำความสะอาดวันนี้ด้วย) */
+    @Query("SELECT COUNT(rd) FROM Bookingroomdetail rd " +
+            "JOIN rd.roomtype rt " +
+            "JOIN rd.booking b " +
+            "WHERE rt.homestay.homestayid = :homestayId " +
+            "AND rd.checkoutdate = :today " +
+            "AND b.bookingStatus IN (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
+            "                         com.example.miniproject.entity.enums.BookingStatus.COMPLETED)")
+    long countCheckoutsTodayByHomestayId(@Param("homestayId") Integer homestayId,
+            @Param("today") java.sql.Date today);
+
+    // ─── แนวโน้มรายได้ 7 วันล่าสุด ──────────────────────────────────────
+
+    /**
+     * รายได้รวมรายวัน (เฉพาะยืนยันแล้ว/เสร็จสิ้น) ของ homestay
+     * ตั้งแต่ :startDate จนถึงวันนี้ — คืนค่าเป็น [java.sql.Date, Double]
+     */
+    @Query("SELECT b.bookingdate as d, COALESCE(SUM(b.totalamount), 0) FROM Booking b " +
+            "JOIN b.roomDetails rd " +
+            "JOIN rd.roomtype rt " +
+            "WHERE rt.homestay.homestayid = :homestayId " +
+            "AND b.bookingStatus IN (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
+            "                         com.example.miniproject.entity.enums.BookingStatus.COMPLETED) " +
+            "AND b.bookingdate >= :startDate " +
+            "GROUP BY b.bookingdate " +
+            "ORDER BY b.bookingdate ASC")
+    List<Object[]> sumRevenueByDayByHomestayId(@Param("homestayId") Integer homestayId,
+            @Param("startDate") java.sql.Date startDate);
 
     // ─── ดึงการจองทั้งหมดของ homestay ───────────
     /** ดึงการจองทั้งหมดของ homestay เรียงวันที่ล่าสุดก่อน */

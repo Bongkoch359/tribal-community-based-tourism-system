@@ -23,7 +23,7 @@ public class TourScheduleService {
     private TourScheduleRepository tourScheduleRepository;
 
     // ─────────────────────────────────────────────────────────
-    // 
+    //
     // สถานะที่ manager ตั้งเองได้ด้วยมือ — "เต็ม" คำนวณอัตโนมัติจากการจอง
     // เท่านั้น ไม่ให้ตั้งเองตรงนี้
     // ─────────────────────────────────────────────────────────
@@ -38,19 +38,40 @@ public class TourScheduleService {
     // - มีรอบแต่ทุกรอบถูกปิดหมด → ปิด
     // - ยังไม่มีรอบทัวร์เลย → ยังไม่เปิดรอบ
     // ─────────────────────────────────────────────────────────
-    public String computeOverallStatus(List<Tourschedule> schedules) {
+    public String computeOverallStatus(List<Tourschedule> schedules, Tour tour, Map<String, Integer> bookedMap) {
         if (schedules == null || schedules.isEmpty()) {
-            return "ยังไม่เปิดรอบ";
+            return "ปิด"; // หรือ "ยังไม่เปิดรอบ"
         }
-        boolean hasOpen = schedules.stream()
-                .anyMatch(s -> "เปิดรับจอง".equals(s.getStatus()));
-        if (hasOpen)
-            return "เปิดรับจอง";
 
-        boolean hasFull = schedules.stream()
-                .anyMatch(s -> "เต็ม".equals(s.getStatus()));
-        if (hasFull)
+        int maxSeats = (tour != null && tour.getMaxSeatstour() != null) ? tour.getMaxSeatstour() : 0;
+        boolean hasOpen = false;
+        boolean hasFull = false;
+
+        for (Tourschedule s : schedules) {
+            // ถ้ารอบถูกปิดด้วยตนเอง ข้ามไป
+            if ("ปิด".equals(s.getStatus())) {
+                continue;
+            }
+
+            // เช็คว่าที่นั่งถูกจองครบแล้วหรือไม่
+            int booked = (bookedMap != null) ? bookedMap.getOrDefault(s.getScheduleid(), 0) : 0;
+            boolean isSeatFull = (maxSeats > 0 && booked >= maxSeats);
+
+            if ("เต็ม".equals(s.getStatus()) || isSeatFull) {
+                hasFull = true;
+            } else if ("เปิดรับจอง".equals(s.getStatus())) {
+                hasOpen = true;
+            }
+        }
+
+        // มีรอบที่ยังเปิดและยังมีที่นั่งเหลือ
+        if (hasOpen) {
+            return "เปิดรับจอง";
+        }
+        // ไม่มีรอบเปิดเหลือเลย แต่มีรอบที่เต็ม
+        if (hasFull) {
             return "เต็ม";
+        }
 
         return "ปิด";
     }
@@ -103,7 +124,7 @@ public class TourScheduleService {
     }
 
     // ─────────────────────────────────────────────────────────
-    //  อัปเดตสถานะรอบทัวร์หลายรอบพร้อมกัน
+    // อัปเดตสถานะรอบทัวร์หลายรอบพร้อมกัน
     // ตามช่วงวันที่ (ใช้กับปฏิทินแบบลากเลือกช่วงในหน้า manager)
     // คืนค่าจำนวนรอบที่อัปเดตสำเร็จ
     // หมายเหตุ: การ "ปิด" รอบที่มีคนจองแล้วยังทำได้ (แค่ไม่รับจองเพิ่ม

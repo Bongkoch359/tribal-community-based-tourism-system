@@ -28,7 +28,7 @@ body {
 }
 
 .top-navbar .brand .brand-logo-img {
-    height: 75px;
+    height: 100px;
     width: auto;
     max-width: 170px;
     object-fit: contain;
@@ -521,3 +521,27 @@ body {
     padding: 1px 5px;
     border-radius: 3px;
 }
+  /* ─── FOOTER ─── */
+        .footer {
+            margin-top: auto;
+            padding: 1rem 2rem;
+            background: #0d3d30;
+            color: #c8f0e4;
+            font-size: .9rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer a {
+            color: #5ecfb0;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }

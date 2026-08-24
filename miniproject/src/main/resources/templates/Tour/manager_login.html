@@ -121,7 +121,7 @@
     }
 
     .brand-logo img {
-      height: 75px;
+      height: 100px;
       /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
       width: auto;
       max-width: 180px;
@@ -232,6 +232,42 @@
         padding: 28px 20px 32px;
       }
     }
+
+      /* ─── ALERT ─── */
+        .alert-success {
+            background: var(--green-light);
+            border: 1px solid #a3e635;
+            color: var(--green-dark);
+            border-radius: 8px;
+            padding: 11px 14px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .footer {
+            padding: 1rem 2rem;
+            background: #3a7d1e;
+            color: #d8f3dc;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer a {
+            color: #95d5b2;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
   </style>
 </head>
 
@@ -241,7 +277,7 @@
   <nav class="navbar">
     <a th:href="@{/}" class="brand-logo-link">
       <div class="brand-logo">
-        <img th:src="@{/images/logo3.png}" alt="Logo">
+        <img th:src="@{/images/logo5.png}" alt="Logo">
       </div>
       <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
     </a>
@@ -285,6 +321,17 @@
 
     </div>
   </div>
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="footer-content">
+      <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+      <span>
+        Version 1.0 |
+        <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+        <a href="#"><i class="fas fa-headset"></i> ติดต่อแอดมิน</a>
+      </span>
+    </div>
+  </footer>
 
 </body>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <title>เข้าสู่ระบบสมาชิก</title>
@@ -11,60 +12,74 @@
 
 <body>
 
-<nav class="top-navbar">
-    <a class="brand" href="index.html">
-        <img th:src="@{/images/logo3.png}" alt="Logo" class="brand-logo-img"> ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
-    <div class="nav-right">
-        <a href="/search" class="top-nav-item">
-            <i class="fas fa-home"></i> หน้าแรก
+    <nav class="top-navbar">
+        <a class="brand" href="index.html">
+            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img"> ระบบท่องเที่ยวชุมชนชนเผ่า
         </a>
-    </div>
-</nav>
+        <div class="nav-right">
+            <a href="/search" class="top-nav-item">
+                <i class="fas fa-home"></i> หน้าแรก
+            </a>
+        </div>
+    </nav>
 
-<div class="login-wrapper">
-    <div class="login-box">
-         <div class="text-center mb-3">
-        <div class="login-avatar">
-            <i class="fas fa-user"></i>
+    <div class="login-wrapper">
+        <div class="login-box">
+            <div class="text-center mb-3">
+                <div class="login-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+
+            <h4 class="mb-2 text-center fw-bold" style="color:#1e4620;">เข้าสู่ระบบ</h4>
+            <h6 class="mb-4 text-center text-muted">ด้วยบัญชีเจ้าของโฮมสเตย์</h6>
+
+            <form id="loginForm" novalidate>
+                <div id="pendingBanner" class="alert alert-warning d-none" role="alert">
+                    <i class="fas fa-clock me-2"></i>
+                    <span id="pendingMsg"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-500">อีเมล</label>
+                    <input type="text" id="email" class="form-control" placeholder="กรอกอีเมล">
+                    <span id="emailError" class="text-danger small" style="display:none;"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">รหัสผ่าน</label>
+                    <div class="input-group">
+                        <input type="password" id="password" class="form-control" placeholder="กรอกรหัสผ่าน">
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword" tabindex="-1">
+                            <i class="fas fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <span id="passwordError" class="text-danger small" style="display:none;"></span>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100">
+                    เข้าสู่ระบบ
+                </button>
+
+                <p class="text-center mt-3 mb-0">
+                    ยังไม่มีบัญชี?
+                    <a th:href="@{/owner/register}" class="fw-bold" style="color:#1e4620;">
+                        ลงทะเบียนที่นี่
+                    </a>
+                </p>
+            </form>
+
         </div>
     </div>
+    <!-- ─── FOOTER ─── -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a></span>
+        </div>
+    </footer>
 
-        <h4 class="mb-2 text-center fw-bold" style="color:#1e4620;">เข้าสู่ระบบ</h4>
-        <h6 class="mb-4 text-center text-muted">ด้วยบัญชีเจ้าของโฮมสเตย์</h6>
 
-        <form id="loginForm" novalidate>
-            <div id="pendingBanner" class="alert alert-warning d-none" role="alert">
-                <i class="fas fa-clock me-2"></i>
-                <span id="pendingMsg"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-500">อีเมล</label>
-                <input type="text" id="email" class="form-control" placeholder="กรอกอีเมล">
-                <span id="emailError" class="text-danger small" style="display:none;"></span>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">รหัสผ่าน</label>
-                <input type="password" id="password" class="form-control" placeholder="กรอกรหัสผ่าน">
-                <span id="passwordError" class="text-danger small" style="display:none;"></span>
-            </div>
-
-            <button type="submit" class="btn btn-login w-100">
-                เข้าสู่ระบบ
-            </button>
-
-            <p class="text-center mt-3 mb-0">
-                ยังไม่มีบัญชี?
-                <a th:href="@{/owner/register}" class="fw-bold" style="color:#1e4620;">
-                    ลงทะเบียนที่นี่
-                </a>
-            </p>
-        </form>
-
-    </div>
-</div>
-
-<script th:src="@{/js/Homestay/login-owner.js}"></script>
+    <script th:src="@{/js/Homestay/login-owner.js}"></script>
 </body>
+
 </html>

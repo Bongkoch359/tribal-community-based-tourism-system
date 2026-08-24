@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขโปรไฟล์ - ผู้จัดการชุมชน</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -64,7 +67,7 @@
         }
 
         .brand-logo img {
-            height: 62px;
+            height: 100px;
             width: auto;
             max-width: 160px;
             object-fit: contain;
@@ -250,6 +253,30 @@
             color: var(--text-muted);
         }
 
+        .back-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .back-icon-btn:hover {
+            background: #f3fae8;
+            color: var(--green-dark);
+            border-color: var(--green-dark);
+            transform: translateX(-2px);
+        }
+
         /* ─── PROFILE CARD ─── */
         .profile-card {
             background: var(--bg-card);
@@ -419,7 +446,8 @@
             padding-right: 38px;
         }
 
-        .input-icon, .toggle-password {
+        .input-icon,
+        .toggle-password {
             position: absolute;
             right: 12px;
             top: 50%;
@@ -607,7 +635,7 @@
     <nav class="navbar">
         <a th:href="@{/}" class="brand-logo-link">
             <div class="brand-logo">
-                <img th:src="@{/images/logo3.png}" alt="Logo">
+                <img th:src="@{/images/logo5.png}" alt="Logo">
             </div>
             <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
@@ -641,13 +669,16 @@
 
     <main class="main-container">
 
-        <a class="back-btn" th:href="@{/manager/dashboard}">
-            <i class="fas fa-chevron-left" style="font-size:11px;"></i> ย้อนกลับ
-        </a>
-
-        <div class="page-header">
-            <h1 class="page-title">แก้ไขโปรไฟล์</h1>
-            <p class="page-subtitle">อัปเดตข้อมูลส่วนตัวและรหัสผ่านของบัญชีคุณ</p>
+        <div class="page-header" style="margin-bottom: 20px;">
+            <div class="page-title-row" style="display:flex; align-items:center; gap:12px;">
+                <a class="back-icon-btn" th:href="@{/manager/dashboard}" title="ย้อนกลับ">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="page-title" style="margin-bottom:2px;">แก้ไขโปรไฟล์</h1>
+                    <p class="page-subtitle" style="margin-bottom:0;">อัปเดตข้อมูลส่วนตัวและรหัสผ่านของบัญชีคุณ</p>
+                </div>
+            </div>
         </div>
 
         <!-- Profile Card -->
@@ -755,14 +786,27 @@
                         <label class="form-label" for="bankNameSelect">ธนาคาร <span class="required">*</span></label>
                         <select class="form-input" name="bankName" id="bankNameSelect">
                             <option value="">-- เลือกธนาคาร --</option>
-                            <option value="ธนาคารกสิกรไทย" th:selected="${loggedInManager?.bankName == 'ธนาคารกสิกรไทย'}">ธนาคารกสิกรไทย (KBank)</option>
-                            <option value="ธนาคารไทยพาณิชย์" th:selected="${loggedInManager?.bankName == 'ธนาคารไทยพาณิชย์'}">ธนาคารไทยพาณิชย์ (SCB)</option>
-                            <option value="ธนาคารกรุงเทพ" th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงเทพ'}">ธนาคารกรุงเทพ (BBL)</option>
-                            <option value="ธนาคารกรุงไทย" th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงไทย'}">ธนาคารกรุงไทย (KTB)</option>
-                            <option value="ธนาคารกรุงศรีอยุธยา" th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงศรีอยุธยา'}">ธนาคารกรุงศรีอยุธยา (BAY)</option>
-                            <option value="ธนาคารทหารไทยธนชาต" th:selected="${loggedInManager?.bankName == 'ธนาคารทหารไทยธนชาต'}">ธนาคารทหารไทยธนชาต (TTB)</option>
-                            <option value="ธนาคารออมสิน" th:selected="${loggedInManager?.bankName == 'ธนาคารออมสิน'}">ธนาคารออมสิน (GSB)</option>
-                            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร" th:selected="${loggedInManager?.bankName == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร'}">ธ.ก.ส. (BAAC)</option>
+                            <option value="ธนาคารกสิกรไทย"
+                                th:selected="${loggedInManager?.bankName == 'ธนาคารกสิกรไทย'}">ธนาคารกสิกรไทย (KBank)
+                            </option>
+                            <option value="ธนาคารไทยพาณิชย์"
+                                th:selected="${loggedInManager?.bankName == 'ธนาคารไทยพาณิชย์'}">ธนาคารไทยพาณิชย์ (SCB)
+                            </option>
+                            <option value="ธนาคารกรุงเทพ" th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงเทพ'}">
+                                ธนาคารกรุงเทพ (BBL)</option>
+                            <option value="ธนาคารกรุงไทย" th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงไทย'}">
+                                ธนาคารกรุงไทย (KTB)</option>
+                            <option value="ธนาคารกรุงศรีอยุธยา"
+                                th:selected="${loggedInManager?.bankName == 'ธนาคารกรุงศรีอยุธยา'}">ธนาคารกรุงศรีอยุธยา
+                                (BAY)</option>
+                            <option value="ธนาคารทหารไทยธนชาต"
+                                th:selected="${loggedInManager?.bankName == 'ธนาคารทหารไทยธนชาต'}">ธนาคารทหารไทยธนชาต
+                                (TTB)</option>
+                            <option value="ธนาคารออมสิน" th:selected="${loggedInManager?.bankName == 'ธนาคารออมสิน'}">
+                                ธนาคารออมสิน (GSB)</option>
+                            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร"
+                                th:selected="${loggedInManager?.bankName == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร'}">
+                                ธ.ก.ส. (BAAC)</option>
                         </select>
                         <span class="error-msg" id="bankNameError"></span>
                     </div>
@@ -789,7 +833,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="accountNumberInput">เลขบัญชีธนาคาร <span class="required">*</span></label>
+                    <label class="form-label" for="accountNumberInput">เลขบัญชีธนาคาร <span
+                            class="required">*</span></label>
                     <div class="input-with-icon">
                         <input class="form-input" type="text" name="accountNumber" id="accountNumberInput"
                             th:value="${loggedInManager?.accountNumber}" placeholder="000-0-00000-0" maxlength="20"
@@ -808,7 +853,8 @@
         </form>
 
         <!-- ═══ FORM 3: ลายเซ็นสำหรับออกใบเสร็จ ═══ -->
-        <form th:action="@{/manager/profile/update-signature}" method="post" enctype="multipart/form-data" id="signatureForm">
+        <form th:action="@{/manager/profile/update-signature}" method="post" enctype="multipart/form-data"
+            id="signatureForm">
             <section class="form-section">
                 <div class="section-header">
                     <span class="section-icon"><i class="fas fa-signature"></i></span>

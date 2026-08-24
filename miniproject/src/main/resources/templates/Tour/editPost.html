@@ -20,7 +20,7 @@
             --green-dark: #3a7d1e;
             --green-mid: #65a30d;
             --green-light: #d9f99d;
-            --amber: #65a30d;
+            --amber: #f0a500;
             --amber-hover: #4d7c0a;
             --bg-page: #f3fae8;
             --bg-card: #ffffff;
@@ -222,8 +222,7 @@
         }
 
         .brand-logo img {
-            height: 75px;
-            /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+            height: 100px;
             width: auto;
             max-width: 180px;
             object-fit: contain;
@@ -237,12 +236,11 @@
             white-space: nowrap;
         }
 
-
         /* ─── PAGE ─── */
         .page {
             padding: 28px 28px 60px;
             max-width: 1100px;
-            margin: auto
+            margin: auto;
         }
 
         .back-link {
@@ -277,6 +275,36 @@
             color: var(--text-muted);
             font-size: 16px;
             margin-left: 6px;
+        }
+
+        .page-title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .back-icon-btn:hover {
+            background: #f3fae8;
+            color: var(--green-dark);
+            border-color: var(--green-dark);
+            transform: translateX(-2px);
         }
 
         /* ─── FORM GRID ─── */
@@ -336,7 +364,6 @@
             opacity: 0.4;
         }
 
-        /* existing image banner */
         .existing-img-wrap {
             width: 100%;
             aspect-ratio: 4/3;
@@ -366,7 +393,6 @@
             font-size: 10px;
         }
 
-        /* preview thumbnails */
         .preview-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -507,28 +533,6 @@
             margin-top: 6px;
         }
 
-        /* ─── TOUR PREVIEW ─── */
-        .tour-preview {
-            display: none;
-            margin-top: 10px;
-            padding: 10px 12px;
-            background: #f3fae8;
-            border: 1px solid var(--green-light);
-            border-radius: var(--radius-sm);
-            font-size: 12.5px;
-            color: var(--green-dark);
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tour-preview.show {
-            display: flex;
-        }
-
-        .tour-preview i {
-            font-size: 14px;
-        }
-
         /* ─── ACTION BAR ─── */
         .action-bar {
             display: flex;
@@ -639,6 +643,154 @@
                 padding: 16px 16px 40px;
             }
         }
+
+        /* ═══ SUCCESS MODAL (รูปแบบเดียวกันเป๊ะ) ═══ */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 30, 12, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 36px 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            transform: scale(0.85) translateY(20px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .modal-backdrop.show .modal-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .checkmark-wrap {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #1a3d1f, #2d6a35);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 24px rgba(26, 61, 31, 0.35);
+            position: relative;
+        }
+
+        .checkmark-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 3px solid rgba(26, 61, 31, 0.15);
+        }
+
+        .checkmark-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(26, 61, 31, 0.08);
+            animation: ring-pulse 1.5s ease-out 0.4s both;
+        }
+
+        @keyframes ring-pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .checkmark-icon {
+            font-size: 36px;
+            color: #fff;
+            animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+        }
+
+        @keyframes pop-in {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d6a2d;
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .modal-btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-progress-bar {
+            height: 3px;
+            background: #e8f4ea;
+            border-radius: 0 0 20px 20px;
+            margin: 24px -36px -32px;
+            overflow: hidden;
+        }
+
+        .modal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #65a30d, #2d6a2d);
+            border-radius: 3px;
+            width: 100%;
+            transform-origin: left;
+            animation: progress-drain 2s linear forwards;
+        }
+
+        @keyframes progress-drain {
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
+        }
     </style>
 </head>
 
@@ -648,7 +800,7 @@
     <nav class="navbar">
         <a th:href="@{/}" class="brand-logo-link">
             <div class="brand-logo">
-                <img th:src="@{/images/logo3.png}" alt="Logo">
+                <img th:src="@{/images/logo5.png}" alt="Logo">
             </div>
             <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
@@ -683,20 +835,39 @@
         </div>
     </nav>
 
+    <!-- Thymeleaf pass message to JS -->
+    <div id="serverMsg" th:data-success="${successMessage}" style="display:none;"></div>
+
+    <!-- ═══ SUCCESS MODAL (รูปแบบเดียวกัน) ═══ -->
+    <div class="modal-backdrop" id="successModal">
+        <div class="modal-box">
+            <div class="checkmark-wrap">
+                <div class="checkmark-ring"></div>
+                <i class="fas fa-check checkmark-icon"></i>
+            </div>
+            <div class="modal-title">แก้ไขโพสต์สำเร็จ!</div>
+            <div class="modal-desc" id="modalDesc">โพสต์ถูกอัปเดตเรียบร้อยแล้ว</div>
+            <div class="modal-btn-row"></div>
+            <div class="modal-progress-bar">
+                <div class="modal-progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ PAGE ═══ -->
     <!-- ═══ PAGE ═══ -->
     <div class="page">
 
-        <a class="back-link" th:href="@{/manager/posts}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="15 18 9 12 15 6" />
-            </svg>
-            ย้อนกลับ
-        </a>
-
-        <div class="page-title">
-            แก้ไขโพสต์ <span>(Edit Activity Post)</span>
+        <div class="page-header" style="margin-bottom: 24px;">
+            <div class="page-title-row">
+                <a class="back-icon-btn" th:href="@{/manager/posts}" title="ย้อนกลับ">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="page-title" style="margin-bottom:0;">
+                    แก้ไขโพสต์
+                </div>
+            </div>
         </div>
-
         <!-- Alert -->
         <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
         <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
@@ -717,7 +888,6 @@
 
                         <!-- รูปเดิม (แสดงเมื่อมีรูป) -->
                         <div th:if="${post.images != null and !#strings.isEmpty(post.images)}">
-                            <!-- แสดงรูปแรกเป็น preview หลัก -->
                             <div class="existing-img-wrap">
                                 <img th:src="${#strings.arraySplit(post.images,'\\|\\|')[0]}" alt="รูปโพสต์ปัจจุบัน" />
                             </div>
@@ -726,7 +896,6 @@
                                 รูปภาพปัจจุบัน (จะคงไว้หากไม่เปลี่ยน)
                             </div>
 
-                            <!-- ปุ่มเปลี่ยนรูป -->
                             <button type="button" class="change-img-btn" id="toggleChangeImg"
                                 onclick="toggleNewImgSection()">
                                 <i class="fas fa-arrows-rotate"></i>
@@ -793,7 +962,6 @@
                                 th:value="${post.title}" required />
                         </div>
 
-
                         <!-- ═══ โพสนี้เป็นของทัวร์อะไร ═══ -->
                         <div class="form-group" style="margin-bottom:0">
                             <label class="form-label">
@@ -807,10 +975,6 @@
                                     ชื่อทัวร์
                                 </option>
                             </select>
-                            <!-- <div class="form-hint">
-                            หากเลือกทัวร์ โพสต์นี้จะอยู่ภายใต้ทัวร์ดังกล่าว และผู้ใช้งานสามารถกด "จองทัวร์"
-                                จากหน้าโพสต์ได้
-                        </div> -->
 
                             <!-- ฟิลด์สถานที่ (แสดงเฉพาะเมื่อเลือกทัวร์) -->
                             <div class="form-group" id="locationGroup" style="display:none;">
@@ -836,7 +1000,7 @@
 
             <!-- ── ACTION BAR ── -->
             <div class="action-bar">
-                <a class="btn-cancel" th:href="@{/manager/posts/__${post.activityid}__}">✕ ยกเลิก</a>
+                <a class="btn-cancel" th:href="@{/manager/posts}">✕ ยกเลิก</a>
                 <button type="submit" class="btn-save">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -863,7 +1027,6 @@
                     ? '<i class="fas fa-arrows-rotate"></i> เปลี่ยนรูปภาพ'
                     : '<i class="fas fa-xmark"></i> ยกเลิกเปลี่ยนรูป';
             }
-            // ถ้าปิด ให้ล้างรูปที่เลือกไว้
             if (isVisible) {
                 base64List = [];
                 renderPreviews();
@@ -898,7 +1061,6 @@
         function renderPreviews() {
             previewGrid.innerHTML = '';
 
-            // อัปเดต dropZone ถ้ามี
             const dropZone = document.getElementById('dropZone');
             if (dropZone) {
                 const svg = dropZone.querySelector('svg');
@@ -944,13 +1106,11 @@
         // Validate ก่อน submit
         document.getElementById('postForm').addEventListener('submit', function () {
             if (base64List.length === 0) {
-                imagesInput.value = ''; // ส่งค่าว่าง → backend จะ keep รูปเดิม
+                imagesInput.value = '';
             }
         });
 
         // ── แสดง/ซ่อนฟิลด์สถานที่ ตามการเลือกทัวร์ ──
-        // เลือกทัวร์ -> แสดงฟิลด์สถานที่ (บังคับกรอก)
-        // ไม่ระบุทัวร์ (ข่าวสารทั่วไป) -> ซ่อนฟิลด์สถานที่ (ไม่บังคับกรอก)
         const tourSelect = document.getElementById('tourSelect');
         const locationGroup = document.getElementById('locationGroup');
         const locationInput = document.getElementById('locationInput');
@@ -966,7 +1126,31 @@
             }
         }
         tourSelect.addEventListener('change', toggleLocationField);
-        toggleLocationField(); // แสดงทันทีถ้าโพสต์นี้มีทัวร์อยู่แล้ว (ตอนโหลดหน้าแก้ไข)
+        toggleLocationField();
+
+        // ─── Auto-show modal ถ้ามี successMessage แล้ว redirect ไปหน้า list ───
+        (function () {
+            const el = document.getElementById('serverMsg');
+            const msg = el ? el.dataset.success : null;
+            if (!msg || msg === 'null' || msg.trim() === '') return;
+
+            const modal = document.getElementById('successModal');
+            const desc = document.getElementById('modalDesc');
+            const fill = document.getElementById('progressFill');
+
+            desc.textContent = msg;
+            modal.classList.add('show');
+
+            fill.style.animation = 'none';
+            fill.offsetHeight;
+            fill.style.animation = 'progress-drain 2s linear forwards';
+
+            // ปิด modal แล้ว redirect ไปหน้า listPost
+            setTimeout(() => {
+                modal.classList.remove('show');
+                window.location.href = '/manager/posts';
+            }, 2000);
+        })();
     </script>
 
 </body>

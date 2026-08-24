@@ -17,7 +17,7 @@
     <nav class="navbar">
         <a th:href="@{/}" class="brand-logo-link">
             <div class="brand-logo">
-                <img th:src="@{/images/logo3.png}" alt="Logo">
+                <img th:src="@{/images/logo5.png}" alt="Logo">
             </div>
             <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
@@ -69,13 +69,15 @@
     <!-- ═══ PAGE ═══ -->
     <div class="page">
 
-        <a class="back-link" th:href="@{/manager/tours}">
-            <i class="fas fa-arrow-left"></i> ย้อนกลับ
-        </a>
-
-        <div class="page-title">
-            เพิ่มทัวร์ <span class="page-subtitle">กรอกข้อมูลให้ครบถ้วนเพื่อเผยแพร่ทัวร์ให้นักท่องเที่ยวจอง</span>
+       <div class="page-header">
+        <div class="page-title-row">
+            <a class="back-icon-btn" th:href="@{/manager/tours}" title="ย้อนกลับ">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="page-title">เพิ่มทัวร์</div>
         </div>
+        <div class="page-subtitle">กรอกข้อมูลให้ครบถ้วนเพื่อเผยแพร่ทัวร์ให้นักท่องเที่ยวจอง</div>
+    </div>
 
         <div th:if="${errorMessage}" class="alert-error"> <i class="fas fa-circle-exclamation"></i> <span
                 th:text="${errorMessage}"></span></div>
@@ -420,21 +422,16 @@
                 </div>
 
 
-
-                <!-- ── การ์ด 2: รูปภาพ (ย้ายมาก่อนราคา) ── -->
+                <!-- ── การ์ด 2: รูปภาพทัวร์ ── -->
                 <div class="card">
                     <div class="card-title">รูปภาพทัวร์</div>
 
                     <div class="img-upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
                         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
                         ondrop="handleDrop(event)">
-                        <i class="fas fa-images"></i>
-                        <div class="upload-title">ลากและวางรูปภาพที่นี่</div>
-                        <div class="upload-hint">หรือกดปุ่มด้านล่างเพื่อเลือกไฟล์จากเครื่อง</div>
-                        <label class="upload-btn-label"
-                            onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
-                            <i class="fas fa-upload"></i> เลือกรูปภาพ
-                        </label>
+                        <!-- เปลี่ยนเฉพาะไอคอนตรงนี้เป็นคลาวด์สีเขียว -->
+                        <i class="fas fa-cloud-arrow-up cloud-icon"></i>
+                        <div class="upload-title">คลิกหรือลากไฟล์มาวางที่นี่</div>
                         <div class="upload-hint" style="margin-top:8px;">jpg · png · webp &nbsp;|&nbsp; สูงสุด 5 รูป
                         </div>
                     </div>

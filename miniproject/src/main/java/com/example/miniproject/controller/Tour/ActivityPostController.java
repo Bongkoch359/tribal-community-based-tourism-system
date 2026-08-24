@@ -23,25 +23,24 @@ public class ActivityPostController {
     // ─── แสดงรายการโพสต์ ───
     @GetMapping
     public String listPosts(Model model, HttpSession session) {
-    Communitymanager manager =
-            (Communitymanager) session.getAttribute("loggedInManager");
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
 
-    if (manager == null) {
-        return "redirect:/manager/login";
+        if (manager == null) {
+            return "redirect:/manager/login";
+        }
+
+        model.addAttribute("loggedInManager", manager);
+        model.addAttribute("posts", activityPostService.getAllPosts());
+
+        return "Tour/listPost";
     }
-
-    model.addAttribute("loggedInManager", manager);
-    model.addAttribute("posts", activityPostService.getAllPosts());
-
-    return "Tour/listPost";
-}
 
     // ─── แสดงรายละเอียดโพสต์ ───
     @GetMapping("/{id}")
     public String viewPost(@PathVariable("id") String activityId,
-                           Model model,
-                           HttpSession session) {
-        Communitymanager manager =  (Communitymanager) session.getAttribute("loggedInManager");
+            Model model,
+            HttpSession session) {
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
         if (session.getAttribute("loggedInManager") == null)
             return "redirect:/manager/login";
 
@@ -58,55 +57,57 @@ public class ActivityPostController {
     // ─── แสดงฟอร์มสร้างโพสต์ ───
     @GetMapping("/create")
     public String showCreateForm(HttpSession session, Model model) {
-    Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
 
-    if (manager == null) {
-        return "redirect:/manager/login";
+        if (manager == null) {
+            return "redirect:/manager/login";
+        }
+
+        model.addAttribute("loggedInManager", manager);
+        model.addAttribute("tours", tourService.getToursByManager(manager)); // สำหรับ dropdown เลือกทัวร์ที่จะโปรโมท
+        return "Tour/createPost";
     }
-
-    model.addAttribute("loggedInManager", manager);
-    model.addAttribute("tours", tourService.getToursByManager(manager)); // สำหรับ dropdown เลือกทัวร์ที่จะโปรโมท
-    return "Tour/createPost";
-}
 
     // ─── บันทึกโพสต์ใหม่ ───
     @PostMapping("/create")
-public String createPost(
-        @RequestParam("title")       String title,
-        @RequestParam("location")    String location,
-        @RequestParam("description") String description,
-        @RequestParam(value = "images", required = false) String images,
-        @RequestParam(value = "tourId", required = false) String tourId,
-        HttpSession session,
-        Model model) {
+    public String createPost(
+            @RequestParam("title") String title,
+            @RequestParam("location") String location,
+            @RequestParam("description") String description,
+            @RequestParam(value = "images", required = false) String images,
+            @RequestParam(value = "tourId", required = false) String tourId,
+            HttpSession session,
+            Model model) {
 
-    Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-    if (manager == null) return "redirect:/manager/login";
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+        if (manager == null)
+            return "redirect:/manager/login";
 
-    try {
-        activityPostService.createPost(title, location, description, images, tourId, manager);
-        model.addAttribute("loggedInManager", manager);
-        model.addAttribute("tours", tourService.getToursByManager(manager));
-        model.addAttribute("successMessage", "บันทึกโพสต์สำเร็จ!");
-        return "Tour/createPost";
-    } catch (Exception e) {
-        model.addAttribute("tours", tourService.getToursByManager(manager));
-        model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
-        return "Tour/createPost";
+        try {
+            activityPostService.createPost(title, location, description, images, tourId, manager);
+            model.addAttribute("loggedInManager", manager);
+            model.addAttribute("tours", tourService.getToursByManager(manager));
+            model.addAttribute("successMessage", "บันทึกโพสต์สำเร็จ!");
+            return "Tour/createPost";
+        } catch (Exception e) {
+            model.addAttribute("tours", tourService.getToursByManager(manager));
+            model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
+            return "Tour/listPost";
+        }
     }
-}
 
     // ─── แสดงฟอร์มแก้ไขโพสต์ ───
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable("id") String activityId,
-                               Model model,
-                               HttpSession session) {
+            Model model,
+            HttpSession session) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
         if (session.getAttribute("loggedInManager") == null)
             return "redirect:/manager/login";
 
         Activitypost post = activityPostService.getPostById(activityId);
-        if (post == null) return "redirect:/manager/posts";
+        if (post == null)
+            return "redirect:/manager/posts";
 
         model.addAttribute("post", post);
         model.addAttribute("loggedInManager", manager);
@@ -117,9 +118,9 @@ public String createPost(
     // ─── บันทึกการแก้ไขโพสต์ ───
     @PostMapping("/{id}/edit")
     public String updatePost(
-            @PathVariable("id")          String activityId,
-            @RequestParam("title")       String title,
-            @RequestParam("location")    String location,
+            @PathVariable("id") String activityId,
+            @RequestParam("title") String title,
+            @RequestParam("location") String location,
             @RequestParam("description") String description,
             @RequestParam(value = "images", required = false) String images,
             @RequestParam(value = "tourId", required = false) String tourId,
@@ -133,9 +134,14 @@ public String createPost(
         try {
             Activitypost updated = activityPostService.updatePost(
                     activityId, title, location, description, images, tourId);
-            if (updated == null) return "redirect:/manager/posts";
+            if (updated == null)
+                return "redirect:/manager/posts";
 
-            return "redirect:/manager/posts/" + activityId + "?success=updated";
+            model.addAttribute("loggedInManager", manager);
+            model.addAttribute("post", updated);
+            model.addAttribute("tours", tourService.getToursByManager(manager));
+            model.addAttribute("successMessage", "แก้ไขโพสต์กิจกรรมสำเร็จ!");
+            return "Tour/editPost";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
             model.addAttribute("post", activityPostService.getPostById(activityId));
@@ -147,7 +153,7 @@ public String createPost(
     // ─── ลบโพสต์ ───
     @PostMapping("/{id}/delete")
     public String deletePost(@PathVariable("id") String activityId,
-                             HttpSession session) {
+            HttpSession session) {
         if (session.getAttribute("loggedInManager") == null)
             return "redirect:/manager/login";
 

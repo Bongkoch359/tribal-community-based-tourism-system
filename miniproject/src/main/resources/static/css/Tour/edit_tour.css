@@ -204,7 +204,7 @@ textarea:focus-visible,
 }
 
 .brand-logo img {
-    height: 75px;
+    height: 100px;
     /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
     width: auto;
     max-width: 180px;
@@ -269,7 +269,7 @@ textarea:focus-visible,
     height: 32px;
     border-radius: 50%;
     border: none;
-    background: var(--green-light);
+    background: #fff;
     color: var(--green-dark);
     text-decoration: none;
     flex-shrink: 0;

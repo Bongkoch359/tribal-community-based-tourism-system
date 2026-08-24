@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>รายละเอียดประเภทห้องพัก</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
+    <style>
         /* ═══════════════════════════════════════════════
            NAVBAR — self-contained, no dashboard.css needed
            ═══════════════════════════════════════════════ */
@@ -19,9 +21,10 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,.25);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
             gap: .5rem;
         }
+
         .hs-navbar-brand {
             display: flex;
             align-items: center;
@@ -33,15 +36,21 @@
             white-space: nowrap;
             margin-right: auto;
         }
-        .hs-navbar-brand i { color: #fff; font-size: 1.2rem; }
+
+        .hs-navbar-brand i {
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
         .hs-nav-links {
             display: flex;
             align-items: center;
             gap: .15rem;
             margin-right: 1.25rem;
         }
+
         .hs-nav-link {
-            color: rgba(255,255,255,.7);
+            color: rgba(255, 255, 255, .7);
             text-decoration: none;
             font-size: .92rem;
             font-weight: 500;
@@ -53,27 +62,48 @@
             gap: .45rem;
             white-space: nowrap;
         }
-        .hs-nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+
+        .hs-nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, .08);
+        }
+
         .hs-nav-link.active {
             color: #fff;
             border-bottom: 3px solid #5ecfb0;
             border-radius: 0;
             padding-bottom: calc(.45rem - 3px);
         }
-        .hs-nav-right { display: flex; align-items: center; }
-        .hs-profile-dropdown { position: relative; display: inline-block; cursor: pointer; }
+
+        .hs-nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .hs-profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
         .hs-profile-trigger {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: .45rem .75rem;
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,.12);
+            border: 1px solid rgba(255, 255, 255, .12);
             transition: background .2s, border-color .2s;
         }
-        .hs-profile-trigger:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.22); }
+
+        .hs-profile-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .22);
+        }
+
         .hs-avatar {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: linear-gradient(135deg, #e08a00, #f5a623);
             color: #fff;
@@ -82,383 +112,721 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 0 2px rgba(255,255,255,.2);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
             flex-shrink: 0;
         }
-        .hs-owner-name { color: #fff; font-size: .9rem; font-weight: 600; display: block; line-height: 1.2; }
-        .hs-owner-role { color: rgba(255,255,255,.55); font-size: .72rem; display: block; line-height: 1; }
-        .hs-chevron { font-size: .7rem; color: rgba(255,255,255,.5); margin-left: 2px; transition: transform .2s; }
-        .hs-profile-dropdown:hover .hs-chevron { transform: rotate(180deg); }
+
+        .hs-owner-name {
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .hs-owner-role {
+            color: rgba(255, 255, 255, .55);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+        }
+
+        .hs-chevron {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .5);
+            margin-left: 2px;
+            transition: transform .2s;
+        }
+
+        .hs-profile-dropdown:hover .hs-chevron {
+            transform: rotate(180deg);
+        }
+
         .hs-dropdown-content {
             display: none;
             position: absolute;
-            right: 0; top: 100%;
+            right: 0;
+            top: 100%;
             background: #fff;
             min-width: 210px;
-            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
             z-index: 1000;
             border-radius: 12px;
             margin-top: 10px;
             padding: 6px 0;
             border: 1px solid #e8e8e8;
         }
+
         .hs-dropdown-content::before {
-            content: ""; position: absolute; top: -10px; left: 0;
-            width: 100%; height: 10px; display: block;
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            display: block;
         }
-        .hs-profile-dropdown:hover .hs-dropdown-content { display: block; }
+
+        .hs-profile-dropdown:hover .hs-dropdown-content {
+            display: block;
+        }
+
         .hs-dropdown-header {
             padding: .75rem 1rem .55rem;
             border-bottom: 1px solid #f0f0f0;
             margin-bottom: 4px;
         }
-        .hs-dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: #0d2e24; }
-        .hs-dropdown-header .d-email { font-size: .75rem; color: #6b7c6e; margin-top: 2px; }
+
+        .hs-dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: #0d2e24;
+        }
+
+        .hs-dropdown-header .d-email {
+            font-size: .75rem;
+            color: #6b7c6e;
+            margin-top: 2px;
+        }
+
         .hs-dropdown-content a {
-            color: #333; padding: .6rem 1rem;
-            text-decoration: none; display: flex;
-            align-items: center; gap: .65rem;
-            font-size: .88rem; transition: background .15s;
+            color: #333;
+            padding: .6rem 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: .88rem;
+            transition: background .15s;
         }
-        .hs-dropdown-content a i { width: 16px; text-align: center; color: #6b7c6e; font-size: .85rem; }
-        .hs-dropdown-content a:hover { background: #f0faf7; color: #0d3d30; }
-        .hs-dropdown-content a:hover i { color: #0d3d30; }
-        .hs-dropdown-content hr { margin: 4px 0; border: 0; border-top: 1px solid #f0f0f0; }
-        .hs-dropdown-content a.hs-logout { color: #c0392b; }
-        .hs-dropdown-content a.hs-logout i { color: #c0392b; }
-        .hs-dropdown-content a.hs-logout:hover { background: #fff5f5; }
+
+        .hs-dropdown-content a i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .hs-dropdown-content a:hover {
+            background: #f0faf7;
+            color: #0d3d30;
+        }
+
+        .hs-dropdown-content a:hover i {
+            color: #0d3d30;
+        }
+
+        .hs-dropdown-content hr {
+            margin: 4px 0;
+            border: 0;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .hs-dropdown-content a.hs-logout {
+            color: #c0392b;
+        }
+
+        .hs-dropdown-content a.hs-logout i {
+            color: #c0392b;
+        }
+
+        .hs-dropdown-content a.hs-logout:hover {
+            background: #fff5f5;
+        }
+
         @media (max-width: 768px) {
-            .hs-nav-links { display: none; }
-            .hs-navbar { padding: 0 1rem; }
+            .hs-nav-links {
+                display: none;
+            }
+
+            .hs-navbar {
+                padding: 0 1rem;
+            }
         }
 
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
-            --green-dark:   #0d3d30;
-            --green-main:   #1a6b52;
+            --green-dark: #0d3d30;
+            --green-main: #1a6b52;
             --green-accent: #2a9068;
-            --green-light:  #d8f5ec;
-            --bg:           #f0ede6;
-            --card:         #ffffff;
-            --text:         #2c2c2c;
-            --text-muted:   #888;
-            --border:       #dde5d4;
-            --price-bg:     #e8f7f2;
+            --green-light: #d8f5ec;
+            --bg: #f0ede6;
+            --card: #ffffff;
+            --text: #2c2c2c;
+            --text-muted: #888;
+            --border: #dde5d4;
+            --price-bg: #e8f7f2;
         }
 
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
-        
+
 
         /* ── Layout ── */
-        .container { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+        }
 
         /* ── Back ── */
         .btn-back {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: var(--green-main); color: #fff;
-            border: none; border-radius: 6px;
-            padding: 7px 16px; font-size: 13.5px; font-family: inherit;
-            cursor: pointer; text-decoration: none;
-            margin-bottom: 20px; transition: background .18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--green-main);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 16px;
+            font-size: 13.5px;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: background .18s;
         }
-        .btn-back:hover { background: var(--green-accent); }
+
+        .btn-back:hover {
+            background: var(--green-accent);
+        }
 
         /* ── Page header ── */
         .page-header {
-            display: flex; align-items: flex-start; justify-content: space-between;
-            margin-bottom: 24px; gap: 16px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            gap: 16px;
         }
-        .page-title h1 { font-size: 26px; font-weight: 700; }
-        .page-title .room-id { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        .page-title h1 {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .page-title .room-id {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
         .btn-edit {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: #fff; color: var(--green-main);
-            border: 1.5px solid var(--green-main); border-radius: 6px;
-            padding: 7px 16px; font-size: 13.5px; font-family: inherit;
-            cursor: pointer; text-decoration: none; transition: background .18s; white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            color: var(--green-main);
+            border: 1.5px solid var(--green-main);
+            border-radius: 6px;
+            padding: 7px 16px;
+            font-size: 13.5px;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .18s;
+            white-space: nowrap;
         }
-        .btn-edit:hover { background: var(--green-light); }
+
+        .btn-edit:hover {
+            background: var(--green-light);
+        }
 
         .btn-close {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: #d9534f; color: #fff; border: none; border-radius: 6px;
-            padding: 7px 16px; font-size: 13.5px; font-family: inherit;
-            cursor: pointer; text-decoration: none; white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #d9534f;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 16px;
+            font-size: 13.5px;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
         }
 
         /* ── Main Grid ── */
         .main-grid {
-    display: grid;
-    grid-template-columns: 35% 65%;
-    gap: 30px;
-    align-items: start;
-}
-        .left-col { display: flex; flex-direction: column; gap: 14px; }
+            display: grid;
+            grid-template-columns: 35% 65%;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
         /* ── Gallery ── */
-        .gallery-wrap { border-radius: 12px; overflow: hidden; background: #ddd; }
-        .gallery-main { position: relative; aspect-ratio: 4/3; overflow: hidden; }
-        .gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .no-image { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+        .gallery-wrap {
+            border-radius: 12px;
+            overflow: hidden;
+            background: #ddd;
+        }
+
+        .gallery-main {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+        }
+
+        .gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .no-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
 
         .gallery-arrow {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            background: rgba(0,0,0,.4); color: #fff; border: none; border-radius: 50%;
-            width: 30px; height: 30px; font-size: 18px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; z-index: 2;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, .4);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
         }
-        .gallery-arrow:hover { background: rgba(0,0,0,.65); }
-        .gallery-arrow.prev { left: 8px; }
-        .gallery-arrow.next { right: 8px; }
+
+        .gallery-arrow:hover {
+            background: rgba(0, 0, 0, .65);
+        }
+
+        .gallery-arrow.prev {
+            left: 8px;
+        }
+
+        .gallery-arrow.next {
+            right: 8px;
+        }
+
         .gallery-counter {
-            position: absolute; bottom: 8px; right: 10px;
-            background: rgba(0,0,0,.5); color: #fff;
-            font-size: 11px; padding: 2px 8px; border-radius: 10px;
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            background: rgba(0, 0, 0, .5);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
         }
-        .gallery-thumbs { display: flex; gap: 6px; padding: 8px; background: #f0ede6; overflow-x: auto; }
+
+        .gallery-thumbs {
+            display: flex;
+            gap: 6px;
+            padding: 8px;
+            background: #f0ede6;
+            overflow-x: auto;
+        }
+
         .gallery-thumbs img {
-            width: 54px; height: 54px; object-fit: cover; border-radius: 6px;
-            cursor: pointer; flex-shrink: 0; border: 2px solid transparent; opacity: .7;
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+            border: 2px solid transparent;
+            opacity: .7;
             transition: border-color .15s, opacity .15s;
         }
-        .gallery-thumbs img.active { border-color: var(--green-main); opacity: 1; }
+
+        .gallery-thumbs img.active {
+            border-color: var(--green-main);
+            opacity: 1;
+        }
 
         /* ── Price card ── */
         .price-card {
-            background: var(--price-bg); border: 1px solid var(--border);
-            border-radius: 12px; padding: 18px 20px; text-align: center;
+            background: var(--price-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            text-align: center;
         }
-        .price-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-        .price-value { font-size: 30px; font-weight: 700; color: var(--green-dark); }
-        .price-unit  { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+        .price-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .price-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--green-dark);
+        }
+
+        .price-unit {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
 
         /* ── Cards ── */
-        .right-col { display: flex; flex-direction: column; gap: 16px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
         .card-header {
-            display: flex; align-items: center; gap: 8px;
-            padding: 11px 18px; border-bottom: 1px solid var(--border);
-            font-size: 14px; font-weight: 600; color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 18px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--green-dark);
             background: #f0faf7;
         }
-        .card-body { padding: 16px 18px; }
+
+        .card-body {
+            padding: 16px 18px;
+        }
 
         /* ── Info grid ── */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-        .info-item label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-        .info-item .value { font-size: 14px; font-weight: 600; }
-        .info-item.full { grid-column: 1 / -1; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .info-item .value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .info-item.full {
+            grid-column: 1 / -1;
+        }
 
         .badge-status {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
         }
-        .badge-open  { background: #c8f0e4; color: #1e7a10; }
-        .badge-close { background: #fde8e8; color: #b32020; }
-        .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
-        .description-text { font-size: 13.5px; line-height: 1.8; }
+        .badge-open {
+            background: #c8f0e4;
+            color: #1e7a10;
+        }
+
+        .badge-close {
+            background: #fde8e8;
+            color: #b32020;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .description-text {
+            font-size: 13.5px;
+            line-height: 1.8;
+        }
 
         /* ── Facilities ── */
-        .facility-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .facility-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
         .facility-tag {
-            display: inline-flex; align-items: center; gap: 5px;
-            background: var(--green-light); border: 1px solid var(--border);
-            color: var(--green-dark); border-radius: 8px;
-            padding: 5px 14px; font-size: 13px; font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--green-light);
+            border: 1px solid var(--border);
+            color: var(--green-dark);
+            border-radius: 8px;
+            padding: 5px 14px;
+            font-size: 13px;
+            font-weight: 500;
         }
 
         /* ── Conditions ── */
-        .condition-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-        .condition-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 13.5px; line-height: 1.65; }
-        .condition-list li::before { content: "*"; color: var(--green-main); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+        .condition-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .condition-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13.5px;
+            line-height: 1.65;
+        }
+
+        .condition-list li::before {
+            content: "*";
+            color: var(--green-main);
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
 
         @media (max-width: 700px) {
-            .main-grid { grid-template-columns: 1fr; }
-            .info-grid { grid-template-columns: 1fr 1fr; }
-            .page-header { flex-direction: column; }
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
-<body>
 
-<!-- ─── NAVBAR ─── -->
-<!-- ─── NAVBAR ─── -->
-<nav class="hs-navbar">
-    <a class="hs-navbar-brand" th:href="@{/}">
-        <i class="fas fa-mountain-sun"></i>
-        ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
-    <!-- <div class="hs-nav-links">
+<body>
+    <!-- ─── NAVBAR ─── -->
+    <nav class="hs-navbar">
+        <a class="hs-navbar-brand" th:href="@{/}">
+            <i class="fas fa-mountain-sun"></i>
+            ระบบท่องเที่ยวชุมชนชนเผ่า
+        </a>
+        <!-- <div class="hs-nav-links">
         <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
         <a class="hs-nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
         <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
         <a class="hs-nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
     </div> -->
-    <div class="hs-nav-right">
-        <div class="hs-profile-dropdown">
-            <div class="hs-profile-trigger">
-                <div class="hs-avatar" th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
-                <div>
-                    <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
-                    <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
-                </div>
-                <i class="fas fa-chevron-down hs-chevron"></i>
-            </div>
-            <div class="hs-dropdown-content">
-                <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
-                <hr>
-                <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<div class="container">
-
-    <a th:href="@{/owner/rooms(homestayid=${room.homestay.homestayid})}" class="btn-back">← ย้อนกลับ</a>
-
-    <div class="page-header">
-        <div class="page-title">
-            <h1>รายละเอียดประเภทห้องพัก</h1>
-            <div class="room-id" th:text="'roomTypeId: ' + ${room.roomtypeid}"></div>
-        </div>
-        <div class="header-actions">
-            <a th:href="@{/owner/room/edit(roomtypeid=${room.roomtypeid})}" class="btn-edit">✏️ แก้ไขข้อมูล</a>
-            
-        </div>
-    </div>
-
-    <div class="main-grid">
-
-        <!-- Left -->
-        <div class="left-col">
-            <div th:if="${imageList != null and !#lists.isEmpty(imageList)}" class="gallery-wrap">
-                <div class="gallery-main">
-                    <img id="mainImg" th:src="${imageList[0]}" alt="room"/>
-                    <button th:if="${#lists.size(imageList) > 1}" class="gallery-arrow prev" onclick="prevImg()">&#8249;</button>
-                    <button th:if="${#lists.size(imageList) > 1}" class="gallery-arrow next" onclick="nextImg()">&#8250;</button>
-                    <div class="gallery-counter" id="imgCounter" th:if="${#lists.size(imageList) > 1}">
-                        1 / <span th:text="${#lists.size(imageList)}"></span>
+        <div class="hs-nav-right">
+            <div class="hs-profile-dropdown">
+                <div class="hs-profile-trigger">
+                    <div class="hs-avatar"
+                        th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">
+                        HS</div>
+                    <div>
+                        <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
+                        <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
                     </div>
+                    <i class="fas fa-chevron-down hs-chevron"></i>
                 </div>
-                <div class="gallery-thumbs" th:if="${#lists.size(imageList) > 1}">
-                    <img th:each="img,stat : ${imageList}"
-                         th:src="${img}"
-                         th:classappend="${stat.index == 0} ? 'active' : ''"
-                         th:onclick="'goToImg(' + ${stat.index} + ')'"
-                         alt="thumb"/>
+                <div class="hs-dropdown-content">
+                    <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                    <hr>
+                    <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i>
+                        ออกจากระบบ</a>
                 </div>
             </div>
-            <div class="gallery-wrap" th:unless="${imageList != null and !#lists.isEmpty(imageList)}">
-                <div class="gallery-main"><div class="no-image">ไม่มีรูปภาพ</div></div>
-            </div>
+        </div>
+    </nav>
 
-            <div class="price-card">
-                <div class="price-label">ราคาต่อคืน</div>
-                <div class="price-value" th:text="${#numbers.formatDecimal(room.pricepernight,1,'COMMA',2,'POINT')} + ' ฿'">1,500.00 ฿</div>
-                <div class="price-unit">ราคาสุทธิ / คืน</div>
+    <div class="container">
+
+        <a th:href="@{/owner/rooms(homestayid=${room.homestay.homestayid})}" class="btn-back">← ย้อนกลับ</a>
+
+        <div class="page-header">
+            <div class="page-title">
+                <h1>รายละเอียดประเภทห้องพัก</h1>
+                <div class="room-id" th:text="'roomTypeId: ' + ${room.roomtypeid}"></div>
+            </div>
+            <div class="header-actions">
+                <a th:href="@{/owner/room/edit(roomtypeid=${room.roomtypeid})}" class="btn-edit">✏️ แก้ไขข้อมูล</a>
+
             </div>
         </div>
 
-        <!-- Right -->
-        <div class="right-col">
+        <div class="main-grid">
 
-            <div class="card">
-                <div class="card-header">🏠 ข้อมูลประเภทห้องพัก</div>
-                <div class="card-body">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>ประเภทห้อง</label>
-                            <div class="value" th:text="${room.typename}">บ้านพัก</div>
-                        </div>
-                        <div class="info-item">
-                            <label>ประเภทเตียง</label>
-                            <div class="value" th:text="${room.bedtype}">เตียงคู่</div>
-                        </div>
-                        <div class="info-item">
-                            <label>สถานะ</label>
-                            <span class="badge-status badge-open" th:if="${room.status == 'เปิดจอง'}">
-                                <span class="dot"></span> เปิดจอง
-                            </span>
-                            <span class="badge-status badge-close" th:if="${room.status == 'ปิดปรับปรุง'}">
-                                <span class="dot"></span> ปิดปรับปรุง
-                            </span>
-                            <span class="badge-status badge-close" th:if="${room.status == 'เต็ม'}">
-                                <span class="dot"></span> เต็ม
-                            </span>
-                        </div>
-                        <div class="info-item">
-                            <label>จำนวนผู้เข้าพักสูงสุด</label>
-                            <div class="value" th:text="${room.maxguest} + ' ท่าน'">4 ท่าน</div>
-                        </div>
-                        <div class="info-item">
-                            <label>จำนวนห้องทั้งหมด</label>
-                            <div class="value" th:text="${room.totalrooms} + ' หลัง'">5 หลัง</div>
-                        </div>
-                        <div class="info-item full" th:if="${room.description != null and room.description != ''}">
-                            <label>คำอธิบาย</label>
-                            <div class="description-text" th:text="${room.description}"></div>
+            <!-- Left -->
+            <div class="left-col">
+                <div th:if="${imageList != null and !#lists.isEmpty(imageList)}" class="gallery-wrap">
+                    <div class="gallery-main">
+                        <img id="mainImg" th:src="${imageList[0]}" alt="room" />
+                        <button th:if="${#lists.size(imageList) > 1}" class="gallery-arrow prev"
+                            onclick="prevImg()">&#8249;</button>
+                        <button th:if="${#lists.size(imageList) > 1}" class="gallery-arrow next"
+                            onclick="nextImg()">&#8250;</button>
+                        <div class="gallery-counter" id="imgCounter" th:if="${#lists.size(imageList) > 1}">
+                            1 / <span th:text="${#lists.size(imageList)}"></span>
                         </div>
                     </div>
+                    <div class="gallery-thumbs" th:if="${#lists.size(imageList) > 1}">
+                        <img th:each="img,stat : ${imageList}" th:src="${img}"
+                            th:classappend="${stat.index == 0} ? 'active' : ''"
+                            th:onclick="'goToImg(' + ${stat.index} + ')'" alt="thumb" />
+                    </div>
+                </div>
+                <div class="gallery-wrap" th:unless="${imageList != null and !#lists.isEmpty(imageList)}">
+                    <div class="gallery-main">
+                        <div class="no-image">ไม่มีรูปภาพ</div>
+                    </div>
+                </div>
+
+                <div class="price-card">
+                    <div class="price-label">ราคาต่อคืน</div>
+                    <div class="price-value"
+                        th:text="${#numbers.formatDecimal(room.pricepernight,1,'COMMA',2,'POINT')} + ' ฿'">1,500.00 ฿
+                    </div>
+                    <div class="price-unit">ราคาสุทธิ / คืน</div>
                 </div>
             </div>
 
-            <div class="card" th:if="${facilities != null and !#lists.isEmpty(facilities)}">
-                <div class="card-header">🏕️ สิ่งอำนวยความสะดวก</div>
-                <div class="card-body">
-                    <div class="facility-list">
-                        <span th:each="f : ${facilities}" class="facility-tag">
-                            <span th:text="${f == 'Wi-Fi'} ? '📶 Wi-Fi' :
+            <!-- Right -->
+            <div class="right-col">
+
+                <div class="card">
+                    <div class="card-header">🏠 ข้อมูลประเภทห้องพัก</div>
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>ประเภทห้อง</label>
+                                <div class="value" th:text="${room.typename}">บ้านพัก</div>
+                            </div>
+                            <div class="info-item">
+                                <label>ประเภทเตียง</label>
+                                <div class="value" th:text="${room.bedtype}">เตียงคู่</div>
+                            </div>
+                            <div class="info-item">
+                                <label>สถานะ</label>
+                                <span class="badge-status badge-open" th:if="${room.status == 'เปิดจอง'}">
+                                    <span class="dot"></span> เปิดจอง
+                                </span>
+                                <span class="badge-status badge-close" th:if="${room.status == 'ปิดปรับปรุง'}">
+                                    <span class="dot"></span> ปิดปรับปรุง
+                                </span>
+                                <span class="badge-status badge-close" th:if="${room.status == 'เต็ม'}">
+                                    <span class="dot"></span> เต็ม
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <label>จำนวนผู้เข้าพักสูงสุด</label>
+                                <div class="value" th:text="${room.maxguest} + ' ท่าน'">4 ท่าน</div>
+                            </div>
+                            <div class="info-item">
+                                <label>จำนวนห้องทั้งหมด</label>
+                                <div class="value" th:text="${room.totalrooms} + ' หลัง'">5 หลัง</div>
+                            </div>
+                            <div class="info-item full" th:if="${room.description != null and room.description != ''}">
+                                <label>คำอธิบาย</label>
+                                <div class="description-text" th:text="${room.description}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" th:if="${facilities != null and !#lists.isEmpty(facilities)}">
+                    <div class="card-header">🏕️ สิ่งอำนวยความสะดวก</div>
+                    <div class="card-body">
+                        <div class="facility-list">
+                            <span th:each="f : ${facilities}" class="facility-tag">
+                                <span th:text="${f == 'Wi-Fi'} ? '📶 Wi-Fi' :
                                            (${f == 'เครื่องปรับอากาศ'} ? '❄️ แอร์' :
                                            (${f == 'น้ำอุ่น'} ? '🚿 น้ำอุ่น' :
                                            (${f == 'ทีวี'} ? '📺 ทีวี' :
                                            (${f == 'อาหารเช้า'} ? '🍳 อาหารเช้า' :
                                            (${f == 'ที่จอดรถ'} ? '🚗 ที่จอดรถ' : ${f})))))">
+                                </span>
                             </span>
-                        </span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="card" th:if="${room.roomcondition != null and room.roomcondition != ''}">
-                <div class="card-header">📋 เงื่อนไขการเข้าพัก</div>
-                <div class="card-body">
-                    <ul class="condition-list">
-                        <li th:each="line : ${#strings.arraySplit(room.roomcondition, '\n')}"
-                            th:if="${!#strings.isEmpty(#strings.trim(line))}"
-                            th:text="${#strings.trim(line)}">
-                        </li>
-                    </ul>
+                <div class="card" th:if="${room.roomcondition != null and room.roomcondition != ''}">
+                    <div class="card-header">📋 เงื่อนไขการเข้าพัก</div>
+                    <div class="card-body">
+                        <ul class="condition-list">
+                            <li th:each="line : ${#strings.arraySplit(room.roomcondition, '\n')}"
+                                th:if="${!#strings.isEmpty(#strings.trim(line))}" th:text="${#strings.trim(line)}">
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
-</div>
 
-<script th:inline="javascript">
-    const images = /*[[${imageList}]]*/ [];
-    let current = 0;
-    const mainImg = document.getElementById('mainImg');
-    const counter = document.getElementById('imgCounter');
-    const thumbs  = document.querySelectorAll('.gallery-thumbs img');
+    <script th:inline="javascript">
+        const images = /*[[${imageList}]]*/[];
+        let current = 0;
+        const mainImg = document.getElementById('mainImg');
+        const counter = document.getElementById('imgCounter');
+        const thumbs = document.querySelectorAll('.gallery-thumbs img');
 
-    function goToImg(index) {
-        if (!images || images.length === 0) return;
-        current = (index + images.length) % images.length;
-        mainImg.src = images[current];
-        if (counter) counter.textContent = (current + 1) + ' / ' + images.length;
-        thumbs.forEach((t, i) => t.classList.toggle('active', i === current));
-    }
-    function nextImg() { goToImg(current + 1); }
-    function prevImg() { goToImg(current - 1); }
-</script>
+        function goToImg(index) {
+            if (!images || images.length === 0) return;
+            current = (index + images.length) % images.length;
+            mainImg.src = images[current];
+            if (counter) counter.textContent = (current + 1) + ' / ' + images.length;
+            thumbs.forEach((t, i) => t.classList.toggle('active', i === current));
+        }
+        function nextImg() { goToImg(current + 1); }
+        function prevImg() { goToImg(current - 1); }
+    </script>
 
 </body>
+
 </html>
