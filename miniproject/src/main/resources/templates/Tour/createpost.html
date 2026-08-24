@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link th:href="@{/css/Tour/add-post.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 </head>
 
 <body>
@@ -136,6 +138,7 @@
                     <!-- ข้อมูลหลัก -->
                     <div class="card">
                         <div class="card-title">ข้อมูลโพสต์</div>
+
                         <!-- ═══ โพสนี้เป็นของทัวร์อะไร ═══ -->
                         <div class="form-group" style="margin-bottom:0">
                             <label class="form-label">
@@ -150,18 +153,20 @@
                                     ชื่อทัวร์
                                 </option>
                             </select>
-                            <!-- <div class="form-hint">
-                                หากเลือกทัวร์ โพสต์นี้จะอยู่ภายใต้ทัวร์ดังกล่าว และผู้ใช้งานสามารถกด "จองทัวร์"
-                                จากหน้าโพสต์ได้
-                            </div> -->
+                        </div>
 
-
-                            <!-- ฟิลด์สถานที่ (แสดงเฉพาะเมื่อเลือกทัวร์) -->
-                            <div class="form-group" id="locationGroup" style="display:none;">
-                                <label class="form-label">สถานที่ <span class="req">*</span></label>
+                        <!-- ฟิลด์สถานที่ (แสดงเฉพาะเมื่อเลือกทัวร์) — sibling แยกจาก form-group ด้านบน -->
+                        <div class="form-group" id="locationGroup" style="display:none;">
+                            <label class="form-label">สถานที่ <span class="req">*</span></label>
+                            <div class="search-input-wrap">
                                 <input class="form-control" type="text" name="location" id="locationInput"
-                                    placeholder="จังหวัด / สถานที่ท่องเที่ยว" th:value="${post?.location}" />
+                                    placeholder="เช่น อ.เมือง จ.เชียงใหม่" th:value="${post?.location}"
+                                    autocomplete="off" />
+                                <div class="search-suggest-box" id="locationSuggest"></div>
                             </div>
+                            <div class="map-box" id="locationMap"></div>
+                            <small style="color:#888;">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
+                                หรือคลิก/ลากหมุดบนแผนที่</small>
                         </div>
 
                         <div class="form-group">

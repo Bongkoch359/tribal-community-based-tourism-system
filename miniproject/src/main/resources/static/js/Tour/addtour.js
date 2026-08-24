@@ -619,9 +619,8 @@ function applyPickupRules() {
     clearErr('hotelPickupArea', 'err-hotelPickupArea');
     document.getElementById('err-pickupOption')?.classList.remove('show');
 
-    // ✅ สร้างแผนที่ตอนเพิ่งเปิดใช้งาน checkbox (Leaflet ไม่ต้องรอ API โหลดเหมือน Google Maps)
     if (allowMeetingPointChk.checked) initMeetingMap();
-    if (allowHotelPickupChk.checked) initHotelMap();
+    if (allowHotelPickupChk.checked) initHotelSearch();
 }
 
 allowMeetingPointChk.addEventListener('change', applyPickupRules);
@@ -716,6 +715,19 @@ function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
     });
 }
 
+/* ── หาตำแหน่งปัจจุบันของผู้ใช้ (ใช้ร่วมกันทั้ง 2 แผนที่) ── */
+function getCurrentPositionOrDefault(onLocated, onFallback) {
+    if (!navigator.geolocation) {
+        onFallback();
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        (pos) => onLocated([pos.coords.latitude, pos.coords.longitude]),
+        () => onFallback(), // ผู้ใช้กดปฏิเสธ หรือหาตำแหน่งไม่ได้ → ใช้ค่า default
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+}
+
 /* ── จุดรวมพล ── */
 function initMeetingMap() {
     if (meetingMap) return; // สร้างครั้งเดียวพอ
@@ -739,7 +751,22 @@ function initMeetingMap() {
         });
     });
 
-    setTimeout(() => meetingMap.invalidateSize(), 200); // กัน bug แผนที่เบี้ยวตอนเพิ่งโผล่จาก display:none
+    setTimeout(() => meetingMap.invalidateSize(), 200);
+
+    // ✅ ปักหมุดที่ตำแหน่งปัจจุบันของผู้ใช้อัตโนมัติ (ถ้าช่องยังว่างอยู่ เช่น ยังไม่มีค่าจาก DB)
+    if (!meetingPointDetailInput.value.trim()) {
+        getCurrentPositionOrDefault(
+            ([lat, lng]) => {
+                meetingMap.setView([lat, lng], 16);
+                meetingMarker.setLatLng([lat, lng]);
+                reverseGeocode(lat, lng, (address) => {
+                    meetingPointDetailInput.value = address;
+                    clearErr('meetingPointDetail', 'err-meetingPointDetail');
+                });
+            },
+            () => { /* ใช้ DEFAULT_MAP_CENTER ตามเดิม ไม่ต้องทำอะไรเพิ่ม */ }
+        );
+    }
 
     attachPlaceSearch(
         meetingPointDetailInput,
@@ -753,38 +780,16 @@ function initMeetingMap() {
     );
 }
 
-/* ── เขตรับที่โรงแรม ── */
-function initHotelMap() {
-    if (hotelMap) return;
-
-    hotelMap = createLeafletMap('hotelPickupMap');
-    hotelMap.setZoom(12);
-    hotelMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(hotelMap);
-
-    hotelMarker.on('dragend', () => {
-        const pos = hotelMarker.getLatLng();
-        reverseGeocode(pos.lat, pos.lng, (address) => {
-            hotelPickupAreaInput.value = address;
-            clearErr('hotelPickupArea', 'err-hotelPickupArea');
-        });
-    });
-
-    hotelMap.on('click', (e) => {
-        hotelMarker.setLatLng(e.latlng);
-        reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => {
-            hotelPickupAreaInput.value = address;
-            clearErr('hotelPickupArea', 'err-hotelPickupArea');
-        });
-    });
-
-    setTimeout(() => hotelMap.invalidateSize(), 200);
+/* ── เขตรับที่โรงแรม */
+function initHotelSearch() {
+    if (initHotelSearch._bound) return; // ผูก listener ครั้งเดียวพอ
+    initHotelSearch._bound = true;
 
     attachPlaceSearch(
         hotelPickupAreaInput,
         document.getElementById('hotelPickupSuggest'),
-        (lat, lng) => {
-            hotelMap.setView([lat, lng], 14);
-            hotelMarker.setLatLng([lat, lng]);
+        (lat, lng, displayName) => {
+            // ไม่มีแผนที่ให้ปัก แค่เคลียร์ error เพราะ input.value ถูกเซ็ตไปแล้วตอนคลิก suggestion
             clearErr('hotelPickupArea', 'err-hotelPickupArea');
         },
         { id: null }
