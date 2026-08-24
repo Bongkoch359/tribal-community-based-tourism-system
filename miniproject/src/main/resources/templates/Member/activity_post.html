@@ -215,97 +215,108 @@ img { display: block; }
 .breadcrumb span[aria-hidden] { color: var(--ink-300); }
 
 /* ============================================================
-   HERO — เต็มความกว้าง เนื้อเรื่องมาก่อนกล่องข้อมูล
-============================================================ */
-.hero-shell {
-    position: relative;
-    height: 58vh;
-    min-height: 420px;
-    max-height: 620px;
-    overflow: hidden;
-    background: linear-gradient(155deg, var(--pine-800), var(--pine-950));
-}
-.hero-shell .hero-image {
-    width: 100%; height: 100%; object-fit: cover; cursor: pointer;
-    transition: transform 8s ease;
-}
-.hero-shell:hover .hero-image { transform: scale(1.06); }
-.hero-shell .hero-placeholder-icon {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 5rem;
-}
-.hero-scrim {
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(13,32,22,0) 35%, rgba(13,32,22,.55) 72%, rgba(13,32,22,.92) 100%);
-    pointer-events: none;
-}
-.hero-content {
-    position: absolute; left: 0; right: 0; bottom: 0;
-    max-width: 1220px; margin: 0 auto;
-    padding: 0 1.2rem 2.4rem;
-    color: #fff;
-}
-.hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--turmeric-100); margin-bottom: .9rem;
-}
-.hero-eyebrow::before { content: '◆'; font-size: .6em; color: var(--turmeric-500); }
-.hero-title {
-    font-family: 'Mitr', sans-serif; font-weight: 600; line-height: 1.18;
-    font-size: clamp(1.7rem, 3.6vw, 3rem);
-    max-width: 22ch;
-    text-shadow: 0 2px 20px rgba(0,0,0,.35);
-    margin-bottom: 1.1rem;
-}
-.hero-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.hero-pill {
-    display: inline-flex; align-items: center; gap: .45rem;
-    background: rgba(255,255,255,0.14); backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.22);
-    color: #fff; padding: .45rem .95rem; border-radius: 999px; font-size: .86rem; font-weight: 600;
-}
-.hero-pill svg { width: 15px; height: 15px; opacity: .9; }
-.hero-pill.muted { background: rgba(255,255,255,0.08); font-weight: 500; color: rgba(255,255,255,.85); }
-
-/* thumbnail filmstrip under hero */
-.filmstrip {
-    max-width: 1220px; margin: 0 auto; padding: 14px 1.2rem 0;
-    display: flex; gap: 10px; overflow-x: auto;
-    scrollbar-width: none;
-}
-.filmstrip::-webkit-scrollbar { display: none; }
-.filmstrip img {
-    width: 108px; height: 78px; flex-shrink: 0; object-fit: cover;
-    border-radius: var(--r-sm); cursor: pointer; box-shadow: var(--shadow-sm);
-    border: 2px solid transparent; transition: border-color .15s, transform .15s;
-}
-.filmstrip img:hover { border-color: var(--pine-500); transform: translateY(-2px); }
-.filmstrip .more-chip {
-    width: 108px; height: 78px; flex-shrink: 0; border-radius: var(--r-sm);
-    background: var(--pine-800); color: #fff; font-weight: 700; font-family: 'Mitr', sans-serif;
-    display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: .95rem;
-}
-
-/* ============================================================
-   PAGE LAYOUT
+   PAGE HEADER — ชื่อเรื่อง + เมตาอยู่เป็นข้อความปกติเหนือแกลเลอรี
+   (แบบเว็บจองทัวร์จริง ไม่ใช่ตัวหนังสือทับรูปภาพ)
 ============================================================ */
 .page-wrap {
     max-width: 1220px;
     margin: auto;
-    padding: 2.6rem 1.2rem 4.5rem;
+    padding: 1.8rem 1.2rem 4.5rem;
 }
 
 .btn-back {
     display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
     color: var(--ink-500); font-weight: 600; font-size: .88rem;
-    margin-bottom: 1.6rem; transition: color .15s, transform .15s;
+    margin-bottom: 1.4rem; transition: color .15s, transform .15s;
 }
 .btn-back:hover { color: var(--pine-700); transform: translateX(-3px); }
 .btn-back svg { width: 15px; height: 15px; }
 
-.layout-container { display: grid; grid-template-columns: 1.6fr 1fr; gap: 56px; align-items: start; }
+.page-header { margin-bottom: 1.2rem; }
+.page-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--clay-600); margin-bottom: .55rem;
+}
+.page-eyebrow::before { content: ''; width: 22px; height: 2px; background: var(--clay-500); border-radius: 2px; }
+.page-title {
+    font-family: 'Mitr', sans-serif; font-weight: 600; line-height: 1.24; color: var(--ink-900);
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    max-width: 34ch;
+    margin-bottom: .75rem;
+}
+.page-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; }
+.meta-item {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-size: .92rem; font-weight: 600; color: var(--ink-700);
+}
+.meta-item svg { width: 16px; height: 16px; color: var(--pine-600); flex-shrink: 0; }
+.meta-item.muted { color: var(--ink-500); font-weight: 500; }
+.meta-item.muted svg { color: var(--ink-300); }
+.meta-divider { color: var(--ink-300); font-size: .8rem; }
+
+/* ============================================================
+   GALLERY — รูปหลักขนาดใหญ่ + กริดรูปย่อยด้านขวา (สไตล์เว็บจองทัวร์)
+============================================================ */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 8px;
+    height: 260px;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2.4rem;
+}
+.gallery-grid.gallery-grid--single { grid-template-columns: 1fr; height: 260px; }
+
+.gallery-main {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    background: linear-gradient(155deg, var(--pine-800), var(--pine-950));
+}
+.gallery-main img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.gallery-main:hover img { transform: scale(1.045); }
+.gallery-main-icon {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    font-size: 4.5rem; color: rgba(255,255,255,0.85);
+}
+.gallery-expand-hint {
+    position: absolute; right: 14px; bottom: 14px;
+    background: rgba(13,32,22,0.55); backdrop-filter: blur(4px);
+    color: #fff; font-size: .78rem; font-weight: 600; padding: 7px 13px;
+    border-radius: 999px; display: flex; align-items: center; gap: 6px;
+    opacity: 0; transition: opacity .2s;
+}
+.gallery-main:hover .gallery-expand-hint { opacity: 1; }
+.gallery-expand-hint svg { width: 14px; height: 14px; }
+
+.gallery-thumbs { display: grid; gap: 6px; height: 100%; }
+.gallery-thumbs.gallery-thumbs--1 { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+.gallery-thumbs.gallery-thumbs--2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+.gallery-thumbs.gallery-thumbs--3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.gallery-thumbs.gallery-thumbs--3 .gallery-thumb:first-child { grid-row: 1 / 3; }
+.gallery-thumbs.gallery-thumbs--4plus { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.gallery-thumb { position: relative; overflow: hidden; cursor: pointer; }
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
+.gallery-thumb:hover img { transform: scale(1.06); }
+.gallery-thumb.has-overlay .gallery-more-overlay {
+    position: absolute; inset: 0; background: rgba(13,32,22,.62);
+    color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: 'Mitr', sans-serif; font-weight: 600; font-size: 1.15rem; gap: 2px;
+}
+.gallery-more-overlay small { font-family: 'Sarabun', sans-serif; font-weight: 500; font-size: .72rem; opacity: .85; }
+
+.gallery-placeholder {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    font-size: 4.5rem; background: linear-gradient(155deg, var(--pine-800), var(--pine-950));
+}
+
+/* ============================================================
+   PAGE LAYOUT (เนื้อหา + ตั๋วทัวร์)
+============================================================ */
+.layout-container { width: 100%; }
 
 /* ── Story column ── */
 .eyebrow {
@@ -317,7 +328,6 @@ img { display: block; }
 
 .desc-text {
     font-size: 1.05rem; line-height: 2; color: var(--ink-700); white-space: pre-line;
-    max-width: 64ch;
 }
 .desc-text.empty { color: var(--ink-300); font-style: italic; }
 
@@ -334,84 +344,43 @@ img { display: block; }
 .host-info .h-label { font-size: .72rem; color: var(--ink-300); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
 .host-info .h-name { font-size: .98rem; font-weight: 700; color: var(--ink-900); font-family: 'Mitr', sans-serif; margin-top: 1px; }
 
-/* ── Right column: tour ticket card ── */
-.sidebar-sticky { position: sticky; top: calc(var(--navbar-h) + 24px); }
-
-.ticket-card { border-radius: var(--r-lg); box-shadow: var(--shadow-lg); }
-
-.ticket-top {
-    background: linear-gradient(160deg, var(--pine-700) 0%, var(--pine-900) 100%);
-    border-radius: var(--r-lg) var(--r-lg) 0 0;
-    padding: 1.7rem 1.6rem 1.5rem;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
+/* ── ลิงก์ไปทัวร์ที่เกี่ยวข้อง — แถบเล็ก ๆ ต่อท้ายรายละเอียด (ไม่ใช่การ์ดใหญ่ในไซด์บาร์) ── */
+.tour-link-panel {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    margin-top: 2.2rem; padding: 16px 20px; border-radius: var(--r-md);
+    background: var(--paper-warm); border: 1px solid var(--paper-line);
 }
-.ticket-top::after {
-    content: '';
-    position: absolute; right: -30px; top: -30px; width: 140px; height: 140px;
-    border-radius: 50%; background: rgba(255,255,255,0.06);
-}
-.ticket-kicker {
-    font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--moss-200); opacity: .85; margin-bottom: .6rem;
-    display: flex; align-items: center; gap: 7px;
-}
-.ticket-kicker svg { width: 13px; height: 13px; }
-.ticket-tourname {
-    font-family: 'Mitr', sans-serif; font-size: 1.28rem; font-weight: 600; line-height: 1.35;
-    position: relative; z-index: 1;
-}
-
-.ticket-divider-wrap { position: relative; height: 0; }
-.ticket-notch {
-    position: absolute; top: -11px; width: 22px; height: 22px; border-radius: 50%;
-    background: var(--paper); z-index: 2;
-}
-.ticket-notch.left { left: -11px; }
-.ticket-notch.right { right: -11px; }
-
-.ticket-bottom {
-    background: var(--paper-warm);
-    border-radius: 0 0 var(--r-lg) var(--r-lg);
-    border-top: 2px dashed #c9b78f;
-    padding: 1.5rem 1.6rem 1.6rem;
-}
-
-.ticket-info-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.1rem; }
-.ticket-info-row:last-of-type { margin-bottom: 1.4rem; }
-.ticket-icon {
-    width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+.tlp-text { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.tlp-icon {
+    width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
     background: var(--moss-100); color: var(--pine-700);
     display: flex; align-items: center; justify-content: center;
 }
-.ticket-icon svg { width: 16px; height: 16px; }
-.ticket-info-text .t-label { font-size: .72rem; color: var(--ink-300); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
-.ticket-info-text .t-value { font-size: .93rem; color: var(--ink-900); font-weight: 600; margin-top: 1px; }
+.tlp-icon svg { width: 18px; height: 18px; }
+.tlp-label { font-size: .74rem; color: var(--ink-300); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.tlp-name { font-size: .98rem; color: var(--ink-900); font-weight: 700; font-family: 'Mitr', sans-serif; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .btn-ticket-cta {
-    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
-    background: var(--turmeric-500); color: #fff !important; padding: 14px 18px; border-radius: 12px;
-    font-weight: 700; font-size: 1rem; box-shadow: 0 8px 20px rgba(214,141,40,0.35);
-    transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0;
+    background: var(--turmeric-500); color: #fff !important; padding: 12px 20px; border-radius: 10px;
+    font-weight: 700; font-size: .94rem; box-shadow: 0 6px 16px rgba(214,141,40,0.32);
+    transition: all 0.2s ease; white-space: nowrap;
 }
-.btn-ticket-cta:hover { background: var(--turmeric-600); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(214,141,40,0.45); }
+.btn-ticket-cta:hover { background: var(--turmeric-600); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(214,141,40,0.4); }
 .btn-ticket-cta svg { flex-shrink: 0; }
 
 .no-tour-panel {
-    background: var(--paper-warm);
-    border-radius: var(--r-lg);
-    box-shadow: var(--shadow-md);
-    padding: 1.8rem 1.6rem;
-    text-align: center;
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 2.2rem; background: var(--paper-warm);
+    border-radius: var(--r-md); padding: 14px 18px;
 }
 .no-tour-panel .ntp-icon {
-    width: 46px; height: 46px; border-radius: 50%; margin: 0 auto .9rem;
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
     background: var(--moss-100); color: var(--pine-700);
     display: flex; align-items: center; justify-content: center;
 }
-.no-tour-panel .ntp-icon svg { width: 22px; height: 22px; }
-.no-tour-panel p { color: var(--ink-500); font-size: .88rem; line-height: 1.7; }
+.no-tour-panel .ntp-icon svg { width: 18px; height: 18px; }
+.no-tour-panel p { color: var(--ink-500); font-size: .86rem; line-height: 1.5; }
 
 /* ── Lightbox ── */
 .lightbox {
@@ -431,16 +400,33 @@ img { display: block; }
    RESPONSIVE
 ============================================================ */
 @media (max-width: 992px) {
-    .layout-container { grid-template-columns: 1fr; gap: 36px; }
-    .sidebar-sticky { position: static; }
-    .hero-shell { height: 46vh; min-height: 320px; }
+    .gallery-grid { height: 260px; }
 }
 @media (max-width: 768px) {
     :root { --navbar-h: auto; }
     .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 10px; }
     .top-bar { display: none; }
-    .hero-shell { height: 38vh; min-height: 260px; }
-    .hero-content { padding-bottom: 1.6rem; }
+
+    .gallery-grid, .gallery-grid.gallery-grid--single {
+        display: flex; flex-direction: column; height: auto; gap: 8px; border-radius: var(--r-md); box-shadow: var(--shadow-sm);
+    }
+    .gallery-main { height: 220px; border-radius: var(--r-md); }
+    .gallery-thumbs,
+    .gallery-thumbs.gallery-thumbs--1,
+    .gallery-thumbs.gallery-thumbs--2,
+    .gallery-thumbs.gallery-thumbs--3,
+    .gallery-thumbs.gallery-thumbs--4plus {
+        display: flex; grid-template-columns: none; grid-template-rows: none;
+        overflow-x: auto; scrollbar-width: none; gap: 8px; height: auto;
+    }
+    .gallery-thumbs .gallery-thumb:first-child { grid-row: auto; }
+    .gallery-thumbs::-webkit-scrollbar { display: none; }
+    .gallery-thumb { width: 88px; height: 66px; flex-shrink: 0; border-radius: var(--r-sm); }
+
+    .page-title { max-width: none; }
+
+    .tour-link-panel { flex-direction: column; align-items: stretch; gap: 12px; }
+    .tour-link-panel .btn-ticket-cta { width: 100%; }
 }
 </style>
 </head>
@@ -495,7 +481,7 @@ img { display: block; }
       </svg>
       ข้อมูลชนเผ่า
     </a>
-    
+
   </div>
 
   <div class="nav-divider"></div>
@@ -640,57 +626,6 @@ img { display: block; }
     <span th:text="${post.title}">รายละเอียดกิจกรรม</span>
 </div>
 
-<!-- ═══════════════ HERO ═══════════════ -->
-<div class="hero-shell" th:if="${post.images != null and !post.images.isEmpty()}">
-    <div th:with="imgs=${#strings.arraySplit(post.images, '||')}">
-        <img class="hero-image" th:src="${imgs[0]}" alt="ภาพหลักของกิจกรรม" onclick="openLightbox(this.src)">
-    </div>
-    <div class="hero-scrim"></div>
-    <div class="hero-content">
-        <div class="hero-eyebrow">เรื่องราวชุมชน</div>
-        <h1 class="hero-title" th:text="${post.title}">ชื่อกิจกรรม</h1>
-        <div class="hero-meta-row">
-            <span class="hero-pill" th:if="${post.location != null}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
-                <span th:text="${post.location}">สถานที่</span>
-            </span>
-            <span class="hero-pill muted" th:if="${post.createddate != null}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span th:text="${#dates.format(post.createddate, 'dd MMM yyyy')}"></span>
-            </span>
-        </div>
-    </div>
-</div>
-
-<div class="hero-shell" th:if="${post.images == null or post.images.isEmpty()}">
-    <div class="hero-placeholder-icon">🌿</div>
-    <div class="hero-scrim"></div>
-    <div class="hero-content">
-        <div class="hero-eyebrow">เรื่องราวชุมชน</div>
-        <h1 class="hero-title" th:text="${post.title}">ชื่อกิจกรรม</h1>
-        <div class="hero-meta-row">
-            <span class="hero-pill" th:if="${post.location != null}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
-                <span th:text="${post.location}">สถานที่</span>
-            </span>
-            <span class="hero-pill muted" th:if="${post.createddate != null}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span th:text="${#dates.format(post.createddate, 'dd MMMM yyyy')}"></span>
-            </span>
-        </div>
-    </div>
-</div>
-
-<!-- แถบรูปย่อย (ถ้ามีมากกว่า 1 รูป) -->
-<div class="filmstrip" th:if="${post.images != null and !post.images.isEmpty()}">
-    <div th:with="imgs=${#strings.arraySplit(post.images, '||')}" style="display:contents">
-        <th:block th:each="img,iter : ${imgs}" th:if="${iter.index > 0 and iter.index <= 5}">
-            <div th:if="${iter.index == 5 and imgs.length > 6}" class="more-chip" onclick="openLightbox(imgs[5])" th:text="'+' + ${imgs.length - 5}">+</div>
-            <img th:if="${!(iter.index == 5 and imgs.length > 6)}" th:src="${img}" alt="ภาพกิจกรรมย่อย" onclick="openLightbox(this.src)">
-        </th:block>
-    </div>
-</div>
-
 <div class="page-wrap">
 
     <a href="/member/search" class="btn-back">
@@ -698,86 +633,93 @@ img { display: block; }
         กลับหน้ากิจกรรมทั้งหมด
     </a>
 
-    <div class="layout-container">
+    <!-- ═══════════════ หัวเรื่อง: ชื่อ + เมตา (ข้อความปกติ ไม่ทับรูป) ═══════════════ -->
+    <div class="page-header">
+        <div class="page-eyebrow">เรื่องราวชุมชน</div>
+        <h1 class="page-title" th:text="${post.title}">ชื่อกิจกรรม</h1>
+        <div class="page-meta-row">
+            <span class="meta-item" th:if="${post.location != null}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
+                <span th:text="${post.location}">สถานที่</span>
+            </span>
+            <span class="meta-divider" th:if="${post.location != null and post.createddate != null}">•</span>
+            <span class="meta-item muted" th:if="${post.createddate != null}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span th:text="${#dates.format(post.createddate, 'dd MMMM yyyy')}"></span>
+            </span>
+        </div>
+    </div>
 
-        <!-- ═══════════════ ซ้าย: เรื่องราว ═══════════════ -->
-        <div class="left-story-section">
+    <!-- ═══════════════ แกลเลอรี: รูปหลัก + กริดรูปย่อย ═══════════════ -->
+    <div class="gallery-grid" th:if="${post.images != null and !post.images.isEmpty()}"
+         th:with="imgs=${#strings.arraySplit(post.images, '||')}, thumbCount=${imgs.length - 1 > 4 ? 4 : imgs.length - 1}"
+         th:classappend="${imgs.length == 1} ? ' gallery-grid--single'">
 
-            <div class="eyebrow">เรื่องราวกิจกรรม</div>
-
-            <p class="desc-text" th:if="${post.description != null and !post.description.isEmpty()}" th:text="${post.description}"></p>
-            <p class="desc-text empty" th:if="${post.description == null or post.description.isEmpty()}">ไม่มีรายละเอียดเพิ่มเติมสำหรับกิจกรรมนี้</p>
-
-            <div class="host-byline" th:if="${post.communitymanager != null}">
-                <div class="host-avatar" th:text="${#strings.substring(post.communitymanager.firstname, 0, 1)}">ช</div>
-                <div class="host-info">
-                    <div class="h-label">เผยแพร่โดยผู้จัดการชุมชน</div>
-                    <div class="h-name" th:text="${post.communitymanager.firstname + ' ' + post.communitymanager.lastname}">ชื่อผู้จัดการ</div>
-                </div>
+        <div class="gallery-main" onclick="openLightbox(this.querySelector('img').src)">
+            <img th:src="${imgs[0]}" alt="ภาพหลักของกิจกรรม">
+            <div class="gallery-expand-hint">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4"/></svg>
+                ดูรูปขยาย
             </div>
-
         </div>
 
-        <!-- ═══════════════ ขวา: ตั๋วเข้าร่วมทัวร์ ═══════════════ -->
-        <div class="right-sidebar-section">
-            <div class="sidebar-sticky">
-
-                <div class="ticket-card" th:if="${post.tour != null}">
-
-                    <div class="ticket-top">
-                        <div class="ticket-kicker">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                            ทัวร์ที่เกี่ยวข้อง
-                        </div>
-                        <div class="ticket-tourname" th:text="${post.tour.tourmname}">ชื่อทัวร์</div>
-                    </div>
-
-                    <div class="ticket-divider-wrap">
-                        <div class="ticket-notch left"></div>
-                        <div class="ticket-notch right"></div>
-                    </div>
-
-                    <div class="ticket-bottom">
-
-                        <div class="ticket-info-row" th:if="${post.location != null}">
-                            <div class="ticket-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
-                            </div>
-                            <div class="ticket-info-text">
-                                <div class="t-label">สถานที่</div>
-                                <div class="t-value" th:text="${post.location}">สถานที่</div>
-                            </div>
-                        </div>
-
-                        <div class="ticket-info-row" th:if="${post.createddate != null}">
-                            <div class="ticket-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            </div>
-                            <div class="ticket-info-text">
-                                <div class="t-label">วันที่เผยแพร่</div>
-                                <div class="t-value" th:text="${#dates.format(post.createddate, 'dd MMMM yyyy')}"></div>
-                            </div>
-                        </div>
-
-                        <a th:href="@{/tour/{id}(id=${post.tour.tourid})}" class="btn-ticket-cta">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <path d="M5 12h14M13 6l6 6-6 6"/>
-                            </svg>
-                            ดูรายละเอียดทัวร์นี้
-                        </a>
-
+        <div class="gallery-thumbs" th:if="${imgs.length > 1}"
+             th:classappend="${thumbCount == 1} ? ' gallery-thumbs--1' : (${thumbCount == 2} ? ' gallery-thumbs--2' : (${thumbCount == 3} ? ' gallery-thumbs--3' : ' gallery-thumbs--4plus'))">
+            <th:block th:each="img,iter : ${imgs}" th:if="${iter.index > 0 and iter.index <= 4}">
+                <div class="gallery-thumb" th:classappend="${iter.index == 4 and imgs.length > 5} ? ' has-overlay'"
+                     onclick="openLightbox(this.querySelector('img').src)">
+                    <img th:src="${img}" alt="ภาพกิจกรรมย่อย">
+                    <div class="gallery-more-overlay" th:if="${iter.index == 4 and imgs.length > 5}">
+                        <span th:text="'+' + ${imgs.length - 4}">+</span>
+                        <small>ดูทั้งหมด</small>
                     </div>
                 </div>
+            </th:block>
+        </div>
+    </div>
 
-                <!-- โพสต์นี้ไม่ได้ผูกกับทัวร์ใด ๆ -->
-                <div class="no-tour-panel" th:if="${post.tour == null}">
-                    <div class="ntp-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                    </div>
-                    <p>โพสต์นี้เป็นข่าวสารทั่วไปของชุมชน ไม่ได้ผูกกับทัวร์ใดโดยเฉพาะ</p>
-                </div>
+    <div class="gallery-grid gallery-grid--single" th:if="${post.images == null or post.images.isEmpty()}">
+        <div class="gallery-placeholder">🌿</div>
+    </div>
 
+    <div class="layout-container">
+
+        <div class="eyebrow">รายละเอียดกิจกรรม</div>
+
+        <p class="desc-text" th:if="${post.description != null and !post.description.isEmpty()}" th:text="${post.description}"></p>
+        <p class="desc-text empty" th:if="${post.description == null or post.description.isEmpty()}">ไม่มีรายละเอียดเพิ่มเติมสำหรับกิจกรรมนี้</p>
+
+        <div class="host-byline" th:if="${post.communitymanager != null}">
+            <div class="host-avatar" th:text="${#strings.substring(post.communitymanager.firstname, 0, 1)}">ช</div>
+            <div class="host-info">
+                <div class="h-label">เผยแพร่โดยผู้จัดการชุมชน</div>
+                <div class="h-name" th:text="${post.communitymanager.firstname + ' ' + post.communitymanager.lastname}">ชื่อผู้จัดการ</div>
             </div>
+        </div>
+
+        <!-- ═══════════════ ลิงก์ไปทัวร์ที่เกี่ยวข้อง — ต่อท้ายรายละเอียดโดยตรง ═══════════════ -->
+        <div class="tour-link-panel" th:if="${post.tour != null}">
+            <div class="tlp-text">
+                <div class="tlp-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                </div>
+                <div>
+                    <div class="tlp-label">ทัวร์ที่เกี่ยวข้อง</div>
+                    <div class="tlp-name" th:text="${post.tour.tourmname}">ชื่อทัวร์</div>
+                </div>
+            </div>
+            <a th:href="@{/tour/{id}(id=${post.tour.tourid})}" class="btn-ticket-cta">
+                ดูรายละเอียดทัวร์นี้
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+        </div>
+
+        <!-- โพสต์นี้ไม่ได้ผูกกับทัวร์ใด ๆ -->
+        <div class="no-tour-panel" th:if="${post.tour == null}">
+            <div class="ntp-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            </div>
+            <p>โพสต์นี้เป็นข่าวสารทั่วไปของชุมชน ไม่ได้ผูกกับทัวร์ใดโดยเฉพาะ</p>
         </div>
 
     </div>

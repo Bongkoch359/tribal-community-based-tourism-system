@@ -234,7 +234,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
     </svg>
-    กิจกรรม
+    โพสต์กิจกรรม
   </button>
   <button class="tab-btn" th:classappend="${currentType == 'tour'} ? 'active'" data-tab="tour" onclick="switchTab('tour')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -483,11 +483,12 @@
 <div class="content">
 
   <!-- รายการแนะนำ: แสดงเฉพาะตอนยังไม่ได้ค้นหา (keyword, startDate, endDate, numGuest ว่างทั้งหมด) -->
-  <div class="featured-all" id="featuredAll"
-       th:if="${param.managerId == null
-               and (keyword == null or keyword == '')
-               and (startDate == null or startDate == '')
-               and (endDate == null or endDate == '')}">
+<div class="featured-all" id="featuredAll"
+     th:if="${param.managerId == null
+             and param.type == null
+             and (keyword == null or keyword == '')
+             and (startDate == null or startDate == '')
+             and (endDate == null or endDate == '')}">
 
     <div class="featured-all-header">
       <div>

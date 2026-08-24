@@ -42,7 +42,7 @@ public class DashboardController {
                         HttpSession session,
                         Model model) {
 
-                Integer ownerid = (Integer) session.getAttribute("ownerid");
+                String ownerid = (String) session.getAttribute("ownerid");
                 if (ownerid == null)
                         return "redirect:/owner/login";
 

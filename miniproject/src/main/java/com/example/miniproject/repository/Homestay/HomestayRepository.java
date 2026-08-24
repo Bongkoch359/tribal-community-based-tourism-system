@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface HomestayRepository extends JpaRepository<Homestay, Integer> {
 
-   List<Homestay> findByOwner_Ownerid(Integer ownerid);
+   List<Homestay> findByOwner_Ownerid(String ownerid);
 
     List<Homestay> findByHomestaynameContainingIgnoreCase(String homestayname);
     List<Homestay> findByAddressContainingIgnoreCase(String address);
@@ -29,7 +29,7 @@ List<Object[]> findLowestRatedHomestays(org.springframework.data.domain.Pageable
            "AND h.owner.ownerid = :ownerid")
     boolean existsByHomestayidAndOwnerOwnerid(
             @Param("homestayid") Integer homestayid,  
-            @Param("ownerid") Integer ownerid
+            @Param("ownerid") String ownerid
     );
 
     @Query("SELECT h FROM Homestay h WHERE h.owner = :owner")
@@ -80,5 +80,21 @@ List<Homestay> searchWithDate(
     @Param("guests")    Integer guests,
     @Param("startDate") java.sql.Date startDate,
     @Param("endDate")   java.sql.Date endDate
+);
+
+// ค้นหาโฮมสเตย์ตาม keyword + จำนวนคน (ไม่กรองวันที่ ใช้ตอนผู้ใช้ไม่ระบุช่วงเช็คอิน/เช็คเอาท์)
+@Query("""
+    SELECT DISTINCT h FROM Homestay h
+    JOIN h.roomtypes r
+    WHERE (:keyword IS NULL
+           OR LOWER(h.homestayname) LIKE LOWER(CONCAT('%', :keyword, '%'))
+           OR LOWER(h.address) LIKE LOWER(CONCAT('%', :keyword, '%')))
+    AND r.status = 'เปิดจอง'
+    AND (:guests IS NULL OR :guests <= 1 OR r.maxguest >= :guests)
+    ORDER BY h.homestayname ASC
+""")
+List<Homestay> searchByGuestOnly(
+    @Param("keyword") String keyword,
+    @Param("guests")  Integer guests
 );
 }

@@ -38,11 +38,14 @@ public class ManagerService {
     }
 
     // Suspend — เปลี่ยนสถานะเป็น INACTIVE
-    public boolean suspend(String managerid) {
+   // Suspend — เปลี่ยนสถานะเป็น INACTIVE (หรือ SUSPENDED) พร้อมบันทึกเหตุผล
+    public boolean suspend(String managerid, String reason) {
         Optional<Communitymanager> opt = managerRepository.findById(managerid);
         if (opt.isPresent()) {
-            opt.get().setAccountstatus(ManagerStatus.INACTIVE);
-            managerRepository.save(opt.get());
+            Communitymanager manager = opt.get();
+            manager.setAccountstatus(ManagerStatus.INACTIVE); // หรือ ManagerStatus.SUSPENDED ตามที่ใช้
+            manager.setSuspensionReason(reason); // บันทึกเหตุผล
+            managerRepository.save(manager);
             return true;
         }
         return false;

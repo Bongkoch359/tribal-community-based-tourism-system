@@ -96,7 +96,7 @@ public class HomestayOwnerService {
 
     // ───── Get Profile ─────
 
-    public Homestayowner getProfile(int ownerid) {
+    public Homestayowner getProfile(String ownerid) {
         return ownerRepository.findById(ownerid)
                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
     }
@@ -106,7 +106,7 @@ public class HomestayOwnerService {
     // ───── Update Profile (เฉพาะข้อมูลส่วนตัว) ─────
 
     @Transactional
-    public Homestayowner updateProfile(int ownerid, String firstname, String lastname,
+    public Homestayowner updateProfile(String ownerid, String firstname, String lastname,
             String email, String phone) {
 
         Homestayowner owner = ownerRepository.findById(ownerid)
@@ -127,7 +127,7 @@ public class HomestayOwnerService {
     // ───── Update Bank Info ─────
 
     @Transactional
-    public Homestayowner updateBankInfo(int ownerid, String bankName, String accountName,
+    public Homestayowner updateBankInfo(String ownerid, String bankName, String accountName,
             String accountNumber, String bankBranch) {
 
         Homestayowner owner = ownerRepository.findById(ownerid)
@@ -144,7 +144,7 @@ public class HomestayOwnerService {
     // ───── Update Signature ─────
 
     @Transactional
-    public Homestayowner updateSignature(int ownerid, String signatureBase64) {
+    public Homestayowner updateSignature(String ownerid, String signatureBase64) {
         Homestayowner owner = ownerRepository.findById(ownerid)
                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
         owner.setSignatureImageUrl(signatureBase64);
@@ -154,7 +154,7 @@ public class HomestayOwnerService {
     // ───── Change Password ─────
 
     @Transactional
-    public void changePassword(int ownerid, String currentPassword, String newPassword) {
+    public void changePassword(String ownerid, String currentPassword, String newPassword) {
 
         // 1. ดึง owner
         Homestayowner owner = ownerRepository.findById(ownerid)

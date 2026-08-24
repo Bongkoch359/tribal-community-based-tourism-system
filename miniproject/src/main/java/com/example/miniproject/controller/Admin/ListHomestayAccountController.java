@@ -63,7 +63,16 @@ public class ListHomestayAccountController {
         if (session.getAttribute("loggedInAdmin") == null)
             return "redirect:/admin/login";
 
-        List<Homestayowner> approved = ownerrepository.findAll().stream()
+        List<Homestayowner> allOwners = ownerrepository.findAll(); // <-- ดึงข้อมูลทั้งหมดมาก่อน
+
+        // ── คำนวณจำนวนโฮมสเตย์ที่รออนุมัติสำหรับเอาไปโชว์ที่ Navbar ──
+        long homestayPending = allOwners.stream()
+            .filter(o -> (o.getVerificationstatus() == null || !o.getVerificationstatus())
+                      && !"REJECTED".equals(o.getAccountstatus()))
+            .count();
+
+        // กรองเฉพาะรายการที่อนุมัติแล้วมาแสดงในตารางหน้านี้
+        List<Homestayowner> approved = allOwners.stream()
             .filter(o -> Boolean.TRUE.equals(o.getVerificationstatus()))
             .toList();
 
@@ -74,6 +83,9 @@ public class ListHomestayAccountController {
         model.addAttribute("allCount",     approved.size());
         model.addAttribute("activeCount",  activeCount);
         model.addAttribute("suspendCount", suspendCount);
+        
+        // ── เพิ่มบรรทัดนี้ เพื่อส่งตัวเลขไปแสดงที่ Navbar ──
+        model.addAttribute("pendingCount", homestayPending);
 
         return "Admin/admin_homestayall";
     }
@@ -81,7 +93,7 @@ public class ListHomestayAccountController {
     // POST /admin/homestay/approve/{id}
     // Basic Flow 5 / Alternate Flow 5.1.1 — error update message
     @PostMapping("/approve/{id}")
-    public String approveHomestay(@PathVariable Integer id,
+    public String approveHomestay(@PathVariable String id,
                                   HttpSession session,
                                   RedirectAttributes redirectAttrs) {
 
@@ -120,7 +132,7 @@ public class ListHomestayAccountController {
     // POST /admin/homestay/reject/{id}
     // Basic Flow 5 / Alternate Flow 5.1.1 — error update message
     @PostMapping("/reject/{id}")
-    public String rejectHomestay(@PathVariable Integer id,
+    public String rejectHomestay(@PathVariable String id,
                                  HttpSession session,
                                  RedirectAttributes redirectAttrs) {
 
@@ -157,9 +169,12 @@ public class ListHomestayAccountController {
     }
 
     // POST /admin/homestay/suspend/{id}@PostMapping("/suspend/{id}")
-public String suspendHomestay(@PathVariable Integer id,
-                              HttpSession session,
-                              RedirectAttributes redirectAttrs) {
+// POST /admin/homestay/suspend/{id}
+@PostMapping("/suspend/{id}")
+public String suspendHomestay(@PathVariable String id,
+                            @RequestParam("reason") String reason, // <-- เพิ่มรับค่าเหตุผลจากฟอร์ม
+                            HttpSession session,
+                            RedirectAttributes redirectAttrs) {
 
     if (session.getAttribute("loggedInAdmin") == null)
         return "redirect:/admin/login";
@@ -168,8 +183,9 @@ public String suspendHomestay(@PathVariable Integer id,
         Homestayowner owner = ownerrepository.findById(id)
             .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล"));
 
-        // Basic Flow 5.1 — update status
+        // Basic Flow 5.1 — update status & reason
         owner.setAccountstatus("SUSPENDED");
+        owner.setSuspensionReason(reason); // <-- บันทึกเหตุผลลง Entity
         ownerrepository.save(owner);
 
     } catch (Exception e) {
@@ -182,7 +198,7 @@ public String suspendHomestay(@PathVariable Integer id,
 }
 
 @PostMapping("/activate/{id}")
-public String activateHomestay(@PathVariable Integer id,
+public String activateHomestay(@PathVariable String id,
                                HttpSession session,
                                RedirectAttributes redirectAttrs) {
 
@@ -207,7 +223,7 @@ public String activateHomestay(@PathVariable Integer id,
 
 // GET /admin/homestay/detail/{id} → ดูรายละเอียดคำขอโฮมสเตย์ (read-only)
 @GetMapping("/detail/{id}")
-public String homestayDetail(@PathVariable("id") Integer id,
+public String homestayDetail(@PathVariable("id") String id,
                               Model model,
                               HttpSession session,
                               RedirectAttributes redirectAttrs) {

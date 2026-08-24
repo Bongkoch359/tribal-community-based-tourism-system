@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, Integer> {
+public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, String> {
     
 
      List<Homestayowner> findByAccountstatus(String accountstatus);
@@ -26,11 +26,11 @@ public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, In
 
     // ตรวจสอบว่า email มีอยู่แล้วหรือยัง (ยกเว้น owner ตัวเอง)
     @Query("SELECT COUNT(o) > 0 FROM Homestayowner o WHERE o.email = :email AND o.ownerid <> :ownerid")
-    boolean existsByEmailAndNotId(@Param("email") String email, @Param("ownerid") int ownerid);
+    boolean existsByEmailAndNotId(@Param("email") String email, @Param("ownerid") String  ownerid);
  
     // ดึงเฉพาะ firstname, lastname, email, phone
     @Query("SELECT o FROM Homestayowner o WHERE o.ownerid = :ownerid")
-    Optional<Homestayowner> findProfileById(@Param("ownerid") int ownerid);
+    Optional<Homestayowner> findProfileById(@Param("ownerid") String  ownerid);
  
     // อัปเดตข้อมูลส่วนตัว (ไม่รวม password)
     @Modifying
@@ -43,7 +43,7 @@ public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, In
         WHERE o.ownerid = :ownerid
         """)
     int updateProfile(
-        @Param("ownerid")    int    ownerid,
+        @Param("ownerid")    String     ownerid,
         @Param("firstname")  String firstname,
         @Param("lastname")   String lastname,
         @Param("email")      String email,
@@ -54,12 +54,12 @@ public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, In
     @Modifying
     @Query("UPDATE Homestayowner o SET o.password = :newPassword WHERE o.ownerid = :ownerid")
     int updatePassword(
-        @Param("ownerid")     int    ownerid,
+        @Param("ownerid")     String     ownerid,
         @Param("newPassword") String newPassword
     );
  
     // ดึง password เดิมเพื่อตรวจสอบ
     @Query("SELECT o.password FROM Homestayowner o WHERE o.ownerid = :ownerid")
-    Optional<String> findPasswordById(@Param("ownerid") int ownerid);
+    Optional<String> findPasswordById(@Param("ownerid") String  ownerid);
 
 }

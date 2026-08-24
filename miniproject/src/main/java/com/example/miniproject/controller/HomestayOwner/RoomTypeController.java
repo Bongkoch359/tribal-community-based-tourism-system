@@ -47,7 +47,7 @@ public class RoomTypeController {
             return "redirect:/owner/login";
 
         String ownername = (String) session.getAttribute("ownername");
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
 
         boolean bankInfoMissing = checkBankInfoMissing(ownerid);
         model.addAttribute("bankInfoMissing", bankInfoMissing);
@@ -113,7 +113,7 @@ public class RoomTypeController {
         if (session.getAttribute("ownerid") == null)
             return "redirect:/owner/login";
 
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
 
         // ── กันฝั่ง server: ธนาคารยังไม่ครบ ห้ามเข้าหน้าเพิ่มห้องพัก ──
         if (checkBankInfoMissing(ownerid)) {
@@ -151,7 +151,7 @@ public class RoomTypeController {
                     .body(Map.of("success", false, "message", "กรุณาเข้าสู่ระบบ"));
         }
 
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
 
         // ── กันฝั่ง server: ธนาคารยังไม่ครบ ห้ามบันทึกห้องพัก ──
         if (checkBankInfoMissing(ownerid)) {
@@ -366,7 +366,7 @@ public class RoomTypeController {
     }
 
     // ─── helper: เช็คว่าข้อมูลธนาคารของเจ้าของยังไม่ครบหรือไม่ ──────────────
-    private boolean checkBankInfoMissing(Integer ownerid) {
+    private boolean checkBankInfoMissing(String ownerid) {
         if (ownerid == null)
             return true;
 

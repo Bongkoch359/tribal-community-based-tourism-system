@@ -47,10 +47,18 @@ public class HomestayownerController {
         try {
             Homestayowner owner = ownerService.login(req.getEmail(), req.getPassword());
 
-            if ("SUSPENDED".equals(owner.getAccountstatus())) {
+           if ("SUSPENDED".equals(owner.getAccountstatus())) {
+                // ดึงเหตุผลการระงับ ถ้ามี ให้เอามาต่อท้ายข้อความ
+                String reason = owner.getSuspensionReason();
+                String message = "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ";
+                
+                if (reason != null && !reason.isBlank()) {
+                    message += " (เหตุผล: " + reason + ")";
+                }
+
                 return ResponseEntity.ok(Map.of(
                         "success", false,
-                        "message", "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ"));
+                        "message", message)); // ส่ง message ที่ต่อเหตุผลแล้วกลับไป
             }
 
             session.setAttribute("ownerLogin", owner);
@@ -89,7 +97,7 @@ public class HomestayownerController {
 
     @GetMapping("/owner/profile-edit")
     public String editProfile(HttpSession session, Model model) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null)
             return "redirect:/owner/login";
 
@@ -211,7 +219,7 @@ public class HomestayownerController {
             @RequestParam(required = false) String phone,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null)
             return "redirect:/owner/login";
 
@@ -236,7 +244,7 @@ public class HomestayownerController {
             @RequestParam(required = false) String bankBranch,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null)
             return "redirect:/owner/login";
 
@@ -257,7 +265,7 @@ public class HomestayownerController {
     public String updateSignature(@RequestParam("signatureFile") MultipartFile signatureFile,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null)
             return "redirect:/owner/login";
 
@@ -299,7 +307,7 @@ public class HomestayownerController {
             @RequestParam String confirmPassword,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null)
             return "redirect:/owner/login";
 
@@ -321,7 +329,7 @@ public class HomestayownerController {
 
     @GetMapping("/owner/homestays")
     public String homestaysPage(HttpSession session, Model model) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null)
             return "redirect:/owner/login";
 
@@ -339,7 +347,7 @@ public class HomestayownerController {
     public String viewHomestay(@PathVariable Integer id,
             HttpSession session,
             Model model) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null)
             return "redirect:/owner/login";
 
@@ -358,7 +366,7 @@ public class HomestayownerController {
     public String editHomestayPage(@PathVariable Integer id,
             HttpSession session,
             Model model) {
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null)
             return "redirect:/owner/login";
 
@@ -387,7 +395,7 @@ public class HomestayownerController {
             @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
             HttpSession session) {
 
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String ) session.getAttribute("ownerid");
         if (ownerid == null)
             return ResponseEntity.status(401).body(Map.of("message", "กรุณาเข้าสู่ระบบก่อน"));
 

@@ -13,6 +13,8 @@ import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.enums.ManagerStatus;
 import com.example.miniproject.service.Admin.EmailService;
 import com.example.miniproject.service.Admin.ManagerService;
+import com.example.miniproject.entity.Homestayowner;
+import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -26,6 +28,9 @@ public class ManagerController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private HomestayOwnerRepository ownerRepository;
+
     // ============================================================
     // GET /admin/manager
     // List Manager Account — step 2-5 (Sequence: List Manager)
@@ -38,6 +43,8 @@ public class ManagerController {
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
+
+        addPendingHomestayCount(model);
 
         // step 4.1: query data
         List<Communitymanager> managers = managerService.getAll();
@@ -69,11 +76,14 @@ public class ManagerController {
     // GET /admin/manager/create
     // เปิดหน้าฟอร์ม Create Manager — step 1 open page
     // ============================================================
-    @GetMapping("/create")
-    public String createPage(HttpSession session) {
+   @GetMapping("/create")
+    public String createPage(HttpSession session, Model model) { // <-- เพิ่ม Model model เข้าไปตรงนี้
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
+        
+        addPendingHomestayCount(model);
+
         return "Admin/admin_managercreate";
     }
 
@@ -157,21 +167,28 @@ public class ManagerController {
     // POST /admin/manager/suspend/{id}
     // Suspend Manager Account
     // ============================================================
+    // ============================================================
+    // POST /admin/manager/suspend/{id}
+    // Suspend Manager Account
+    // ============================================================
     @PostMapping("/suspend/{id}")
     public String suspendManager(@PathVariable String id,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
+                                   @RequestParam("reason") String reason, // <-- เพิ่มรับค่าเหตุผลจากฟอร์ม
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
 
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
 
-        boolean success = managerService.suspend(id);
+        // ส่ง id และ reason ไปให้ Service จัดการบันทึก
+        boolean success = managerService.suspend(id, reason); // <-- ปรับให้ Service รับเหตุผลด้วย
+        
         if (success) {
-            redirectAttributes.addFlashAttribute("message",   "ระงับบัญชีเรียบร้อยแล้ว");
+            redirectAttributes.addFlashAttribute("message", "ระงับบัญชีเรียบร้อยแล้ว");
             redirectAttributes.addFlashAttribute("alertType", "success");
         } else {
-            redirectAttributes.addFlashAttribute("message",   "ไม่พบบัญชีที่ต้องการระงับ");
+            redirectAttributes.addFlashAttribute("message", "ไม่พบบัญชีที่ต้องการระงับ");
             redirectAttributes.addFlashAttribute("alertType", "error");
         }
         return "redirect:/admin/manager";
@@ -199,5 +216,14 @@ public class ManagerController {
             redirectAttributes.addFlashAttribute("alertType", "error");
         }
         return "redirect:/admin/manager";
+    }
+
+    private void addPendingHomestayCount(Model model) {
+        List<Homestayowner> allOwners = ownerRepository.findAll();
+        long homestayPending = allOwners.stream()
+            .filter(o -> (o.getVerificationstatus() == null || !o.getVerificationstatus())
+                      && !"REJECTED".equals(o.getAccountstatus()))
+            .count();
+        model.addAttribute("pendingCount", homestayPending);
     }
 }

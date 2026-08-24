@@ -303,6 +303,8 @@ img { display: block; }
   font-weight: 700; line-height: 1;
 }
 .counter-btn:hover { border-color: var(--green-500); color: var(--green-700); background: var(--green-50); }
+.counter-btn:disabled { opacity: .4; cursor: not-allowed; }
+.counter-btn:disabled:hover { border-color: var(--neutral-300); color: var(--neutral-700); background: var(--white); }
 .counter-val {
   width: 32px; text-align: center; font-size: 16px; font-weight: 800;
   color: var(--neutral-800); background: transparent; border: none; outline: none;
@@ -498,6 +500,7 @@ img { display: block; }
       const INSURANCE_PRICE = /*[[${insurancePrice}]]*/ 100;
       const ALLOW_MEETING_POINT = /*[[${tour.allowMeetingPoint}]]*/ true;  
       const ALLOW_HOTEL_PICKUP  = /*[[${tour.allowHotelPickup}]]*/ false; 
+      const HOTEL_PICKUP_AREA   = /*[[${tour.hotelPickupArea}]]*/ 'เชียงใหม่';
     </script>
 
     <!-- Alpine ต้องโหลดก่อน Alpine.data() จึงใช้ script ธรรมดา (ไม่ defer) -->
@@ -509,6 +512,7 @@ img { display: block; }
             adultPrice: ADULT_PRICE,
             childPrice: CHILD_PRICE,
             insurancePrice: INSURANCE_PRICE,
+            availableSeats: AVAILABLE_SEATS,
             numOfAdult: 1,
             numOfChild: 0,
             isBookingForOther: false,
@@ -523,6 +527,14 @@ img { display: block; }
             get hasInsuranceOption() { return this.insurancePrice !== null && this.insurancePrice !== undefined; },
             get insuranceSubtotal() { return this.wantInsurance ? (this.numOfGuest * this.insurancePrice) : 0; },
             get subtotal() { return (this.numOfAdult * this.adultPrice) + (this.numOfChild * this.childPrice) + this.insuranceSubtotal; },
+            get isSoldOut() { return this.availableSeats <= 0; },
+            get canIncreaseGuest() { return this.numOfGuest < this.availableSeats; },
+            get pickupAreaMismatch() {
+                if (this.pickupType !== 'โรงแรม/ที่พัก') return false;
+                if (!this.pickupLocation || !this.pickupLocation.trim()) return false;
+                if (!HOTEL_PICKUP_AREA) return false;
+                return !this.pickupLocation.includes(HOTEL_PICKUP_AREA);
+            },
             get guestListForOther() {
                 return Array.from({ length: this.numOfGuest }, (_, i) => i + 1);
             },
@@ -533,6 +545,13 @@ img { display: block; }
                 return Object.values(this.fieldErrors);
             },
 
+            incrementAdult() {
+                if (this.canIncreaseGuest) this.numOfAdult++;
+            },
+            incrementChild() {
+                if (this.canIncreaseGuest) this.numOfChild++;
+            },
+
             validate() {
                 const errors = {};
 
@@ -541,7 +560,7 @@ img { display: block; }
                 if (!dateVal) {
                     errors['tourdate'] = 'กรุณาเลือกวันที่เดินทาง';
                 } else {
-                    const chosen = new Date(dateVal);
+                    const chosen = new Date(dateVal + 'T00:00:00');
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
                     if (chosen < today) {
@@ -552,14 +571,14 @@ img { display: block; }
                 // 2. จำนวนผู้โดยสาร
                 if (this.numOfGuest < 1) {
                     errors['numOfGuest'] = 'กรุณาระบุจำนวนผู้เดินทางอย่างน้อย 1 ท่าน';
+                } else if (this.numOfGuest > this.availableSeats) {
+                    errors['numOfGuest'] = `ที่นั่งเหลือเพียง ${this.availableSeats} ที่ กรุณาลดจำนวนผู้เดินทาง`;
                 }
 
-                // 2.5 ที่อยู่โรงแรม (กรณีเลือกให้ไปรับ)
+                // 2.5 ที่อยู่โรงแรม (กรณีเลือกให้ไปรับ) — เช็คแค่ว่ากรอกมาหรือยัง ไม่บังคับคำพื้นที่
                 if (this.pickupType === 'โรงแรม/ที่พัก') {
                     if (!this.pickupLocation || !this.pickupLocation.trim()) {
                         errors['pickuplocation'] = 'กรุณาระบุชื่อ/ที่อยู่โรงแรมที่พัก';
-                    } else if (!this.pickupLocation.includes('เชียงใหม่')) {
-                        errors['pickuplocation'] = 'บริการรับที่พักรองรับเฉพาะในเขตจังหวัดเชียงใหม่เท่านั้น';
                     }
                 }
 
@@ -619,7 +638,7 @@ img { display: block; }
             },
 
             handleSubmit() {
-                if (this.submitting) return;
+                if (this.submitting || this.isSoldOut) return;
 
                 this.submitted = true;
                 this.fieldErrors = this.validate();
@@ -876,8 +895,7 @@ img { display: block; }
             <span>
                 🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
                 <span th:if="${tour.hotelPickupArea != null and !#strings.isEmpty(tour.hotelPickupArea)}">
-    (เฉพาะในเขตจังหวัด
-    <strong th:text="${tour.hotelPickupArea}">เชียงใหม่</strong>)
+    (เฉพาะพื้นที่ <strong th:text="${tour.hotelPickupArea}">เชียงใหม่</strong>)
 </span>
             </span>
         </label>
@@ -915,10 +933,22 @@ img { display: block; }
         <span x-text="fieldErrors['pickuplocation']"></span>
     </div>
 
-    <div class="idcard-hint">
-        ⚠️ บริการรับส่งถึงที่พัก
-        รองรับเฉพาะที่พักในเขตจังหวัดเชียงใหม่เท่านั้น
-        กรุณาระบุคำว่า "เชียงใหม่" ในที่อยู่
+    <div class="idcard-hint"
+         style="color: var(--amber-700); display: flex; align-items: flex-start; gap: 4px;"
+         x-show="pickupAreaMismatch"
+         x-cloak>
+        <span>⚠️</span>
+        <span>
+            ที่อยู่นี้ดูเหมือนจะไม่ได้ระบุพื้นที่ <strong th:text="${tour.hotelPickupArea}">เชียงใหม่</strong>
+            หากที่พักของท่านอยู่นอกเขตนี้จริง เจ้าหน้าที่อาจติดต่อกลับเพื่อยืนยันค่าบริการรับส่งเพิ่มเติม
+        </span>
+    </div>
+
+    <div class="idcard-hint"
+         th:if="${tour.hotelPickupArea != null and !#strings.isEmpty(tour.hotelPickupArea)}">
+        💡 บริการรับส่งถึงที่พักครอบคลุมพื้นที่
+        <strong th:text="${tour.hotelPickupArea}">เชียงใหม่</strong>
+        เป็นหลัก
     </div>
 </div>
 
@@ -946,7 +976,7 @@ img { display: block; }
                 <div class="counter-wrap">
                   <button type="button" class="counter-btn" @click="if(numOfAdult > 1) numOfAdult--">−</button>
                   <input type="number" name="adult" x-model.number="numOfAdult" class="counter-val" readonly>
-                  <button type="button" class="counter-btn" @click="numOfAdult++">+</button>
+                  <button type="button" class="counter-btn" :disabled="!canIncreaseGuest" @click="incrementAdult()">+</button>
                 </div>
               </div>
               <div class="passenger-card">
@@ -958,9 +988,13 @@ img { display: block; }
                 <div class="counter-wrap">
                   <button type="button" class="counter-btn" @click="if(numOfChild > 0) numOfChild--">−</button>
                   <input type="number" name="children" x-model.number="numOfChild" class="counter-val" readonly>
-                  <button type="button" class="counter-btn" @click="numOfChild++">+</button>
+                  <button type="button" class="counter-btn" :disabled="!canIncreaseGuest" @click="incrementChild()">+</button>
                 </div>
               </div>
+            </div>
+
+            <div class="field-error" style="margin-top: 8px;" x-show="!canIncreaseGuest && availableSeats > 0">
+              <span>⚠️ ถึงจำนวนที่นั่งที่เหลือแล้ว (<span x-text="availableSeats"></span> ที่)</span>
             </div>
 
             <div class="field-error" style="margin-top: 8px;" x-show="submitted && fieldErrors['numOfGuest']">
@@ -983,13 +1017,13 @@ img { display: block; }
                   </div>
                 </div>
                 <div class="insurance-included-badge">✅ รวมแล้ว</div>
-                <input type="hidden" name="wantinsurance" value="true">
               </div>
 
               <div class="insurance-card-expand">
                 📋 กรอกเลขบัตรประชาชน 13 หลักของผู้เดินทางทุกท่านในฟอร์มด้านล่าง เพื่อออกกรมธรรม์ประกัน
               </div>
             </div>
+            <input type="hidden" name="wantinsurance" :value="hasInsuranceOption ? wantInsurance : false">
 
             <div class="field-error" style="margin-top: 8px;" x-show="submitted && fieldErrors['idcards']">
               <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -1237,14 +1271,13 @@ img { display: block; }
           </div>
 
          <button type="button" class="btn-confirm"
-        th:disabled="${availableSeats <= 0 or schedules == null or schedules.isEmpty()}"
-        :disabled="submitting"
+        :disabled="submitting || isSoldOut"
         @click="handleSubmit()">
             <template x-if="!submitting">
-              <span th:if="${availableSeats <= 0}">❌ ทัวร์รอบนี้เต็มแล้ว</span>
+              <span x-show="isSoldOut">❌ ทัวร์รอบนี้เต็มแล้ว</span>
             </template>
             <template x-if="!submitting">
-              <span th:if="${availableSeats > 0}">🚀 ยืนยันการจองตอนนี้</span>
+              <span x-show="!isSoldOut">🚀 ยืนยันการจองตอนนี้</span>
             </template>
             <template x-if="submitting">
               <span style="display:flex;align-items:center;gap:8px;">

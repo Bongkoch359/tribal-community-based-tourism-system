@@ -793,17 +793,16 @@
       <div class="booking-gallery" onclick="openLightbox(0)">
         <div class="g-main">
           <img th:src="${imgs[0]}" alt="รูปหลัก"/>
+            <!-- <img th:src="@{${imgs[0]}}" alt="รูปหลัก"/> -->
         </div>
-        <div class="g-side" th:if="${imgs.length > 1}"><img th:src="${imgs[1]}" alt=""/></div>
-        <div class="g-side" th:if="${imgs.length > 2}"><img th:src="${imgs[2]}" alt=""/></div>
-        <div class="g-side" th:if="${imgs.length > 3}"><img th:src="${imgs[3]}" alt=""/></div>
-        <div class="g-side" th:if="${imgs.length > 4}">
-          <img th:src="${imgs[4]}" alt=""/>
-          <div class="g-more-overlay">
-            <span class="more-num" th:text="'+' + ${imgs.length - 4}">+8</span>
-            <span class="more-lbl">รูปทั้งหมด</span>
-          </div>
-        </div>
+       <div class="g-side" th:if="${imgs.length > 1}"><img th:src="${imgs[1]}" alt=""/></div>
+<div class="g-side" th:if="${imgs.length > 2}">
+  <img th:src="${imgs[2]}" alt=""/>
+  <div class="g-more-overlay" th:if="${imgs.length > 3}">
+    <span class="more-num" th:text="'+' + ${imgs.length - 2}">+8</span>
+    <span class="more-lbl">รูปทั้งหมด</span>
+  </div>
+</div>
         <button class="btn-view-all" onclick="event.stopPropagation(); openLightbox(0)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>

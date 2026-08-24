@@ -602,8 +602,8 @@ img { display: block; max-width: 100%; }
                     and session.loggedInManager == null
                     and session.loggedInOwner   == null
                     and session.loggedInAdmin   == null}">
-      <div class="login-dropdown">
-        <button class="btn-login">
+   <div class="login-dropdown" id="loginDropdown">
+  <button class="btn-login" type="button" onclick="toggleLoginMenu(event)">
           <span class="icon-user">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
               <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -843,7 +843,7 @@ img { display: block; max-width: 100%; }
   </div>
 </div>
 
-<span th:attr="data-tour-id=${tour.tourid}" data-tour-id="1" style="display:none;"></span>
+<span th:attr="data-tour-id=${tour.tourid}" style="display:none;"></span>
 
 <!-- ══════════════════════════════════════════
      MAIN LAYOUT
@@ -1222,10 +1222,20 @@ img { display: block; max-width: 100%; }
     const w = document.getElementById('userMenuWrapper');
     if (w) w.classList.toggle('open');
   }
-  document.addEventListener('click', function(e) {
-    const w = document.getElementById('userMenuWrapper');
-    if (w && !w.contains(e.target)) w.classList.remove('open');
-  });
+
+  function toggleLoginMenu(e) {
+  e.stopPropagation();
+  const w = document.getElementById('loginDropdown');
+  if (w) w.classList.toggle('open');
+}
+
+ document.addEventListener('click', function(e) {
+  const w = document.getElementById('userMenuWrapper');
+  if (w && !w.contains(e.target)) w.classList.remove('open');
+
+  const l = document.getElementById('loginDropdown');
+  if (l && !l.contains(e.target)) l.classList.remove('open');
+});
 
   // ปฏิทินเลือกวันเดินทาง — โชว์สถานะจริงของแต่ละวันจากรอบทัวร์ (Tourschedule)
   var scheduleByDate = {};

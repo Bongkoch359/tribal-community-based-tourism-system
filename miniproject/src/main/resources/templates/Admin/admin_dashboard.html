@@ -4,155 +4,177 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>แผงควบคุมผู้ดูแลระบบ - ระบบท่องเที่ยวชุมชนเผ่า</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <style>
-  :root {
-    /* ── Primary: ฟ้าเขียว (Turquoise/Teal) / ขาว ── */
-    --primary-900: #0c4a52;
-    --primary-700: #0e7c86;
-    --primary-600: #14a3ae;
-    --primary-500: #35bcc4;
-    --primary-400: #6fd3d9;
-    --primary-100: #d7f4f5;
-    --primary-50:  #eefbfb;
-    --white-bg: #F8F9FA;
-
-    /* ── Supporting colors ── */
-    --gray-purple: #6C7293;
-    --gray-purple-light: #e4e5ec;
-    --gray-purple-50: #f3f3f8;
-    --green: #21BF06;
-    --green-dark: #189004;
-    --green-100: #e2f7de;
-    --blue: #3B86D1;
-    --blue-dark: #2c68a6;
-    --blue-100: #e2eefa;
-
-    --red-700:   #d6395c;
-    --red-100:   #fce3e9;
-
-    --neutral-950: #14121e;
-    --neutral-800: #262336;
-    --neutral-700: #3d3950;
-    --neutral-600: #5b5771;
-    --neutral-500: #7d7a94;
-    --neutral-400: #a5a2b8;
-    --neutral-300: #cecbdb;
-    --neutral-200: #e6e4ee;
-    --neutral-100: #f6f5fa;
-    --white: #ffffff;
+  *, *::before, *::after { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #006c49;
+    --primary-container: #10b981;
+    --on-primary: #ffffff;
+    --on-primary-container: #00422b;
+    
+    --secondary: #2b6954;
+    --secondary-container: #adedd3;
+    
+    --background: #f4fbf4;
+    --surface: #f4fbf4;
+    --surface-container-low: #eef6ee;
+    --surface-container: #e8f0e9;
+    --surface-container-lowest: #ffffff;
+    --surface-variant: #dde4dd;
+    
+    --on-surface: #161d19;
+    --on-surface-variant: #3c4a42;
+    --outline: #6c7a71;
+    --outline-variant: #bbcabf;
+    
+    --error: #ba1a1a;
+    --error-container: #ffdad6;
+    --on-error-container: #93000a;
 
+    --gold-700: #92681b;
+    --gold-100: #fbedce;
+    --blue: #2563eb;
+    --blue-100: #eff6ff;
+    --green-dark: #15803d;
+    --green-100: #f0fdf4;
+    
+    --navbar-h: 100px;
+    --r-md: 10px;
+    --r-lg: 16px;
+  }
+
+  html { scroll-behavior: smooth; }
   body {
-    font-family: 'Sarabun', sans-serif;
-    background: var(--white-bg);
-    color: var(--neutral-800);
-    line-height: 1.6;
+    background-color: var(--surface-container-low);
+    color: var(--on-surface);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
   }
+
+  a { text-decoration: none; color: inherit; }
+  button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif; }
 
   /* ── NAVBAR ── */
   .navbar {
-    background: linear-gradient(120deg, var(--primary-600), var(--primary-700));
-    height: 100px;
+    background: var(--primary);
+    height: var(--navbar-h);
     display: flex;
     align-items: center;
-    padding: 0 5%;
-    gap: 8px;
+    padding: 0 4%;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 4px 16px rgba(0, 108, 73, 0.15);
   }
 
   .navbar-brand {
-    color: #fff;
-    font-weight: 700;
-    font-size: 22px;
-    text-decoration: none;
+    color: var(--on-primary);
     margin-right: auto;
     display: flex;
     align-items: center;
-    gap: 14px;
-    flex-shrink: 0;
   }
 
-  .brand-icon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--blue), var(--primary-600));
-    border-radius: 12px;
+  .brand-logo {
+    width: 160px;
+    height: 120px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(59,134,209,0.4);
+  }
+  .brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
   }
 
-  .nav-group {
+  .brand-name { display: flex; flex-direction: column; margin-left: -25px; }
+  .brand-name-line1 {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+  .brand-name-line2 {
+    display: block;
+    font-size: 12px;
+    color: var(--secondary-container);
+    margin-top: 4px;
+  }
+
+  /* สไตล์สำหรับตัวเลขแจ้งเตือนบน Navbar */
+  .nav-badge {
+    background-color: var(--error);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    line-height: 1;
+    display: inline-block;
+  }
+  
+  .nav-group { display: flex; align-items: center; gap: 6px; }
+
+  .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
     display: flex;
     align-items: center;
     gap: 6px;
-  }
-
-  .nav-link {
-    color: rgba(255,255,255,0.5);
-    text-decoration: none;
-    font-size: 17px;
-    font-weight: 500;
-    padding: 10px 20px;
-    border-radius: 10px;
-    transition: all 0.15s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
     white-space: nowrap;
   }
 
-  .nav-link:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
-  .nav-link.active { background: var(--blue); color: #fff; }
+  .nav-link:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+  .nav-link.active { background: rgba(255, 255, 255, 0.22); color: #fff; }
 
-  .nav-divider {
-    width: 1px;
-    height: 36px;
-    background: rgba(255,255,255,0.1);
-    margin: 0 12px;
-  }
+  .nav-divider { width: 1px; height: 32px; background: rgba(255, 255, 255, 0.2); margin: 0 12px; }
 
-  .admin-area { display: flex; align-items: center; gap: 14px; }
-
+  .admin-area { display: flex; align-items: center; gap: 12px; }
   .admin-info { text-align: right; }
-  .admin-name { color: rgba(255,255,255,0.9); font-size: 15px; font-weight: 600; line-height: 1.2; }
-  .admin-role { color: rgba(255,255,255,0.4); font-size: 12px; }
+  .admin-name { color: #fff; font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255, 255, 255, 0.7); font-size: 12px; }
 
   .admin-avatar {
-    width: 46px;
-    height: 46px;
-    background: linear-gradient(135deg, var(--green), var(--blue));
+    width: 42px; height: 42px;
+    background: var(--secondary);
+    border: 1px solid rgba(255,255,255,0.3);
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--white);
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: #fff; flex-shrink: 0;
   }
 
   .logout-btn {
-    color: rgba(255,255,255,0.35);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     transition: color 0.15s;
     white-space: nowrap;
+    margin-left: 6px;
   }
-  .logout-btn:hover { color: rgba(255,255,255,0.85); }
+  .logout-btn:hover { color: #fff; }
 
   /* ── CONTENT ── */
   .content {
@@ -163,10 +185,10 @@
     width: 100%;
   }
 
-  /* WELCOME */
+  /* WELCOME BANNER */
   .welcome-banner {
-    background: linear-gradient(120deg, var(--primary-600) 0%, var(--blue) 130%);
-    border-radius: 18px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: var(--r-lg);
     padding: 32px 36px;
     color: #fff;
     margin-bottom: 32px;
@@ -176,6 +198,7 @@
     gap: 24px;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 108, 73, 0.15);
   }
 
   .welcome-banner::after {
@@ -185,34 +208,34 @@
     top: -60px;
     width: 220px;
     height: 220px;
-    background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 70%);
+    background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
     border-radius: 50%;
   }
 
   .welcome-text { position: relative; z-index: 1; }
   .welcome-text h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
-  .welcome-text p  { font-size: 14px; color: rgba(255,255,255,0.7); }
+  .welcome-text p  { font-size: 15px; color: rgba(255,255,255,0.8); }
 
   .welcome-stats { display: flex; gap: 12px; flex-shrink: 0; position: relative; z-index: 1; }
 
   .welcome-stat {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: var(--r-md);
     padding: 14px 20px;
     text-align: center;
     min-width: 90px;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(4px);
   }
 
   .ws-num   { font-size: 26px; font-weight: 700; color: #fff; line-height: 1; }
-  .ws-label { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+  .ws-label { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 4px; }
 
   /* SECTION LABEL */
   .section-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--neutral-500);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--outline);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin-bottom: 12px;
@@ -225,7 +248,7 @@
     content: "";
     width: 4px;
     height: 14px;
-    background: var(--primary-600);
+    background: var(--primary);
     border-radius: 2px;
   }
 
@@ -233,7 +256,7 @@
   .stat-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+    gap: 16px;
     margin-bottom: 28px;
   }
 
@@ -241,90 +264,37 @@
   .stat-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
 
   .stat-card {
-    background: var(--white);
-    border: 1px solid var(--neutral-200);
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--surface-variant);
     border-top: 3px solid transparent;
-    border-radius: 14px;
+    border-radius: var(--r-md);
     padding: 20px 22px;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
 
   .stat-card:hover {
-    box-shadow: 0 10px 26px rgba(20,163,174,0.14);
+    box-shadow: 0 8px 24px rgba(0, 108, 73, 0.08);
     transform: translateY(-2px);
   }
 
-  .stat-card.acc-purple { border-top-color: var(--primary-600); }
+  .stat-card.acc-purple { border-top-color: var(--primary); }
   .stat-card.acc-blue   { border-top-color: var(--blue); }
-  .stat-card.acc-green  { border-top-color: var(--green); }
-  .stat-card.acc-gray   { border-top-color: var(--gray-purple); }
-  .stat-card.acc-red    { border-top-color: var(--red-700); }
+  .stat-card.acc-green  { border-top-color: var(--green-dark); }
+  .stat-card.acc-gray   { border-top-color: var(--outline); }
+  .stat-card.acc-red    { border-top-color: var(--error); }
 
-  .stat-label  { font-size: 12px; color: var(--neutral-500); margin-bottom: 8px; font-weight: 500; }
-  .stat-number { font-size: 32px; font-weight: 700; color: var(--neutral-800); line-height: 1; }
-  .stat-number.teal  { color: var(--primary-600); }
+  .stat-label  { font-size: 13px; color: var(--outline); margin-bottom: 8px; font-weight: 600; }
+  .stat-number { font-size: 32px; font-weight: 700; color: var(--on-surface); line-height: 1; }
+  .stat-number.teal  { color: var(--primary); }
   .stat-number.gold  { color: var(--blue); }
   .stat-number.green { color: var(--green-dark); }
-  .stat-number.gray  { color: var(--gray-purple); }
-  .stat-number.red   { color: var(--red-700); }
+  .stat-number.gray  { color: var(--secondary); }
+  .stat-number.red   { color: var(--error); }
 
-  .stat-delta { font-size: 12px; margin-top: 6px; font-weight: 500; }
+  .stat-delta { font-size: 13px; margin-top: 6px; font-weight: 600; }
   .delta-up   { color: var(--green-dark); }
   .delta-warn { color: var(--blue); }
-  .delta-red  { color: var(--red-700); }
-
-  /* MENU CARDS */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  .menu-card {
-    background: var(--white);
-    border-radius: 16px;
-    padding: 28px 28px 24px;
-    border: 1px solid var(--neutral-200);
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: all 0.2s ease;
-  }
-
-  .menu-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(20,163,174,0.16);
-    border-color: var(--primary-400);
-  }
-
-  .card-icon-wrap {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 16px;
-  }
-
-  .icon-teal { background: var(--primary-50); }
-  .icon-gold { background: var(--blue-100); }
-
-  .menu-title { font-size: 17px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px; }
-  .menu-desc  { font-size: 14px; color: var(--neutral-500); line-height: 1.6; margin-bottom: 16px; }
-
-  .menu-pill {
-    display: inline-block;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 20px;
-  }
-
-  .pill-teal { background: var(--primary-100); color: var(--primary-700); }
-  .pill-gold { background: var(--blue-100); color: var(--blue-dark); }
+  .delta-red  { color: var(--error); }
 
   /* PANELS: top tours / lowest rated */
   .panel-grid {
@@ -335,10 +305,11 @@
   }
 
   .panel {
-    background: var(--white);
-    border: 1px solid var(--neutral-200);
-    border-radius: 16px;
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--surface-variant);
+    border-radius: var(--r-lg);
     padding: 24px 24px 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
   }
 
   .panel-header {
@@ -349,26 +320,26 @@
   }
 
   .panel-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
-    color: var(--neutral-800);
+    color: var(--on-surface);
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .panel-badge {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
-    color: var(--blue-dark);
+    color: var(--blue);
     background: var(--blue-100);
     padding: 3px 10px;
     border-radius: 20px;
   }
 
   .panel:nth-of-type(2) .panel-badge {
-    color: var(--red-700);
-    background: var(--red-100);
+    color: var(--error);
+    background: var(--error-container);
   }
 
   .rank-list { list-style: none; }
@@ -378,7 +349,7 @@
     align-items: center;
     gap: 14px;
     padding: 12px 0;
-    border-bottom: 1px solid var(--neutral-100);
+    border-bottom: 1px solid var(--surface-container);
   }
 
   .rank-item:last-child { border-bottom: none; }
@@ -387,9 +358,9 @@
     width: 28px;
     height: 28px;
     border-radius: 8px;
-    background: var(--primary-50);
-    color: var(--primary-700);
-    font-size: 13px;
+    background: var(--surface-container);
+    color: var(--primary);
+    font-size: 14px;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -397,75 +368,95 @@
     flex-shrink: 0;
   }
 
-  .rank-item:nth-child(1) .rank-num { background: var(--primary-600); color: var(--white); }
-  .rank-item:nth-child(2) .rank-num { background: var(--blue); color: var(--white); }
-  .rank-item:nth-child(3) .rank-num { background: var(--green); color: var(--white); }
+  .rank-item:nth-child(1) .rank-num { background: var(--primary); color: var(--white); }
+  .rank-item:nth-child(2) .rank-num { background: var(--secondary); color: var(--white); }
+  .rank-item:nth-child(3) .rank-num { background: var(--blue); color: var(--white); }
 
   .rank-info { flex: 1; min-width: 0; }
   .rank-name {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    color: var(--neutral-800);
+    color: var(--on-surface);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .rank-sub { font-size: 12px; color: var(--neutral-500); margin-top: 2px; }
+  .rank-sub { font-size: 13px; color: var(--outline); margin-top: 2px; }
 
   .rank-value {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     flex-shrink: 0;
   }
-  .rank-value.teal { color: var(--primary-600); }
-  .rank-value.warn { color: var(--red-700); }
+  .rank-value.teal { color: var(--primary); }
+  .rank-value.warn { color: var(--error); }
 
   .empty-state {
     text-align: center;
-    color: var(--neutral-400);
-    font-size: 13px;
+    color: var(--outline);
+    font-size: 14px;
     padding: 24px 0;
   }
 
   /* FOOTER */
   .footer {
-    background: linear-gradient(120deg, var(--gray-purple), var(--primary-700));
-    border-top: 1px solid rgba(255,255,255,0.08);
-    padding: 14px 5%;
+    background: var(--primary);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 16px 5%;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: auto;
   }
 
-  .footer-text { font-size: 12px; color: rgba(255,255,255,0.4); }
+  .footer-text { font-size: 15px; color: rgba(255,255,255,0.9); }
 
   /* RESPONSIVE */
   @media (max-width: 768px) {
-    .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 12px; }
+    .navbar { height: auto; min-height: 80px; padding: 10px 4%; flex-wrap: wrap; gap: 12px; }
+    .brand-logo { width: 120px; height: 90px; }
+    .brand-name-line1 { font-size: 20px; }
     .nav-group { flex-wrap: wrap; gap: 4px; }
     .welcome-banner { flex-direction: column; align-items: flex-start; padding: 24px; }
-    .welcome-stats { flex-wrap: wrap; }
+    .welcome-stats { flex-wrap: wrap; width: 100%; justify-content: space-between; }
     .stat-row { grid-template-columns: 1fr 1fr; }
     .stat-row.cols-4 { grid-template-columns: 1fr 1fr; }
     .stat-row .stat-card:last-child { grid-column: span 2; }
     .panel-grid { grid-template-columns: 1fr; }
-    .footer { flex-direction: column; gap: 4px; text-align: center; }
+    .footer { flex-direction: column; gap: 6px; text-align: center; }
   }
 </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar">
+<header class="navbar">
   <a href="/admin/dashboard" class="navbar-brand">
-    <div class="brand-icon">🏔️</div>
-    ระบบท่องเที่ยวชุมชนเผ่า
+    <div class="brand-logo">
+      <img th:src="@{/images/logo5.png}" alt="ตราสัญลักษณ์ระบบท่องเที่ยวชุมชนชนเผ่า">
+    </div>
+    <div class="brand-name">
+      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+      <span class="brand-name-line2">Tribal Community-Based Tourism System</span>
+    </div>
   </a>
 
   <div class="nav-group">
-    <a href="/admin/dashboard" class="nav-link active">📊 Dashboard</a>
-    <a href="/admin/manager"   class="nav-link">👥 จัดการผู้จัดการ</a>
-    <a href="/admin/homestay"  class="nav-link">🏠 จัดการโฮมสเตย์</a>
+    <a href="/admin/dashboard" class="nav-link active">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+    <a href="/admin/manager" class="nav-link">
+      <span class="material-symbols-outlined">group</span>
+      จัดการผู้จัดการ
+    </a>
+    <a href="/admin/homestay" class="nav-link">
+      <span class="material-symbols-outlined">home</span>
+      จัดการโฮมสเตย์
+      <span th:if="${pendingCount != null and pendingCount > 0}" 
+            class="nav-badge" 
+            th:text="${pendingCount}">0</span>
+    </a>
   </div>
 
   <div class="nav-divider"></div>
@@ -476,18 +467,21 @@
       <div class="admin-role">Super Admin</div>
     </div>
     <div class="admin-avatar">A</div>
-    <a href="/admin/logout" class="logout-btn">ออกจากระบบ</a>
+    <a href="/admin/logout" class="logout-btn">
+      <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+      ออกจากระบบ
+    </a>
   </div>
-</nav>
+</header>
 
 <!-- MAIN CONTENT -->
-<div class="content">
+<main class="content">
 
   <!-- WELCOME BANNER -->
   <div class="welcome-banner">
     <div class="welcome-text">
       <h1>ยินดีต้อนรับ, <span th:text="${session.loggedInAdmin?.username ?: 'Admin'}">Admin</span> 👋</h1>
-      <p>ระบบบริหารจัดการข้อมูลการท่องเที่ยวชุมชน — เลือกโมดูลที่ต้องการด้านล่าง</p>
+      <p>ระบบบริหารจัดการข้อมูลการท่องเที่ยวชุมชน — ภาพรวมข้อมูลและสถิติสำคัญในระบบ</p>
     </div>
     <div class="welcome-stats">
       <div class="welcome-stat">
@@ -543,7 +537,7 @@
     </div>
   </div>
 
-  <!-- STAT ROW: BOOKING / REVENUE (เพิ่มใหม่) -->
+  <!-- STAT ROW: BOOKING / REVENUE -->
   <div class="section-label">สถิติการจองและรายได้</div>
   <div class="stat-row cols-4">
     <div class="stat-card acc-purple">
@@ -568,14 +562,16 @@
     </div>
   </div>
 
-  <!-- PANELS: TOP TOURS & LOWEST RATED HOMESTAYS (เพิ่มใหม่) -->
+  <!-- PANELS: TOP TOURS & LOWEST RATED HOMESTAYS -->
   <div class="section-label">ภาพรวมเชิงลึก</div>
   <div class="panel-grid">
 
     <!-- TOP 5 TOUR ยอดจองสูงสุด -->
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">🚐 ทัวร์ยอดนิยม Top 5</div>
+        <div class="panel-title">
+          <span class="material-symbols-outlined">tour</span> ทัวร์ยอดนิยม Top 5
+        </div>
         <span class="panel-badge">ยอดจองสูงสุด</span>
       </div>
       <ul class="rank-list" th:if="${topTours != null and !topTours.isEmpty()}">
@@ -594,7 +590,9 @@
     <!-- TOP 5 โฮมสเตย์รีวิวต่ำสุด -->
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">⭐ โฮมสเตย์ที่ควรดูแลเป็นพิเศษ</div>
+        <div class="panel-title">
+          <span class="material-symbols-outlined">star_rate</span> โฮมสเตย์ที่ควรดูแลเป็นพิเศษ
+        </div>
         <span class="panel-badge">คะแนนรีวิวต่ำสุด</span>
       </div>
       <ul class="rank-list" th:if="${lowestRated != null and !lowestRated.isEmpty()}">
@@ -612,74 +610,13 @@
 
   </div>
 
-  
-
-  </div>
-
-</div>
+</main>
 
 <!-- FOOTER -->
 <footer class="footer">
   <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
   <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
 </footer>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script th:inline="javascript">
-  const homestayData = {
-    approved: /*[[${homestayApproved}]]*/ 0,
-    pending:  /*[[${homestayPending}]]*/ 0,
-    rejected: /*[[${homestayRejected}]]*/ 0
-  };
-
-  const bookingData = {
-    confirmed: /*[[${bookingConfirmed}]]*/ 0,
-    pending:   /*[[${bookingPending}]]*/ 0,
-    cancel:    /*[[${bookingCancel}]]*/ 0
-  };
-
-  const chartFont = { family: "'Sarabun', sans-serif", size: 13 };
-
-  new Chart(document.getElementById('homestayStatusChart'), {
-    type: 'doughnut',
-    data: {
-      labels: ['อนุมัติแล้ว', 'รอพิจารณา', 'ปฏิเสธแล้ว'],
-      datasets: [{
-        data: [homestayData.approved, homestayData.pending, homestayData.rejected],
-        backgroundColor: ['#14a3ae', '#3B86D1', '#d6395c'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '62%',
-      plugins: {
-        legend: { position: 'bottom', labels: { font: chartFont, color: '#3d3950', usePointStyle: true } }
-      }
-    }
-  });
-
-  new Chart(document.getElementById('bookingStatusChart'), {
-    type: 'doughnut',
-    data: {
-      labels: ['ยืนยันแล้ว', 'รอดำเนินการ', 'ยกเลิก'],
-      datasets: [{
-        data: [bookingData.confirmed, bookingData.pending, bookingData.cancel],
-        backgroundColor: ['#21BF06', '#3B86D1', '#d6395c'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '62%',
-      plugins: {
-        legend: { position: 'bottom', labels: { font: chartFont, color: '#3d3950', usePointStyle: true } }
-      }
-    }
-  });
-</script>
 
 </body>
 </html>

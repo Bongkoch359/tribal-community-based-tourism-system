@@ -35,7 +35,7 @@ public class BookingOwnerController {
         if (session.getAttribute("ownerid") == null)
             return "redirect:/owner/login";
 
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String  ownerid = (String ) session.getAttribute("ownerid");
         String ownername = (String) session.getAttribute("ownername");
 
         // ดึงโฮมสเตย์ทั้งหมดของเจ้าของ

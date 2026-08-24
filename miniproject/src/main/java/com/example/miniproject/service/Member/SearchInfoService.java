@@ -126,8 +126,7 @@ public class SearchInfoService {
                 validateDateRange(sd, ed);
                 return homestayRepository.searchWithDate(kw, numGuest, sd, ed);
             }
-            if (kw == null) return homestayRepository.findAll();
-            return homestayRepository.findByHomestaynameContainingIgnoreCaseOrAddressContainingIgnoreCase(kw, kw);
+           return homestayRepository.searchByGuestOnly(kw, numGuest);
 
         } catch (IllegalArgumentException e) {
             throw e;

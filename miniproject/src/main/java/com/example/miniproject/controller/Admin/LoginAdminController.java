@@ -75,6 +75,7 @@ public class LoginAdminController {
             .filter(o -> (o.getVerificationstatus() == null || !o.getVerificationstatus())
                       && !"REJECTED".equals(o.getAccountstatus()))
             .count();
+        model.addAttribute("pendingCount", homestayPending);
 
         long homestayApproved = allOwners.stream()
             .filter(o -> Boolean.TRUE.equals(o.getVerificationstatus()))

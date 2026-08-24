@@ -24,11 +24,11 @@ public class HomestayService {
     private ReviewRepository reviewRepository;
     
 
-    public List<Homestay> getHomestaysByOwnerId(Integer ownerid) {
-    return homestayRepository.findByOwner_Ownerid(ownerid);
-}
+    public List<Homestay> getHomestaysByOwnerId(String ownerid) {
+        return homestayRepository.findByOwner_Ownerid(ownerid);
+    }
 
-    public boolean isOwnedBy(Integer homestayid, Integer ownerid) {  
+    public boolean isOwnedBy(Integer homestayid, String ownerid) {  
         return homestayRepository.existsByHomestayidAndOwnerOwnerid(homestayid, ownerid);
     }
 

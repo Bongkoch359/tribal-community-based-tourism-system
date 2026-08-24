@@ -55,6 +55,9 @@ public class Communitymanager {
     @Enumerated(EnumType.STRING)
     private ManagerStatus accountstatus;
 
+    @Column(name = "suspension_reason", columnDefinition = "TEXT")
+    private String suspensionReason;
+
     @OneToMany(mappedBy = "communitymanager", cascade = CascadeType.ALL)
     private List<Tour> tours = new ArrayList<>();
 
@@ -173,6 +176,14 @@ public class Communitymanager {
 
     public void setAccountstatus(ManagerStatus accountstatus) {
         this.accountstatus = accountstatus;
+    }
+
+    public String getSuspensionReason() {
+        return suspensionReason;
+    }
+
+    public void setSuspensionReason(String suspensionReason) {
+        this.suspensionReason = suspensionReason;
     }
 
     public List<Tour> getTours() {

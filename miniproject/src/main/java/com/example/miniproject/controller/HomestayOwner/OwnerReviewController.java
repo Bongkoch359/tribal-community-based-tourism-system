@@ -33,7 +33,7 @@ public class OwnerReviewController {
                                        Model model) {
 
         // เช็ค login เหมือนหน้าอื่นๆ ของ owner (เช่น addroom, homestays)
-        Integer ownerid = (Integer) session.getAttribute("ownerid");
+        String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null) return "redirect:/owner/login";
 
         // กันเจ้าของคนอื่นมาดูรีวิวโฮมสเตย์ที่ไม่ใช่ของตัวเอง

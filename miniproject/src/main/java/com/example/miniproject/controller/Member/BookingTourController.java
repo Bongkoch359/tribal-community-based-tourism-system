@@ -71,7 +71,7 @@ public String bookingPage(
     // POST : สร้างการจองทัวร์
     // ════════════════════════════════════════════════════════
     @PostMapping("/booking/tour/create")
-public String createBooking(
+    public String createBooking(
         @RequestParam("tourid") String tourId,
         @RequestParam("tourdate") String tourDate,
         @RequestParam("adult") Integer adult,

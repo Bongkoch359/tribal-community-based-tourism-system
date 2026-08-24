@@ -4,149 +4,160 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>รายการคำขอโฮมสเตย์ - ระบบท่องเที่ยวชุมชนเผ่า</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <style>
-  :root {
-    /* ── โทนฟ้าเขียว (Turquoise) เหมือนหน้าอื่นๆ ── */
-    --teal-900: #0a3a40;
-    --teal-800: #0c454c;
-    --teal-700: #0e7c86;
-    --teal-600: #14a3ae;
-    --teal-500: #35bcc4;
-    --teal-400: #6fd3d9;
-    --teal-100: #d7f4f5;
-    --teal-50:  #eefbfb;
-
-    --gold-700: #92681b;
-    --gold-600: #b3822a;
-    --gold-500: #d4a13b;
-    --gold-400: #e7b94f;
-    --gold-100: #fbedce;
-
-    --red-700:   #b8332e;
-    --red-100:   #fbe3e1;
-
-    --neutral-800: #26302c;
-    --neutral-700: #3d4945;
-    --neutral-600: #5b6864;
-    --neutral-500: #7c8985;
-    --neutral-400: #a4b0ac;
-    --neutral-300: #cdd6d2;
-    --neutral-200: #e4ebe8;
-    --neutral-100: #f4f8f6;
-    --white: #ffffff;
+  *, *::before, *::after { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #006c49;
+    --primary-container: #10b981;
+    --on-primary: #ffffff;
+    --on-primary-container: #00422b;
+    
+    --secondary: #2b6954;
+    --secondary-container: #adedd3;
+    
+    --background: #f4fbf4;
+    --surface: #f4fbf4;
+    --surface-container-low: #eef6ee;
+    --surface-container: #e8f0e9;
+    --surface-container-lowest: #ffffff;
+    --surface-variant: #dde4dd;
+    
+    --on-surface: #161d19;
+    --on-surface-variant: #3c4a42;
+    --outline: #6c7a71;
+    --outline-variant: #bbcabf;
+    
+    --error: #ba1a1a;
+    --error-container: #ffdad6;
+    --on-error-container: #93000a;
 
+    --gold-700: #92681b;
+    --gold-100: #fbedce;
+    
+    --navbar-h: 100px;
+    --r-md: 10px;
+    --r-lg: 16px;
+  }
+
+  html { scroll-behavior: smooth; }
   body {
-    font-family: 'Sarabun', sans-serif;
-    background: var(--neutral-100);
-    color: var(--neutral-800);
-    line-height: 1.6;
+    background-color: var(--surface-container-low);
+    color: var(--on-surface);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
   }
+
+  a { text-decoration: none; color: inherit; }
+  button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif; }
 
   /* ── NAVBAR ── */
   .navbar {
-    background: linear-gradient(120deg, var(--teal-600), var(--teal-700));
-    height: 100px;
+    background: var(--primary);
+    height: var(--navbar-h);
     display: flex;
     align-items: center;
-    padding: 0 5%;
-    gap: 8px;
+    padding: 0 4%;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 4px 16px rgba(0, 108, 73, 0.15);
   }
 
   .navbar-brand {
-    color: #fff;
-    font-weight: 700;
-    font-size: 22px;
-    text-decoration: none;
+    color: var(--on-primary);
     margin-right: auto;
     display: flex;
     align-items: center;
-    gap: 14px;
-    flex-shrink: 0;
   }
 
-  .brand-icon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--teal-400), var(--teal-600));
-    border-radius: 12px;
+  .brand-logo {
+    width: 160px;
+    height: 120px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(20,163,174,0.35);
+  }
+  .brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
   }
 
-  .nav-group {
+  .brand-name { display: flex; flex-direction: column; margin-left: -25px; }
+  .brand-name-line1 {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+  .brand-name-line2 {
+    display: block;
+    font-size: 12px;
+    color: var(--secondary-container);
+    margin-top: 4px;
+  }
+
+  .nav-group { display: flex; align-items: center; gap: 6px; }
+
+  .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
     display: flex;
     align-items: center;
     gap: 6px;
-  }
-
-  .nav-link {
-    color: rgba(255,255,255,0.5);
-    text-decoration: none;
-    font-size: 17px;
-    font-weight: 500;
-    padding: 10px 20px;
-    border-radius: 10px;
-    transition: all 0.15s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
     white-space: nowrap;
   }
 
-  .nav-link:hover { background: rgba(255,255,255,0.08); color: #fff; }
-  .nav-link.active { background: rgba(255,255,255,0.12); color: #fff; }
+  .nav-link:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+  .nav-link.active { background: rgba(255, 255, 255, 0.22); color: #fff; }
 
-  .nav-divider {
-    width: 1px;
-    height: 36px;
-    background: rgba(255,255,255,0.1);
-    margin: 0 12px;
-  }
+  .nav-divider { width: 1px; height: 32px; background: rgba(255, 255, 255, 0.2); margin: 0 12px; }
 
-  .admin-area { display: flex; align-items: center; gap: 14px; }
-
+  .admin-area { display: flex; align-items: center; gap: 12px; }
   .admin-info { text-align: right; }
-  .admin-name { color: rgba(255,255,255,0.85); font-size: 15px; font-weight: 600; line-height: 1.2; }
-  .admin-role { color: rgba(255,255,255,0.4); font-size: 12px; }
+  .admin-name { color: #fff; font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255, 255, 255, 0.7); font-size: 12px; }
 
   .admin-avatar {
-    width: 46px;
-    height: 46px;
-    background: linear-gradient(135deg, var(--gold-500), var(--gold-700));
+    width: 42px; height: 42px;
+    background: var(--secondary);
+    border: 1px solid rgba(255,255,255,0.3);
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 18px;
-    color: #fff;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: #fff; flex-shrink: 0;
   }
 
   .logout-btn {
-    color: rgba(255,255,255,0.4);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     transition: color 0.15s;
     white-space: nowrap;
+    margin-left: 6px;
   }
-  .logout-btn:hover { color: rgba(255,255,255,0.85); }
+  .logout-btn:hover { color: #fff; }
 
   /* ── CONTENT ── */
   .content {
@@ -159,18 +170,18 @@
 
   .page-header {
     margin-bottom: 28px;
-    border-bottom: 1px solid var(--neutral-200);
+    border-bottom: 1px solid var(--surface-variant);
     padding-bottom: 18px;
   }
 
   .page-header h1 {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
-    color: var(--neutral-800);
+    color: var(--on-surface);
     margin-bottom: 4px;
   }
 
-  .page-header p { font-size: 14px; color: var(--neutral-500); }
+  .page-header p { font-size: 15px; color: var(--on-surface-variant); }
 
   /* TOP MENU TABS */
   .top-menu { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -178,20 +189,32 @@
   .top-menu a {
     text-decoration: none;
     font-size: 15px;
-    padding: 11px 22px;
-    color: var(--neutral-600);
-    background: var(--white);
-    border-radius: 10px;
-    border: 1px solid var(--neutral-200);
+    padding: 10px 20px;
+    color: var(--on-surface-variant);
+    background: var(--surface-container-lowest);
+    border-radius: 8px;
+    border: 1px solid var(--outline-variant);
     transition: all 0.2s;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   .top-menu a.active {
-    background: linear-gradient(120deg, var(--teal-600), var(--teal-700));
+    background: var(--primary);
     color: #fff;
-    border-color: var(--teal-700);
-    font-weight: 600;
+    border-color: var(--primary);
+  }
+
+  /* สไตล์สำหรับตัวเลขแจ้งเตือนบน Navbar */
+  .nav-badge {
+    background-color: var(--error);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    line-height: 1;
+    display: inline-block;
   }
 
   /* FILTER PILLS */
@@ -199,116 +222,121 @@
 
   .filter-pill {
     padding: 8px 18px;
-    border-radius: 20px;
-    background: var(--white);
-    border: 1px solid var(--neutral-200);
-    font-size: 14px;
-    color: var(--neutral-600);
+    border-radius: 8px;
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+    font-size: 15px;
+    color: var(--on-surface-variant);
     cursor: pointer;
     text-decoration: none;
     transition: 0.2s;
-    font-family: 'Sarabun', sans-serif;
+    font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
   }
 
   .filter-pill.active {
-    background: var(--teal-600);
+    background: var(--primary);
     color: #fff;
-    border-color: var(--teal-600);
+    border-color: var(--primary);
+    font-weight: 700;
   }
 
   /* TABLE UI */
   .table-wrap {
-    background: var(--white);
-    border-radius: 16px;
-    border: 1px solid var(--neutral-200);
+    background: var(--surface-container-lowest);
+    border-radius: var(--r-lg);
+    border: 1px solid var(--surface-variant);
     overflow: hidden;
-    box-shadow: 0 6px 20px rgba(14,124,134,0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
   }
 
   table { width: 100%; border-collapse: collapse; }
 
   thead th {
-    padding: 18px 18px;
-    background: var(--teal-100);
+    padding: 16px 18px;
+    background: var(--surface-container);
     text-align: left;
-    border-bottom: 1px solid var(--neutral-200);
-    color: var(--teal-700);
+    border-bottom: 1px solid var(--surface-variant);
+    color: var(--on-surface);
     font-weight: 700;
-    font-size: 14px;
+    font-size: 15px;
   }
 
   tbody td {
-    padding: 18px 18px;
-    border-bottom: 1px solid var(--neutral-100);
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--surface-container);
     font-size: 15px;
     vertical-align: middle;
   }
 
-  tbody tr:hover { background: var(--teal-50); }
+  tbody tr:hover { background: var(--surface-container-low); }
 
   /* BADGES */
-  .badge { padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+  .badge { padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 700; display: inline-block; }
 
-  .pending { background: var(--gold-100); color: var(--gold-700); border: 1px solid var(--gold-400); }
-  .approved-badge { background: var(--teal-100); color: var(--teal-700); }
-  .rejected-badge { background: var(--red-100); color: var(--red-700); }
+  .pending { background: var(--gold-100); color: var(--gold-700); border: 1px solid #e7b94f; }
+  .approved-badge { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+  .rejected-badge { background: var(--error-container); color: var(--on-error-container); border: 1px solid #fca5a5; }
 
   /* ACTION BUTTONS */
   .action-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
   .btn-action {
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 6px 14px;
+    border-radius: 6px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    border: none;
+    border: 1px solid;
     transition: all 0.2s;
-    font-family: 'Sarabun', sans-serif;
+    font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
   }
 
   .btn-detail {
-    background: var(--neutral-100);
-    color: var(--neutral-700);
-    border: 1px solid var(--neutral-200);
+    border-color: var(--outline-variant);
+    color: var(--on-surface-variant);
   }
-  .btn-detail:hover { background: var(--neutral-200); }
+  .btn-detail:hover { background: var(--surface-variant); }
 
   .btn-approve {
-    background: linear-gradient(120deg, var(--teal-600), var(--teal-700));
-    color: #fff;
+    border-color: var(--primary);
+    color: var(--primary);
   }
-  .btn-approve:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(14,124,134,0.3); }
+  .btn-approve:hover { background: var(--primary); color: #fff; }
 
   .btn-reject {
-    background: #fff;
-    border: 1.5px solid var(--red-700);
-    color: var(--red-700);
+    border-color: var(--error);
+    color: var(--error);
   }
-  .btn-reject:hover { background: var(--red-100); }
+  .btn-reject:hover { background: var(--error); color: #fff; }
 
-  .empty { text-align: center; padding: 80px; color: var(--neutral-400); font-size: 16px; }
+  .empty { text-align: center; padding: 60px; color: var(--outline); font-size: 16px; }
 
-  .owner-name { font-weight: 700; color: var(--neutral-800); }
-  .homestay-name { font-weight: 600; color: var(--teal-700); }
+  .owner-name { font-weight: 700; color: var(--on-surface); font-size: 16px; }
+  .homestay-name { font-weight: 700; color: var(--primary); }
 
   /* FOOTER */
   .footer {
-    background: linear-gradient(120deg, var(--teal-700), var(--teal-600));
-    border-top: 1px solid rgba(255,255,255,0.08);
-    padding: 14px 5%;
+    background: var(--primary);
+    padding: 16px 5%;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
   }
-  .footer-text { font-size: 12px; color: rgba(255,255,255,0.3); }
+  .footer-text { font-weight: 400; }
 
   /* ── CONFIRM MODAL ── */
   .confirm-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(38,48,41,0.55);
+    background: rgba(22,29,25,0.6);
     z-index: 3000;
     align-items: center;
     justify-content: center;
@@ -317,61 +345,65 @@
   .confirm-overlay.show { display: flex; }
 
   .confirm-box {
-    background: var(--white);
-    border-radius: 16px;
-    max-width: 380px;
-    width: 100%;
-    padding: 32px 28px;
+    background: var(--surface-container-lowest);
+    border-radius: var(--r-lg);
+    max-width: 450px;
+    width: 90%;
+    padding: 36px;
     text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    border: 1px solid var(--surface-variant);
   }
 
   .confirm-icon {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
+    font-size: 32px;
     margin: 0 auto 16px;
   }
-  .confirm-icon.approve { background: var(--teal-100); color: var(--teal-700); }
-  .confirm-icon.reject  { background: var(--red-100); color: var(--red-700); }
+  .confirm-icon.approve { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+  .confirm-icon.reject  { background: var(--error-container); color: var(--error); }
 
-  .confirm-title { font-size: 17px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px; }
-  .confirm-desc  { font-size: 14px; color: var(--neutral-500); margin-bottom: 24px; line-height: 1.6; }
-  .confirm-desc strong { color: var(--neutral-800); }
+  .confirm-title { font-size: 20px; font-weight: 700; color: var(--on-surface); margin-bottom: 8px; }
+  .confirm-desc  { font-size: 15px; color: var(--on-surface-variant); margin-bottom: 24px; line-height: 1.5; }
+  .confirm-desc strong { color: var(--primary); font-size: 16px; }
 
-  .confirm-actions { display: flex; gap: 10px; }
-  .confirm-actions .btn-action { flex: 1; padding: 11px; font-size: 15px; }
+  .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+  .confirm-actions .btn-action { flex: 1; padding: 10px 20px; font-size: 15px; justify-content: center; }
 
   .btn-cancel {
-    background: var(--white);
-    border: 1px solid var(--neutral-300);
-    color: var(--neutral-700);
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+    color: var(--on-surface-variant);
   }
-  .btn-cancel:hover { background: var(--neutral-100); }
+  .btn-cancel:hover { background: var(--surface-container); }
 
   /* RESPONSIVE */
   @media (max-width: 768px) {
-    .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 12px; }
-    .nav-group { flex-wrap: wrap; gap: 4px; }
-    .footer { flex-direction: column; gap: 4px; text-align: center; }
+    .navbar { height: auto; min-height: 80px; padding: 10px 4%; flex-wrap: wrap; gap: 12px; }
+    .brand-logo { width: 120px; height: 90px; }
+    .brand-name-line1 { font-size: 20px; }
+    .nav-group { flex-wrap: wrap; }
+    .footer { flex-direction: column; gap: 6px; text-align: center; }
     .table-wrap { overflow-x: auto; }
   }
 
   .alert-error {
-    background: var(--red-100);
-    color: var(--red-700);
-    border: 1px solid #f3b3b0;
-    border-radius: 10px;
-    padding: 14px 18px;
+    background: var(--error-container);
+    color: var(--on-error-container);
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    padding: 12px 16px;
     font-size: 15px;
     font-weight: 600;
-    margin-bottom: 18px;
+    margin-bottom: 24px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
   }
 </style>
 </head>
@@ -379,16 +411,33 @@
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar">
+<header class="navbar">
   <a href="/admin/dashboard" class="navbar-brand">
-    <div class="brand-icon">🏔️</div>
-    ระบบท่องเที่ยวชุมชนเผ่า
+    <div class="brand-logo">
+      <img th:src="@{/images/logo5.png}" alt="ตราสัญลักษณ์ระบบท่องเที่ยวชุมชนชนเผ่า">
+    </div>
+    <div class="brand-name">
+      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+      <span class="brand-name-line2">Tribal Community-Based Tourism System</span>
+    </div>
   </a>
 
   <div class="nav-group">
-    <a href="/admin/dashboard" class="nav-link">📊 Dashboard</a>
-    <a href="/admin/manager"   class="nav-link">👥 จัดการผู้จัดการ</a>
-    <a href="/admin/homestay"  class="nav-link active">🏠 จัดการโฮมสเตย์</a>
+    <a href="/admin/dashboard" class="nav-link">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+    <a href="/admin/manager" class="nav-link">
+      <span class="material-symbols-outlined">group</span>
+      จัดการผู้จัดการ
+    </a>
+    <a href="/admin/homestay" class="nav-link active">
+      <span class="material-symbols-outlined">home</span>
+      จัดการโฮมสเตย์
+      <span th:if="${pendingCount != null and pendingCount > 0}" 
+            class="nav-badge" 
+            th:text="${pendingCount}">0</span>
+    </a>
   </div>
 
   <div class="nav-divider"></div>
@@ -399,15 +448,18 @@
       <div class="admin-role">Super Admin</div>
     </div>
     <div class="admin-avatar">A</div>
-    <a href="/admin/logout" class="logout-btn">ออกจากระบบ</a>
+    <a href="/admin/logout" class="logout-btn">
+      <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+      ออกจากระบบ
+    </a>
   </div>
-</nav>
+</header>
 
 <!-- MAIN CONTENT -->
-<div class="content">
+<main class="content">
 
   <div class="page-header">
-    <h1>📄 รายการคำขอโฮมสเตย์</h1>
+    <h1>รายการคำขอโฮมสเตย์</h1>
     <p>ตรวจสอบและอนุมัติการลงทะเบียนโฮมสเตย์ใหม่ในระบบ</p>
   </div>
 
@@ -417,7 +469,8 @@
   </div>
 
   <div th:if="${errorMessage}" class="alert-error">
-    ❌ <span th:text="${errorMessage}"></span>
+    <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
+    <span th:text="${errorMessage}"></span>
   </div>
 
   <!-- Filter Pills -->
@@ -457,21 +510,21 @@
 
           <td>
             <div class="owner-name" th:text="${h.firstname + ' ' + h.lastname}">ชื่อ-นามสกุล</div>
-            <div style="font-size:13px; color:var(--neutral-400);">
-              ID: #<span th:text="${h.ownerid}">001</span>
+            <div style="font-size: 13px; color: var(--outline);">
+              ID: <span th:text="${h.ownerid}">001</span>
             </div>
           </td>
 
           <td>
             <div style="font-size: 14px;" th:text="${h.email}">email</div>
-            <div style="font-size: 13px; color: var(--neutral-500);" th:text="${h.phone}">phone</div>
+            <div style="font-size: 14px; color: var(--outline);" th:text="${h.phone}">phone</div>
           </td>
 
           <td class="homestay-name">
             <span th:if="${h.homestays != null and !h.homestays.isEmpty()}"
                   th:text="${h.homestays[0].homestayname}">ชื่อโฮมสเตย์</span>
             <span th:if="${h.homestays == null or h.homestays.isEmpty()}"
-                  style="color:var(--neutral-400);">-</span>
+                  style="color: var(--outline);">-</span>
           </td>
 
           <td>
@@ -487,21 +540,21 @@
             <div class="action-group">
               <!-- ปุ่มดูรายละเอียด -->
               <a th:href="@{/admin/homestay/detail/{id}(id=${h.ownerid})}"
-                 class="btn-action btn-detail" style="text-decoration:none; display:inline-block;">
-                👁️ ดูรายละเอียด
+                 class="btn-action btn-detail">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> ดูรายละเอียด
               </a>
 
               <!-- ปุ่มอนุมัติ/ปฏิเสธ เฉพาะ pending -->
               <button type="button" th:if="${isPending and !isRejected}"
                       class="btn-action btn-approve"
                       th:attr="onclick='openConfirmModal(' + ${h.ownerid} + ', &quot;approve&quot;, &quot;' + ${h.firstname + ' ' + h.lastname} + '&quot;)'">
-                ✅ อนุมัติ
+                <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> อนุมัติ
               </button>
 
               <button type="button" th:if="${isPending and !isRejected}"
                       class="btn-action btn-reject"
                       th:attr="onclick='openConfirmModal(' + ${h.ownerid} + ', &quot;reject&quot;, &quot;' + ${h.firstname + ' ' + h.lastname} + '&quot;)'">
-                ❌ ปฏิเสธ
+                <span class="material-symbols-outlined" style="font-size: 16px;">block</span> ปฏิเสธ
               </button>
             </div>
           </td>
@@ -509,28 +562,28 @@
 
         <tr id="empty-row" style="display: none;">
           <td colspan="5" class="empty">
-            <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
-            ยังไม่มีคำขอสมัครโฮมสเตย์ใหม่ในขณะนี้
+            ไม่มีคำขอสมัครโฮมสเตย์ใหม่ในขณะนี้
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-
-</div>
+</main>
 
 <!-- CONFIRM MODAL -->
 <div id="confirmModal" class="confirm-overlay">
   <div class="confirm-box">
-    <div class="confirm-icon" id="confirm-icon">✅</div>
+    <div class="confirm-icon" id="confirm-icon">
+      <span class="material-symbols-outlined" style="font-size: 32px;">check_circle</span>
+    </div>
     <div class="confirm-title" id="confirm-title">ยืนยันการอนุมัติ</div>
     <div class="confirm-desc" id="confirm-desc">
       คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?
     </div>
     <div class="confirm-actions">
       <button type="button" class="btn-action btn-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
-      <form id="confirm-form" method="post" style="flex:1;">
-        <button type="submit" class="btn-action" id="confirm-submit-btn" style="width:100%;">ยืนยัน</button>
+      <form id="confirm-form" method="post" style="flex: 1; margin: 0;">
+        <button type="submit" class="btn-action" id="confirm-submit-btn" style="width: 100%; justify-content: center;">ยืนยัน</button>
       </form>
     </div>
   </div>
@@ -586,19 +639,19 @@
 
     if (action === 'approve') {
       icon.className = 'confirm-icon approve';
-      icon.textContent = '✅';
+      icon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 32px;">check_circle</span>';
       title.textContent = 'ยืนยันการอนุมัติ';
       desc.innerHTML = 'คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?';
       submitBtn.className = 'btn-action btn-approve';
-      submitBtn.textContent = 'ยืนยัน';
+      submitBtn.textContent = 'ยืนยันการอนุมัติ';
       form.action = '/admin/homestay/approve/' + ownerId;
     } else {
       icon.className = 'confirm-icon reject';
-      icon.textContent = '❌';
+      icon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 32px;">warning</span>';
       title.textContent = 'ยืนยันการปฏิเสธ';
       desc.innerHTML = 'คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?';
       submitBtn.className = 'btn-action btn-reject';
-      submitBtn.textContent = 'ยืนยัน';
+      submitBtn.textContent = 'ยืนยันการปฏิเสธ';
       form.action = '/admin/homestay/reject/' + ownerId;
     }
     document.getElementById('confirm-name').textContent = ownerName;
