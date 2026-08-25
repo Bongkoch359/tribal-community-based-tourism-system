@@ -10,69 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/Homestay/homestay-review.css}" rel="stylesheet">
-
-    <!--
-        สไตล์เพิ่มเติมสำหรับ layout ใหม่:
-        - .reviews-layout      = ครอบ 2 คอลัมน์ (ซ้าย sticky / ขวาเลื่อนตามปกติ)
-        - .reviews-sidebar     = คอลัมน์ซ้าย "สรุปคะแนน" ให้ sticky อยู่นิ่ง
-        - .reviews-main        = คอลัมน์ขวา รวม "กรองรีวิว" + รายการรีวิวไว้ด้วยกัน
-        ถ้ามี class ชื่อซ้ำใน homestay-review.css อยู่แล้ว ให้ลบ block นี้ทิ้งแล้ว
-        ย้ายไปเขียนในไฟล์ css จริงแทนได้เลยครับ (เนื้อหาเหมือนกัน)
-    -->
-    <style>
-        .reviews-layout {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-        }
-
-        .reviews-sidebar {
-            flex: 0 0 280px;
-            position: sticky;
-            top: 20px;
-            align-self: flex-start;
-        }
-
-        .reviews-main {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .reviews-main .panel {
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 900px) {
-            .reviews-layout {
-                flex-direction: column;
-            }
-
-            .reviews-sidebar {
-                position: static;
-                width: 100%;
-            }
-        }
-
-        /* ลดช่องว่างด้านบนที่เหลือเยอะเกินไป + จัดปุ่มย้อนกลับให้อยู่แถวเดียวกับหัวข้อ */
-        .page-content {
-            padding-top: 5px !important;
-        }
-
-        .page-header-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .page-header-row .back-btn {
-            margin-bottom: 0;
-        }
-
-        .page-header-row .page-title {
-            margin: 0;
-        }
-    </style>
 </head>
 
 <body>
@@ -106,8 +43,8 @@
         <div class="page-content">
 
             <div class="page-header-row">
-                <a class="back-btn" th:href="@{/owner/homestays}">
-                    <i class="fas fa-chevron-left"></i> ย้อนกลับ
+                <a class="back-btn" th:href="@{/owner/homestays}" title="ย้อนกลับ">
+                    <i class="fas fa-arrow-left"></i>
                 </a>
                 <h1 class="page-title">รีวิวโฮมสเตย์</h1>
             </div>
@@ -179,15 +116,14 @@
                             <div class="review-head">
                                 <div class="avatar-circle" th:classappend="'avatar-' + ${iter.index % 5}"
                                     th:text="${#strings.substring(review.booking.member.firstname, 0, 1)} + ${#strings.substring(review.booking.member.lastname, 0, 1)}">
-                                    สท
+                                    
                                 </div>
                                 <div>
                                     <span class="reviewer-name"
-                                        th:text="${review.booking.member.firstname} + ' ' + ${review.booking.member.lastname}">สมหญิง
-                                        แก้วใจ</span>
-                                    <span class="verified-badge">✓ จองผ่านระบบ</span>
-                                    <div class="review-meta" th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}">18
-                                        มี.ค. 2567</div>
+                                        th:text="${review.booking.member.firstname} + ' ' + ${review.booking.member.lastname}"></span>
+                                    <!-- <span class="verified-badge">✓ จองผ่านระบบ</span> -->
+                                    <div class="review-meta"
+                                        th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}"></div>
                                 </div>
                             </div>
 

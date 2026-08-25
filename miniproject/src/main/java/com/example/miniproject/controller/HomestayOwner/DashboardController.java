@@ -99,53 +99,92 @@ public class DashboardController {
                 double totalRevenue = (homestayid != null)
                                 ? bookingRepository.sumConfirmedRevenueByHomestayId(homestayid)
                                 : 0.0;
-                // ─── การจองล่าสุด 5 รายการ ───
-                List<Booking> recentBookings = (homestayid != null)
-                                ? bookingRepository.findTop5ByHomestayId(homestayid)
+
+                // ─── การจอง "รอตรวจสอบ" ล่าสุด 5 รายการ (สำหรับตารางแถวล่าง) ───
+                List<Booking> recentPendingBookings = (homestayid != null)
+                                ? bookingRepository.findTop5ByHomestayIdAndStatus(homestayid,
+                                                BookingStatus.WAITING_APPROVAL)
                                 : new java.util.ArrayList<>();
+                // ─── แนวโน้มรายได้ต่อเดือน (6 เดือนล่าสุด, เติม 0 ในเดือนที่ไม่มีรายได้) ───
+                java.time.YearMonth currentYM = java.time.YearMonth.now();
+                java.time.YearMonth startYM = currentYM.minusMonths(5);
+                java.sql.Date startOfRange = java.sql.Date.valueOf(startYM.atDay(1));
 
-                // ─── กิจกรรมวันนี้: เช็คอิน / เช็คเอาท์ / ทำความสะอาด ───
-                long checkinsToday = (homestayid != null)
-                                ? bookingRepository.countCheckinsTodayByHomestayId(homestayid, today)
-                                : 0;
-                long checkoutsToday = (homestayid != null)
-                                ? bookingRepository.countCheckoutsTodayByHomestayId(homestayid, today)
-                                : 0;
-                // ห้องที่ต้องทำความสะอาด = ห้องที่เพิ่งเช็คเอาท์วันนี้
-                long cleaningToday = checkoutsToday;
-
-                // ─── แนวโน้มรายได้ 7 วันล่าสุด (เติม 0 ในวันที่ไม่มีรายได้) ───
-                java.sql.Date sevenDaysAgo = java.sql.Date.valueOf(
-                                java.time.LocalDate.now().minusDays(6));
-
-                Map<java.time.LocalDate, Double> revenueByDate = new LinkedHashMap<>();
-                for (int i = 6; i >= 0; i--) {
-                        revenueByDate.put(java.time.LocalDate.now().minusDays(i), 0.0);
+                Map<java.time.YearMonth, Double> revenueByMonth = new LinkedHashMap<>();
+                for (int i = 5; i >= 0; i--) {
+                        revenueByMonth.put(currentYM.minusMonths(i), 0.0);
                 }
                 if (homestayid != null) {
-                        List<Object[]> rows = bookingRepository.sumRevenueByDayByHomestayId(homestayid,
-                                        sevenDaysAgo);
+                        List<Object[]> rows = bookingRepository.sumRevenueByMonthByHomestayId(homestayid,
+                                        startOfRange);
                         for (Object[] row : rows) {
-                                java.sql.Date d = (java.sql.Date) row[0];
-                                Double amount = ((Number) row[1]).doubleValue();
-                                revenueByDate.put(d.toLocalDate(), amount);
+                                int yr = ((Number) row[0]).intValue();
+                                int mo = ((Number) row[1]).intValue();
+                                double amount = ((Number) row[2]).doubleValue();
+                                revenueByMonth.put(java.time.YearMonth.of(yr, mo), amount);
                         }
                 }
 
+                String[] thaiMonths = { "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+                                "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค." };
+
                 List<Map<String, Object>> revenueTrend = new ArrayList<>();
-                double maxDailyRevenue = revenueByDate.values().stream()
+                double maxMonthlyRevenue = revenueByMonth.values().stream()
                                 .max(Double::compareTo).orElse(0.0);
-                java.time.format.DateTimeFormatter dayFmt = java.time.format.DateTimeFormatter.ofPattern("dd/MM");
-                for (Map.Entry<java.time.LocalDate, Double> e : revenueByDate.entrySet()) {
+                for (Map.Entry<java.time.YearMonth, Double> e : revenueByMonth.entrySet()) {
+                        java.time.YearMonth ym = e.getKey();
                         Map<String, Object> point = new LinkedHashMap<>();
-                        point.put("label", e.getKey().format(dayFmt));
+                        int beYearShort = (ym.getYear() + 543) % 100;
+                        point.put("label", thaiMonths[ym.getMonthValue() - 1] + " " + beYearShort);
                         point.put("amount", e.getValue());
-                        int heightPct = maxDailyRevenue > 0
-                                        ? (int) Math.round((e.getValue() / maxDailyRevenue) * 100)
+                        int heightPct = maxMonthlyRevenue > 0
+                                        ? (int) Math.round((e.getValue() / maxMonthlyRevenue) * 100)
                                         : 0;
                         point.put("heightPct", Math.max(heightPct, e.getValue() > 0 ? 6 : 2));
                         revenueTrend.add(point);
                 }
+                // ─── สัดส่วนยอดจองตามประเภทห้อง (Donut Chart) ───
+                String[] donutColorPalette = { "#2563eb", "#22c55e", "#f59e0b", "#a855f7",
+                                "#ef4444", "#0ea5e9", "#84cc16", "#ec4899" };
+
+                List<Object[]> roomTypeBookingRows = (homestayid != null)
+                                ? bookingRoomDetailRepository.countBookingsByRoomType(homestayid)
+                                : new java.util.ArrayList<>();
+
+                long totalBookingsForDonut = roomTypeBookingRows.stream()
+                                .mapToLong(row -> ((Number) row[1]).longValue())
+                                .sum();
+
+                List<Map<String, Object>> bookingRoomTypeDonut = new ArrayList<>();
+                StringBuilder gradient = new StringBuilder("conic-gradient(");
+                double cursor = 0;
+                for (int i = 0; i < roomTypeBookingRows.size(); i++) {
+                        Object[] row = roomTypeBookingRows.get(i);
+                        String typeName = (String) row[0];
+                        long count = ((Number) row[1]).longValue();
+                        double pct = totalBookingsForDonut > 0
+                                        ? Math.round((count * 1000.0 / totalBookingsForDonut)) / 10.0
+                                        : 0;
+                        String color = donutColorPalette[i % donutColorPalette.length];
+
+                        Map<String, Object> seg = new LinkedHashMap<>();
+                        seg.put("label", typeName);
+                        seg.put("count", count);
+                        seg.put("percent", pct);
+                        seg.put("color", color);
+                        bookingRoomTypeDonut.add(seg);
+
+                        double start = cursor;
+                        double end = cursor + pct;
+                        gradient.append(color).append(" ").append(start).append("% ").append(end).append("%");
+                        if (i < roomTypeBookingRows.size() - 1)
+                                gradient.append(", ");
+                        cursor = end;
+                }
+                gradient.append(")");
+                String donutGradientStyle = totalBookingsForDonut > 0
+                                ? gradient.toString()
+                                : "conic-gradient(#e5e2d8 0% 100%)";
 
                 model.addAttribute("ownername", session.getAttribute("ownername"));
                 model.addAttribute("homestayname", homestayname);
@@ -156,10 +195,10 @@ public class DashboardController {
                 model.addAttribute("availableRooms", availableRooms);
                 model.addAttribute("pendingBookings", pendingBookings);
                 model.addAttribute("totalRevenue", totalRevenue);
-                model.addAttribute("recentBookings", recentBookings);
-                model.addAttribute("checkinsToday", checkinsToday);
-                model.addAttribute("checkoutsToday", checkoutsToday);
-                model.addAttribute("cleaningToday", cleaningToday);
+                model.addAttribute("recentPendingBookings", recentPendingBookings);
+                model.addAttribute("bookingRoomTypeDonut", bookingRoomTypeDonut);
+                model.addAttribute("totalBookingsForDonut", totalBookingsForDonut);
+                model.addAttribute("donutGradientStyle", donutGradientStyle);
                 model.addAttribute("revenueTrend", revenueTrend);
 
                 // ── ตรวจสอบข้อมูลธนาคาร + ลายเซ็น ──

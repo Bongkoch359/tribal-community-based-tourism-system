@@ -3,7 +3,7 @@
             display: flex;
             align-items: center;
             padding: 0 2rem;
-            height: 84px;
+            height: 90px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -24,7 +24,7 @@
         }
 
         .hs-navbar-brand img.brand-logo-img {
-            height: 100px;
+            height: 110px;
             width: auto;
             max-width: 160px;
             object-fit: contain;

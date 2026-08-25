@@ -46,7 +46,7 @@ body {
     color: white;
 }
 
-/* ── Top Navbar (เหมือนโค้ดแรกทุกประการ) ── */
+/* ── Top Navbar  ── */
 .top-navbar {
     background: #0d3d30;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
@@ -57,7 +57,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
-    min-height: 80px;
+    height: 90px;
 }
 
 .top-navbar .brand {
@@ -72,7 +72,7 @@ body {
 }
 
 .top-navbar .brand .brand-logo-img {
-    height: 100px;
+    height: 110px;
     width: auto;
     max-width: 170px;
     object-fit: contain;
@@ -106,6 +106,45 @@ body {
 .top-nav-item:hover {
     color: #fff;
     background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── PASSWORD FIELD + EYE TOGGLE (seamless, no dark seam) ─── */
+#password.form-control {
+    border-right: none;
+    box-shadow: none;
+}
+
+#password.form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+#togglePassword {
+    border: 1px solid #ced4da;
+    border-left: none;
+    background: #fff;
+    color: #9a9284;
+    box-shadow: none;
+}
+
+#togglePassword:hover,
+#togglePassword:active,
+#togglePassword:focus {
+    background: #fff !important;
+    color: #0d3d30 !important;
+    border-color: #ced4da !important;
+    box-shadow: none !important;
+}
+
+/* When either the input or the button has focus, highlight the whole group as one unit */
+.input-group:focus-within {
+    box-shadow: 0 0 0 3px rgba(13, 61, 48, .15);
+    border-radius: .375rem;
+}
+
+.input-group:focus-within #password.form-control,
+.input-group:focus-within #togglePassword {
+    border-color: #0d3d30;
 }
 
 /* ─── FOOTER ─── */

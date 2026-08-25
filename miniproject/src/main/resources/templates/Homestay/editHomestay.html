@@ -37,7 +37,7 @@
     /* Navbar */
     .navbar {
       background: var(--green-dark);
-      height: 84px;
+      height: 90px;
       padding: 0 32px;
       display: flex;
       align-items: center;
@@ -69,7 +69,7 @@
     }
 
     .brand .brand-logo-img {
-      height: 100px;
+      height: 110px;
       width: auto;
       max-width: 140px;
       object-fit: contain;
@@ -449,6 +449,148 @@
       opacity: .85;
     }
 
+    /* ── Success Modal ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 30, 12, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 36px 32px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+      transform: scale(0.85) translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+      opacity: 0;
+    }
+
+    .modal-backdrop.show .modal-box {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    .checkmark-wrap {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--green-dark), var(--green-main));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 24px rgba(26, 107, 82, 0.35);
+      position: relative;
+    }
+
+    .checkmark-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 3px solid rgba(26, 107, 82, 0.15);
+    }
+
+    .checkmark-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 2px solid rgba(26, 107, 82, 0.08);
+      animation: ring-pulse 1.5s ease-out 0.4s both;
+    }
+
+    @keyframes ring-pulse {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1.3);
+        opacity: 0;
+      }
+    }
+
+    .checkmark-icon {
+      font-size: 36px;
+      color: #fff;
+      animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+    }
+
+    @keyframes pop-in {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: var(--gray-text);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .modal-progress-bar {
+      height: 3px;
+      background: #e8f4ea;
+      border-radius: 0 0 20px 20px;
+      margin: 24px -36px -32px;
+      overflow: hidden;
+    }
+
+    .modal-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-main), var(--orange));
+      border-radius: 3px;
+      width: 100%;
+      transform-origin: left;
+      animation: progress-drain 1.5s linear forwards;
+    }
+
+    @keyframes progress-drain {
+      from {
+        transform: scaleX(1);
+      }
+
+      to {
+        transform: scaleX(0);
+      }
+    }
+
     @media(max-width:600px) {
       .wrapper {
         padding: 16px 12px 50px;
@@ -485,6 +627,20 @@
       <span style="color:rgba(255,255,255,.7);font-size:11px">▾</span>
     </div>
   </nav>
+  <!-- Success Modal  -->
+  <div class="modal-backdrop" id="successModal">
+    <div class="modal-box">
+      <div class="checkmark-wrap">
+        <div class="checkmark-ring"></div>
+        <i class="fas fa-check checkmark-icon"></i>
+      </div>
+      <div class="modal-title">บันทึกสำเร็จ!</div>
+      <div class="modal-desc" id="successModalDesc">บันทึกข้อมูลเรียบร้อยแล้ว<br>กำลังกลับไปหน้ารายละเอียด...</div>
+      <div class="modal-progress-bar">
+        <div class="modal-progress-fill"></div>
+      </div>
+    </div>
+  </div>
 
   <div class="wrapper">
 
@@ -695,22 +851,32 @@
     }
 
     // ── Toast ──
+    // ── Success Modal ──
+    function showSuccessModal(msg) {
+      if (msg) document.getElementById('successModalDesc').innerHTML = msg + '<br>กำลังกลับไปหน้ารายละเอียด...';
+      document.getElementById('successModal').classList.add('show');
+    }
+
+    // ── Toast (ใช้เฉพาะกรณี error) ──
     function showToast(msg, isError = false) {
-      document.getElementById('toastIcon').textContent = isError ? '❌' : '✅';
-      document.getElementById('toastTitle').textContent = isError ? 'เกิดข้อผิดพลาด' : 'บันทึกสำเร็จ';
+      if (!isError) {
+        showSuccessModal(msg);
+        return;
+      }
+      document.getElementById('toastIcon').textContent = '❌';
+      document.getElementById('toastTitle').textContent = 'เกิดข้อผิดพลาด';
       document.getElementById('toastMsg').textContent = msg;
 
       const toast = document.getElementById('toast');
       const overlay = document.getElementById('toastOverlay');
-      toast.className = 'toast' + (isError ? ' error' : '') + ' show';
+      toast.className = 'toast error show';
       overlay.className = 'toast-overlay show';
 
       setTimeout(() => {
-        toast.className = 'toast' + (isError ? ' error' : '');
+        toast.className = 'toast error';
         overlay.className = 'toast-overlay';
       }, 3500);
     }
-
     // Init
     renderImages();
   </script>

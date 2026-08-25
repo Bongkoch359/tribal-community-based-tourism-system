@@ -805,9 +805,9 @@
                                 <span class="reviewer-name"
                                     th:text="${review.booking.member.firstname + ' ' + review.booking.member.lastname}">
                                     ผู้รีวิว</span>
-                                <span class="verified-badge">
+                                <!-- <span class="verified-badge">
                                     <i class="fas fa-circle-check"></i> จองผ่านระบบ
-                                </span>
+                                </span> -->
                                 <div class="review-meta" th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}">-
                                 </div>
                             </div>

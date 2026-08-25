@@ -17,7 +17,7 @@
             display: flex;
             align-items: center;
             padding: 0 2rem;
-            height: 84px;
+            height: 90px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -38,7 +38,7 @@
         }
 
         .hs-navbar-brand img.brand-logo-img {
-            height: 100px;
+            height: 110px;
             width: auto;
             max-width: 160px;
             object-fit: contain;
@@ -256,30 +256,48 @@
         /* ── Page ── */
         .page {
             width: 100%;
-            max-width: 100%;
-            margin: 0;
-            padding: 32px 40px;
+            max-width: 1300px;
+            /* จำกัดความกว้างไม่ให้ยืดเต็มขอบจอเกินไป */
+            margin: 0 auto;
+            /* จัดกึ่งกลางหน้าจอ */
+            padding: 28px 32px 40px;
+            /* ด้านบน 28px เว้นระยะลงมาจาก Navbar ให้เห็นหัวข้อชัดเจน */
             flex: 1;
+            box-sizing: border-box;
+        }
+
+        /* ── Page Title Row & Back Button Circle ── */
+        .page-title-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
 
         .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1.5px solid #dde5d4;
+            color: #333;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: #1a6b52;
-            color: #fff;
-            font-size: 0.85rem;
-            font-weight: 600;
+            justify-content: center;
             text-decoration: none;
-            padding: 7px 14px;
-            border-radius: 8px;
-            margin-bottom: 1.2rem;
-            transition: background .18s;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .15s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+            margin-bottom: 0;
+            padding: 0;
         }
 
         .back-btn:hover {
-            background: #0d3d30;
-            color: #fff;
+            background: #d8f5ec;
+            color: #1a6b52;
+            border-color: #1a6b52;
+            transform: translateX(-2px);
         }
 
         /* ── Page title ── */
@@ -728,13 +746,14 @@
             flex-direction: column;
         }
 
-        /* footer */
+        /* ── FOOTER ปรับความสูงและจัดระยะ ── */
         .footer {
             margin-top: auto;
-            padding: 1rem 2.5rem;
+            padding: 0.8rem 2.5rem;
+            /* ปรับลดความหนาจาก 1rem เป็น 0.8rem */
             background: #0d3d30;
             color: #c8f0e4;
-            font-size: .9rem;
+            font-size: 0.84rem;
         }
 
         .footer-content {
@@ -745,12 +764,23 @@
             gap: 10px;
         }
 
+        .footer-right {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .footer a {
-            color: #5ecfb0;
+            color: #8fc9ac;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.15s;
         }
 
         .footer a:hover {
+            color: #fff;
             text-decoration: underline;
         }
     </style>
@@ -789,15 +819,16 @@
     <!-- ─── CONTENT ─── -->
     <div class="page">
 
-        <a th:href="@{/owner/homestays}" class="back-btn">
-            <i class="fas fa-chevron-left"></i> ย้อนกลับ
-        </a>
-
         <div class="page-title">
-            <h2>
-                <i class="fas fa-house"></i>
-                <span th:text="${detail.homestay.homestayname}">บ้านมูเซอดาว</span>
-            </h2>
+            <div class="page-title-left">
+                <a th:href="@{/owner/homestays}" class="back-btn" title="ย้อนกลับ">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h2>
+                    <i class="fas fa-house"></i>
+                    <span th:text="${detail.homestay.homestayname}">บ้านมูเซอดาว</span>
+                </h2>
+            </div>
             <div class="title-actions">
                 <a th:href="@{/owner/homestays/{id}/edit(id=${detail.homestay.homestayid})}" class="btn-edit">
                     <i class="fas fa-pen"></i> แก้ไขโฮมสเตย์
@@ -817,20 +848,16 @@
                 <!-- Gallery -->
                 <div class="gallery-wrap">
                     <div class="gallery-main">
-                        <!-- มีรูป -->
                         <img th:if="${detail.firstImage != null}" th:src="${detail.firstImage}" id="mainImg"
                             alt="homestay" />
-                        <!-- ไม่มีรูป -->
                         <div class="no-img" th:unless="${detail.firstImage != null}">
                             <i class="fas fa-house"></i>
                         </div>
-                        <!-- ลูกศร (มีมากกว่า 1 รูป) -->
                         <button th:if="${detail.allImages != null and #lists.size(detail.allImages) > 1}"
                             class="gallery-arrow prev" onclick="prevImg()">&#8249;</button>
                         <button th:if="${detail.allImages != null and #lists.size(detail.allImages) > 1}"
                             class="gallery-arrow next" onclick="nextImg()">&#8250;</button>
                     </div>
-                    <!-- Thumbnails -->
                     <div class="thumb-row" th:if="${detail.allImages != null and #lists.size(detail.allImages) > 1}">
                         <div th:each="img,stat : ${detail.allImages}"
                             th:classappend="${stat.index == 0} ? ' active' : ''" class="thumb"
@@ -842,11 +869,6 @@
 
                 <!-- Status + Rating -->
                 <div class="status-rating-row">
-                    <!-- <span class="status-badge"
-                      th:classappend="${detail.homestay.status == 'active'} ? 'badge-active' : 'badge-pending'">
-                    <i class="fas fa-circle" style="font-size:0.5rem;"></i>
-                    <span th:text="${detail.homestay.status == 'active'} ? 'อนุมัติแล้ว' : 'รอการอนุมัติ'"></span>
-                </span> -->
                     <div class="rating-row">
                         <span class="stars">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i>
@@ -884,7 +906,6 @@
                     <div class="info-card-title"><i class="fas fa-circle-info"
                             style="margin-right:6px;"></i>ข้อมูลโฮมสเตย์</div>
 
-
                     <div class="info-row">
                         <span class="info-label">ชื่อโฮมสเตย์</span>
                         <span class="info-value" th:text="${detail.homestay.homestayname}"></span>
@@ -913,7 +934,7 @@
                             style="margin-right:6px;"></i>เมนูที่เกี่ยวข้อง</div>
 
                     <!-- ดูรีวิว -->
-                    <a th:href="@{/owner/reviews(homestayid=${detail.homestay.homestayid})}" class="menu-item">
+                    <a th:href="@{/owner/homestay/{id}/reviews(id=${detail.homestay.homestayid})}" class="menu-item">
                         <div class="menu-item-left">
                             <div class="menu-icon icon-star"><i class="fas fa-star"></i></div>
                             <div>
@@ -926,7 +947,6 @@
                         <i class="fas fa-chevron-right menu-arrow"></i>
                     </a>
 
-                    <!-- ประเภทห้องพัก -->
                     <a th:href="@{/owner/rooms(homestayid=${detail.homestay.homestayid})}" class="menu-item">
                         <div class="menu-item-left">
                             <div class="menu-icon icon-room"><i class="fas fa-door-open"></i></div>
@@ -938,7 +958,6 @@
                         <i class="fas fa-chevron-right menu-arrow"></i>
                     </a>
 
-                    <!-- รายการจอง -->
                     <a th:href="@{/owner/bookings(homestayid=${detail.homestay.homestayid})}" class="menu-item">
                         <div class="menu-item-left">
                             <div class="menu-icon icon-booking"><i class="fas fa-calendar-check"></i></div>
@@ -958,19 +977,15 @@
         </div>
     </div>
 
-    <!-- ─── FOOTER ─── -->
+    <!-- ─── FOOTER (อยู่นอก .page) ─── -->
     <footer class="footer">
         <div class="footer-content">
             <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
 
-            <span>
+            <span class="footer-right">
                 Version 1.0 |
-                <a href="#">
-                    <i class="fas fa-circle-question"></i> Help
-                </a> |
-                <a href="#">
-                    <i class="fas fa-headset"></i> ติดต่อแอดมิน
-                </a>
+                <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+                <a href="#"><i class="fas fa-headset"></i> ติดต่อแอดมิน</a>
             </span>
         </div>
     </footer>

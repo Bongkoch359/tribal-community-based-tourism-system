@@ -420,11 +420,15 @@
     <!-- ─── CONTENT ─── -->
     <div class="page">
 
-        <a th:href="@{/owner/rooms(homestayid=${homestayid})}" class="back-btn">
-            <i class="fas fa-chevron-left"></i> ย้อนกลับ
-        </a>
+        <div class="page-header" style="margin-bottom: 20px;">
+            <div class="page-title-row">
+                <a class="back-icon-btn" th:href="@{/owner/rooms(homestayid=${homestayid})}" title="ย้อนกลับ">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="page-title" style="margin-bottom:0;">เพิ่มที่พักใหม่</div>
+            </div>
+        </div>
 
-        <div class="page-title">เพิ่มที่พักใหม่</div>
 
         <form id="addRoomForm" th:action="@{/addroom}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="homestayid" th:value="${homestayid}">
@@ -445,6 +449,7 @@
                                 <option value="บ้านพัก">🏡 บ้านพัก</option>
                                 <option value="เต็นท์">⛺ เต็นท์</option>
                                 <option value="กระท่อมไม้ไผ่">🛖 กระท่อมไม้ไผ่</option>
+                                <option value="อื่นๆ">✏️ อื่นๆ (ระบุเอง)</option>
                             </select>
                             <span class="field-error" id="typenameError"></span>
                         </div>
@@ -468,6 +473,12 @@
                             <span class="field-error" id="priceError"></span>
                         </div>
                     </div>
+                    <div class="form-group" id="typenameOtherGroup" style="display:none;">
+                        <label class="form-label">ระบุชื่อประเภทที่พัก <span class="req">*</span></label>
+                        <input type="text" id="typenameOther" class="form-control"
+                            placeholder="เช่น บ้านต้นไม้, เรือนแพ, กระโจม...">
+                        <span class="field-error" id="typenameOtherError"></span>
+                    </div>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -490,20 +501,20 @@
                     </div>
 
                     <!-- คำอธิบาย -->
-<div class="form-group">
-    <label class="form-label">รายละเอียดที่พัก <span class="req">*</span></label>
-    <textarea id="description" name="description" class="form-control"
-        placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
-    <span class="field-error" id="descriptionError"></span>
-</div>
+                    <div class="form-group">
+                        <label class="form-label">รายละเอียดที่พัก <span class="req">*</span></label>
+                        <textarea id="description" name="description" class="form-control"
+                            placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
+                        <span class="field-error" id="descriptionError"></span>
+                    </div>
 
                     <!-- เงื่อนไขการเข้าพัก -->
-<div class="form-group">
-    <label class="form-label">เงื่อนไขการเข้าพัก <span class="req">*</span></label>
-    <textarea id="roomcondition" name="roomcondition" class="form-control"
-        placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
-    <span class="field-error" id="roomconditionError"></span>
-</div>
+                    <div class="form-group">
+                        <label class="form-label">เงื่อนไขการเข้าพัก <span class="req">*</span></label>
+                        <textarea id="roomcondition" name="roomcondition" class="form-control"
+                            placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
+                        <span class="field-error" id="roomconditionError"></span>
+                    </div>
 
                 </div>
             </div>
@@ -586,11 +597,9 @@
                     <i class="fas fa-floppy-disk"></i> บันทึกประเภทที่พัก
                 </button>
             </div>
-
         </form>
     </div>
-    
-<script th:src="@{/js/Homestay/addroom.js}"></script>
+    <script th:src="@{/js/Homestay/addroom.js}"></script>
 </body>
 
 </html>

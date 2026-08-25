@@ -55,7 +55,7 @@
             <div class="page-title">
                 <i class="fas fa-door-open"></i>
                 รายการห้องพักทั้งหมด
-                <span class="count-chip" th:text="${rooms.size()} + ' ห้อง'">0 ห้อง</span>
+                <!-- <span class="count-chip" th:text="${rooms.size()} + ' ห้อง'">0 ห้อง</span> -->
             </div>
             <a class="btn-add" th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}"
                 th:onclick="${bankInfoMissing} ? 'return blockAddRoom(event)' : null">

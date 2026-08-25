@@ -259,3 +259,44 @@
                 goToList();
             }, 2000);
         }
+        (function () {
+        const typeSelect = document.getElementById('typename');
+        const otherGroup = document.getElementById('typenameOtherGroup');
+        const otherInput = document.getElementById('typenameOther');
+        const otherError = document.getElementById('typenameOtherError');
+        const form = document.getElementById('addRoomForm');
+
+        typeSelect.addEventListener('change', function () {
+            if (this.value === 'อื่นๆ') {
+                otherGroup.style.display = 'block';
+                otherInput.setAttribute('required', 'required');
+            } else {
+                otherGroup.style.display = 'none';
+                otherInput.removeAttribute('required');
+                otherInput.value = '';
+                otherInput.classList.remove('error');
+                otherError.textContent = '';
+            }
+        });
+
+        // ก่อนฟอร์มถูกส่งจริง (ไม่ว่าจะกดผ่าน submitForm() หรือวิธีอื่น)
+        form.addEventListener('submit', function (e) {
+            if (typeSelect.value === 'อื่นๆ') {
+                const customName = otherInput.value.trim();
+                if (customName === '') {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    otherInput.classList.add('error');
+                    otherError.textContent = 'กรุณาระบุชื่อประเภทที่พัก';
+                    otherInput.focus();
+                    return false;
+                }
+                // เพิ่ม option ใหม่ด้วยชื่อที่พิมพ์เอง แล้วเลือกมันแทน
+                // เพื่อให้ค่าที่ส่งไป backend (name="typename") เป็นข้อความนี้โดยตรง
+                const customOption = document.createElement('option');
+                customOption.value = customName;
+                customOption.selected = true;
+                typeSelect.appendChild(customOption);
+            }
+        }, true); // capture phase เพื่อให้ทำงานก่อน handler อื่นที่อาจ preventDefault ทีหลัง
+    })();

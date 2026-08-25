@@ -5,26 +5,45 @@
 // ─────────────────────────────────────────
 // Regex สำหรับ validate ฝั่ง client (ก่อน submit จริง)
 // ─────────────────────────────────────────
-const nameRegex    = /^[ก-์a-zA-Z]+$/;
-const emailRegex   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phoneRegex   = /^0[689][0-9]{8}$/;
+const nameRegex = /^[ก-์a-zA-Z]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^0[689][0-9]{8}$/;
 const accountRegex = /^[0-9\-]{6,30}$/;
 // ─────────────────────────────────────────
 // Toast helper — แสดงผลจากข้อความที่ server ส่งมาผ่าน flash attribute
 // ─────────────────────────────────────────
+// ─────────────────────────────────────────
+// Toast helper — ใช้เฉพาะกรณี error เท่านั้น
+// ─────────────────────────────────────────
 function showToast(message, isError) {
+    if (!isError) {
+        showSuccessModal(message);
+        return;
+    }
     const toast = document.getElementById('toast');
     toast.textContent = message;
-    toast.classList.remove('error');
-    if (isError) toast.classList.add('error');
+    toast.classList.add('error');
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2800);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.remove('error');
+    }, 2800);
 }
 
+// ─────────────────────────────────────────
+// Success Modal helper
+// ─────────────────────────────────────────
+function showSuccessModal(message) {
+    const modal = document.getElementById('successModal');
+    const desc = document.getElementById('successModalDesc');
+    if (message) desc.textContent = message;
+    modal.classList.add('show');
+    setTimeout(() => modal.classList.remove('show'), 2000);
+}
 (function () {
     const el = document.getElementById('serverMsg');
     const success = el ? el.dataset.success : null;
-    const error   = el ? el.dataset.error   : null;
+    const error = el ? el.dataset.error : null;
     if (success && success !== 'null' && success.trim() !== '') {
         showToast(success, false);
     } else if (error && error !== 'null' && error.trim() !== '') {
@@ -53,7 +72,7 @@ document.querySelectorAll('.toggle-password').forEach(btn => {
 // Real-time validation: ชื่อ / นามสกุล / อีเมล / เบอร์โทร (เหมือน manager)
 // ─────────────────────────────────────────
 function attachNameValidation(inputId, label) {
-    const input   = document.getElementById(inputId);
+    const input = document.getElementById(inputId);
     const errorEl = document.getElementById(inputId + 'Error');
     input.addEventListener('input', () => {
         const v = input.value.trim();
@@ -91,16 +110,16 @@ phoneInputEl.addEventListener('input', () => {
 // ─────────────────────────────────────────
 document.getElementById('personalForm').addEventListener('submit', function (e) {
     const firstname = document.getElementById('firstname').value.trim();
-    const lastname  = document.getElementById('lastname').value.trim();
-    const email     = document.getElementById('email').value.trim();
-    const phone     = document.getElementById('phone').value.trim();
+    const lastname = document.getElementById('lastname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
 
     document.getElementById('firstnameError').textContent = '';
-    document.getElementById('lastnameError').textContent  = '';
-    document.getElementById('emailError').textContent     = '';
-    document.getElementById('phoneError').textContent     = '';
+    document.getElementById('lastnameError').textContent = '';
+    document.getElementById('emailError').textContent = '';
+    document.getElementById('phoneError').textContent = '';
 
-     if (!firstname || !nameRegex.test(firstname)) {
+    if (!firstname || !nameRegex.test(firstname)) {
         e.preventDefault();
         document.getElementById('firstnameError').textContent = 'กรุณากรอกชื่อให้ถูกต้อง (ไทย/อังกฤษ ไม่มีอักขระพิเศษ)';
         return;
@@ -127,12 +146,12 @@ document.getElementById('personalForm').addEventListener('submit', function (e) 
 // FORM 2: ข้อมูลธนาคาร — validate ก่อน submit จริง
 // ─────────────────────────────────────────
 document.getElementById('bankForm').addEventListener('submit', function (e) {
-    const bankName      = document.getElementById('bankName').value;
-    const accountName   = document.getElementById('accountName').value.trim();
+    const bankName = document.getElementById('bankName').value;
+    const accountName = document.getElementById('accountName').value.trim();
     const accountNumber = document.getElementById('accountNumber').value.trim();
 
-    document.getElementById('bankNameError').textContent      = '';
-    document.getElementById('accountNameError').textContent   = '';
+    document.getElementById('bankNameError').textContent = '';
+    document.getElementById('accountNameError').textContent = '';
     document.getElementById('accountNumberError').textContent = '';
 
     if (!bankName) {
@@ -158,7 +177,7 @@ document.getElementById('bankForm').addEventListener('submit', function (e) {
 document.getElementById('signatureFile').addEventListener('change', function (e) {
     const file = e.target.files[0];
     const wrap = document.getElementById('signaturePreviewWrap');
-    const img  = document.getElementById('signaturePreviewImg');
+    const img = document.getElementById('signaturePreviewImg');
     if (!file) { wrap.style.display = 'none'; return; }
 
     const reader = new FileReader();
@@ -171,7 +190,7 @@ document.getElementById('signatureFile').addEventListener('change', function (e)
 
 document.getElementById('signatureForm').addEventListener('submit', function (e) {
     const fileInput = document.getElementById('signatureFile');
-    const errorEl   = document.getElementById('signatureError');
+    const errorEl = document.getElementById('signatureError');
     errorEl.textContent = '';
 
     if (!fileInput.files.length) {
@@ -186,10 +205,10 @@ document.getElementById('signatureForm').addEventListener('submit', function (e)
 // ─────────────────────────────────────────
 document.getElementById('passwordForm').addEventListener('submit', function (e) {
     const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword     = document.getElementById('newPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
-    document.getElementById('newPasswordError').textContent     = '';
+    document.getElementById('newPasswordError').textContent = '';
     document.getElementById('confirmPasswordError').textContent = '';
 
     if (!currentPassword || !newPassword || !confirmPassword) {
@@ -206,5 +225,20 @@ document.getElementById('passwordForm').addEventListener('submit', function (e) 
         e.preventDefault();
         document.getElementById('confirmPasswordError').textContent = 'รหัสผ่านไม่ตรงกัน';
         return;
+    }
+});
+// ─────────────────────────────────────────
+// แก้ปัญหา bfcache: เคลียร์ modal/toast ที่ค้างอยู่
+// เมื่อผู้ใช้กดปุ่ม "กลับ" แล้วเบราว์เซอร์ดึงหน้าจาก back-forward cache
+// ─────────────────────────────────────────
+window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+        const modal = document.getElementById('successModal');
+        const toast = document.getElementById('toast');
+        if (modal) modal.classList.remove('show');
+        if (toast) {
+            toast.classList.remove('show');
+            toast.classList.remove('error');
+        }
     }
 });

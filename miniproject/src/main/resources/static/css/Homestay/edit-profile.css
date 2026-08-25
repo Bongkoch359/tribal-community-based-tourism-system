@@ -53,7 +53,7 @@ body {
     display: flex;
     align-items: center;
     padding: 0 2rem;
-    height: 84px;
+    height: 90px;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -74,7 +74,7 @@ body {
 }
 
 .hs-navbar-brand img.brand-logo-img {
-    height: 75px;
+    height: 110px;
     width: auto;
     max-width: 160px;
     object-fit: contain;
@@ -270,28 +270,39 @@ body {
     }
 }
 
-/* ── Back Button (สไตล์เดียวกับหน้าอื่น เช่น homestayReviews) ── */
+/* ── Back Button  ── */
+.page-title-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
 .back-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1.5px solid #e2ddd4;
+    color: #2c2c2c;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: var(--green-main);
-    color: #fff;
-    font-family: var(--font);
-    font-size: 0.85rem;
-    font-weight: 600;
+    justify-content: center;
     text-decoration: none;
-    padding: 7px 14px;
-    border-radius: 8px;
-    border: none;
+    font-size: 14px;
     cursor: pointer;
-    margin-bottom: 1.2rem;
-    transition: background .18s;
+    transition: all .15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    margin-bottom: 0;
+    padding: 0;
 }
 
 .back-btn:hover {
-    background: var(--green-dark);
-    color: #fff;
+    background: #d8f5ec;
+    color: #1a6b52;
+    border-color: #1a6b52;
+    transform: translateX(-2px);
 }
 
 /* ── Main Container ── */
@@ -694,5 +705,154 @@ body {
     .btn {
         width: 100%;
         justify-content: center;
+    }
+}
+
+/* ── Success Modal ── */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 30, 12, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.modal-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.modal-box {
+    pointer-events: auto;
+    font-family: var(--font);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 40px 36px 32px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    opacity: 0;
+}
+
+.modal-backdrop.show .modal-box {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.checkmark-wrap {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--green-dark), var(--green-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(13, 61, 48, 0.35);
+    position: relative;
+}
+
+.checkmark-wrap::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 3px solid rgba(13, 61, 48, 0.15);
+}
+
+.checkmark-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(13, 61, 48, 0.08);
+    animation: ring-pulse 1.5s ease-out 0.4s both;
+}
+
+@keyframes ring-pulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
+
+.checkmark-icon {
+    font-size: 36px;
+    color: #fff;
+    animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+@keyframes pop-in {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-title {
+    font-family: var(--font);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+}
+
+.modal-desc {
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+.modal-progress-bar {
+    height: 3px;
+    background: var(--green-pale);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    margin: 24px -36px -32px;
+    overflow: hidden;
+}
+
+.modal-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-main), var(--orange));
+    border-radius: 3px;
+    width: 100%;
+    transform-origin: left;
+    animation: progress-drain 2.5s linear forwards;
+}
+
+@keyframes progress-drain {
+    from {
+        transform: scaleX(1);
+    }
+
+    to {
+        transform: scaleX(0);
     }
 }

@@ -57,7 +57,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     long countByRoomHomestayIdAndStatus(
             @Param("homestayId") Integer homestayId,
             @Param("status") BookingStatus status);
-
+// ================== ของโฮมสเตย์ ==================
     /**
      * รายได้รวมของ homestay (นับทั้ง CONFIRMED และ COMPLETED
      * เพราะถือว่าจ่ายเงินแล้วทั้งคู่)
@@ -70,55 +70,63 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
             "                         com.example.miniproject.entity.enums.BookingStatus.COMPLETED)")
     double sumConfirmedRevenueByHomestayId(@Param("homestayId") Integer homestayId);
 
-    /** การจองล่าสุด 5 รายการของ homestay */
+    /** การจองที่ "รอตรวจสอบ" ล่าสุด 5 รายการของ homestay */
     @Query("SELECT b FROM Booking b " +
             "JOIN b.roomDetails rd " +
             "JOIN rd.roomtype rt " +
             "WHERE rt.homestay.homestayid = :homestayId " +
+            "AND b.bookingStatus = :status " +
             "ORDER BY b.bookingdate DESC " +
             "LIMIT 5")
-    List<Booking> findTop5ByHomestayId(@Param("homestayId") Integer homestayId);
+    List<Booking> findTop5ByHomestayIdAndStatus(@Param("homestayId") Integer homestayId,
+            @Param("status") BookingStatus status);
 
-    // ─── กิจกรรมวันนี้: เช็คอิน / เช็คเอาท์ ───────────────────────────
+    // // ─── กิจกรรมวันนี้: เช็คอิน / เช็คเอาท์ ───────────────────────────
 
-    /** จำนวนห้องที่มีแขก "เช็คอิน" วันนี้ (นับตามรายละเอียดห้อง ไม่ใช่นับ booking) */
-    @Query("SELECT COUNT(rd) FROM Bookingroomdetail rd " +
-            "JOIN rd.roomtype rt " +
-            "JOIN rd.booking b " +
-            "WHERE rt.homestay.homestayid = :homestayId " +
-            "AND rd.checkindate = :today " +
-            "AND b.bookingStatus IN (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
-            "                         com.example.miniproject.entity.enums.BookingStatus.COMPLETED)")
-    long countCheckinsTodayByHomestayId(@Param("homestayId") Integer homestayId,
-            @Param("today") java.sql.Date today);
+    // /**
+    // * จำนวนห้องที่มีแขก "เช็คอิน" วันนี้ (นับตามรายละเอียดห้อง ไม่ใช่นับ booking)
+    // */
+    // @Query("SELECT COUNT(rd) FROM Bookingroomdetail rd " +
+    // "JOIN rd.roomtype rt " +
+    // "JOIN rd.booking b " +
+    // "WHERE rt.homestay.homestayid = :homestayId " +
+    // "AND rd.checkindate = :today " +
+    // "AND b.bookingStatus IN
+    // (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
+    // " com.example.miniproject.entity.enums.BookingStatus.COMPLETED)")
+    // long countCheckinsTodayByHomestayId(@Param("homestayId") Integer homestayId,
+    // @Param("today") java.sql.Date today);
 
-    /** จำนวนห้องที่มีแขก "เช็คเอาท์" วันนี้ (= ห้องที่ต้องทำความสะอาดวันนี้ด้วย) */
-    @Query("SELECT COUNT(rd) FROM Bookingroomdetail rd " +
-            "JOIN rd.roomtype rt " +
-            "JOIN rd.booking b " +
-            "WHERE rt.homestay.homestayid = :homestayId " +
-            "AND rd.checkoutdate = :today " +
-            "AND b.bookingStatus IN (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
-            "                         com.example.miniproject.entity.enums.BookingStatus.COMPLETED)")
-    long countCheckoutsTodayByHomestayId(@Param("homestayId") Integer homestayId,
-            @Param("today") java.sql.Date today);
+    // /** จำนวนห้องที่มีแขก "เช็คเอาท์" วันนี้ (= ห้องที่ต้องทำความสะอาดวันนี้ด้วย)
+    // */
+    // @Query("SELECT COUNT(rd) FROM Bookingroomdetail rd " +
+    // "JOIN rd.roomtype rt " +
+    // "JOIN rd.booking b " +
+    // "WHERE rt.homestay.homestayid = :homestayId " +
+    // "AND rd.checkoutdate = :today " +
+    // "AND b.bookingStatus IN
+    // (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
+    // " com.example.miniproject.entity.enums.BookingStatus.COMPLETED)")
+    // long countCheckoutsTodayByHomestayId(@Param("homestayId") Integer homestayId,
+    // @Param("today") java.sql.Date today);
 
-    // ─── แนวโน้มรายได้ 7 วันล่าสุด ──────────────────────────────────────
-
+    // ─── รายได้รวมรายเดือน (เฉพาะยืนยันแล้ว/เสร็จสิ้น) ของ homestay ────────────
     /**
-     * รายได้รวมรายวัน (เฉพาะยืนยันแล้ว/เสร็จสิ้น) ของ homestay
-     * ตั้งแต่ :startDate จนถึงวันนี้ — คืนค่าเป็น [java.sql.Date, Double]
+     * รายได้รวมรายเดือน (เฉพาะยืนยันแล้ว/เสร็จสิ้น) ของ homestay
+     * ตั้งแต่ :startDate จนถึงวันนี้ — คืนค่าเป็น [Integer year, Integer month,
+     * Double total]
      */
-    @Query("SELECT b.bookingdate as d, COALESCE(SUM(b.totalamount), 0) FROM Booking b " +
+    @Query("SELECT YEAR(b.bookingdate) as yr, MONTH(b.bookingdate) as mo, " +
+            "COALESCE(SUM(b.totalamount), 0) as total FROM Booking b " +
             "JOIN b.roomDetails rd " +
             "JOIN rd.roomtype rt " +
             "WHERE rt.homestay.homestayid = :homestayId " +
             "AND b.bookingStatus IN (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
             "                         com.example.miniproject.entity.enums.BookingStatus.COMPLETED) " +
             "AND b.bookingdate >= :startDate " +
-            "GROUP BY b.bookingdate " +
-            "ORDER BY b.bookingdate ASC")
-    List<Object[]> sumRevenueByDayByHomestayId(@Param("homestayId") Integer homestayId,
+            "GROUP BY YEAR(b.bookingdate), MONTH(b.bookingdate) " +
+            "ORDER BY YEAR(b.bookingdate) ASC, MONTH(b.bookingdate) ASC")
+    List<Object[]> sumRevenueByMonthByHomestayId(@Param("homestayId") Integer homestayId,
             @Param("startDate") java.sql.Date startDate);
 
     // ─── ดึงการจองทั้งหมดของ homestay ───────────
@@ -142,6 +150,8 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     List<Booking> findAllByHomestayIdAndStatus(
             @Param("homestayId") Integer homestayId,
             @Param("status") BookingStatus status);
+
+    // =====================================================================================================================================
 
     // ─── การจองทัวร์ของ manager (สำหรับหน้ารายการจองทัวร์) ───
 

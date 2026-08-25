@@ -7,6 +7,156 @@
 const homestayImages = {};
 
 // ============================================================
+//  LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่โฮมสเตย์ (แบบเดียวกับหน้าเพิ่มทัวร์)
+//  ฟรี ไม่ต้องมี API Key ไม่เก็บ lat/lng ลง backend
+//  ใช้ Nominatim (OSM) สำหรับค้นหาสถานที่ + reverse geocode
+// ============================================================
+const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเชียงใหม่ (ปรับตามพื้นที่ให้บริการจริงได้)
+const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
+const homestayMaps = {}; // { idx: { map, marker } }
+
+function createLeafletMap(divId) {
+    const map = L.map(divId, { center: DEFAULT_MAP_CENTER, zoom: 13 });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    return map;
+}
+
+function reverseGeocode(lat, lng, callback) {
+    fetch(`${NOMINATIM_BASE}/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=th`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.display_name) callback(data.display_name);
+        })
+        .catch(() => {});
+}
+
+function searchPlaces(query, callback) {
+    if (!query || query.trim().length < 3) { callback([]); return; }
+    const params = new URLSearchParams({
+        format: 'jsonv2',
+        q: query,
+        countrycodes: 'th',
+        'accept-language': 'th',
+        limit: '5'
+    });
+    fetch(`${NOMINATIM_BASE}/search?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => callback(data || []))
+        .catch(() => callback([]));
+}
+
+/* ── ผูก search box + suggestion dropdown ให้แต่ละช่อง input ── */
+function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
+    inputEl.addEventListener('input', () => {
+        clearTimeout(timerRef.id);
+        const query = inputEl.value;
+        timerRef.id = setTimeout(() => {
+            suggestBoxEl.innerHTML = '<div class="search-suggest-loading">กำลังค้นหา...</div>';
+            suggestBoxEl.style.display = 'block';
+            searchPlaces(query, (results) => {
+                if (results.length === 0) {
+                    suggestBoxEl.style.display = 'none';
+                    return;
+                }
+                suggestBoxEl.innerHTML = '';
+                results.forEach(place => {
+                    const item = document.createElement('div');
+                    item.className = 'search-suggest-item';
+                    item.textContent = place.display_name;
+                    item.addEventListener('click', () => {
+                        inputEl.value = place.display_name;
+                        suggestBoxEl.style.display = 'none';
+                        onSelect(parseFloat(place.lat), parseFloat(place.lon), place.display_name);
+                    });
+                    suggestBoxEl.appendChild(item);
+                });
+                suggestBoxEl.style.display = 'block';
+            });
+        }, 500); // debounce 500ms ตามนโยบายการใช้งาน Nominatim
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!inputEl.contains(e.target) && !suggestBoxEl.contains(e.target)) {
+            suggestBoxEl.style.display = 'none';
+        }
+    });
+}
+
+/* ── หาตำแหน่งปัจจุบันของผู้ใช้ ── */
+function getCurrentPositionOrDefault(onLocated, onFallback) {
+    if (!navigator.geolocation) { onFallback(); return; }
+    navigator.geolocation.getCurrentPosition(
+        (pos) => onLocated([pos.coords.latitude, pos.coords.longitude]),
+        () => onFallback(),
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+}
+
+/* ── สร้าง/แสดงแผนที่สำหรับโฮมสเตย์แต่ละแห่ง (เรียกซ้ำได้ปลอดภัย — ครั้งต่อไปแค่ invalidateSize) ── */
+function initHomestayMap(idx) {
+    const mapDivId = `hs_map_${idx}`;
+    const mapDiv = document.getElementById(mapDivId);
+    if (!mapDiv) return;
+
+    if (homestayMaps[idx]) {
+        setTimeout(() => homestayMaps[idx].map.invalidateSize(), 100);
+        return;
+    }
+
+    const addressInput = document.getElementById(`hs_address_${idx}`);
+    const map = createLeafletMap(mapDivId);
+    const marker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(map);
+    homestayMaps[idx] = { map, marker };
+
+    function fillAddress(address) {
+        addressInput.value = address;
+        if (addressInput.classList.contains('is-invalid')) validateHsAddress(idx);
+    }
+
+    marker.on('dragend', () => {
+        const pos = marker.getLatLng();
+        reverseGeocode(pos.lat, pos.lng, fillAddress);
+    });
+
+    map.on('click', (e) => {
+        marker.setLatLng(e.latlng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng, fillAddress);
+    });
+
+    setTimeout(() => map.invalidateSize(), 200);
+
+    // ✅ ปักหมุดที่ตำแหน่งปัจจุบันของผู้ใช้อัตโนมัติ ถ้ายังไม่มีที่อยู่กรอกไว้
+    if (!addressInput.value.trim()) {
+        getCurrentPositionOrDefault(
+            ([lat, lng]) => {
+                map.setView([lat, lng], 16);
+                marker.setLatLng([lat, lng]);
+                reverseGeocode(lat, lng, fillAddress);
+            },
+            () => { /* ใช้ DEFAULT_MAP_CENTER ตามเดิม */ }
+        );
+    }
+
+    attachPlaceSearch(
+        addressInput,
+        document.getElementById(`hs_addressSuggest_${idx}`),
+        (lat, lng) => {
+            map.setView([lat, lng], 16);
+            marker.setLatLng([lat, lng]);
+            if (addressInput.classList.contains('is-invalid')) validateHsAddress(idx);
+        },
+        { id: null }
+    );
+}
+
+// หมายเหตุ: สไตล์ของกล่องแผนที่ (.hs-map-box, .hs-search-input-wrap ฯลฯ)
+// อยู่ใน register-owner.css แล้ว (รวมถึงตัวแก้ปัญหาแผนที่ลอยทับ navbar ตอนเลื่อนจอ
+// ด้วย isolation/z-index) จึงไม่ต้อง inject style ผ่าน JS อีกต่อไป
+
+// ============================================================
 //  HELPER
 // ============================================================
 function showError(input, spanId, msg) {
@@ -181,20 +331,26 @@ function addHomestay() {
 
         <div class="mb-2">
             <label class="form-label required-label">ที่อยู่โฮมสเตย์</label>
-            <input type="text" class="form-control" id="hs_address_${idx}"
-                   placeholder="บ้านเลขที่ / หมู่ / ตำบล / อำเภอ">
+            <div class="hs-search-input-wrap">
+                <input type="text" class="form-control" id="hs_address_${idx}" autocomplete="off"
+                       placeholder="บ้านเลขที่ / หมู่ / ตำบล / อำเภอ">
+                <div class="hs-search-suggest-box" id="hs_addressSuggest_${idx}"></div>
+            </div>
             <span class="field-error" id="hs_addressError_${idx}"></span>
+            <div class="hs-map-box" id="hs_map_${idx}"></div>
+            <small style="color:#888; font-size:0.78rem;">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
+                หรือคลิก/ลากหมุดบนแผนที่เพื่อให้ระบบเติมที่อยู่ให้อัตโนมัติ</small>
         </div>
 
         <div class="mb-2">
-            <label class="form-label">รายละเอียดโฮมสเตย์ <span class="text-muted">(ไม่บังคับ)</span></label>
+            <label class="form-label required-label">รายละเอียดโฮมสเตย์</label>
             <textarea class="form-control" id="hs_desc_${idx}" rows="3"
                       placeholder="อธิบายจุดเด่น บรรยากาศ หรือสิ่งอำนวยความสะดวก..."></textarea>
             <span class="field-error" id="hs_descError_${idx}"></span>
         </div>
 
         <div class="mb-2">
-            <label class="form-label">รูปภาพโฮมสเตย์ <span class="text-muted">(ไม่บังคับ)</span></label>
+            <label class="form-label required-label">รูปภาพโฮมสเตย์</label>
             <div class="hs-upload-zone" id="hs_zone_${idx}"
                  onclick="document.getElementById('hs_img_${idx}').click()"
                  ondragover="event.preventDefault(); this.style.borderColor='#2d6a2d'"
@@ -205,8 +361,9 @@ function addHomestay() {
                        onchange="handleHsImages(${idx}, this.files); this.value=''">
                 <i class="fas fa-cloud-arrow-up" style="font-size:1.8rem; color:#ccc; display:block; margin-bottom:6px;"></i>
                 <p style="color:#aaa; font-size:0.85rem; margin:0;">คลิกหรือลากรูปมาวางที่นี่</p>
-                <small style="color:#bbb; font-size:0.78rem;">JPG, PNG, WEBP — หลายรูปพร้อมกัน ขนาดสูงสุด 5MB/รูป</small>
+                <small style="color:#bbb; font-size:0.78rem;">JPG, PNG, WEBP — อย่างน้อย 1 รูป (สูงสุด 5MB/รูป)</small>
             </div>
+            <span class="field-error" id="hs_imagesError_${idx}"></span>
             <div id="hs_preview_${idx}"
                  style="display:none; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:8px;"></div>
         </div>
@@ -223,6 +380,7 @@ function addHomestay() {
                 background: #f9fdf9; transition: border-color 0.2s;
             }
             .hs-upload-zone:hover { border-color: #2d6a2d; }
+            .hs-upload-zone.is-invalid { border-color: #dc3545; background: #fff5f5; }
             .hs-preview-card {
                 position: relative; border-radius: 6px;
                 overflow: hidden; aspect-ratio: 4/3;
@@ -246,11 +404,23 @@ function addHomestay() {
     }
 
     bindHomestayListeners(idx);
+
+    // ถ้าหน้า Step 2 กำลังแสดงอยู่ (เช่น กดเพิ่มโฮมสเตย์อีกแห่งระหว่างอยู่หน้านี้) ให้สร้างแผนที่ทันที
+    // ถ้ายังไม่แสดง (เช่น ตอนโหลดหน้าครั้งแรก) จะไปสร้างตอน goToPage(2) แทน เพราะ Leaflet ต้องการ
+    // container ที่มองเห็นอยู่จริงถึงจะคำนวณขนาดแผนที่ได้ถูกต้อง
+    const page2 = document.getElementById('page-2');
+    if (page2 && !page2.classList.contains('d-none')) {
+        initHomestayMap(idx);
+    }
 }
 
 function removeHomestay(idx) {
     document.getElementById(`homestay-block-${idx}`)?.remove();
     delete homestayImages[idx];
+    if (homestayMaps[idx]) {
+        homestayMaps[idx].map.remove();
+        delete homestayMaps[idx];
+    }
 }
 
 function handleHsImages(idx, fileList) {
@@ -264,6 +434,7 @@ function handleHsImages(idx, fileList) {
         if (!dup) homestayImages[idx].push(file);
     });
     renderHsPreviews(idx);
+    validateHsImages(idx);
 }
 
 function handleHsDrop(e, idx) {
@@ -297,6 +468,7 @@ function renderHsPreviews(idx) {
 function removeHsImage(idx, imgIdx) {
     homestayImages[idx].splice(imgIdx, 1);
     renderHsPreviews(idx);
+    validateHsImages(idx);
 }
 
 // ============================================================
@@ -378,9 +550,21 @@ function validateHsAddress(idx) {
 function validateHsDesc(idx) {
     const input = document.getElementById(`hs_desc_${idx}`);
     const val = input.value.trim();
-    if (val === '') { showValid(input, `hs_descError_${idx}`); return true; }
-    if (val.length < 3 || val.length > 5000) { showError(input, `hs_descError_${idx}`, 'รายละเอียดโฮมสเตย์ต้องมีความยาว 3–5000 ตัวอักษร (หากกรอก)'); return false; }
+    if (val === '') { showError(input, `hs_descError_${idx}`, 'กรุณากรอกรายละเอียดโฮมสเตย์'); return false; }
+    if (val.length < 3 || val.length > 5000) { showError(input, `hs_descError_${idx}`, 'รายละเอียดโฮมสเตย์ต้องมีความยาว 3–5000 ตัวอักษร'); return false; }
     showValid(input, `hs_descError_${idx}`); return true;
+}
+function validateHsImages(idx) {
+    const zone = document.getElementById(`hs_zone_${idx}`);
+    const count = (homestayImages[idx] || []).length;
+    if (count === 0) {
+        zone.classList.add('is-invalid');
+        showSpanError(`hs_imagesError_${idx}`, 'กรุณาอัปโหลดรูปภาพโฮมสเตย์อย่างน้อย 1 รูป');
+        return false;
+    }
+    zone.classList.remove('is-invalid');
+    hideSpan(`hs_imagesError_${idx}`);
+    return true;
 }
 function validateAllHomestays() {
     const blocks = document.querySelectorAll('.homestay-block');
@@ -388,7 +572,7 @@ function validateAllHomestays() {
     let allOk = true;
     blocks.forEach(block => {
         const idx = block.id.split('-').pop();
-        if (!validateHsName(idx) || !validateHsAddress(idx) || !validateHsDesc(idx)) allOk = false;
+        if (!validateHsName(idx) || !validateHsAddress(idx) || !validateHsDesc(idx) || !validateHsImages(idx)) allOk = false;
     });
     if (!allOk) {
         const first = document.querySelector('#page-2 .is-invalid');
@@ -406,6 +590,20 @@ function goToPage(n) {
         document.getElementById(`step-dot-${i}`)?.classList.remove('active', 'done');
     });
     document.getElementById(`page-${n}`).classList.remove('d-none');
+
+    // Step 2 เพิ่งถูกแสดง -> สร้าง/รีเฟรชขนาดแผนที่ของทุกโฮมสเตย์ที่มีอยู่ตอนนี้
+    // ใช้ requestAnimationFrame เพื่อรอให้ browser คำนวณ layout ของ container ที่เพิ่ง
+    // เอา d-none ออกให้เสร็จก่อน ไม่งั้น Leaflet อาจอ่านขนาด container ผิด (เช่น 0 หรือค้างจาก viewport)
+    // ทำให้แผนที่แสดงผลเลยขอบการ์ด
+    if (n === 2) {
+        requestAnimationFrame(() => {
+            document.querySelectorAll('.homestay-block').forEach(block => {
+                const idx = block.id.split('-').pop();
+                initHomestayMap(idx);
+            });
+        });
+    }
+
     for (let i = 1; i < n; i++) {
         document.getElementById(`step-dot-${i}`)?.classList.add('done');
         document.getElementById(`step-line-${i}`)?.classList.add('done');

@@ -14,7 +14,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
-    min-height: 84px;
+   height: 90px;
 }
 
 .top-navbar .brand {
@@ -28,7 +28,7 @@ body {
 }
 
 .top-navbar .brand .brand-logo-img {
-    height: 100px;
+    height: 110px;
     width: auto;
     max-width: 170px;
     object-fit: contain;
@@ -545,3 +545,81 @@ body {
         .footer a:hover {
             text-decoration: underline;
         }
+
+/* ══════════════════════════════════════════════════════════
+   Homestay location map (แบบเดียวกับหน้าเพิ่มทัวร์)
+   หมายเหตุสำคัญ: .top-navbar เป็น position: sticky; z-index: 100;
+   ส่วน Leaflet ใช้ z-index สูงถึง 1000 กับปุ่มซูม/attribution ของมันเอง
+   ถ้า container ของแผนที่ไม่ได้สร้าง stacking context ของตัวเอง
+   ค่า z-index สูงๆ ของ Leaflet จะ "หลุด" ออกไปแข่งกับ navbar ในบริบท
+   ทั้งหน้า ทำให้แผนที่ลอยทับ navbar ตอนเลื่อนหน้าจอ (ที่ควรจะลอดใต้
+   navbar ไปตามปกติ) — แก้ด้วย isolation: isolate; + ให้ z-index ของ
+   กล่องแผนที่เอง น้อยกว่า 100 เสมอ
+   ══════════════════════════════════════════════════════════ */
+.homestay-block {
+    overflow: hidden;
+    position: relative;
+}
+
+.hs-search-input-wrap {
+    position: relative;
+    max-width: 100%;
+}
+
+.hs-search-suggest-box {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 4px;
+}
+
+.hs-search-suggest-box .search-suggest-item {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.hs-search-suggest-box .search-suggest-item:last-child {
+    border-bottom: none;
+}
+
+.hs-search-suggest-box .search-suggest-item:hover {
+    background: #f2f9f2;
+}
+
+.hs-search-suggest-box .search-suggest-loading {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.hs-map-box {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    height: 220px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    position: relative;
+    isolation: isolate; /* กัน z-index ภายในแผนที่หลุดออกไปนอกกล่อง */
+    z-index: 1;          /* ต้องน้อยกว่า .top-navbar (z-index: 100) */
+}
+
+.hs-map-box .leaflet-container {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    font-family: 'Sarabun', sans-serif;
+}

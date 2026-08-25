@@ -4,25 +4,35 @@
     padding: 2rem;
 }
 
-.back-btn {
-    display: inline-flex;
+/* ─── BACK BUTTON CIRCLE & HEADER ─── */
+.page-title-row {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    background: #d8f5ec;
-    color: #1a6b52;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 600;
-    text-decoration: none;
-    margin-bottom: 1.2rem;
+    gap: 12px;
 }
 
-.back-btn:hover {
-    background: #b0e8d8;
-    color: #0d3d30;
+.back-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    color: #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+}
+
+.back-icon-btn:hover {
+    background: #d8f5ec;
+    color: #1a6b52;
+    border-color: #1a6b52;
+    transform: translateX(-2px);
 }
 
 .page-title {

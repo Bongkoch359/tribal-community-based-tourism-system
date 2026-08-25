@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link th:href="@{/css/Homestay/register-owner.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 </head>
 
 <body>
@@ -191,11 +193,20 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="termsBody">
-                    <p>1. ผู้สมัครต้องเป็นเจ้าของหรือผู้มีสิทธิ์บริหารจัดการโฮมสเตย์ที่ลงทะเบียนจริง</p>
-                    <p>2. ข้อมูลที่กรอกต้องเป็นความจริงและสามารถตรวจสอบได้</p>
-                    <p><strong>3. บัญชีจะต้องผ่านการอนุมัติจากผู้ดูแลระบบ (Admin) ก่อน
-                            จึงจะสามารถเข้าสู่ระบบและใช้งานได้</strong></p>
-                    <p>4. ระบบขอสงวนสิทธิ์ระงับหรือยกเลิกบัญชีที่ให้ข้อมูลเท็จหรือละเมิดเงื่อนไข</p>
+                    <p>1. <strong>คุณสมบัติผู้สมัคร:</strong> ผู้สมัครต้องเป็นเจ้าของกิจการ
+                        หรือตัวแทนผู้มีอำนาจในการบริหารจัดการโฮมสเตย์ที่ได้รับอนุญาตอย่างถูกต้อง</p>
+                    <p>2. <strong>ความถูกต้องของข้อมูล:</strong>
+                        ข้อมูลและเอกสารทั้งหมดที่ใช้ในการลงทะเบียนต้องเป็นข้อมูลจริง ถูกต้อง
+                        และสามารถตรวจสอบได้ตามกฎหมาย</p>
+                    <p>3. <strong>การอนุมัติสิทธิ์เข้าใช้งาน:</strong>
+                        บัญชีผู้ใช้งานจะต้องผ่านการตรวจสอบและอนุมัติจากผู้ดูแลระบบ (Admin) ก่อน
+                        จึงจะสามารถเข้าสู่ระบบและเริ่มดำเนินการได้</p>
+                    <p>4. <strong>การระงับหรือยกเลิกสิทธิ์:</strong> ระบบขอสงวนสิทธิ์ในการปฏิเสธคำขอ ระงับ
+                        หรือยกเลิกบัญชีผู้ใช้งานทันที หากตรวจพบการให้ข้อมูลเท็จ
+                        หรือมีการกระทำที่ละเมิดข้อกำหนดและเงื่อนไขการให้บริการ</p>
+                    <p>5. <strong>การคุ้มครองข้อมูล:</strong>
+                        ข้อมูลส่วนบุคคลจะถูกเก็บรักษาและนำไปใช้เพื่อวัตถุประสงค์ในการยืนยันตัวตนและการให้บริการภายในระบบเท่านั้น
+                    </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
@@ -207,7 +218,7 @@
             </div>
         </div>
     </div>
-     <!-- ─── FOOTER ─── -->
+    <!-- ─── FOOTER ─── -->
     <footer class="footer">
         <div class="footer-content">
             <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>

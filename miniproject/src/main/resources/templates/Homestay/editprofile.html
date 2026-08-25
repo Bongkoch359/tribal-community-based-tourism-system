@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขโปรไฟล์</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/edit-profile.css}" rel="stylesheet">
 </head>
+
 <body>
     <!-- ─── NAVBAR (เหมือนหน้าอื่นทุกประการ) ─── -->
     <nav class="hs-navbar">
@@ -32,24 +35,42 @@
                 <div class="hs-dropdown-content">
                     <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
                     <hr>
-                    <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i> ออกจากระบบ</a>
+                    <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i>
+                        ออกจากระบบ</a>
                 </div>
             </div>
         </div>
     </nav>
+    <!-- Success Modal (แบบเดียวกับ addRoom) -->
+    <div class="modal-backdrop" id="successModal">
+        <div class="modal-box">
+            <div class="checkmark-wrap">
+                <div class="checkmark-ring"></div>
+                <i class="fas fa-check checkmark-icon"></i>
+            </div>
+            <div class="modal-title">บันทึกสำเร็จ!</div>
+            <div class="modal-desc" id="successModalDesc">บันทึกข้อมูลเรียบร้อยแล้ว</div>
+            <div class="modal-progress-bar">
+                <div class="modal-progress-fill"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Thymeleaf ส่ง flash message ให้ JS อ่าน (แทนการเช็ค response ของ fetch) -->
     <div id="serverMsg" th:data-success="${successMessage}" th:data-error="${errorMessage}" style="display:none;"></div>
 
     <main class="main-container">
 
-        <a class="back-btn" onclick="history.back()">
-            <i class="fas fa-chevron-left"></i> กลับ
-        </a>
-
         <div class="page-header">
-            <h1 class="page-title">แก้ไขโปรไฟล์</h1>
-            <p class="page-subtitle">อัปเดตข้อมูลส่วนตัวและรหัสผ่านของบัญชีคุณ</p>
+            <div class="page-title-row">
+                <a class="back-btn" th:href="@{/owner/dashboard}" title="ย้อนกลับ">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="page-title" style="margin-bottom: 2px;">แก้ไขโปรไฟล์</h1>
+                    <p class="page-subtitle" style="margin-bottom: 0;">อัปเดตข้อมูลและรหัสผ่านของบัญชีคุณ</p>
+                </div>
+            </div>
         </div>
 
         <!-- Profile Card -->
@@ -106,8 +127,8 @@
                 <div class="form-group">
                     <label class="form-label" for="phone">เบอร์โทรศัพท์</label>
                     <div class="input-with-icon">
-                        <input type="tel" id="phone" name="phone" class="form-input"
-                            th:value="${loggedInOwner?.phone}" placeholder="0812345678" maxlength="10">
+                        <input type="tel" id="phone" name="phone" class="form-input" th:value="${loggedInOwner?.phone}"
+                            placeholder="0812345678" maxlength="10">
                         <span class="input-icon"><i class="fas fa-phone"></i></span>
                     </div>
                     <span class="error-msg" id="phoneError"></span>
@@ -144,18 +165,37 @@
                         <label class="form-label" for="bankName">ชื่อธนาคาร <span class="required">*</span></label>
                         <select id="bankName" name="bankName" class="form-input">
                             <option value="">-- เลือกธนาคาร --</option>
-                            <option value="ธนาคารกรุงเทพ" th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงเทพ'}">ธนาคารกรุงเทพ (BBL)</option>
-                            <option value="ธนาคารกสิกรไทย" th:selected="${loggedInOwner?.bankName == 'ธนาคารกสิกรไทย'}">ธนาคารกสิกรไทย (KBANK)</option>
-                            <option value="ธนาคารกรุงไทย" th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงไทย'}">ธนาคารกรุงไทย (KTB)</option>
-                            <option value="ธนาคารทหารไทยธนชาต" th:selected="${loggedInOwner?.bankName == 'ธนาคารทหารไทยธนชาต'}">ธนาคารทหารไทยธนชาต (TTB)</option>
-                            <option value="ธนาคารไทยพาณิชย์" th:selected="${loggedInOwner?.bankName == 'ธนาคารไทยพาณิชย์'}">ธนาคารไทยพาณิชย์ (SCB)</option>
-                            <option value="ธนาคารกรุงศรีอยุธยา" th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงศรีอยุธยา'}">ธนาคารกรุงศรีอยุธยา (BAY)</option>
-                            <option value="ธนาคารออมสิน" th:selected="${loggedInOwner?.bankName == 'ธนาคารออมสิน'}">ธนาคารออมสิน (GSB)</option>
-                            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร" th:selected="${loggedInOwner?.bankName == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร'}">ธนาคารเพื่อการเกษตรและสหกรณ์ (ธ.ก.ส.)</option>
-                            <option value="ธนาคารอาคารสงเคราะห์" th:selected="${loggedInOwner?.bankName == 'ธนาคารอาคารสงเคราะห์'}">ธนาคารอาคารสงเคราะห์ (GHB)</option>
-                            <option value="ธนาคารซีไอเอ็มบีไทย" th:selected="${loggedInOwner?.bankName == 'ธนาคารซีไอเอ็มบีไทย'}">ธนาคารซีไอเอ็มบีไทย (CIMB)</option>
-                            <option value="ธนาคารแลนด์ แอนด์ เฮ้าส์" th:selected="${loggedInOwner?.bankName == 'ธนาคารแลนด์ แอนด์ เฮ้าส์'}">ธนาคารแลนด์ แอนด์ เฮ้าส์ (LH Bank)</option>
-                            <option value="ธนาคารยูโอบี" th:selected="${loggedInOwner?.bankName == 'ธนาคารยูโอบี'}">ธนาคารยูโอบี (UOB)</option>
+                            <option value="ธนาคารกรุงเทพ" th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงเทพ'}">
+                                ธนาคารกรุงเทพ (BBL)</option>
+                            <option value="ธนาคารกสิกรไทย" th:selected="${loggedInOwner?.bankName == 'ธนาคารกสิกรไทย'}">
+                                ธนาคารกสิกรไทย (KBANK)</option>
+                            <option value="ธนาคารกรุงไทย" th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงไทย'}">
+                                ธนาคารกรุงไทย (KTB)</option>
+                            <option value="ธนาคารทหารไทยธนชาต"
+                                th:selected="${loggedInOwner?.bankName == 'ธนาคารทหารไทยธนชาต'}">ธนาคารทหารไทยธนชาต
+                                (TTB)</option>
+                            <option value="ธนาคารไทยพาณิชย์"
+                                th:selected="${loggedInOwner?.bankName == 'ธนาคารไทยพาณิชย์'}">ธนาคารไทยพาณิชย์ (SCB)
+                            </option>
+                            <option value="ธนาคารกรุงศรีอยุธยา"
+                                th:selected="${loggedInOwner?.bankName == 'ธนาคารกรุงศรีอยุธยา'}">ธนาคารกรุงศรีอยุธยา
+                                (BAY)</option>
+                            <option value="ธนาคารออมสิน" th:selected="${loggedInOwner?.bankName == 'ธนาคารออมสิน'}">
+                                ธนาคารออมสิน (GSB)</option>
+                            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร"
+                                th:selected="${loggedInOwner?.bankName == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร'}">
+                                ธนาคารเพื่อการเกษตรและสหกรณ์ (ธ.ก.ส.)</option>
+                            <option value="ธนาคารอาคารสงเคราะห์"
+                                th:selected="${loggedInOwner?.bankName == 'ธนาคารอาคารสงเคราะห์'}">ธนาคารอาคารสงเคราะห์
+                                (GHB)</option>
+                            <option value="ธนาคารซีไอเอ็มบีไทย"
+                                th:selected="${loggedInOwner?.bankName == 'ธนาคารซีไอเอ็มบีไทย'}">ธนาคารซีไอเอ็มบีไทย
+                                (CIMB)</option>
+                            <option value="ธนาคารแลนด์ แอนด์ เฮ้าส์"
+                                th:selected="${loggedInOwner?.bankName == 'ธนาคารแลนด์ แอนด์ เฮ้าส์'}">ธนาคารแลนด์ แอนด์
+                                เฮ้าส์ (LH Bank)</option>
+                            <option value="ธนาคารยูโอบี" th:selected="${loggedInOwner?.bankName == 'ธนาคารยูโอบี'}">
+                                ธนาคารยูโอบี (UOB)</option>
                         </select>
                         <span class="error-msg" id="bankNameError"></span>
                     </div>
@@ -198,7 +238,8 @@
         </form>
 
         <!-- ═══ FORM 3: ลายเซ็นสำหรับออกใบเสร็จ ═══ -->
-        <form th:action="@{/owner/profile/update-signature}" method="post" enctype="multipart/form-data" id="signatureForm">
+        <form th:action="@{/owner/profile/update-signature}" method="post" enctype="multipart/form-data"
+            id="signatureForm">
             <section class="form-section">
                 <div class="section-header">
                     <span class="section-icon"><i class="fas fa-signature"></i></span>
@@ -213,7 +254,8 @@
 
                 <div class="form-group">
                     <label class="form-label" for="signatureFile">อัปโหลดไฟล์ลายเซ็นใหม่</label>
-                    <input type="file" id="signatureFile" name="signatureFile" class="form-input" accept="image/png,image/jpeg">
+                    <input type="file" id="signatureFile" name="signatureFile" class="form-input"
+                        accept="image/png,image/jpeg">
                     <span class="error-msg" id="signatureError"></span>
                     <small style="color:var(--text-muted); font-size:12px; margin-top:4px; display:block;">
                         รองรับไฟล์ PNG หรือ JPG ขนาดไม่เกิน 2MB (แนะนำพื้นหลังโปร่งใส)
@@ -242,10 +284,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="currentPassword">รหัสผ่านปัจจุบัน <span class="required">*</span></label>
+                    <label class="form-label" for="currentPassword">รหัสผ่านปัจจุบัน <span
+                            class="required">*</span></label>
                     <div class="input-with-icon">
-                        <input type="password" id="currentPassword" name="currentPassword" class="form-input" placeholder="กรอกรหัสผ่านปัจจุบัน">
-                        <button type="button" class="toggle-password" data-target="currentPassword"><i class="fas fa-eye"></i></button>
+                        <input type="password" id="currentPassword" name="currentPassword" class="form-input"
+                            placeholder="กรอกรหัสผ่านปัจจุบัน">
+                        <button type="button" class="toggle-password" data-target="currentPassword"><i
+                                class="fas fa-eye"></i></button>
                     </div>
                 </div>
 
@@ -253,16 +298,21 @@
                     <div class="form-group">
                         <label class="form-label" for="newPassword">รหัสผ่านใหม่ <span class="required">*</span></label>
                         <div class="input-with-icon">
-                            <input type="password" id="newPassword" name="newPassword" class="form-input" placeholder="รหัสผ่านใหม่">
-                            <button type="button" class="toggle-password" data-target="newPassword"><i class="fas fa-eye"></i></button>
+                            <input type="password" id="newPassword" name="newPassword" class="form-input"
+                                placeholder="รหัสผ่านใหม่">
+                            <button type="button" class="toggle-password" data-target="newPassword"><i
+                                    class="fas fa-eye"></i></button>
                         </div>
                         <span class="error-msg" id="newPasswordError"></span>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="confirmPassword">ยืนยันรหัสผ่านใหม่ <span class="required">*</span></label>
+                        <label class="form-label" for="confirmPassword">ยืนยันรหัสผ่านใหม่ <span
+                                class="required">*</span></label>
                         <div class="input-with-icon">
-                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="ยืนยันรหัสผ่านใหม่">
-                            <button type="button" class="toggle-password" data-target="confirmPassword"><i class="fas fa-eye"></i></button>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-input"
+                                placeholder="ยืนยันรหัสผ่านใหม่">
+                            <button type="button" class="toggle-password" data-target="confirmPassword"><i
+                                    class="fas fa-eye"></i></button>
                         </div>
                         <span class="error-msg" id="confirmPasswordError"></span>
                     </div>
@@ -299,6 +349,7 @@
         </div>
     </footer>
 
-<script th:src="@{/js/Homestay/edit-profile.js}"></script>
+    <script th:src="@{/js/Homestay/edit-profile.js}"></script>
 </body>
+
 </html>

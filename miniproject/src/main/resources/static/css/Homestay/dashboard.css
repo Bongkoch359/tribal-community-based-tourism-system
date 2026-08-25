@@ -29,7 +29,7 @@ body {
     flex-direction: row;
     align-items: stretch;
     padding: 0 2rem;
-    height: 84px;
+    height: 90px;
     min-height: 84px;      /* ← กันถูก body flex ย่อ */
     flex-shrink: 0;        /* ← กันถูก body flex ย่อ */
     position: sticky;
@@ -54,7 +54,7 @@ body {
 }
 
 .brand-logo img {
-    height: 100px;          /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+    height: 110px;          /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
     width: auto;
     max-width: 180px;
     object-fit: contain;
