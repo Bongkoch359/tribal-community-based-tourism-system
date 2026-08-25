@@ -72,7 +72,6 @@ public class RoomTypeController {
         List<Roomtype> rooms = (homestayid != null)
                 ? roomTypeService.getRoomTypesByHomestayId(homestayid)
                 : Collections.emptyList();
-
         List<Map<String, Object>> roomViews = rooms.stream().map(room -> {
             Map<String, Object> m = new HashMap<>();
             m.put("roomtypeid", room.getRoomtypeid());
@@ -80,7 +79,22 @@ public class RoomTypeController {
             m.put("pricepernight", room.getPricepernight());
             m.put("maxguest", room.getMaxguest());
             m.put("totalrooms", room.getTotalrooms());
-            m.put("status", room.getStatus());
+
+            // คำนวณสถานะแบบ Dynamic
+            String calculatedStatus = room.getStatus(); // ค่าตั้งต้น เช่น "เปิดจอง" หรือ "ปิดปรับปรุง"
+
+            // ตรวจสอบเฉพาะห้องที่เปิดจองอยู่ว่าถูกจองจนเต็มแล้วหรือไม่
+            if ("เปิดจอง".equals(calculatedStatus)) {
+                // ดึงจำนวนห้องที่ถูกจองอยู่ในปัจจุบันของ roomtype นี้ (ผ่าน BookingService หรือ
+                // RoomTypeService)
+                int bookedCount = roomTypeService.getCurrentlyBookedRooms(room.getRoomtypeid());
+
+                if (bookedCount >= room.getTotalrooms()) {
+                    calculatedStatus = "เต็ม";
+                }
+            }
+
+            m.put("status", calculatedStatus);
 
             String firstImg = null;
             String imgs = room.getImages();

@@ -230,7 +230,7 @@ function reverseGeocode(lat, lng, callback) {
         .then(data => {
             if (data && data.display_name) callback(data.display_name);
         })
-        .catch(() => {});
+        .catch(() => { });
 }
 
 function searchPlaces(query, callback) {
@@ -375,7 +375,7 @@ function initHotelMap() {
 // ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
 // ✅ tourtype เป็น entity แล้ว ต้องอ่านชื่อผ่าน .typename และกัน null (ทัวร์ที่ยังไม่ผูกประเภท)
 (function initTourType() {
-     const savedType = (typeof tourSavedType !== 'undefined') ? tourSavedType : '';
+    const savedType = (typeof tourSavedType !== 'undefined') ? tourSavedType : '';
     if (!savedType) return;
     if (KNOWN_TYPES.includes(savedType)) {
         tourtypeSelect.value = savedType;
@@ -472,10 +472,10 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     this.appendChild(hidden);
 });
 
- /* ═══════════════════════════════════════════
-   ปฏิทินรอบทัวร์ — คลิก/ลากเลือกช่วงวันที่ แล้ว
-   เปิด/ปิดรับจอง, สร้างรอบใหม่, หรือลบรอบ ได้ทีเดียวทั้งช่วง
-   ไม่ต้องไล่กดทีละแถวเหมือนตารางแบบเดิมอีกต่อไป
+/* ═══════════════════════════════════════════
+  ปฏิทินรอบทัวร์ — คลิก/ลากเลือกช่วงวันที่ แล้ว
+  เปิด/ปิดรับจอง, สร้างรอบใหม่, หรือลบรอบ ได้ทีเดียวทั้งช่วง
+  ไม่ต้องไล่กดทีละแถวเหมือนตารางแบบเดิมอีกต่อไป
 ═══════════════════════════════════════════ */
 (function () {
     // ── ตรวจสอบ element ทั้งหมดตั้งแต่ต้น ถ้าตัวไหนหาไม่เจอให้ log ชัดๆ ──
@@ -566,14 +566,14 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     }
 
     function statusClass(status, dateISO) {
-    // วันที่ผ่านไปแล้ว (ก่อนวันนี้) ให้ถือเป็น "ปิด/ผ่านไปแล้ว" เสมอ ไม่ว่า status ใน DB จะเป็นอะไร
-    if (dateISO < todayISO) return 'st-past';
+        // วันที่ผ่านไปแล้ว (ก่อนวันนี้) ให้ถือเป็น "ปิด/ผ่านไปแล้ว" เสมอ ไม่ว่า status ใน DB จะเป็นอะไร
+        if (dateISO < todayISO) return 'st-past';
 
-    if (status === 'เปิดรับจอง') return 'st-open';
-    if (status === 'เต็ม') return 'st-full';
-    if (status === 'ปิด') return 'st-closed';
-    return '';
-}
+        if (status === 'เปิดรับจอง') return 'st-open';
+        if (status === 'เต็ม') return 'st-full';
+        if (status === 'ปิด') return 'st-closed';
+        return '';
+    }
 
     // ── วาดปฏิทินของเดือนที่กำลังดูอยู่ ──
     function renderCalendar() {
@@ -599,9 +599,11 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
             cell.dataset.date = dateISO;
 
             let sub = '';
-            if (schedule) {
+            // ให้แสดงยอดที่นั่งเฉพาะ "วันเริ่มต้นรอบทัวร์" (opendate) เท่านั้น
+            if (schedule && schedule.opendate === dateISO) {
                 sub = `${schedule.booked}/${tourMaxSeats}`;
             }
+
             cell.innerHTML = `<div class="cal-day-num">${d}</div>` +
                 (sub ? `<div class="cal-day-sub">${sub}</div>` : '');
             calGrid.appendChild(cell);

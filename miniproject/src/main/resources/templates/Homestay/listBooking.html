@@ -8,643 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* ─── NAVBAR ─── */
-        .hs-navbar {
-            background: #0d3d30;
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            height: 90px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
-            gap: .5rem;
-        }
-
-        .hs-navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: .6rem;
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.05rem;
-            text-decoration: none;
-            white-space: nowrap;
-            margin-right: auto;
-        }
-
-        .hs-navbar-brand img.brand-logo-img {
-            height: 110px;
-            width: auto;
-            max-width: 160px;
-            object-fit: contain;
-            display: block;
-        }
-
-        .hs-nav-links {
-            display: flex;
-            align-items: center;
-            gap: .15rem;
-            margin-right: 1.25rem;
-        }
-
-        .hs-nav-link {
-            color: rgba(255, 255, 255, .7);
-            text-decoration: none;
-            font-size: .92rem;
-            font-weight: 500;
-            padding: .45rem 1rem;
-            border-radius: 6px;
-            transition: all .2s;
-            display: flex;
-            align-items: center;
-            gap: .45rem;
-            white-space: nowrap;
-        }
-
-        .hs-nav-link:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, .08);
-        }
-
-        .hs-nav-link.active {
-            color: #fff;
-            border-bottom: 3px solid #5ecfb0;
-            border-radius: 0;
-            padding-bottom: calc(.45rem - 3px);
-        }
-
-        .hs-nav-right {
-            display: flex;
-            align-items: center;
-        }
-
-        .hs-profile-dropdown {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-        }
-
-        .hs-profile-trigger {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: .45rem .75rem;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, .12);
-            transition: background .2s, border-color .2s;
-        }
-
-        .hs-profile-trigger:hover {
-            background: rgba(255, 255, 255, .1);
-            border-color: rgba(255, 255, 255, .22);
-        }
-
-        .hs-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #e08a00, #f5a623);
-            color: #fff;
-            font-weight: 700;
-            font-size: .82rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
-            flex-shrink: 0;
-        }
-
-        .hs-owner-name {
-            color: #fff;
-            font-size: .9rem;
-            font-weight: 600;
-            display: block;
-            line-height: 1.2;
-        }
-
-        .hs-owner-role {
-            color: rgba(255, 255, 255, .55);
-            font-size: .72rem;
-            display: block;
-        }
-
-        .hs-chevron {
-            font-size: .7rem;
-            color: rgba(255, 255, 255, .5);
-            margin-left: 2px;
-            transition: transform .2s;
-        }
-
-        .hs-profile-dropdown:hover .hs-chevron {
-            transform: rotate(180deg);
-        }
-
-        .hs-dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background: #fff;
-            min-width: 210px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
-            z-index: 1000;
-            border-radius: 12px;
-            margin-top: 10px;
-            padding: 6px 0;
-            border: 1px solid #e8e8e8;
-        }
-
-        .hs-dropdown-content::before {
-            content: "";
-            position: absolute;
-            top: -10px;
-            left: 0;
-            width: 100%;
-            height: 10px;
-        }
-
-        .hs-profile-dropdown:hover .hs-dropdown-content {
-            display: block;
-        }
-
-        .hs-dropdown-content a {
-            color: #333;
-            padding: .6rem 1rem;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-            font-size: .88rem;
-            transition: background .15s;
-        }
-
-        .hs-dropdown-content a i {
-            width: 16px;
-            text-align: center;
-            color: #6b7c6e;
-            font-size: .85rem;
-        }
-
-        .hs-dropdown-content a:hover {
-            background: #f0faf7;
-            color: #0d3d30;
-        }
-
-        .hs-dropdown-content hr {
-            margin: 4px 0;
-            border: 0;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .hs-dropdown-content a.hs-logout {
-            color: #c0392b;
-        }
-
-        .hs-dropdown-content a.hs-logout i {
-            color: #c0392b;
-        }
-
-        .hs-dropdown-content a.hs-logout:hover {
-            background: #fff5f5;
-        }
-
-        /* ─── BASE ─── */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background: #f5f0e8;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ─── PAGE ─── */
-        .page {
-            max-width: 100%;
-            padding: 32px 40px;
-            flex: 1;
-        }
-
-        /* ─── PAGE HEADER ─── */
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0d3d30;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .page-title i {
-            color: #1a6b52;
-        }
-
-        .count-chip {
-            background: #d8f5ec;
-            color: #1a6b52;
-            font-size: .78rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
-
-        /* ─── HOMESTAY SELECTOR ─── */
-        .homestay-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: #fff;
-            padding: 12px 18px;
-            border-radius: 10px;
-            box-shadow: 0 1px 6px rgba(0, 0, 0, .07);
-            width: fit-content;
-        }
-
-        .homestay-selector label {
-            font-weight: 600;
-            color: #0d3d30;
-            font-size: .95rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-        }
-
-        .homestay-selector label i {
-            color: #1a6b52;
-        }
-
-        .homestay-selector select {
-            padding: 7px 14px;
-            border-radius: 8px;
-            border: 1.5px solid #b0d4c8;
-            background: #f0faf7;
-            font-family: 'Sarabun', sans-serif;
-            font-size: .95rem;
-            color: #0d3d30;
-            cursor: pointer;
-            outline: none;
-            transition: border-color .2s;
-            min-width: 200px;
-        }
-
-        .homestay-selector select:hover,
-        .homestay-selector select:focus {
-            border-color: #1a6b52;
-        }
-
-        /* ─── STAT STRIP ─── */
-        .stat-strip {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .stat-pill {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #fff;
-            border-radius: 10px;
-            padding: 10px 16px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all .2s;
-            text-decoration: none;
-            color: #444;
-        }
-
-        .stat-pill:hover {
-            border-color: #b0d4c8;
-        }
-
-        .stat-pill.active {
-            background: #f0faf7;
-        }
-
-        .stat-pill.pill-waiting.active {
-            border-color: #e07b00;
-            background: #fff8f0;
-        }
-
-        .stat-pill.pill-confirmed.active {
-            border-color: #1a6b52;
-            background: #f0faf7;
-        }
-
-        .stat-pill.pill-completed.active {
-            border-color: #3d7dbf;
-            background: #f0f6fc;
-        }
-
-        .stat-pill.pill-cancel.active {
-            border-color: #c0392b;
-            background: #fdecea;
-        }
-
-        .stat-pill .pill-label {
-            font-size: .85rem;
-            font-weight: 500;
-        }
-
-        .stat-pill .pill-count {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #0d3d30;
-        }
-
-        .stat-pill.pill-waiting .pill-count {
-            color: #e07b00;
-        }
-
-        .stat-pill.pill-confirmed .pill-count {
-            color: #1a6b52;
-        }
-
-        .stat-pill.pill-completed .pill-count {
-            color: #3d7dbf;
-        }
-
-        .stat-pill.pill-cancel .pill-count {
-            color: #c0392b;
-        }
-
-        /* ─── TABLE CARD ─── */
-        .table-card {
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, .07);
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead tr {
-            background: #c8f0e4;
-        }
-
-        thead th {
-            padding: 16px;
-            text-align: left;
-            font-size: .88rem;
-            font-weight: 600;
-            color: #0d3d30;
-            border-bottom: 2px solid #a8ddd0;
-            white-space: nowrap;
-        }
-
-        tbody td {
-            padding: 16px;
-            vertical-align: middle;
-            border-top: 1px solid #f0ede5;
-            font-size: .9rem;
-            color: #0d2e24;
-        }
-
-        tbody tr:hover {
-            background: #faf8f4;
-        }
-
-        /* ─── MEMBER CELL ─── */
-        .member-name {
-            font-weight: 600;
-            color: #0d3d30;
-        }
-
-        .member-phone {
-            font-size: .8rem;
-            color: #888;
-            margin-top: 2px;
-        }
-
-        /* ─── ROOM TYPE BADGE ─── */
-        .type-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: .82rem;
-            font-weight: 600;
-        }
-
-        .badge-house {
-            background: #fff3e0;
-            color: #e07b00;
-        }
-
-        .badge-dome {
-            background: #e3f0ff;
-            color: #2266cc;
-        }
-
-        .badge-tent {
-            background: #d8f5ec;
-            color: #1a6b52;
-        }
-
-        .badge-default {
-            background: #f0f0f0;
-            color: #666;
-        }
-
-        /* ─── DATE CELL ─── */
-        .date-range {
-            font-size: .88rem;
-            color: #444;
-        }
-
-        .date-nights {
-            font-size: .78rem;
-            color: #888;
-            margin-top: 2px;
-        }
-
-        /* ─── AMOUNT ─── */
-        .amount-text {
-            font-weight: 700;
-            color: #0d3d30;
-        }
-
-        /* ─── STATUS BADGE ─── */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: .82rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-        }
-
-        .s-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .s-pending .status-dot {
-            background: #f0a500;
-        }
-
-        .s-waiting {
-            background: #fff3e0;
-            color: #c05a00;
-        }
-
-        .s-waiting .status-dot {
-            background: #e07b00;
-        }
-
-        .s-confirmed {
-            background: #d1e7dd;
-            color: #0d3d30;
-        }
-
-        .s-confirmed .status-dot {
-            background: #2a9068;
-        }
-
-        .s-completed {
-            background: #d6e4f0;
-            color: #1c4e80;
-        }
-
-        .s-completed .status-dot {
-            background: #3d7dbf;
-        }
-
-        .s-cancel {
-            background: #f8d7da;
-            color: #842029;
-        }
-
-        .s-cancel .status-dot {
-            background: #e53935;
-        }
-
-        /* ─── ACTION BUTTONS ─── */
-        .btn-actions {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            justify-content: center;
-        }
-
-        .btn-view {
-            background: #0d3d30;
-            color: #fff;
-            border: none;
-            border-radius: 7px;
-            padding: 6px 14px;
-            font-family: 'Sarabun', sans-serif;
-            font-size: .85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            text-decoration: none;
-            transition: background .2s;
-            white-space: nowrap;
-        }
-
-        .btn-view:hover {
-            background: #1a6b52;
-            color: #fff;
-        }
-
-        /* ─── EMPTY STATE ─── */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #aaa;
-        }
-
-        .empty-state i {
-            font-size: 2.8rem;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .empty-state p {
-            font-size: 1rem;
-        }
-
-        /* ─── NO RESULTS (client-side filter) ─── */
-        .no-filter-results {
-            display: none;
-            text-align: center;
-            padding: 60px 20px;
-            color: #aaa;
-        }
-
-        .no-filter-results i {
-            font-size: 2.8rem;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .no-filter-results p {
-            font-size: 1rem;
-        }
-
-        /* ─── FOOTER ─── */
-        .footer {
-            margin-top: auto;
-            padding: 1rem 2rem;
-            background: #0d3d30;
-            color: #c8f0e4;
-            font-size: .9rem;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .footer a {
-            color: #5ecfb0;
-            text-decoration: none;
-            margin-left: 8px;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link th:href="@{/css/Homestay/list-booking.css}" rel="stylesheet">
 </head>
 
 <body>
-
     <!-- ─── NAVBAR ─── -->
     <nav class="hs-navbar">
         <a class="hs-navbar-brand" th:href="@{/}">
@@ -710,16 +77,14 @@
                 </div>
             </a>
 
-            <a class="stat-pill pill-confirmed" href="javascript:void(0)"
-                onclick="filterBookings('CONFIRMED', this)">
+            <a class="stat-pill pill-confirmed" href="javascript:void(0)" onclick="filterBookings('CONFIRMED', this)">
                 <i class="fas fa-circle-check" style="color:#1a6b52;font-size:1.1rem;"></i>
                 <div class="pill-label">
                     ยืนยันแล้ว <span class="pill-count" th:text="${countConfirmed}">0</span>
                 </div>
             </a>
 
-            <a class="stat-pill pill-completed" href="javascript:void(0)"
-                onclick="filterBookings('COMPLETED', this)">
+            <a class="stat-pill pill-completed" href="javascript:void(0)" onclick="filterBookings('COMPLETED', this)">
                 <i class="fas fa-flag-checkered" style="color:#3d7dbf;font-size:1.1rem;"></i>
                 <div class="pill-label">
                     เสร็จสิ้นแล้ว <span class="pill-count" th:text="${countCompleted}">0</span>
@@ -773,16 +138,48 @@
                         </td>
 
                         <!-- ประเภทห้อง -->
+                        <!-- ประเภทห้อง -->
                         <td>
                             <span th:switch="${b['roomtypename']}">
-                                <span th:case="'บ้านพัก'" class="type-badge badge-house"><i class="fas fa-house"></i>
-                                    <span th:text="${b['roomtypename']}"></span></span>
-                                <span th:case="'โดม'" class="type-badge badge-dome"><i class="fas fa-circle-dot"></i>
-                                    <span th:text="${b['roomtypename']}"></span></span>
-                                <span th:case="'เต็นท์'" class="type-badge badge-tent"><i class="fas fa-campground"></i>
-                                    <span th:text="${b['roomtypename']}"></span></span>
-                                <span th:case="*" class="type-badge badge-default"
-                                    th:text="${b['roomtypename']}"></span>
+                                <!-- 1. บ้านพัก (ฟ้า) -->
+                                <span th:case="'บ้านพัก'" class="type-badge badge-house">
+                                    <i class="fas fa-house"></i>
+                                    <span th:text="${b['roomtypename']}"></span>
+                                </span>
+
+                                <!-- 2. เต็นท์ (เขียว) -->
+                                <span th:case="'เต็นท์'" class="type-badge badge-tent">
+                                    <i class="fas fa-campground"></i>
+                                    <span th:text="${b['roomtypename']}"></span>
+                                </span>
+
+                                <!-- 3. กระท่อมไม้ไผ่ (น้ำตาลครีม + fa-tents) -->
+                                <span th:case="'กระท่อมไม้ไผ่'" class="type-badge badge-hut">
+                                    <i class="fas fa-tents"></i>
+                                    <span th:text="${b['roomtypename']}"></span>
+                                </span>
+
+                                <!-- 4. โดม / กระโจม (ม่วง) -->
+                                <span th:case="'โดม'" class="type-badge badge-dome">
+                                    <i class="fas fa-circle-dot"></i>
+                                    <span th:text="${b['roomtypename']}"></span>
+                                </span>
+                                <span th:case="'กระโจม'" class="type-badge badge-dome">
+                                    <i class="fas fa-tent"></i>
+                                    <span th:text="${b['roomtypename']}"></span>
+                                </span>
+
+                                <!-- 5. บ้านต้นไม้ (เขียวมะกอก) -->
+                                <span th:case="'บ้านต้นไม้'" class="type-badge badge-treehouse">
+                                    <i class="fas fa-tree"></i>
+                                    <span th:text="${b['roomtypename']}"></span>
+                                </span>
+
+                                <!-- 6. อื่นๆ ทั่วไป -->
+                                <span th:case="*" class="type-badge badge-default">
+                                    <i class="fas fa-bed"></i>
+                                    <span th:text="${b['roomtypename']}"></span>
+                                </span>
                             </span>
                         </td>
 
@@ -814,12 +211,10 @@
                             <span th:if="${b['bookingStatus'] == 'WAITING_APPROVAL'}" class="status-badge s-waiting">
                                 <span class="status-dot"></span> รอตรวจสอบ
                             </span>
-                            <span th:if="${b['bookingStatus'] == 'CONFIRMED'}"
-                                class="status-badge s-confirmed">
+                            <span th:if="${b['bookingStatus'] == 'CONFIRMED'}" class="status-badge s-confirmed">
                                 <span class="status-dot"></span> ยืนยันแล้ว
                             </span>
-                            <span th:if="${b['bookingStatus'] == 'COMPLETED'}"
-                                class="status-badge s-completed">
+                            <span th:if="${b['bookingStatus'] == 'COMPLETED'}" class="status-badge s-completed">
                                 <span class="status-dot"></span> เสร็จสิ้นแล้ว
                             </span>
                             <span th:if="${b['bookingStatus'] == 'CANCEL'}" class="status-badge s-cancel">

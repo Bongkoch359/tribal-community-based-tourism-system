@@ -163,10 +163,10 @@
                                 <span class="field-value">
                                     <span th:switch="${booking.bookingType?.name()}">
                                         <span th:case="'ACCOMMODATION'" class="booking-type-badge badge-accommodation">
-                                            <i class="fas fa-house"></i>
+                                            <i class="fas fa-house"></i> ที่พัก
                                         </span>
                                         <span th:case="'TOUR'" class="booking-type-badge badge-tour">
-                                            <i class="fas fa-campground"></i>
+                                            <i class="fas fa-campground"></i> ทัวร์
                                         </span>
                                         <span th:case="*" class="booking-type-badge badge-default"
                                             th:text="${booking.bookingType}">-</span>
@@ -325,10 +325,14 @@
                                 th:text="${booking.payment.paymentStatus}">-</span>
                         </span>
 
-                        <div class="pay-amount">
-                            <span class="cur">฿</span><span
-                                th:text="${booking.payment.amount != null ? #numbers.formatDecimal(booking.payment.amount,1,'COMMA',0,'POINT') : '0'}">1,600</span>
+                        <div class="field" style="margin-top: 10px;">
+                            <span class="field-label">ยอดที่ต้องชำระ</span>
+                            <div class="pay-amount">
+                                <span class="cur">฿</span><span
+                                    th:text="${booking.payment.amount != null ? #numbers.formatDecimal(booking.payment.amount,1,'COMMA',0,'POINT') : '0'}">1,600</span>
+                            </div>
                         </div>
+
 
                         <div class="slip-thumb"
                             th:if="${booking.payment.paymentslip != null and !#strings.isEmpty(booking.payment.paymentslip)}"
@@ -350,6 +354,23 @@
                                     <span class="field-value"
                                         th:text="${booking.payment.paymentdate != null ? #dates.format(booking.payment.paymentdate,'dd MMM yyyy HH:mm') : '-'}">-</span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--การ์ดแสดงเหตุผลการยกเลิก (แสดงเมื่อสถานะเป็น CANCEL) -->
+                <div class="card card-cancel-reason" th:if="${booking.bookingStatus?.name() == 'CANCEL'}">
+                    <div class="card-header cancel-header">
+                        <i class="fas fa-circle-xmark"></i> ข้อมูลการยกเลิก
+                    </div>
+                    <div class="card-body">
+                        <div class="cancel-reason-box">
+                            <div class="cancel-reason-label">
+                                <i class="fas fa-comment-dots"></i> เหตุผลที่ยกเลิก:
+                            </div>
+                            <div class="cancel-reason-text"
+                                th:text="${booking.cancelReason != null and !#strings.isEmpty(booking.cancelReason) ? booking.cancelReason : 'ไม่ได้ระบุเหตุผล'}">
+                                ยอดชำระเงินไม่ตรงกับยอดที่ต้องชำระ
                             </div>
                         </div>
                     </div>
@@ -430,10 +451,37 @@
         <img id="slipLightboxImg" src="" alt="สลิปการชำระเงิน">
     </div>
 
-    <div class="toast-overlay" id="toastOverlay">
-        <div class="toast" id="toast">
-            <i class="fas fa-circle-check toast-icon" id="toastIcon"></i>
-            <span id="toastMsg"></span>
+    <!-- ═══ SUCCESS MODAL (รูปแบบ addroom) ═══ -->
+    <div class="modal-backdrop-alert" id="successModal">
+        <div class="modal-box-alert">
+            <div class="checkmark-wrap">
+                <div class="checkmark-ring"></div>
+                <i class="fas fa-check checkmark-icon"></i>
+            </div>
+            <div class="modal-alert-title" id="successModalTitle">บันทึกสำเร็จ!</div>
+            <div class="modal-alert-desc" id="successModalDesc">ยืนยันการจองเรียบร้อยแล้ว</div>
+            <div class="modal-btn-row"></div>
+            <div class="modal-progress-bar">
+                <div class="modal-progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ ALERT MODAL (กรณี Error / รูปแบบ addroom) ═══ -->
+    <div class="modal-backdrop-alert" id="alertModal">
+        <div class="modal-box-alert">
+            <div class="checkmark-wrap"
+                style="background: linear-gradient(135deg, #8a2424, #c0392b); box-shadow: 0 8px 24px rgba(192, 57, 43, 0.35);">
+                <i class="fas fa-triangle-exclamation checkmark-icon"></i>
+            </div>
+            <div class="modal-alert-title" id="alertModalTitle" style="color: #c0392b;">แจ้งเตือน</div>
+            <div class="modal-alert-desc" id="alertModalDesc">เกิดข้อผิดพลาดในการทำรายการ</div>
+            <div class="modal-btn-row">
+                <button type="button" class="modal-btn-primary" style="background: #c0392b;"
+                    onclick="closeAlertModal()">
+                    <i class="fas fa-check"></i> ตกลง
+                </button>
+            </div>
         </div>
     </div>
 
@@ -457,6 +505,7 @@
         function closeModal(id) {
             document.getElementById(id).classList.remove('open');
         }
+
         function openSlip(src) {
             document.getElementById('slipLightboxImg').src = src;
             document.getElementById('slipLightbox').classList.add('open');
@@ -477,19 +526,45 @@
             if (!reason) {
                 document.getElementById('cancelReasonError').style.display = 'block';
                 reasonInput.focus();
-                return; // ไม่ปิด modal ไม่ยิง request จนกว่าจะกรอก
+                return;
             }
 
             closeModal('cancelModal');
-            await postAction('/owner/bookings/cancel', 'ยกเลิกการจองแล้ว', { reason });
+            await postAction('/owner/bookings/cancel', 'ยกเลิกการจองสำเร็จ', 'ยกเลิกการจองเรียบร้อยแล้ว', { reason });
         }
 
         async function doConfirm() {
             closeModal('confirmModal');
-            await postAction('/owner/bookings/confirm', 'ยืนยันการจองสำเร็จ');
+            await postAction('/owner/bookings/confirm', 'ยืนยันการจองสำเร็จ', 'การจองได้รับการยืนยันเรียบร้อยแล้ว');
         }
 
-        async function postAction(url, successMsg, extraParams = {}) {
+        function showSuccessModal(title, desc) {
+            const modal = document.getElementById('successModal');
+            const progress = document.getElementById('progressFill');
+            if (title) document.getElementById('successModalTitle').textContent = title;
+            if (desc) document.getElementById('successModalDesc').textContent = desc;
+
+            progress.classList.remove('running');
+            void progress.offsetWidth; // trigger reflow
+            progress.classList.add('running');
+
+            modal.classList.add('show');
+            setTimeout(() => {
+                window.location.href = '/owner/bookings';
+            }, 2200);
+        }
+
+        function showAlertModal(msg) {
+            const modal = document.getElementById('alertModal');
+            if (msg) document.getElementById('alertModalDesc').textContent = msg;
+            modal.classList.add('show');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('alertModal').classList.remove('show');
+        }
+
+        async function postAction(url, title, desc, extraParams = {}) {
             const params = new URLSearchParams({
                 bookingid: pendingBookingId,
                 homestayid: pendingHomestayId,
@@ -499,28 +574,13 @@
                 const res = await fetch(url, { method: 'POST', body: params });
                 const data = await res.json();
                 if (data.success) {
-                    showToast(successMsg, false);
-                    setTimeout(() => window.location.href = '/owner/bookings', 1600);
+                    showSuccessModal(title, desc);
                 } else {
-                    showToast(data.message || 'เกิดข้อผิดพลาด', true);
+                    showAlertModal(data.message || 'เกิดข้อผิดพลาด');
                 }
             } catch (e) {
-                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', true);
+                showAlertModal('เกิดข้อผิดพลาดในการเชื่อมต่อ');
             }
-        }
-
-        function showToast(msg, isError = false) {
-            const overlay = document.getElementById('toastOverlay');
-            const box = document.getElementById('toast');
-            const icon = document.getElementById('toastIcon');
-            const msgEl = document.getElementById('toastMsg');
-
-            msgEl.textContent = msg;
-            box.className = 'toast' + (isError ? ' error' : '');
-            icon.className = 'fas toast-icon ' + (isError ? 'fa-circle-xmark' : 'fa-circle-check');
-
-            overlay.classList.add('show');
-            setTimeout(() => overlay.classList.remove('show'), 1800);
         }
 
         document.querySelectorAll('.modal-overlay').forEach(el => {

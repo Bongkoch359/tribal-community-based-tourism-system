@@ -7,6 +7,8 @@ import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Roomtype;
 import com.example.miniproject.repository.Homestay.FacilitiesRepository;
 import com.example.miniproject.repository.Homestay.RoomTypeRepository;
+import com.example.miniproject.repository.Member.BookingroomdetailRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,8 @@ public class RoomTypeService {
 
     @Autowired
     private FacilitiesRepository facilitiesRepository;
+    @Autowired
+    private BookingroomdetailRepository bookingRoomDetailRepository;
 
     // member เพิ่มมม
     public Roomtype getRoomById(String id) {
@@ -93,6 +97,12 @@ public class RoomTypeService {
         }
 
         return roomTypeRepository.save(room);
+    }
+
+    public int getCurrentlyBookedRooms(String roomtypeid) {
+        java.sql.Date today = java.sql.Date.valueOf(java.time.LocalDate.now());
+        Integer booked = bookingRoomDetailRepository.countActiveFutureBookedRooms(roomtypeid, today);
+        return booked != null ? booked : 0;
     }
 
     // ─── Read all by homestay ──────────────────────────────────────────────────

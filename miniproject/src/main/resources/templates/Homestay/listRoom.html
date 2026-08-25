@@ -129,19 +129,45 @@
 
                         <td>
                             <span th:switch="${room['typename']}">
+                                <!-- 1. บ้านพัก (ส้ม) -->
                                 <span th:case="'บ้านพัก'" class="type-badge badge-house">
                                     <i class="fas fa-house"></i>
                                     <span th:text="${room['typename']}"></span>
                                 </span>
-                                <span th:case="'โดม'" class="type-badge badge-dome">
-                                    <i class="fas fa-circle-dot"></i>
-                                    <span th:text="${room['typename']}"></span>
-                                </span>
+
+                                <!-- 2. เต็นท์ (เขียว) -->
                                 <span th:case="'เต็นท์'" class="type-badge badge-tent">
                                     <i class="fas fa-campground"></i>
                                     <span th:text="${room['typename']}"></span>
                                 </span>
-                                <span th:case="*" class="type-badge badge-default" th:text="${room['typename']}"></span>
+
+                                <!-- 3. กระท่อมไม้ไผ่ (ฟ้า/น้ำเงิน) -->
+                                <span th:case="'กระท่อมไม้ไผ่'" class="type-badge badge-hut">
+                                    <i class="fas fa-tents"></i>
+                                    <span th:text="${room['typename']}"></span>
+                                </span>
+
+                                <!-- 4. โดม / กระโจม (ม่วง) -->
+                                <span th:case="'โดม'" class="type-badge badge-dome">
+                                    <i class="fas fa-circle-dot"></i>
+                                    <span th:text="${room['typename']}"></span>
+                                </span>
+                                <span th:case="'กระโจม'" class="type-badge badge-dome">
+                                    <i class="fas fa-tent"></i>
+                                    <span th:text="${room['typename']}"></span>
+                                </span>
+
+                                <!-- 5. บ้านต้นไม้ (เขียวมะกอก) -->
+                                <span th:case="'บ้านต้นไม้'" class="type-badge badge-treehouse">
+                                    <i class="fas fa-tree"></i>
+                                    <span th:text="${room['typename']}"></span>
+                                </span>
+
+                                <!-- 6. ประเภทอื่นๆ (ค่าเริ่มต้นติดไอคอนเตียงนอน) -->
+                                <span th:case="*" class="type-badge badge-default">
+                                    <i class="fas fa-bed"></i>
+                                    <span th:text="${room['typename']}"></span>
+                                </span>
                             </span>
                         </td>
 

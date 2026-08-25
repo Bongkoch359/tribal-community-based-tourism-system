@@ -2,884 +2,1470 @@
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>แก้ไขโฮมสเตย์</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --green-dark: #1a6b52;
-      --green-main: #2a9068;
-      --orange: #e8891a;
-      --bg: #f0ede8;
-      --white: #ffffff;
-      --gray-bg: #f5f3f0;
-      --gray-border: #ddd9d4;
-      --gray-text: #888;
-      --text: #2c2c2c;
-      --danger: #e53e3e;
-      --shadow: 0 2px 12px rgba(0, 0, 0, .08);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Sarabun', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* Navbar */
-    .navbar {
-      background: var(--green-dark);
-      height: 90px;
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #fff;
-      font-weight: 700;
-      font-size: 16px;
-      text-decoration: none;
-    }
-
-    .brand-icon {
-      background: rgba(255, 255, 255, .15);
-      border-radius: 8px;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    .brand .brand-logo-img {
-      height: 110px;
-      width: auto;
-      max-width: 140px;
-      object-fit: contain;
-      display: block;
-    }
-
-    .nav-user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .nav-avatar {
-      background: var(--orange);
-      border-radius: 50%;
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .nav-name {
-      font-size: 14px;
-    }
-
-    /* Layout */
-    .wrapper {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 28px 20px 60px;
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--green-main);
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      margin-bottom: 14px;
-      transition: gap .15s;
-    }
-
-    .back-link:hover {
-      gap: 10px;
-    }
-
-    .page-title {
-      font-size: 26px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 24px;
-    }
-
-    /* Card */
-    .card {
-      background: var(--white);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-
-    .card-head {
-      background: linear-gradient(90deg, var(--orange), #f5a63a);
-      padding: 10px 20px;
-    }
-
-    .card-head h3 {
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .7px;
-      text-transform: uppercase;
-    }
-
-    .card-body {
-      padding: 24px;
-    }
-
-    /* Form */
-    .fgroup {
-      margin-bottom: 20px;
-    }
-
-    .fgroup:last-child {
-      margin-bottom: 0;
-    }
-
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 7px;
-    }
-
-    .req {
-      color: var(--danger);
-    }
-
-    input[type=text],
-    textarea {
-      width: 100%;
-      border: 1.5px solid var(--gray-border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 15px;
-      color: var(--text);
-      background: var(--white);
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-
-    input[type=text]:focus,
-    textarea:focus {
-      border-color: var(--green-main);
-      box-shadow: 0 0 0 3px rgba(58, 122, 48, .1);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 110px;
-      line-height: 1.6;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: var(--gray-text);
-      margin-top: 5px;
-    }
-
-    /* Images */
-    .img-section-label {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .img-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
-      min-height: 10px;
-    }
-
-    .img-thumb {
-      position: relative;
-      width: 90px;
-      height: 80px;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
-      animation: pop .2s ease;
-    }
-
-    @keyframes pop {
-      from {
-        opacity: 0;
-        transform: scale(.85);
-      }
-
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    .img-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .img-thumb .del {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(0, 0, 0, .5);
-      border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      color: #fff;
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background .15s;
-    }
-
-    .img-thumb .del:hover {
-      background: var(--danger);
-    }
-
-    .img-thumb .primary-badge {
-      position: absolute;
-      bottom: 4px;
-      left: 4px;
-      background: var(--orange);
-      color: #fff;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 4px;
-    }
-
-    .img-thumb .new-badge {
-      position: absolute;
-      bottom: 4px;
-      right: 4px;
-      background: var(--green-main);
-      color: #fff;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 4px;
-    }
-
-    /* Upload zone */
-    .upload-zone {
-      border: 2px dashed var(--gray-border);
-      border-radius: 12px;
-      padding: 28px 20px;
-      text-align: center;
-      cursor: pointer;
-      background: var(--gray-bg);
-      transition: border-color .2s, background .2s;
-      display: block;
-    }
-
-    .upload-zone:hover {
-      border-color: var(--green-main);
-      background: rgba(58, 122, 48, .04);
-    }
-
-    .upload-zone input {
-      display: none;
-    }
-
-    .up-icon {
-      font-size: 30px;
-      color: var(--gray-text);
-      margin-bottom: 8px;
-    }
-
-    .up-text {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--gray-text);
-      margin-bottom: 3px;
-    }
-
-    .up-hint {
-      font-size: 12px;
-      color: #aaa;
-    }
-
-    /* Actions */
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 8px;
-    }
-
-    .btn {
-      padding: 11px 28px;
-      border-radius: 9px;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: opacity .15s, box-shadow .15s;
-      text-decoration: none;
-    }
-
-    .btn-cancel {
-      background: var(--white);
-      color: var(--text);
-      border: 1.5px solid var(--gray-border);
-    }
-
-    .btn-cancel:hover {
-      background: var(--gray-bg);
-    }
-
-    .btn-save {
-      background: linear-gradient(135deg, var(--green-main), var(--green-dark));
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(45, 90, 39, .28);
-    }
-
-    .btn-save:hover {
-      box-shadow: 0 6px 20px rgba(45, 90, 39, .38);
-    }
-
-    .btn-save:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    /* Toast overlay */
-    .toast-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .35);
-      backdrop-filter: blur(3px);
-      opacity: 0;
-      transition: opacity .3s;
-      pointer-events: none;
-      z-index: 9998;
-    }
-
-    .toast-overlay.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    /* Toast modal */
-    .toast {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.85);
-      width: 360px;
-      background: linear-gradient(145deg, #1a6b52, #2a9068);
-      color: #fff;
-      padding: 36px 40px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
-      border: 1px solid rgba(255, 255, 255, .15);
-      opacity: 0;
-      transition: opacity .3s, transform .3s;
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .toast.error {
-      background: linear-gradient(145deg, #c0392b, #e53e3e);
-    }
-
-    .toast-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
-
-    .toast-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .toast-msg {
-      font-size: 14px;
-      opacity: .85;
-    }
-
-    /* ── Success Modal ── */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 30, 12, 0.55);
-      backdrop-filter: blur(4px);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .modal-backdrop.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .modal-box {
-      background: #fff;
-      border-radius: 20px;
-      padding: 40px 36px 32px;
-      max-width: 380px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
-      transform: scale(0.85) translateY(20px);
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-      opacity: 0;
-    }
-
-    .modal-backdrop.show .modal-box {
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-
-    .checkmark-wrap {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, var(--green-dark), var(--green-main));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      box-shadow: 0 8px 24px rgba(26, 107, 82, 0.35);
-      position: relative;
-    }
-
-    .checkmark-wrap::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 3px solid rgba(26, 107, 82, 0.15);
-    }
-
-    .checkmark-ring {
-      position: absolute;
-      inset: -8px;
-      border-radius: 50%;
-      border: 2px solid rgba(26, 107, 82, 0.08);
-      animation: ring-pulse 1.5s ease-out 0.4s both;
-    }
-
-    @keyframes ring-pulse {
-      0% {
-        transform: scale(0.9);
-        opacity: 0;
-      }
-
-      50% {
-        opacity: 1;
-      }
-
-      100% {
-        transform: scale(1.3);
-        opacity: 0;
-      }
-    }
-
-    .checkmark-icon {
-      font-size: 36px;
-      color: #fff;
-      animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
-    }
-
-    @keyframes pop-in {
-      from {
-        transform: scale(0);
-        opacity: 0;
-      }
-
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--green-dark);
-      margin-bottom: 8px;
-    }
-
-    .modal-desc {
-      font-size: 13px;
-      color: var(--gray-text);
-      line-height: 1.7;
-      margin-bottom: 24px;
-    }
-
-    .modal-progress-bar {
-      height: 3px;
-      background: #e8f4ea;
-      border-radius: 0 0 20px 20px;
-      margin: 24px -36px -32px;
-      overflow: hidden;
-    }
-
-    .modal-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--green-main), var(--orange));
-      border-radius: 3px;
-      width: 100%;
-      transform-origin: left;
-      animation: progress-drain 1.5s linear forwards;
-    }
-
-    @keyframes progress-drain {
-      from {
-        transform: scaleX(1);
-      }
-
-      to {
-        transform: scaleX(0);
-      }
-    }
-
-    @media(max-width:600px) {
-      .wrapper {
-        padding: 16px 12px 50px;
-      }
-
-      .card-body {
-        padding: 16px;
-      }
-
-      .actions {
-        flex-direction: column-reverse;
-      }
-
-      .btn {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>แก้ไขโฮมสเตย์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <style>
+        /* ═══════════════════════════════════════════════
+           NAVBAR
+           ═══════════════════════════════════════════════ */
+        .hs-navbar {
+            background: #0d3d30;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            height: 90px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+            gap: .5rem;
+        }
+
+        .hs-navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            white-space: nowrap;
+            margin-right: auto;
+        }
+
+        .hs-navbar-brand img.brand-logo-img {
+            height: 110px;
+            width: auto;
+            max-width: 160px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .hs-navbar-brand i {
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .hs-nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .hs-profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .hs-profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: .45rem .75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            transition: background .2s, border-color .2s;
+        }
+
+        .hs-profile-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .22);
+        }
+
+        .hs-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e08a00, #f5a623);
+            color: #fff;
+            font-weight: 700;
+            font-size: .82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
+            flex-shrink: 0;
+        }
+
+        .hs-owner-name {
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .hs-owner-role {
+            color: rgba(255, 255, 255, .55);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+        }
+
+        .hs-chevron {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .5);
+            margin-left: 2px;
+            transition: transform .2s;
+        }
+
+        .hs-profile-dropdown:hover .hs-chevron {
+            transform: rotate(180deg);
+        }
+
+        .hs-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: #fff;
+            min-width: 210px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            z-index: 1000;
+            border-radius: 12px;
+            margin-top: 10px;
+            padding: 6px 0;
+            border: 1px solid #e8e8e8;
+        }
+
+        .hs-dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            display: block;
+        }
+
+        .hs-profile-dropdown:hover .hs-dropdown-content {
+            display: block;
+        }
+
+        .hs-dropdown-header {
+            padding: .75rem 1rem .55rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+
+        .hs-dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: #0d2e24;
+        }
+
+        .hs-dropdown-header .d-email {
+            font-size: .75rem;
+            color: #6b7c6e;
+            margin-top: 2px;
+        }
+
+        .hs-dropdown-content a {
+            color: #333;
+            padding: .6rem 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: .88rem;
+            transition: background .15s;
+        }
+
+        .hs-dropdown-content a i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .hs-dropdown-content a:hover {
+            background: #f0faf7;
+            color: #0d3d30;
+        }
+
+        .hs-dropdown-content a:hover i {
+            color: #0d3d30;
+        }
+
+        .hs-dropdown-content hr {
+            margin: 4px 0;
+            border: 0;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .hs-dropdown-content a.hs-logout {
+            color: #c0392b;
+        }
+
+        .hs-dropdown-content a.hs-logout i {
+            color: #c0392b;
+        }
+
+        .hs-dropdown-content a.hs-logout:hover {
+            background: #fff5f5;
+        }
+
+        @media (max-width: 768px) {
+            .hs-navbar {
+                padding: 0 1rem;
+            }
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --green-dark: #0d3d30;
+            --green-main: #1a6b52;
+            --green-accent: #2a9068;
+            --green-light: #d8f5ec;
+            --bg: #f0ede6;
+            --card: #ffffff;
+            --text: #2c2c2c;
+            --text-muted: #888;
+            --border: #dde5d4;
+            --price-bg: #e8f7f2;
+            --orange: #e07b39;
+            --orange-dark: #c5672a;
+            --red: #c0392b;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Layout ── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+        }
+
+        /* ── Page title row & Back Button Circle ── */
+        .page-title-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .btn-back {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .15s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+            margin-bottom: 0;
+        }
+
+        .btn-back:hover {
+            background: var(--green-light);
+            color: var(--green-main);
+            border-color: var(--green-main);
+            transform: translateX(-2px);
+        }
+
+        /* ── Page header ── */
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+
+        .page-title h1 {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .page-title .homestay-id {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .btn-cancel {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            padding: 7px 16px;
+            font-size: 13.5px;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: border-color .18s;
+        }
+
+        .btn-cancel:hover {
+            border-color: #aaa;
+        }
+
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--orange);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 16px;
+            font-size: 13.5px;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background .18s;
+        }
+
+        .btn-save:hover {
+            background: var(--orange-dark);
+        }
+
+        .btn-save:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* ── Main Grid ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 40% 60%;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* ── Gallery / Image edit ── */
+        .gallery-wrap {
+            border-radius: 12px;
+            overflow: hidden;
+            background: #ddd;
+            border: 1px solid var(--border);
+        }
+
+        .gallery-main {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            background: #e8e8e8;
+        }
+
+        .gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .no-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            background: #e8e8e8;
+        }
+
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, .4);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .gallery-arrow:hover {
+            background: rgba(0, 0, 0, .65);
+        }
+
+        .gallery-arrow.prev {
+            left: 8px;
+        }
+
+        .gallery-arrow.next {
+            right: 8px;
+        }
+
+        .gallery-counter {
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            background: rgba(0, 0, 0, .5);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .gallery-thumbs {
+            display: flex;
+            gap: 6px;
+            padding: 8px;
+            background: #f0ede6;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+
+        .gallery-thumbs .thumb-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .gallery-thumbs img {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            display: block;
+            border: 2px solid transparent;
+            opacity: .7;
+            transition: border-color .15s, opacity .15s;
+        }
+
+        .gallery-thumbs img.active {
+            border-color: var(--green-main);
+            opacity: 1;
+        }
+
+        .thumb-remove {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .6);
+            color: #fff;
+            border: none;
+            font-size: .65rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            z-index: 3;
+        }
+
+        .thumb-remove:hover {
+            background: var(--red);
+        }
+
+        /* Upload strip */
+        .upload-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: #f0faf7;
+            border-top: 1px solid var(--border);
+        }
+
+        .upload-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1.5px dashed var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            white-space: nowrap;
+        }
+
+        .upload-label:hover {
+            border-color: var(--green-main);
+            background: #e0f5ef;
+            color: var(--green-main);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ── Cards ── */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 18px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--green-dark);
+            background: #f0faf7;
+        }
+
+        .card-body {
+            padding: 16px 18px;
+        }
+
+        /* ── Form Items ── */
+        .fgroup {
+            margin-bottom: 16px;
+        }
+
+        .fgroup:last-child {
+            margin-bottom: 0;
+        }
+
+        .fgroup label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .fgroup label .req {
+            color: var(--orange);
+            margin-left: 2px;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            background: #fafaf9;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .field-input:focus {
+            border-color: var(--green-main);
+            box-shadow: 0 0 0 3px rgba(45, 90, 22, .1);
+            background: #fff;
+        }
+
+        .field-input.error {
+            border-color: #d32f2f !important;
+        }
+
+        .field-error {
+            display: block;
+            color: #d32f2f;
+            font-size: 0.78rem;
+            margin-top: 4px;
+            min-height: 16px;
+        }
+
+        textarea.field-input {
+            resize: vertical;
+            min-height: 120px;
+            font-weight: 400;
+            font-size: 13.5px;
+            line-height: 1.7;
+        }
+
+        /* ── Toast (error only) ── */
+        #toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 9999;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: .9rem;
+            font-weight: 500;
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .18);
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity .3s, transform .3s;
+            pointer-events: none;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Success Modal ── */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 30, 12, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 36px 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            transform: scale(0.85) translateY(20px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .modal-backdrop.show .modal-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .checkmark-wrap {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--green-dark), var(--green-main));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 24px rgba(13, 61, 48, 0.35);
+            position: relative;
+        }
+
+        .checkmark-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 3px solid rgba(13, 61, 48, 0.15);
+        }
+
+        .checkmark-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(13, 61, 48, 0.08);
+            animation: ring-pulse 1.5s ease-out 0.4s both;
+        }
+
+        @keyframes ring-pulse {
+            0% { transform: scale(0.9); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        .checkmark-icon {
+            font-size: 36px;
+            color: #fff;
+            animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+        }
+
+        @keyframes pop-in {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .modal-progress-bar {
+            height: 3px;
+            background: #e8f4ea;
+            border-radius: 0 0 20px 20px;
+            margin: 24px -36px -32px;
+            overflow: hidden;
+        }
+
+        .modal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-main), var(--orange));
+            border-radius: 3px;
+            width: 100%;
+            transform-origin: left;
+            animation: progress-drain 2s linear forwards;
+        }
+
+        @keyframes progress-drain {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
+
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: rgba(255, 255, 255, .6);
+            align-items: center;
+            justify-content: center;
+        }
+
+        #loadingOverlay.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid var(--border);
+            border-top-color: var(--green-main);
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+           แผนที่ค้นหาสถานที่ (ชุดเดียวกับหน้า addtour)
+           ═══════════════════════════════════════════════ */
+        .map-box {
+            width: 100%;
+            height: 220px;
+            border-radius: 10px;
+            border: 1px solid var(--border, #ddd);
+            margin-top: 8px;
+            background: #f2f2f2;
+        }
+
+        .search-input-wrap {
+            position: relative;
+        }
+
+        .search-suggest-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #fff;
+            border: 1px solid var(--border, #ddd);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
+        }
+
+        .search-suggest-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .search-suggest-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-suggest-item:hover {
+            background: #f3fae8;
+        }
+
+        .search-suggest-loading {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
 </head>
 
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <a th:href="@{/owner/homestays}" class="brand">
-      <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img">
-      ระบบท่องเที่ยวชุมชนชนเผ่า
-    </a>
-    <div class="nav-user">
-      <div class="nav-avatar" th:text="${ownername != null and #strings.length(ownername) >= 2}
-                  ? ${#strings.substring(ownername,0,2)} : 'HS'">HS</div>
-      <span class="nav-name" th:text="${ownername}">คุณนิคม สุขใจ</span>
-      <span style="color:rgba(255,255,255,.7);font-size:11px">▾</span>
+    <nav class="hs-navbar">
+        <a class="hs-navbar-brand" th:href="@{/owner/homestays}">
+            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img">
+            ระบบท่องเที่ยวชุมชนชนเผ่า
+        </a>
+        <div class="hs-nav-right">
+            <div class="hs-profile-dropdown">
+                <div class="hs-profile-trigger">
+                    <div class="hs-avatar"
+                        th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">
+                        HS</div>
+                    <div>
+                        <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
+                        <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+                    </div>
+                    <i class="fas fa-chevron-down hs-chevron"></i>
+                </div>
+                <div class="hs-dropdown-content">
+                    <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
+                    <hr>
+                    <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i>
+                        ออกจากระบบ</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
     </div>
-  </nav>
-  <!-- Success Modal  -->
-  <div class="modal-backdrop" id="successModal">
-    <div class="modal-box">
-      <div class="checkmark-wrap">
-        <div class="checkmark-ring"></div>
-        <i class="fas fa-check checkmark-icon"></i>
-      </div>
-      <div class="modal-title">บันทึกสำเร็จ!</div>
-      <div class="modal-desc" id="successModalDesc">บันทึกข้อมูลเรียบร้อยแล้ว<br>กำลังกลับไปหน้ารายละเอียด...</div>
-      <div class="modal-progress-bar">
-        <div class="modal-progress-fill"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="wrapper">
-
-    <!-- Back -->
-    <a th:href="@{/owner/homestays/{id}(id=${detail.homestay.homestayid})}" class="back-link">
-      ◀ ย้อนกลับ · <span th:text="${detail.homestay.homestayname}">โฮมสเตย์</span>
-    </a>
-
-    <div class="page-title">
-      <span>✏️</span> แก้ไขโฮมสเตย์
+    <div id="toast"></div>
+    <div class="modal-backdrop" id="successOverlay">
+        <div class="modal-box">
+            <div class="checkmark-wrap">
+                <div class="checkmark-ring"></div>
+                <i class="fas fa-check checkmark-icon"></i>
+            </div>
+            <div class="modal-title">บันทึกสำเร็จ!</div>
+            <div class="modal-desc">ข้อมูลโฮมสเตย์ได้รับการอัปเดตเรียบร้อยแล้ว<br>กำลังกลับหน้ารายละเอียด...</div>
+            <div class="modal-progress-bar">
+                <div class="modal-progress-fill"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Card: ข้อมูลโฮมสเตย์ -->
-    <div class="card">
-      <div class="card-head">
-        <h3>ข้อมูลโฮมสเตย์</h3>
-      </div>
-      <div class="card-body">
+    <div class="container">
 
-        <div class="fgroup">
-          <label>ชื่อโฮมสเตย์ <span class="req">*</span></label>
-          <input type="text" id="homestayname" th:value="${detail.homestay.homestayname}" placeholder="ชื่อโฮมสเตย์">
+        <div class="page-header">
+            <div class="page-title-row">
+                <a th:href="@{/owner/homestays/{id}(id=${detail.homestay.homestayid})}" class="btn-back" title="ย้อนกลับ">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="page-title">
+                    <h1>แก้ไขข้อมูลโฮมสเตย์</h1>
+                    <div class="homestay-id" th:text="'Homestay ID: ' + ${detail.homestay.homestayid}"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="fgroup">
-          <label>ที่อยู่ <span class="req">*</span></label>
-          <input type="text" id="address" th:value="${detail.homestay.address}" placeholder="ที่อยู่โฮมสเตย์">
+        <div class="main-grid">
+
+            <div class="left-col">
+                <div class="gallery-wrap">
+                    <div class="gallery-main">
+                        <img id="mainImg"
+                            th:src="${detail.allImages != null and !#lists.isEmpty(detail.allImages)} ? ${detail.allImages[0]} : ''"
+                            th:style="${detail.allImages == null or #lists.isEmpty(detail.allImages)} ? 'display:none' : ''"
+                            alt="homestay" />
+                        <div class="no-image" id="noImagePlaceholder"
+                            th:style="${detail.allImages != null and !#lists.isEmpty(detail.allImages)} ? 'display:none' : ''">
+                            ไม่มีรูปภาพ
+                        </div>
+                        <button class="gallery-arrow prev" id="prevBtn" onclick="prevImg()"
+                            th:style="${detail.allImages == null or #lists.size(detail.allImages) <= 1} ? 'display:none' : ''">&#8249;</button>
+                        <button class="gallery-arrow next" id="nextBtn" onclick="nextImg()"
+                            th:style="${detail.allImages == null or #lists.size(detail.allImages) <= 1} ? 'display:none' : ''">&#8250;</button>
+                        <div class="gallery-counter" id="imgCounter"
+                            th:style="${detail.allImages == null or #lists.size(detail.allImages) <= 1} ? 'display:none' : ''">
+                            1 / <span id="imgTotal" th:text="${detail.allImages != null ? #lists.size(detail.allImages) : 0}"></span>
+                        </div>
+                    </div>
+
+                    <div class="gallery-thumbs" id="thumbStrip">
+                        <th:block th:each="img,stat : ${detail.allImages}">
+                            <div class="thumb-wrap existing-thumb" th:data-src="${img}">
+                                <img th:src="${img}" alt="thumb" th:class="${stat.index == 0} ? 'active' : ''"
+                                    th:onclick="'goToImg(' + ${stat.index} + ')'" />
+                                <button type="button" class="thumb-remove" onclick="removeThumb(this)">✕</button>
+                            </div>
+                        </th:block>
+                    </div>
+
+                    <div class="upload-strip">
+                        <label class="upload-label" for="fileInput">
+                            <i class="fas fa-plus" style="font-size:.8rem;"></i> เพิ่มรูปภาพ
+                        </label>
+                        <div style="text-align:right;">
+                            <span class="upload-hint">JPG, PNG, WEBP (ไม่เกิน 5 MB)</span>
+                            <span class="upload-hint" id="imgCountHint" style="display:block; margin-top:2px; font-weight:600;"></span>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple />
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <div class="card">
+                    <div class="card-header">🏡 ข้อมูลโฮมสเตย์</div>
+                    <div class="card-body">
+
+                        <div class="fgroup">
+                            <label>ชื่อโฮมสเตย์ <span class="req">*</span></label>
+                            <input type="text" id="homestayname" class="field-input"
+                                th:value="${detail.homestay.homestayname}" placeholder="เช่น บ้านไร่สายหมอก โฮมสเตย์">
+                            <span class="field-error" id="homestaynameError"></span>
+                        </div>
+
+                        <div class="fgroup">
+                            <label>ที่อยู่โฮมสเตย์ <span class="req">*</span></label>
+                            <div class="search-input-wrap">
+                                <input type="text" id="address" class="field-input"
+                                    th:value="${detail.homestay.address}" placeholder="ระบุเลขที่ ตำบล อำเภอ จังหวัด"
+                                    autocomplete="off">
+                                <div class="search-suggest-box" id="addressSuggest"></div>
+                            </div>
+                            <span class="field-error" id="addressError"></span>
+
+                            <div class="map-box" id="addressMap"></div>
+                            <small style="color:#888;">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
+                                หรือคลิก/ลากหมุดบนแผนที่เพื่อให้ระบบเติมที่อยู่ให้อัตโนมัติ</small>
+                        </div>
+
+                        <div class="fgroup">
+                            <label>รายละเอียดโฮมสเตย์ <span class="req">*</span></label>
+                            <textarea id="description" class="field-input"
+                                placeholder="อธิบายจุดเด่น บรรยากาศ และกิจกรรมที่นักท่องเที่ยวสามารถทำได้..."
+                                th:text="${detail.homestay.description}"></textarea>
+                            <span class="field-error" id="descriptionError"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="fgroup">
-          <label>รายละเอียดโฮมสเตย์</label>
-          <textarea id="description" placeholder="อธิบายจุดเด่น บรรยากาศ และกิจกรรมที่นักท่องเที่ยวสามารถทำได้"
-            th:text="${detail.homestay.description}"></textarea>
-          <div class="hint">อธิบายจุดเด่น บรรยากาศ และกิจกรรมที่นักท่องเที่ยวสามารถทำได้</div>
+        <div class="footer-actions">
+            <button class="btn-cancel" type="button"
+                th:onclick="|window.location.href='@{/owner/homestays/{id}(id=${detail.homestay.homestayid})}'|">
+                ยกเลิก
+            </button>
+            <button class="btn-save" type="button" id="btnSave" onclick="handleSave()">
+                <i class="fas fa-save"></i> บันทึกการแก้ไข
+            </button>
         </div>
 
-      </div>
     </div>
 
-    <!-- Card: รูปภาพ -->
-    <div class="card">
-      <div class="card-head">
-        <h3>รูปภาพโฮมสเตย์ (IMAGES)</h3>
-      </div>
-      <div class="card-body">
-        <div class="img-section-label">รูปปัจจุบัน</div>
-        <div class="img-grid" id="imgGrid"></div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const HOMESTAY_ID = /*[[${detail.homestay.homestayid}]]*/ 0;
+        const DB_IMAGES = /*[[${detail.allImages}]]*/[];
+        /*]]>*/
+    </script>
 
-        <label class="upload-zone" for="fileInput">
-          <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple>
-          <div class="up-icon">☁️</div>
-          <div class="up-text">คลิกเพื่อเพิ่มรูปภาพใหม่</div>
-          <div class="up-hint">PNG, JPG, WEBP · ขนาดไม่เกิน 5MB ต่อรูป</div>
-        </label>
-      </div>
-    </div>
+    <script>
+        // ── Gallery & Image Controller ─────────────────────────────────────────
+        const MAX_IMAGES = 5;
+        let images = Array.from(document.querySelectorAll('#thumbStrip .existing-thumb'))
+            .map(el => el.dataset.src);
+        let newFileList = [];
+        let current = 0;
 
-    <!-- Actions -->
-    <div class="actions">
-      <a th:href="@{/owner/homestays/{id}(id=${detail.homestay.homestayid})}" class="btn btn-cancel">✕ ยกเลิก</a>
-      <button class="btn btn-save" id="saveBtn" onclick="handleSave()">💾 บันทึกข้อมูล</button>
-    </div>
+        const mainImg = document.getElementById('mainImg');
+        const noImgEl = document.getElementById('noImagePlaceholder');
+        const counter = document.getElementById('imgCounter');
+        const imgTotal = document.getElementById('imgTotal');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const thumbStrip = document.getElementById('thumbStrip');
+        const imgCountHint = document.getElementById('imgCountHint');
+        const fileInput = document.getElementById('fileInput');
 
-  </div>
+        function refreshUI() {
+            const total = images.length;
+            if (total === 0) {
+                mainImg.style.display = 'none';
+                noImgEl.style.display = '';
+                counter.style.display = 'none';
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            } else {
+                mainImg.style.display = '';
+                noImgEl.style.display = 'none';
+                if (current >= total) current = total - 1;
+                mainImg.src = images[current];
+                const showNav = total > 1;
+                counter.style.display = showNav ? '' : 'none';
+                prevBtn.style.display = showNav ? '' : 'none';
+                nextBtn.style.display = showNav ? '' : 'none';
+                if (imgTotal) imgTotal.textContent = total;
+                counter.childNodes[0].textContent = (current + 1) + ' / ';
+            }
+            thumbStrip.querySelectorAll('img').forEach((t, i) => t.classList.toggle('active', i === current));
 
-  <!-- Toast overlay + modal -->
-  <div class="toast-overlay" id="toastOverlay"></div>
-  <div class="toast" id="toast">
-    <div class="toast-icon" id="toastIcon"></div>
-    <div class="toast-title" id="toastTitle"></div>
-    <div class="toast-msg" id="toastMsg"></div>
-  </div>
-
-  <!-- ฝัง data จาก Thymeleaf → JavaScript -->
-  <script th:inline="javascript">
-    /*<![CDATA[*/
-    const HOMESTAY_ID = /*[[${detail.homestay.homestayid}]]*/ 0;
-    // allImages คือ List<String> ของ paths เช่น ["/uploads/homestays/1/abc.jpg", ...]
-    const DB_IMAGES = /*[[${detail.allImages}]]*/[];
-    /*]]>*/
-  </script>
-
-  <script>
-    /*
-      โครงสร้าง images array:
-      {
-        src:      string  — URL สำหรับแสดงผล (path จาก server หรือ blob URL)
-        keepPath: string|null — path เก่าที่จะส่งกลับไปให้ server คง (null = รูปใหม่)
-        file:     File|null   — File object ของรูปใหม่ที่ยังไม่ได้ upload (null = รูปเก่า)
-      }
-    */
-    let images = [];
-
-    // โหลดรูปเก่าจาก DB — DB_IMAGES เป็น array ของ path string แล้ว
-    DB_IMAGES.forEach(path => {
-      if (path && path.trim()) {
-        images.push({ src: path.trim(), keepPath: path.trim(), file: null });
-      }
-    });
-
-    // ── Render ──
-    function renderImages() {
-      const grid = document.getElementById('imgGrid');
-      grid.innerHTML = '';
-      images.forEach((img, i) => {
-        const div = document.createElement('div');
-        div.className = 'img-thumb';
-        div.innerHTML = `
-      <img src="${escapeHtml(img.src)}" alt="รูป ${i + 1}">
-      ${i === 0 ? '<span class="primary-badge">หลัก</span>' : ''}
-      ${img.file ? '<span class="new-badge">ใหม่</span>' : ''}
-      <button class="del" type="button" onclick="removeImg(${i})" title="ลบ">✕</button>
-    `;
-        grid.appendChild(div);
-      });
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/"/g, '&quot;').replace(/</g, '&lt;');
-    }
-
-    function removeImg(idx) {
-      // ถ้าเป็นรูปใหม่ (blob URL) ให้ revoke เพื่อคืน memory
-      if (images[idx].file) URL.revokeObjectURL(images[idx].src);
-      images.splice(idx, 1);
-      renderImages();
-    }
-
-    // ── Upload ใหม่ ──
-    document.getElementById('fileInput').addEventListener('change', e => {
-      Array.from(e.target.files).forEach(file => {
-        if (file.size > 5 * 1024 * 1024) {
-          showToast('ไฟล์ใหญ่เกิน 5MB: ' + file.name, true);
-          return;
+            if (imgCountHint) {
+                imgCountHint.textContent = `รูปภาพ ${total} / ${MAX_IMAGES}`;
+                imgCountHint.style.color = total >= MAX_IMAGES ? 'var(--red)' : 'var(--text-muted)';
+            }
+            const uploadLabel = document.querySelector('.upload-label');
+            if (uploadLabel) {
+                if (total >= MAX_IMAGES) {
+                    uploadLabel.style.opacity = '.5';
+                    uploadLabel.style.pointerEvents = 'none';
+                    fileInput.disabled = true;
+                } else {
+                    uploadLabel.style.opacity = '';
+                    uploadLabel.style.pointerEvents = '';
+                    fileInput.disabled = false;
+                }
+            }
         }
-        images.push({
-          src: URL.createObjectURL(file), // blob URL ใช้แค่ preview
-          keepPath: null,
-          file: file
-        });
-        renderImages();
-      });
-      e.target.value = ''; // reset เพื่อให้เลือกไฟล์เดิมซ้ำได้
-    });
 
-    // ── Drag & drop ──
-    const zone = document.querySelector('.upload-zone');
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = 'var(--green-main)'; });
-    zone.addEventListener('dragleave', () => zone.style.borderColor = '');
-    zone.addEventListener('drop', e => {
-      e.preventDefault(); zone.style.borderColor = '';
-      Array.from(e.dataTransfer.files).forEach(file => {
-        if (!file.type.match(/image\/(png|jpeg|webp)/)) return;
-        images.push({ src: URL.createObjectURL(file), keepPath: null, file: file });
-        renderImages();
-      });
-    });
-
-    // ── Save → PUT /owner/homestays/{id} (multipart/form-data) ──
-    async function handleSave() {
-      const name = document.getElementById('homestayname').value.trim();
-      const addr = document.getElementById('address').value.trim();
-      const desc = document.getElementById('description').value.trim();
-
-      if (!name) { showToast('กรุณากรอกชื่อโฮมสเตย์', true); return; }
-      if (!addr) { showToast('กรุณากรอกที่อยู่', true); return; }
-
-      const btn = document.getElementById('saveBtn');
-      btn.disabled = true;
-      btn.textContent = '⏳ กำลังบันทึก...';
-
-      const fd = new FormData();
-      fd.append('homestayname', name);
-      fd.append('address', addr);
-      fd.append('description', desc);
-
-      // รูปเก่าที่คงไว้ → ส่งเป็น CSV ของ path
-      const keepPaths = images
-        .filter(img => img.keepPath)
-        .map(img => img.keepPath)
-        .join(',');
-      fd.append('keepImages', keepPaths);
-
-      // รูปใหม่ → แนบ File 
-      images
-        .filter(img => img.file)
-        .forEach(img => fd.append('newImages', img.file));
-
-      try {
-        const res = await fetch(`/owner/homestays/${HOMESTAY_ID}`, {
-          method: 'PUT',
-          body: fd
-        });
-        const data = await res.json();
-
-        if (res.ok && data.success) {
-          showToast('บันทึกข้อมูลสำเร็จ');
-          setTimeout(() => window.location.href = `/owner/homestays/${HOMESTAY_ID}`, 1500);
-        } else {
-          showToast(data.message || 'เกิดข้อผิดพลาด', true);
+        function goToImg(index) {
+            if (images.length === 0) return;
+            current = (index + images.length) % images.length;
+            refreshUI();
         }
-      } catch (err) {
-        showToast('ไม่สามารถเชื่อมต่อ server ได้', true);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '💾 บันทึกข้อมูล';
-      }
-    }
+        function nextImg() { goToImg(current + 1); }
+        function prevImg() { goToImg(current - 1); }
 
-    // ── Toast ──
-    // ── Success Modal ──
-    function showSuccessModal(msg) {
-      if (msg) document.getElementById('successModalDesc').innerHTML = msg + '<br>กำลังกลับไปหน้ารายละเอียด...';
-      document.getElementById('successModal').classList.add('show');
-    }
+        function removeThumb(btn) {
+            const wrap = btn.closest('.thumb-wrap');
+            const idx = Array.from(thumbStrip.children).indexOf(wrap);
+            images.splice(idx, 1);
+            wrap.remove();
+            if (current >= images.length) current = Math.max(0, images.length - 1);
+            refreshUI();
+        }
 
-    // ── Toast (ใช้เฉพาะกรณี error) ──
-    function showToast(msg, isError = false) {
-      if (!isError) {
-        showSuccessModal(msg);
-        return;
-      }
-      document.getElementById('toastIcon').textContent = '❌';
-      document.getElementById('toastTitle').textContent = 'เกิดข้อผิดพลาด';
-      document.getElementById('toastMsg').textContent = msg;
+        fileInput.addEventListener('change', function () {
+            Array.from(this.files).forEach(file => {
+                if (images.length >= MAX_IMAGES) {
+                    showToast(`อัปโหลดรูปได้สูงสุด ${MAX_IMAGES} รูป`, true);
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('ไฟล์ ' + file.name + ' ใหญ่เกิน 5 MB', true);
+                    return;
+                }
+                const objectUrl = URL.createObjectURL(file);
+                const fileIdx = newFileList.length;
+                newFileList.push({ file, objectUrl });
+                images.push(objectUrl);
 
-      const toast = document.getElementById('toast');
-      const overlay = document.getElementById('toastOverlay');
-      toast.className = 'toast error show';
-      overlay.className = 'toast-overlay show';
+                const wrap = document.createElement('div');
+                wrap.className = 'thumb-wrap new-thumb';
+                wrap.dataset.newIdx = fileIdx;
+                const img = document.createElement('img');
+                img.src = objectUrl; img.alt = 'thumb';
+                img.onclick = () => goToImg(images.indexOf(objectUrl));
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'thumb-remove';
+                removeBtn.textContent = '✕';
+                removeBtn.onclick = () => removeNewThumb(removeBtn, fileIdx, objectUrl);
+                wrap.appendChild(img); 
+                wrap.appendChild(removeBtn);
+                thumbStrip.appendChild(wrap);
+            });
+            this.value = '';
+            refreshUI();
+        });
 
-      setTimeout(() => {
-        toast.className = 'toast error';
-        overlay.className = 'toast-overlay';
-      }, 3500);
-    }
-    // Init
-    renderImages();
-  </script>
+        function removeNewThumb(btn, fileIdx, objectUrl) {
+            newFileList[fileIdx] = null;
+            const imgIdx = images.indexOf(objectUrl);
+            if (imgIdx > -1) images.splice(imgIdx, 1);
+            btn.closest('.thumb-wrap').remove();
+            if (current >= images.length) current = Math.max(0, images.length - 1);
+            refreshUI();
+        }
+
+        function collectExistingPaths() {
+            return Array.from(thumbStrip.querySelectorAll('.existing-thumb'))
+                .map(el => el.dataset.src)
+                .filter(Boolean)
+                .join(',');
+        }
+
+        // ── Validation: รองรับเฉพาะไทยและอังกฤษ ──────────────────────────────────
+        // Regex: รองรับ ก-ฮ, สระ, วรรณยุกต์, a-z, A-Z, ตัวเลข 0-9, อักขระเว้นวรรค และเครื่องหมายพื้นฐาน (. , - / # ( ) " ' \n)
+        const THAI_ENG_REGEX = /^[a-zA-Z0-9\u0E00-\u0E7F\s.,\-\/#()'":;\n\r]+$/;
+
+        const FIELDS_TO_CHECK = [
+            { id: 'homestayname', errId: 'homestaynameError', label: 'ชื่อโฮมสเตย์' },
+            { id: 'address', errId: 'addressError', label: 'ที่อยู่' },
+            { id: 'description', errId: 'descriptionError', label: 'รายละเอียดโฮมสเตย์' }
+        ];
+
+        function showFieldErr(id, errId, msg) {
+            const el = document.getElementById(id);
+            const err = document.getElementById(errId);
+            if (el) el.classList.add('error');
+            if (err) err.textContent = msg;
+        }
+
+        function clearFieldErr(id, errId) {
+            const el = document.getElementById(id);
+            const err = document.getElementById(errId);
+            if (el) el.classList.remove('error');
+            if (err) err.textContent = '';
+        }
+
+        // Real-time Validation
+        FIELDS_TO_CHECK.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (!el) return;
+            el.addEventListener('input', () => {
+                const val = el.value.trim();
+                if (!val) {
+                    clearFieldErr(f.id, f.errId);
+                    return;
+                }
+                if (!THAI_ENG_REGEX.test(val)) {
+                    showFieldErr(f.id, f.errId, f.label + ' ต้องเป็นภาษาไทยหรือภาษาอังกฤษเท่านั้น');
+                } else {
+                    clearFieldErr(f.id, f.errId);
+                }
+            });
+        });
+
+        function validate() {
+            let isValid = true;
+            let firstInvalidEl = null;
+
+            for (const f of FIELDS_TO_CHECK) {
+                const el = document.getElementById(f.id);
+                const val = el ? el.value.trim() : '';
+
+                if (!val) {
+                    showFieldErr(f.id, f.errId, `กรุณากรอก${f.label}`);
+                    isValid = false;
+                    if (!firstInvalidEl) firstInvalidEl = el;
+                } else if (!THAI_ENG_REGEX.test(val)) {
+                    showFieldErr(f.id, f.errId, `${f.label} ต้องเป็นภาษาไทยหรือภาษาอังกฤษเท่านั้น`);
+                    isValid = false;
+                    if (!firstInvalidEl) firstInvalidEl = el;
+                } else {
+                    clearFieldErr(f.id, f.errId);
+                }
+            }
+
+            if (firstInvalidEl) firstInvalidEl.focus();
+            return isValid;
+        }
+
+        // ── Submit / Save ─────────────────────────────────────────────────────
+        async function handleSave() {
+            if (!validate()) return;
+
+            const btn = document.getElementById('btnSave');
+            btn.disabled = true;
+            document.getElementById('loadingOverlay').classList.add('show');
+
+            const fd = new FormData();
+            fd.append('homestayname', document.getElementById('homestayname').value.trim());
+            fd.append('address', document.getElementById('address').value.trim());
+            fd.append('description', document.getElementById('description').value.trim());
+
+            // รูปเดิมที่คงไว้
+            fd.append('keepImages', collectExistingPaths());
+
+            // รูปใหม่ที่เพิ่มเข้ามา
+            newFileList.filter(f => f !== null).forEach(f => {
+                fd.append('newImages', f.file);
+            });
+
+            try {
+                const res = await fetch(`/owner/homestays/${HOMESTAY_ID}`, {
+                    method: 'PUT',
+                    body: fd
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showSuccessModal();
+                    setTimeout(() => {
+                        window.location.href = `/owner/homestays/${HOMESTAY_ID}`;
+                    }, 2000);
+                } else {
+                    showToast(data.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล', true);
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', true);
+                btn.disabled = false;
+            } finally {
+                document.getElementById('loadingOverlay').classList.remove('show');
+            }
+        }
+
+        // ── Feedback Functions ────────────────────────────────────────────────
+        function showSuccessModal() {
+            document.getElementById('successOverlay').classList.add('show');
+        }
+
+        let toastTimer;
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'show';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+        }
+
+        // Init
+        refreshUI();
+    </script>
+
+    <script>
+        /* ═══════════════════════════════════════════
+        LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่สำหรับฟิลด์ "ที่อยู่โฮมสเตย์"
+        (โค้ดชุดเดียวกับหน้า addtour: Nominatim search + reverse geocode + geolocation)
+        ═══════════════════════════════════════════ */
+        const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเชียงใหม่
+        const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
+
+        let addressMap, addressMarker;
+        const addressInput = document.getElementById('address');
+
+        function createLeafletMap(divId) {
+            const map = L.map(divId, { center: DEFAULT_MAP_CENTER, zoom: 13 });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+            return map;
+        }
+
+        function reverseGeocode(lat, lng, callback) {
+            fetch(`${NOMINATIM_BASE}/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=th`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.display_name) callback(data.display_name);
+                })
+                .catch(() => { });
+        }
+
+        function searchPlaces(query, callback) {
+            if (!query || query.trim().length < 3) { callback([]); return; }
+            const params = new URLSearchParams({
+                format: 'jsonv2',
+                q: query,
+                countrycodes: 'th',
+                'accept-language': 'th',
+                limit: '5'
+            });
+            fetch(`${NOMINATIM_BASE}/search?${params.toString()}`)
+                .then(res => res.json())
+                .then(data => callback(data || []))
+                .catch(() => callback([]));
+        }
+
+        function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
+            inputEl.addEventListener('input', () => {
+                clearTimeout(timerRef.id);
+                const query = inputEl.value;
+                timerRef.id = setTimeout(() => {
+                    suggestBoxEl.innerHTML = '<div class="search-suggest-loading">กำลังค้นหา...</div>';
+                    suggestBoxEl.style.display = 'block';
+                    searchPlaces(query, (results) => {
+                        if (results.length === 0) {
+                            suggestBoxEl.style.display = 'none';
+                            return;
+                        }
+                        suggestBoxEl.innerHTML = '';
+                        results.forEach(place => {
+                            const item = document.createElement('div');
+                            item.className = 'search-suggest-item';
+                            item.textContent = place.display_name;
+                            item.addEventListener('click', () => {
+                                inputEl.value = place.display_name;
+                                suggestBoxEl.style.display = 'none';
+                                onSelect(parseFloat(place.lat), parseFloat(place.lon), place.display_name);
+                            });
+                            suggestBoxEl.appendChild(item);
+                        });
+                        suggestBoxEl.style.display = 'block';
+                    });
+                }, 500);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!inputEl.contains(e.target) && !suggestBoxEl.contains(e.target)) {
+                    suggestBoxEl.style.display = 'none';
+                }
+            });
+        }
+
+        function getCurrentPositionOrDefault(onLocated, onFallback) {
+            if (!navigator.geolocation) {
+                onFallback();
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => onLocated([pos.coords.latitude, pos.coords.longitude]),
+                () => onFallback(),
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+            );
+        }
+
+        // ค้นหาพิกัดจากที่อยู่ ถ้าค้นแบบเต็มไม่เจอ ให้ตัดคำแรกออกทีละคำแล้วลองใหม่
+        // (ที่อยู่ไทยที่มีเลขที่/หมู่บ้านละเอียดมักหา exact match ใน Nominatim ไม่เจอ
+        //  แต่พอตัดให้เหลือแค่ตำบล/อำเภอ/จังหวัด มักจะเจอ)
+        function geocodeWithFallback(fullAddress) {
+            const words = fullAddress.split(/\s+/).filter(Boolean);
+
+            function tryQuery(startIdx) {
+                if (startIdx >= words.length - 1) return; // เหลือคำเดียวก็ไม่ต้องลองต่อ
+                const query = words.slice(startIdx).join(' ');
+                searchPlaces(query, (results) => {
+                    if (results && results.length > 0) {
+                        const lat = parseFloat(results[0].lat);
+                        const lng = parseFloat(results[0].lon);
+                        addressMap.setView([lat, lng], startIdx === 0 ? 16 : 13);
+                        addressMarker.setLatLng([lat, lng]);
+                    } else {
+                        tryQuery(startIdx + 1); // ค้นไม่เจอ → ตัดคำแรกออกแล้วลองใหม่
+                    }
+                });
+            }
+
+            tryQuery(0);
+        }
+
+        function initAddressMap() {
+            if (addressMap) return; // สร้างครั้งเดียวพอ
+
+            addressMap = createLeafletMap('addressMap');
+            addressMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(addressMap);
+
+            addressMarker.on('dragend', () => {
+                const pos = addressMarker.getLatLng();
+                reverseGeocode(pos.lat, pos.lng, (address) => {
+                    addressInput.value = address;
+                });
+            });
+
+            addressMap.on('click', (e) => {
+                addressMarker.setLatLng(e.latlng);
+                reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => {
+                    addressInput.value = address;
+                });
+            });
+
+            setTimeout(() => addressMap.invalidateSize(), 200); // กัน bug แผนที่เบี้ยวตอนเพิ่งโผล่
+
+            const existingAddress = addressInput.value.trim();
+            if (existingAddress) {
+                // ✅ มีที่อยู่เดิมจาก DB อยู่แล้ว → ค้นหาพิกัดจากที่อยู่นั้นมาปักหมุดให้
+                //    ถ้าค้นแบบเต็มไม่เจอ (เช่น มีเลขที่/หมู่บ้านละเอียดเกินไป)
+                //    ให้ค่อยๆ ตัดคำแรกออกแล้วลองค้นใหม่ จนกว่าจะเจอหรือหมดคำ
+                geocodeWithFallback(existingAddress);
+            } else {
+                // ✅ ยังไม่มีที่อยู่ → ปักหมุดตามตำแหน่งปัจจุบันอัตโนมัติ
+                getCurrentPositionOrDefault(
+                    ([lat, lng]) => {
+                        addressMap.setView([lat, lng], 16);
+                        addressMarker.setLatLng([lat, lng]);
+                        reverseGeocode(lat, lng, (address) => {
+                            addressInput.value = address;
+                        });
+                    },
+                    () => { /* หาไม่ได้ ใช้ศูนย์กลางเชียงใหม่ตามเดิม */ }
+                );
+            }
+
+            attachPlaceSearch(
+                addressInput,
+                document.getElementById('addressSuggest'),
+                (lat, lng) => {
+                    addressMap.setView([lat, lng], 16);
+                    addressMarker.setLatLng([lat, lng]);
+                },
+                { id: null }
+            );
+        }
+
+        initAddressMap();
+    </script>
 </body>
 
 </html>

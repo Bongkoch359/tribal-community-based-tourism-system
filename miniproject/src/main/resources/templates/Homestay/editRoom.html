@@ -17,7 +17,7 @@
             display: flex;
             align-items: center;
             padding: 0 2rem;
-            height: 84px;
+            height: 90px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -38,7 +38,7 @@
         }
 
         .hs-navbar-brand img.brand-logo-img {
-            height: 75px;
+            height: 110px;
             width: auto;
             max-width: 160px;
             object-fit: contain;
@@ -880,9 +880,19 @@
         }
 
         @keyframes ring-pulse {
-            0% { transform: scale(0.9); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: scale(1.3); opacity: 0; }
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
         }
 
         .checkmark-icon {
@@ -892,8 +902,15 @@
         }
 
         @keyframes pop-in {
-            from { transform: scale(0); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-title {
@@ -928,8 +945,13 @@
         }
 
         @keyframes progress-drain {
-            from { transform: scaleX(1); }
-            to { transform: scaleX(0); }
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
         }
 
         #loadingOverlay {
@@ -942,7 +964,9 @@
             justify-content: center;
         }
 
-        #loadingOverlay.show { display: flex; }
+        #loadingOverlay.show {
+            display: flex;
+        }
 
         .spinner {
             width: 40px;
@@ -953,7 +977,11 @@
             animation: spin .7s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         .footer-actions {
             display: flex;
@@ -966,9 +994,17 @@
         }
 
         @media (max-width: 700px) {
-            .main-grid { grid-template-columns: 1fr; }
-            .info-grid { grid-template-columns: 1fr 1fr; }
-            .page-header { flex-direction: column; }
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -1089,8 +1125,8 @@
                 <div class="price-card">
                     <div class="price-label">ราคาต่อคืน</div>
                     <div class="price-input-wrap">
-                        <input type="number" id="pricepernight" min="1" step="0.01" th:value="${room.pricepernight}"
-                            placeholder="0.00" onkeydown="return ['-','+','e','E'].indexOf(event.key) === -1" />
+                        <input type="number" id="pricepernight" step="0.01" th:value="${room.pricepernight}"
+                            placeholder="0.00" />
                         <span class="currency">฿</span>
                     </div>
                     <span class="field-error" id="priceError" style="text-align:center;"></span>
@@ -1129,9 +1165,14 @@
                                 <label>ประเภทเตียง <span class="req">*</span></label>
                                 <select id="bedtype" class="field-input">
                                     <option value="" disabled>-- เลือกประเภทเตียง --</option>
-                                    <option value="เตียงเดี่ยว" th:selected="${room.bedtype == 'เตียงเดี่ยว' or room.bedtype == 'เดี่ยว'}">เตียงเดี่ยว</option>
-                                    <option value="เตียงคู่" th:selected="${room.bedtype == 'เตียงคู่' or room.bedtype == 'คู่'}">เตียงคู่</option>
-                                    <option value="ฟูกนอนพื้น" th:selected="${room.bedtype == 'ฟูกนอนพื้น'}">ฟูกนอนพื้น</option>
+                                    <option value="เตียงเดี่ยว"
+                                        th:selected="${room.bedtype == 'เตียงเดี่ยว' or room.bedtype == 'เดี่ยว'}">
+                                        เตียงเดี่ยว</option>
+                                    <option value="เตียงคู่"
+                                        th:selected="${room.bedtype == 'เตียงคู่' or room.bedtype == 'คู่'}">เตียงคู่
+                                    </option>
+                                    <option value="ฟูกนอนพื้น" th:selected="${room.bedtype == 'ฟูกนอนพื้น'}">ฟูกนอนพื้น
+                                    </option>
                                 </select>
                                 <span class="field-error" id="bedtypeError"></span>
                             </div>
@@ -1162,9 +1203,8 @@
                             <div class="info-item">
                                 <label>จำนวนผู้เข้าพักสูงสุด <span class="req">*</span></label>
                                 <div class="input-with-unit">
-                                    <input type="number" id="maxguest" class="field-input" min="1"
-                                        th:value="${room.maxguest}"
-                                        onkeydown="return ['-','+','e','E'].indexOf(event.key) === -1" />
+                                    <input type="number" id="maxguest" class="field-input"
+                                        th:value="${room.maxguest}" />
                                     <span class="input-unit">ท่าน</span>
                                 </div>
                                 <span class="field-error" id="maxguestError"></span>
@@ -1174,9 +1214,8 @@
                             <div class="info-item">
                                 <label>จำนวนห้องทั้งหมด <span class="req">*</span></label>
                                 <div class="input-with-unit">
-                                    <input type="number" id="totalrooms" class="field-input" min="1"
-                                        th:value="${room.totalrooms}"
-                                        onkeydown="return ['-','+','e','E'].indexOf(event.key) === -1" />
+                                    <input type="number" id="totalrooms" class="field-input"
+                                        th:value="${room.totalrooms}" />
                                     <span class="input-unit">หลัง</span>
                                 </div>
                                 <span class="field-error" id="totalroomsError"></span>

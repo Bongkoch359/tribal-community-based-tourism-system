@@ -64,7 +64,8 @@ textarea:focus-visible,
     height: 76px;
     position: sticky;
     top: 0;
-    z-index: 1100;   /* เดิม 100 → เปลี่ยนเป็นสูงกว่า Leaflet (สูงสุดปกติ ~1000) */
+    z-index: 1100;
+    /* เดิม 100 → เปลี่ยนเป็นสูงกว่า Leaflet (สูงสุดปกติ ~1000) */
     box-shadow: 0 2px 16px rgba(20, 35, 10, .28);
 }
 
@@ -254,6 +255,7 @@ textarea:focus-visible,
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border);
 }
+
 .page-title-row {
     display: flex;
     align-items: center;
@@ -292,7 +294,8 @@ textarea:focus-visible,
 }
 
 .page-subtitle {
-    margin-left: 44px;  /* 32px (ความกว้างลูกศร) + 12px (gap) */
+    margin-left: 44px;
+    /* 32px (ความกว้างลูกศร) + 12px (gap) */
 }
 
 .page-subtitle span {
@@ -334,11 +337,13 @@ textarea:focus-visible,
     gap: 22px;
     align-items: start;
 }
+
 .left-col {
     position: sticky;
     top: 92px;
     align-self: start;
 }
+
 .right-col {
     min-width: 0;
 }
@@ -816,7 +821,8 @@ input[type="file"] {
 }
 
 .cal-cell {
-    aspect-ratio: 1 / 0.75;
+    height: 38px;
+    /* ล็อกความสูงให้ทุกช่องเท่ากันเป๊ะ 100% */
     border-radius: 6px;
     border: 1px solid var(--border);
     background: #fff;
@@ -824,6 +830,7 @@ input[type="file"] {
     padding: 3px 4px;
     cursor: pointer;
     position: relative;
+    box-sizing: border-box;
     transition: box-shadow .1s, transform .08s, border-color .1s;
 }
 
@@ -839,13 +846,18 @@ input[type="file"] {
 
 .cal-cell .cal-day-num {
     font-weight: 700;
+    line-height: 1;
 }
 
+/* ล็อกให้อยู่ชิดมุมล่างซ้าย ไม่ดันความสูงของกล่อง */
 .cal-cell .cal-day-sub {
+    position: absolute;
+    bottom: 3px;
+    left: 4px;
     font-size: 8px;
     color: var(--text-muted);
-    margin-top: 2px;
-    line-height: 1.2;
+    line-height: 1;
+    pointer-events: none;
 }
 
 .cal-cell.st-open {
@@ -863,6 +875,7 @@ input[type="file"] {
     border-color: #9c9990;
     color: #55524a;
 }
+
 .cal-cell.st-past {
     background: #f1f0ec;
     border-color: #d8d4c8;
@@ -870,6 +883,7 @@ input[type="file"] {
     opacity: .65;
     cursor: not-allowed;
 }
+
 .cal-cell.cal-today {
     border-color: var(--amber);
     border-width: 2px;
@@ -1044,6 +1058,7 @@ input[type="file"] {
         justify-content: center;
     }
 }
+
 .map-box {
     width: 100%;
     height: 320px;
@@ -1070,7 +1085,7 @@ input[type="file"] {
     max-height: 220px;
     overflow-y: auto;
     display: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
 }
 
 .search-suggest-item {
@@ -1080,8 +1095,13 @@ input[type="file"] {
     border-bottom: 1px solid #f0f0f0;
 }
 
-.search-suggest-item:last-child { border-bottom: none; }
-.search-suggest-item:hover { background: #f3fae8; }
+.search-suggest-item:last-child {
+    border-bottom: none;
+}
+
+.search-suggest-item:hover {
+    background: #f3fae8;
+}
 
 .search-suggest-loading {
     padding: 8px 12px;
