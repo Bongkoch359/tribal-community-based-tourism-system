@@ -5,10 +5,14 @@ import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Bookingtourdetail;
 import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.Payment;
+import com.example.miniproject.entity.Tour;
+import com.example.miniproject.entity.Tourschedule;
 import com.example.miniproject.entity.enums.BookingStatus;
 import com.example.miniproject.entity.enums.PaymentStatus;
 import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.PaymentRepository;
+import com.example.miniproject.repository.Tour.TourScheduleRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +36,12 @@ public class TourPaymentServiceImpl implements PaymentService<TourReceiptDTO> {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+private BookingCancelHelper bookingCancelHelper;
+
+@Autowired
+private TourScheduleRepository tourScheduleRepository;
 
     private final String slipUploadDir = System.getProperty("user.dir") + "/uploads/slips/";
 
@@ -125,9 +135,25 @@ public class TourPaymentServiceImpl implements PaymentService<TourReceiptDTO> {
     // ─────────────────────────────────────────────────────────────
     @Override
     @Transactional
-    public void confirmPayment(String bookingId, MultipartFile slipFile, String payNote) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+   public void confirmPayment(String bookingId, MultipartFile slipFile, String payNote) {
+    Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+
+             if (isExpired(booking)) {
+        bookingCancelHelper.cancelNow(bookingId, "ยกเลิกอัตโนมัติ: ไม่ชำระเงินภายในกำหนดเวลา");
+        throw new IllegalStateException("เลยกำหนดชำระเงินแล้ว การจองนี้ถูกยกเลิกอัตโนมัติ กรุณาจองใหม่อีกครั้ง");
+    }
+    Bookingtourdetail detail = booking.getTourDetails().get(0);
+    Tourschedule schedule = detail.getTourschedule();
+    Tour tour = detail.getTour();
+
+if (tour.getMaxSeatstour() != null) {
+    int totalBooked = tourScheduleRepository.countBookedSeatsBySchedule(schedule.getScheduleid());
+    if (totalBooked > tour.getMaxSeatstour()) {
+        bookingCancelHelper.cancelNow(bookingId, "ยกเลิกอัตโนมัติ: ที่นั่งเต็มก่อนชำระเงิน");
+        throw new IllegalStateException("ขออภัย ที่นั่งเต็มแล้วก่อนที่คุณจะชำระเงิน การจองถูกยกเลิก กรุณาจองใหม่อีกครั้ง");
+    }
+}
 
         String savedFileName = saveSlipFile(slipFile, bookingId);
 
@@ -147,6 +173,52 @@ public class TourPaymentServiceImpl implements PaymentService<TourReceiptDTO> {
 
         booking.setBookingStatus(BookingStatus.WAITING_APPROVAL);
         bookingRepository.save(booking);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // เช็คว่าการจองนี้เลยกำหนดชำระเงินแล้วหรือยัง (public — ให้ controller เรียกใช้)
+    // ─────────────────────────────────────────────────────────────
+    @Override
+    public boolean isPaymentExpired(String bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+        return isExpired(booking);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // ยกเลิก booking ทันทีถ้าหมดเวลาแล้ว — เรียกจาก controller ตอนเปิดหน้า/ก่อน confirm
+    // เพื่อไม่ต้องรอ scheduled job รอบถัดไป (สูงสุด 1 ชั่วโมง)
+    // ─────────────────────────────────────────────────────────────
+    @Override
+    @Transactional
+    public void cancelIfExpired(String bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+
+        if (isExpired(booking) && booking.getBookingStatus() == BookingStatus.PENDING) {
+            booking.setBookingStatus(BookingStatus.CANCEL);
+            booking.setCancelReason("ยกเลิกอัตโนมัติ: ไม่ชำระเงินภายในกำหนดเวลา");
+            bookingRepository.save(booking);
+        }
+    }
+
+    /**
+     * ตรรกะกลางในการเช็ค deadline — ใช้ทั้งใน isPaymentExpired / cancelIfExpired / confirmPayment
+     * deadline = วันเดินทาง(opendate) - 1 วัน (23:59:59)
+     * ถือว่าหมดเวลาเมื่อ "วันนี้" มาหลังจากวัน deadline นั้นแล้ว
+     */
+    private boolean isExpired(Booking booking) {
+        List<Bookingtourdetail> tourDetails = booking.getTourDetails();
+        if (tourDetails == null || tourDetails.isEmpty()) {
+            return false;
+        }
+        Bookingtourdetail detail = tourDetails.get(0);
+        if (detail.getTourschedule() == null || detail.getTourschedule().getOpendate() == null) {
+            return false;
+        }
+        LocalDate openDate = detail.getTourschedule().getOpendate().toLocalDate();
+        LocalDate deadline = openDate.minusDays(1);
+        return LocalDate.now().isAfter(deadline);
     }
 
     // ─────────────────────────────────────────────────────────────

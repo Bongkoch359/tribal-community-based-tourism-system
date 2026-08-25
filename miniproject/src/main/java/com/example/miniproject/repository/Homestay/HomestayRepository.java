@@ -62,7 +62,9 @@ List<Object[]> findLowestRatedHomestays(org.springframework.data.domain.Pageable
 @Query("""
     SELECT DISTINCT h FROM Homestay h
     JOIN h.roomtypes r
-    WHERE (:keyword IS NULL
+    WHERE h.owner.verificationstatus = true
+    AND h.owner.accountstatus = 'ACTIVE'
+    AND (:keyword IS NULL
            OR LOWER(h.homestayname) LIKE LOWER(CONCAT('%', :keyword, '%'))
            OR LOWER(h.address) LIKE LOWER(CONCAT('%', :keyword, '%')))
     AND r.status = 'เปิดจอง'
@@ -82,11 +84,12 @@ List<Homestay> searchWithDate(
     @Param("endDate")   java.sql.Date endDate
 );
 
-// ค้นหาโฮมสเตย์ตาม keyword + จำนวนคน (ไม่กรองวันที่ ใช้ตอนผู้ใช้ไม่ระบุช่วงเช็คอิน/เช็คเอาท์)
 @Query("""
     SELECT DISTINCT h FROM Homestay h
     JOIN h.roomtypes r
-    WHERE (:keyword IS NULL
+    WHERE h.owner.verificationstatus = true
+    AND h.owner.accountstatus = 'ACTIVE'
+    AND (:keyword IS NULL
            OR LOWER(h.homestayname) LIKE LOWER(CONCAT('%', :keyword, '%'))
            OR LOWER(h.address) LIKE LOWER(CONCAT('%', :keyword, '%')))
     AND r.status = 'เปิดจอง'

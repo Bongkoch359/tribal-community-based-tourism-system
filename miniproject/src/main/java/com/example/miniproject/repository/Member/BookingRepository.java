@@ -214,4 +214,24 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     List<Booking> findCompletedBookingsWithoutReview(@Param("memberId") String memberId,
             @Param("homestayId") Integer homestayId);
 
+            //เช็ควันหมดอายุ
+@Query("""
+            SELECT DISTINCT b FROM Booking b
+            JOIN b.tourDetails td
+            JOIN td.tourschedule ts
+            WHERE b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.PENDING
+            AND b.bookingType = com.example.miniproject.entity.enums.BookingType.TOUR
+            AND ts.opendate <= CURRENT_DATE
+        """)
+List<Booking> findExpiredPendingTourBookings();
+
+@Query("""
+    SELECT DISTINCT b FROM Booking b
+    JOIN b.roomDetails rd
+    WHERE b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.PENDING
+    AND b.bookingType = com.example.miniproject.entity.enums.BookingType.ACCOMMODATION
+    AND rd.checkindate <= CURRENT_DATE
+""")
+List<Booking> findExpiredPendingRoomBookings();
+
 }

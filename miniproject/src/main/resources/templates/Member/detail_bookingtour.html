@@ -113,9 +113,18 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     border-bottom: 3px solid var(--amber-500);
 }
 .navbar-brand { color:#fff; margin-right:auto; display:flex; align-items:center; gap:14px; text-decoration:none; }
-.brand-logo { width:130px; height:90px; flex-shrink:0; }
-.brand-logo img { width:100%; height:100%; object-fit:contain; }
-.brand-name { display:flex; flex-direction:column; }
+.brand-logo{
+    width:160px;
+    height:120px;
+    flex-shrink:0;
+}
+
+.brand-logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+.brand-name { display: flex; flex-direction: column;margin-left: -25px; }
 .brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; color:#fff; }
 .brand-name-line2 { font-size:13px; font-weight:400; color:var(--green-200); opacity:.85; }
 
@@ -625,7 +634,7 @@ textarea.form-control { resize:vertical; min-height:110px; }
 <nav class="navbar">
     <a href="/search" class="navbar-brand">
         <div class="brand-logo">
-            <img th:src="@{/images/logo3.png}" alt="Logo">
+            <img th:src="@{/images/logo5.png}" alt="Logo">
         </div>
         <div class="brand-name">
             <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
@@ -697,6 +706,12 @@ textarea.form-control { resize:vertical; min-height:110px; }
 </div>
 <div class="alert alert-error" th:if="${errorMsg != null}"><span>❌</span><span th:text="${errorMsg}"></span></div>
 
+<!-- ★ เพิ่มตรงนี้ -->
+<div class="alert alert-error"
+     th:if="${sts == 'CANCEL' and booking.cancelReason != null and !booking.cancelReason.isEmpty()}">
+    <span>❌</span>
+    <span>เหตุผลที่ยกเลิก: <strong th:text="${booking.cancelReason}"></strong></span>
+</div>
 
     <!-- ══ BOOKING HEADER ══ -->
     <div class="booking-header">
@@ -1100,38 +1115,45 @@ textarea.form-control { resize:vertical; min-height:110px; }
             </div>
 
             <!-- ══ ACTION BAR ══ -->
-            <div class="action-bar">
+<!-- ══ ACTION BAR ══ -->
+<div class="action-bar" th:if="${sts != 'CANCEL'}">
 
-                <!-- ยกเลิก: PENDING / WAITING_APPROVAL -->
-                <button class="btn-cancel-booking"
-                        th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
-                        onclick="confirmCancel()">❌ ยกเลิกการจอง</button>
+    <!-- ยกเลิก: PENDING / WAITING_APPROVAL -->
+    <button class="btn-cancel-booking"
+            th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
+            onclick="confirmCancel()">❌ ยกเลิกการจอง</button>
 
-                <!-- ชำระเงิน: PENDING -->
-                <a th:if="${sts == 'PENDING'}"
-                   th:href="@{/payment/tour/{id}(id=${booking.bookingid})}"
-                   class="btn-pay">
-                    💳 ไปหน้าชำระเงิน
-                </a>
+    <!-- ชำระเงิน: PENDING -->
+    <a th:if="${sts == 'PENDING'}"
+       th:href="@{/payment/tour/{id}(id=${booking.bookingid})}"
+       class="btn-pay">
+        💳 ไปหน้าชำระเงิน
+    </a>
 
-                <!-- ใบเสร็จ: CONFIRMED / COMPLETED -->
-               <a th:if="${sts == 'CONFIRMED' or sts == 'COMPLETED'}"
+    <!-- ใบเสร็จ: CONFIRMED / COMPLETED -->
+   <a th:if="${sts == 'CONFIRMED' or sts == 'COMPLETED'}"
    th:href="@{/member/bookings/receipt/{id}(id=${booking.bookingid}, print=true)}"
    class="btn-receipt">🧾 ดูใบเสร็จ</a>
 
-                <!-- รีวิว: COMPLETED ยังไม่ได้รีวิว -->
-                <button class="btn-review"
-                        th:if="${sts == 'COMPLETED' and booking.review == null}"
-                        onclick="openReviewModal()">⭐ เขียนรีวิว</button>
+    <!-- รีวิว: COMPLETED ยังไม่ได้รีวิว -->
+    <button class="btn-review"
+            th:if="${sts == 'COMPLETED' and booking.review == null}"
+            onclick="openReviewModal()">⭐ เขียนรีวิว</button>
 
-                <!-- รีวิวแล้ว -->
-                <div class="reviewed-box"
-                     th:if="${sts == 'COMPLETED' and booking.review != null}">
-                    ✅ คุณรีวิวทัวร์นี้แล้ว &nbsp;
-                    <span th:text="${'⭐'.repeat(booking.review.rating)}"></span>
-                </div>
+    <!-- รีวิวแล้ว -->
+    <div class="reviewed-box"
+         th:if="${sts == 'COMPLETED' and booking.review != null}">
+        ✅ คุณรีวิวทัวร์นี้แล้ว &nbsp;
+        <span th:text="${'⭐'.repeat(booking.review.rating)}"></span>
+    </div>
 
-            </div>
+</div>
+
+<!-- ★ เพิ่มตรงนี้ — แสดงแทน action-bar ตอนยกเลิกแล้ว -->
+<div class="reviewed-box" style="background:var(--red-light);color:#b71c1c;border-color:#ef9a9a;"
+     th:if="${sts == 'CANCEL'}">
+    ❌ การจองนี้ถูกยกเลิกแล้ว ไม่สามารถดำเนินการใดๆ เพิ่มเติมได้
+</div>
         </div>
         <!-- /LEFT -->
 

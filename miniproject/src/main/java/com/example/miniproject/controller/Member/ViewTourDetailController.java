@@ -90,6 +90,7 @@ public String viewTourDetail(@PathVariable String id, Model model) {
             entry.put("date", d.toString()); // yyyy-MM-dd
             entry.put("status", status);
             entry.put("availableSeats", avail);
+            entry.put("scheduleid", s.getScheduleid()); // ✅ เพิ่ม: ให้ frontend รู้ว่าวันไหนอยู่รอบทัวร์เดียวกัน
             calendarData.add(entry);
         }
     }

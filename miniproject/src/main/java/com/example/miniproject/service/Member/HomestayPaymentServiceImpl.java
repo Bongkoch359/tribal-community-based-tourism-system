@@ -4,8 +4,10 @@ import com.example.miniproject.dto.Member.RoomReceiptDTO;
 import com.example.miniproject.entity.Booking;
 import com.example.miniproject.entity.Bookingroomdetail;
 import com.example.miniproject.entity.Payment;
+import com.example.miniproject.entity.Roomtype;
 import com.example.miniproject.entity.enums.PaymentStatus;
 import com.example.miniproject.repository.Member.BookingRepository;
+import com.example.miniproject.repository.Member.BookingroomdetailRepository;
 import com.example.miniproject.repository.Member.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,13 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private BookingCancelHelper bookingCancelHelper;
+
+    @Autowired
+private BookingroomdetailRepository bookingroomdetailRepository; 
+
 
     private final String slipUploadDir = System.getProperty("user.dir") + "/uploads/slips/";
 
@@ -126,8 +135,25 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
     @Override
     @Transactional
     public void confirmPayment(String bookingId, MultipartFile slipFile, String payNote) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+    Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+
+    if (isExpired(booking)) {
+        bookingCancelHelper.cancelNow(bookingId, "ยกเลิกอัตโนมัติ: ไม่ชำระเงินภายในกำหนดเวลา");
+        throw new IllegalStateException("เลยกำหนดชำระเงินแล้ว การจองนี้ถูกยกเลิกอัตโนมัติ กรุณาจองใหม่อีกครั้ง");
+    }
+        Bookingroomdetail detail = booking.getRoomDetails().get(0);
+    Roomtype roomtype = detail.getRoomtype();
+    if (roomtype.getTotalrooms() != null) {
+        Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
+                roomtype.getRoomtypeid(), detail.getCheckindate(), detail.getCheckoutdate());
+        int totalBooked = (bookedRooms != null ? bookedRooms : 0);
+        // totalBooked นับรวม booking นี้อยู่แล้ว (ยัง PENDING) เทียบตรงๆ กับ capacity ได้เลย
+        if (totalBooked > roomtype.getTotalrooms()) {
+            bookingCancelHelper.cancelNow(bookingId, "ยกเลิกอัตโนมัติ: ห้องเต็มก่อนชำระเงิน");
+            throw new IllegalStateException("ขออภัย ห้องเต็มแล้วก่อนที่คุณจะชำระเงิน การจองถูกยกเลิก กรุณาจองใหม่อีกครั้ง");
+        }
+    }
 
         String savedFileName = saveSlipFile(slipFile, bookingId);
 
@@ -195,4 +221,32 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
 
         return dto;
     }
+
+    @Override
+public boolean isPaymentExpired(String bookingId) {
+    Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+    return isExpired(booking);
+}
+
+@Override
+@Transactional
+public void cancelIfExpired(String bookingId) {
+    Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+    if (isExpired(booking) && booking.getBookingStatus() == BookingStatus.PENDING) {
+        booking.setBookingStatus(BookingStatus.CANCEL);
+        booking.setCancelReason("ยกเลิกอัตโนมัติ: ไม่ชำระเงินภายในกำหนดเวลา");
+        bookingRepository.save(booking);
+    }
+}
+
+private boolean isExpired(Booking booking) {
+    List<Bookingroomdetail> roomDetails = booking.getRoomDetails();
+    if (roomDetails == null || roomDetails.isEmpty()) return false;
+    Bookingroomdetail detail = roomDetails.get(0);
+    if (detail.getCheckindate() == null) return false;
+    LocalDate deadline = detail.getCheckindate().toLocalDate().minusDays(1);
+    return LocalDate.now().isAfter(deadline);
+}
 }

@@ -118,7 +118,7 @@ body {
     box-shadow:0 4px 12px rgba(82,183,136,0.35);
 }
 .brand-icon svg { width:26px; height:26px; }
-.brand-name { display:flex; flex-direction:column; }
+.brand-name { display: flex; flex-direction: column;margin-left: -25px; }
 .brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; }
 .brand-name-line2 { font-size:13px; font-weight:400; color:var(--green-200); opacity:.8; }
 
@@ -447,6 +447,64 @@ body {
 @media(max-width:560px) {
     .form-grid, .form-grid.cols3 { grid-template-columns:1fr; }
 }
+
+/* ═══════════════════════════
+   SUCCESS MODAL
+═══════════════════════════ */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(15,33,20,0.55);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+}
+.modal-backdrop.show { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--white); border-radius: 20px;
+  padding: 40px 36px 32px; max-width: 380px; width: 90%;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(20,14,8,0.25);
+  transform: scale(.85) translateY(20px); opacity: 0;
+  transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+}
+.modal-backdrop.show .modal-box { transform: scale(1) translateY(0); opacity: 1; }
+
+.checkmark-wrap {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--green-800), var(--green-600));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; position: relative;
+  box-shadow: 0 8px 24px rgba(22,49,29,0.35);
+}
+.checkmark-ring {
+  position: absolute; inset: -8px; border-radius: 50%;
+  border: 2px solid rgba(22,49,29,0.12);
+  animation: ring-pulse 1.5s ease-out .4s both;
+}
+@keyframes ring-pulse {
+  0% { transform: scale(.9); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+.checkmark-icon { font-size: 36px; color: #fff; animation: pop-in .5s cubic-bezier(.34,1.56,.64,1) .2s both; }
+@keyframes pop-in { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-title { font-size: 20px; font-weight: 800; color: var(--green-800); margin-bottom: 8px; }
+.modal-desc { font-size: 13px; color: var(--neutral-600); line-height: 1.7; margin-bottom: 8px; }
+.modal-bookingid { font-size: 13px; color: var(--amber-600); font-weight: 700; margin-bottom: 20px; }
+
+.modal-progress-bar {
+  height: 3px; background: var(--neutral-100);
+  border-radius: 0 0 20px 20px; margin: 24px -36px -32px; overflow: hidden;
+}
+.modal-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--green-500), var(--amber-500));
+  width: 100%; transform-origin: left;
+  animation: progress-drain 2.5s linear forwards;
+}
+@keyframes progress-drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 </style>
 </head>
 
@@ -787,7 +845,6 @@ body {
 
         </div><!-- /card -->
 
-        <button type="submit" id="real-submit" style="display:none;"></button>
     </form>
 
 </div><!-- /LEFT -->
@@ -881,14 +938,13 @@ function updateSummary(){
     document.getElementById('sum-nights').textContent = nights+' คืน';
     document.getElementById('sum-price').textContent = (pricePerNight*nights*rooms).toLocaleString();
 }
-
 function confirmBooking(){
     const checkin = document.getElementById('checkin').value;
     const checkout = document.getElementById('checkout').value;
     if(!checkin||!checkout){ alert('กรุณาเลือกวันเช็คอินและเช็คเอาท์'); return; }
     if(new Date(checkout)<=new Date(checkin)){ alert('วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน'); return; }
     if(confirm('ยืนยันการจองโฮมสเตย์นี้ใช่หรือไม่?')){
-        document.getElementById('real-submit').click();
+        submitBooking();
     }
 }
 
@@ -916,7 +972,64 @@ window.onload = function(){
     document.getElementById('checkout').min = today;
     updateSummary();
 }
+function submitBooking(){
+    const form = document.getElementById('bookingForm');
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(() => {
+                throw new Error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (status ' + response.status + ')');
+            });
+        }
+        if (!response.redirected) {
+            return response.text().then(html => {
+                const match = html.match(/class="error-box"[\s\S]*?<span[^>]*>([^<]*)<\/span>/);
+                const msg = match ? match[1].trim() : 'กรุณาตรวจสอบข้อมูลที่กรอกอีกครั้ง';
+                throw new Error(msg);
+            });
+        }
+        return response.url;
+    })
+    .then(redirectUrl => {
+        showSuccessModal(redirectUrl);
+    })
+    .catch(err => {
+        console.error('จองโฮมสเตย์ไม่สำเร็จ:', err);
+        alert('เกิดข้อผิดพลาด: ' + err.message);
+    });
+}
+
+function showSuccessModal(redirectUrl){
+    const modal = document.getElementById('successModal');
+    const fill = document.getElementById('progressFill');
+    modal.classList.add('show');
+    fill.style.animation = 'none';
+    fill.offsetHeight;
+    fill.style.animation = 'progress-drain 2.5s linear forwards';
+    setTimeout(() => {
+        window.location.href = redirectUrl;
+    }, 2500);
+}
 </script>
 
+<!-- ═══ SUCCESS MODAL ═══ -->
+<div class="modal-backdrop" id="successModal">
+  <div class="modal-box">
+    <div class="checkmark-wrap">
+      <div class="checkmark-ring"></div>
+      <i class="fas fa-check checkmark-icon" style="font-family: initial;">✓</i>
+    </div>
+    <div class="modal-title">จองโฮมสเตย์สำเร็จ!</div>
+    <div class="modal-desc">การจองของท่านถูกบันทึกเรียบร้อยแล้ว<br>ระบบกำลังพาไปหน้ารายละเอียดการจอง</div>
+    <div class="modal-progress-bar">
+      <div class="modal-progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

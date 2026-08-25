@@ -62,7 +62,7 @@
   --shadow-xl: 0 24px 64px rgba(20,14,8,0.22), 0 8px 20px rgba(20,14,8,0.10);
 
   --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 18px; --r-xl: 26px;
-  --navbar-h: 92px;
+  --navbar-h:92px;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -91,25 +91,41 @@ img { display: block; max-width: 100%; }
 .top-bar a svg { width: 14px; height: 14px; }
 .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
 
+
 .navbar {
   background: var(--green-900);
   background-image: linear-gradient(180deg, var(--green-800), var(--green-900));
-  min-height: var(--navbar-h);
-  display: flex; align-items: center; padding: 10px 5%; gap: 8px;
+  height: var(--navbar-h);
+  display: flex; align-items: center; padding: 0 5% 0 3%;
+  gap: 8px;
   position: sticky; top: 0; z-index: 1000;
   box-shadow: 0 3px 18px rgba(15,33,20,0.35);
   border-bottom: 3px solid var(--amber-500);
 }
 .navbar-brand { display: flex; align-items: center; text-decoration: none; margin-right: auto; }
-.brand-logo { width: 130px; height: 90px; flex-shrink: 0; }
-.brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+.brand-logo{
+    width: 160px;
+    height: 120px;
+    flex-shrink: 0;
+}
+.brand-logo img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 .brand-icon {
-  width: 48px; height: 48px; background: var(--green-400); border-radius: 14px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(82,183,136,0.35);
+  width: auto; height: 60px;
+  background: var(--green-400); border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-shadow: 0 4px 12px rgba(82,183,136,0.35);
 }
 .brand-icon svg { width: 26px; height: 26px; }
-.brand-name { display: flex; flex-direction: column; }
+.brand-name {
+    display: flex;
+    flex-direction: column;
+    margin-left: -25px;   /* คืนค่าเดิม */
+}
 .brand-name-line1 { font-size: 21px; font-weight: 800; line-height: 1.15; color: #fff; }
 .brand-name-line2 { font-size: 12.5px; font-weight: 400; color: var(--green-200); opacity: .85; margin-top: 3px; }
 
@@ -570,7 +586,7 @@ img { display: block; max-width: 100%; }
 <nav class="navbar">
   <a href="/search" class="navbar-brand">
     <div class="brand-logo">
-      <img th:src="@{/images/logo3.png}" alt="Logo">
+      <img th:src="@{/images/logo5.png}" alt="Logo">
     </div>
     <div class="brand-name">
       <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
@@ -1102,7 +1118,13 @@ img { display: block; max-width: 100%; }
     </p>
   </div>
 
-  <button th:if="${seatLevel != 'full'}"
+   <div th:if="${schedules == null or schedules.isEmpty()}"
+       style="text-align:center;color:var(--neutral-500);font-size:13px;
+              padding:14px 10px;background:var(--neutral-50);border-radius:var(--r-md);">
+    ยังไม่มีรอบทัวร์เปิดให้จองในขณะนี้
+  </div>
+
+    <button th:if="${seatLevel != 'full' and schedules != null and !schedules.isEmpty()}"
           class="btn-book-now"
           onclick="goToBooking()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1138,7 +1160,6 @@ img { display: block; max-width: 100%; }
   </div><!-- /booking-sidebar -->
 
 </div><!-- /tour-layout -->
-
 <!-- ══════════════════════════════════════════
      CALENDAR MODAL — เลือกวันเดินทาง พร้อมสถานะที่นั่งของแต่ละวัน
 ══════════════════════════════════════════ -->
@@ -1162,6 +1183,9 @@ img { display: block; max-width: 100%; }
       <span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span>
     </div>
     <div class="cal-grid" id="calendarGrid"></div>
+    
+    <!-- เพิ่มปุ่มยืนยันไว้ข้างในนี้เลย ตรงแถบล่างสุด -->
+    
   </div>
 </div>
 
@@ -1216,7 +1240,16 @@ img { display: block; max-width: 100%; }
   var scheduleCalendarData = /*[[${scheduleCalendarJson}]]*/ [];
   /*]]>*/
 </script>
+<!--
+  แก้ 2 จุดจากไฟล์เดิม:
+  1) ลบ <script><script> ที่ซ้อนกันผิดๆ (บั๊กเดิมที่ทำให้ทั้งบล็อกเสี่ยงพัง)
+  2) เพิ่ม logic ให้กดวันไหนในรอบทัวร์เดียวกัน (scheduleid เดียวกัน) จะไฮไลต์ทั้งช่วง
+     เช่น รอบทัวร์ 29-31 ส.ค. กด 29 -> ไฮไลต์ 29,30,31 พร้อมกัน
 
+  ข้อกำหนด: backend ต้องส่ง field "scheduleid" มาในแต่ละ entry ของ scheduleCalendarJson ด้วย
+  เช่น: [{ "date": "2026-08-29", "status": "available", "availableSeats": 3, "scheduleid": 12 }, ...]
+  ถ้าไม่มี scheduleid โค้ดจะ fallback ไปไฮไลต์แค่วันเดียว (ไม่ error แต่ไม่ครอบช่วง)
+-->
 <script>
   function toggleUserMenu() {
     const w = document.getElementById('userMenuWrapper');
@@ -1224,28 +1257,57 @@ img { display: block; max-width: 100%; }
   }
 
   function toggleLoginMenu(e) {
-  e.stopPropagation();
-  const w = document.getElementById('loginDropdown');
-  if (w) w.classList.toggle('open');
-}
+    e.stopPropagation();
+    const w = document.getElementById('loginDropdown');
+    if (w) w.classList.toggle('open');
+  }
 
- document.addEventListener('click', function(e) {
-  const w = document.getElementById('userMenuWrapper');
-  if (w && !w.contains(e.target)) w.classList.remove('open');
+  document.addEventListener('click', function (e) {
+    const w = document.getElementById('userMenuWrapper');
+    if (w && !w.contains(e.target)) w.classList.remove('open');
 
-  const l = document.getElementById('loginDropdown');
-  if (l && !l.contains(e.target)) l.classList.remove('open');
-});
+    const l = document.getElementById('loginDropdown');
+    if (l && !l.contains(e.target)) l.classList.remove('open');
+  });
 
+  // ═══════════════════════════════════════════
   // ปฏิทินเลือกวันเดินทาง — โชว์สถานะจริงของแต่ละวันจากรอบทัวร์ (Tourschedule)
+  // ═══════════════════════════════════════════
   var scheduleByDate = {};
   (scheduleCalendarData || []).forEach(function (item) {
     scheduleByDate[item.date] = item;
   });
 
-  var calendarCursor = new Date();
+  // จับกลุ่มวันที่ตาม scheduleid เดียวกัน -> ได้ set ของวันที่ทั้งหมดในรอบทัวร์นั้น
+  // ใช้ตอนกด select เพื่อไฮไลต์ทั้งช่วง (เช่น 29-31)
+  var datesByScheduleId = {};
+  (scheduleCalendarData || []).forEach(function (item) {
+    if (item.scheduleid == null) return; // ไม่มี scheduleid -> ข้าม (จะ fallback เป็นวันเดียว)
+    if (!datesByScheduleId[item.scheduleid]) datesByScheduleId[item.scheduleid] = [];
+    datesByScheduleId[item.scheduleid].push(item.date);
+  });
+
+  // หาวันแรกที่จองได้ (เรียงตามวันที่จริง ไม่ใช่ลำดับที่ backend ส่งมา)
+  function findFirstAvailableDate() {
+    var list = (scheduleCalendarData || [])
+      .filter(function (item) {
+        return item.status === 'available' || item.status === 'low';
+      })
+      .sort(function (a, b) { return a.date.localeCompare(b.date); });
+    return list.length > 0 ? list[0] : null;
+  }
+
+  var firstAvailable = findFirstAvailableDate();
+
+  // cursor เริ่มต้น: เดือนของวันแรกที่จองได้ — ถ้าไม่มีรอบจองได้เลย fallback เป็นเดือนปัจจุบัน
+  var calendarCursor = firstAvailable
+    ? new Date(firstAvailable.date + 'T00:00:00')
+    : new Date();
   calendarCursor.setDate(1);
-  var selectedDate = null;
+
+  // เปลี่ยนจาก selectedDate เดี่ยว -> เป็น "ชุดวันที่ที่ถูกไฮไลต์" ของทั้งรอบทัวร์
+  var selectedDate = null;          // วันที่ที่ผู้ใช้กดจริง (ใช้ส่งไป booking)
+  var selectedDateGroup = [];       // ทุกวันในรอบทัวร์เดียวกัน (ใช้ไฮไลต์ในปฏิทิน)
 
   var THAI_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
     'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
@@ -1254,14 +1316,38 @@ img { display: block; max-width: 100%; }
   function toISO(y, m, d) { return y + '-' + pad2(m + 1) + '-' + pad2(d); }
 
   function openCalendarModal() {
+    // ทุกครั้งที่เปิด modal ให้กลับไปเดือนของวันที่เลือกไว้แล้ว หรือวันแรกที่จองได้
+    var target = selectedDate || (firstAvailable ? firstAvailable.date : null);
+    if (target) {
+      calendarCursor = new Date(target + 'T00:00:00');
+      calendarCursor.setDate(1);
+    }
     document.getElementById('calendarModalOverlay').classList.add('open');
     renderCalendar();
   }
   function closeCalendarModal() {
     document.getElementById('calendarModalOverlay').classList.remove('open');
   }
-  function changeCalendarMonth(delta) {
-    calendarCursor.setMonth(calendarCursor.getMonth() + delta);
+    function changeCalendarMonth(delta) {
+    var newCursor = new Date(calendarCursor);
+    newCursor.setMonth(newCursor.getMonth() + delta);
+
+    var minMonth = new Date();
+    minMonth.setDate(1);
+    minMonth.setHours(0, 0, 0, 0);
+
+    var lastScheduleDate = (scheduleCalendarData || [])
+      .map(function (d) { return d.date; })
+      .sort()
+      .pop();
+    var maxMonth = lastScheduleDate
+      ? new Date(lastScheduleDate + 'T00:00:00')
+      : new Date(minMonth);
+    maxMonth.setDate(1);
+
+    if (newCursor < minMonth || newCursor > maxMonth) return; // กันเลื่อนเกินขอบเขตที่มีข้อมูลจริง
+
+    calendarCursor = newCursor;
     renderCalendar();
   }
 
@@ -1287,7 +1373,12 @@ img { display: block; max-width: 100%; }
 
       var cell = document.createElement('div');
       cell.className = 'cal-day st-' + status;
-      if (selectedDate === iso) cell.classList.add('selected');
+        cell.title = status === 'full'   ? 'ที่นั่งเต็มแล้ว' :
+                   status === 'closed' ? 'ยังไม่เปิดรับจองรอบนี้' :
+                   status === 'past'   ? 'วันที่ผ่านมาแล้ว' :
+                   status === 'none'   ? 'ไม่มีรอบทัวร์วันนี้' : '';
+      // ไฮไลต์ทุกวันที่อยู่ใน group เดียวกับวันที่เลือกไว้ (ไม่ใช่แค่วันเดียว)
+      if (selectedDateGroup.indexOf(iso) !== -1) cell.classList.add('selected');
 
       var num = document.createElement('div');
       num.className = 'dnum';
@@ -1307,30 +1398,58 @@ img { display: block; max-width: 100%; }
     }
   }
 
-  // ใช้ร่วมกันทั้งจากปฏิทิน modal และจากตารางรอบทัวร์
+  // ตอนคลิกเลือกวัน ให้แค่ไฮไลต์และเปลี่ยนข้อความโชว์รอบ แต่ "ยังไม่ปิด Modal"
   function selectScheduleDate(iso) {
     var info = scheduleByDate[iso];
     if (!info || (info.status !== 'available' && info.status !== 'low')) {
-      alert('วันที่นี้ไม่สามารถจองได้');
-      return;
+        return; // กดวันที่ว่าง/เต็ม ไม่ทำอะไร (มี tooltip อธิบายอยู่แล้ว)
     }
+
+    // commit ทันที ไม่ต้องรอปุ่มยืนยัน
     selectedDate = iso;
-    document.getElementById('tourDate').value = iso;
+    document.getElementById('tourDate').value = selectedDate;
 
-    var parts = iso.split('-');
-    var label = parts[2] + '/' + parts[1] + '/' + (parseInt(parts[0], 10) + 543);
-    document.getElementById('selectedDateLabel').textContent = label + ' (' + info.availableSeats + ' ที่นั่งว่าง)';
+    if (info.scheduleid != null && datesByScheduleId[info.scheduleid]) {
+        selectedDateGroup = datesByScheduleId[info.scheduleid];
+    } else {
+        selectedDateGroup = [iso];
+    }
+
+    // อัปเดต label บนปุ่มหลักทันที (ย้าย logic จาก confirmSelectedDate มาไว้ตรงนี้)
+    var labelText = "";
+    if (selectedDateGroup.length > 1) {
+        var sortedGroup = selectedDateGroup.slice().sort();
+        var s = sortedGroup[0].split('-'), e = sortedGroup[sortedGroup.length - 1].split('-');
+        labelText = s[2] + '/' + s[1] + '/' + (parseInt(s[0],10)+543) + ' ถึง ' +
+                    e[2] + '/' + e[1] + '/' + (parseInt(e[0],10)+543);
+    } else {
+        var p = iso.split('-');
+        labelText = p[2] + '/' + p[1] + '/' + (parseInt(p[0],10)+543);
+    }
+    document.getElementById('selectedDateLabel').textContent = labelText + ' (' + info.availableSeats + ' ที่ว่าง)';
     document.getElementById('openCalendarBtn').classList.add('has-date');
-    closeCalendarModal();
-  }
 
+    renderCalendar(); // อัปเดตไฮไลต์ก่อนปิด ให้เห็นแวบนึงว่ากดวันไหน
+    setTimeout(closeCalendarModal, 150); // หน่วงนิดให้เห็นไฮไลต์ก่อนปิด ไม่ปิดกระชากจนงง
+}
+
+  // ฟังก์ชันกดยืนยัน (ทำงานเมื่อกดปุ่ม "ยืนยันวันที่เลือก")
+  
   function goToBooking() {
     const date = document.getElementById('tourDate').value;
     if (!date) { alert('กรุณาเลือกวันที่เดินทางก่อน'); return; }
-    const tourId = document.querySelector('[data-tour-id]')?.dataset.tourId || '1';
+
+    const tourIdEl = document.querySelector('[data-tour-id]');
+    if (!tourIdEl || !tourIdEl.dataset.tourId) {
+      alert('เกิดข้อผิดพลาด: ไม่พบรหัสทัวร์ กรุณารีเฟรชหน้าใหม่');
+      return;
+    }
+    const tourId = tourIdEl.dataset.tourId;
     const params = new URLSearchParams({ tourdate: date });
     window.location.href = `/booking/tour/${tourId}?${params}`;
   }
+
 </script>
+
 </body>
 </html>

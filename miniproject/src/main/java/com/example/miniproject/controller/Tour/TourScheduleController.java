@@ -97,12 +97,16 @@ public class TourScheduleController {
         }
 
         // ส่ง enddate เข้าไปใน Service
-        Tourschedule createdSchedule = tourScheduleService.createSchedule(tour, Date.valueOf(opendate),
-                Date.valueOf(finalEnddate));
+        Tourschedule createdSchedule;
+        try {
+            createdSchedule = tourScheduleService.createSchedule(tour, Date.valueOf(opendate),
+                    Date.valueOf(finalEnddate));
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/manager/tours/" + tourid + "/schedules";
+        }
 
-        // ตั้งสถานะเริ่มต้นตามที่เลือก (ถ้าไม่ระบุหรือค่าไม่ถูกต้อง
-        // จะใช้ค่าเริ่มต้นจาก service คือ "เปิดรับจอง")
-        if (createdSchedule != null && status != null
+        if (status != null
                 && TourScheduleService.ALLOWED_MANUAL_STATUS.contains(status.trim())) {
             tourScheduleService.updateStatus(createdSchedule.getScheduleid(), status.trim());
         }

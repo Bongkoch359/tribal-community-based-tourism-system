@@ -19,17 +19,26 @@ public class HomestayPaymentController {
     private PaymentService<RoomReceiptDTO> paymentService;
 
     // GET: แสดงหน้าชำระเงินโฮมสเตย์
-    @GetMapping("/{bookingId}")
-    public String showPaymentPage(@PathVariable String bookingId, Model model) {
-        try {
-            RoomReceiptDTO payment = paymentService.getPaymentPageData(bookingId);
-            model.addAttribute("payment", payment);
-        } catch (Exception e) {
-            model.addAttribute("errorMsg", "ไม่พบข้อมูลการจอง: " + e.getMessage());
-            model.addAttribute("payment", new RoomReceiptDTO());
+   @GetMapping("/{bookingId}")
+public String showPaymentPage(@PathVariable String bookingId, Model model,
+                               RedirectAttributes redirectAttributes) {
+    try {
+        paymentService.cancelIfExpired(bookingId);
+
+        if (paymentService.isPaymentExpired(bookingId)) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "เลยกำหนดชำระเงินแล้ว การจองนี้ถูกยกเลิกอัตโนมัติ กรุณาจองใหม่อีกครั้ง");
+            return "redirect:/member/bookings/detail/" + bookingId;
         }
-        return "Member/homestay-payment";
+
+        RoomReceiptDTO payment = paymentService.getPaymentPageData(bookingId);
+        model.addAttribute("payment", payment);
+    } catch (Exception e) {
+        model.addAttribute("errorMsg", "ไม่พบข้อมูลการจอง: " + e.getMessage());
+        model.addAttribute("payment", new RoomReceiptDTO());
     }
+    return "Member/homestay-payment";
+}
 
     // POST: รับสลิปและยืนยันการชำระเงิน
     @PostMapping("/{bookingId}/confirm")

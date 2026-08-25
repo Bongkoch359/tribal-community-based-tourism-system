@@ -38,6 +38,10 @@ public class BookingTourController {
     @GetMapping("/booking/tour/{id}")
 public String bookingPage(
         @PathVariable("id") String id,
+        // ✅ เพิ่ม: รับค่าที่ผู้ใช้เลือกไว้จากหน้า tour detail (ปฏิทิน)
+        //    ทั้งสองตัว optional เผื่อคนเข้าหน้านี้ตรงๆ โดยไม่ได้เลือกวันมาก่อน
+        @RequestParam(value = "tourdate", required = false) String tourDateParam,
+        @RequestParam(value = "scheduleid", required = false) String scheduleIdParam,
         Model model,
         RedirectAttributes redirectAttributes) {
 
@@ -58,12 +62,45 @@ public String bookingPage(
     List<Tourschedule> schedules = tourScheduleRepository
             .findBookableSchedules(id, java.sql.Date.valueOf(LocalDate.now()));
 
+    // ✅ หา schedule ที่ตรงกับที่ผู้ใช้เลือกมาจากหน้าก่อนหน้า
+    //    ลำดับความสำคัญ: scheduleid ก่อน (แม่นยำสุด) ถ้าไม่มีค่อย fallback ไปเทียบ tourdate ตรงๆ
+    Tourschedule selectedSchedule = null;
+
+    if (scheduleIdParam != null && !scheduleIdParam.isBlank()) {
+        selectedSchedule = schedules.stream()
+                .filter(s -> String.valueOf(s.getScheduleid()).equals(scheduleIdParam))
+                .findFirst()
+                .orElse(null);
+    }
+
+    if (selectedSchedule == null && tourDateParam != null && !tourDateParam.isBlank()) {
+        try {
+            LocalDate wanted = LocalDate.parse(tourDateParam); // yyyy-MM-dd
+            selectedSchedule = schedules.stream()
+                    .filter(s -> {
+                        LocalDate start = s.getOpendate().toLocalDate();
+                        LocalDate end = (s.getEnddate() != null) ? s.getEnddate().toLocalDate() : start;
+                        return !wanted.isBefore(start) && !wanted.isAfter(end);
+                    })
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception ignored) {
+            // tourdate format ไม่ถูกต้อง -> ไม่ preselect อะไร ปล่อยให้ผู้ใช้เลือกเองในหน้า booking
+        }
+    }
+
     model.addAttribute("tour", tour);
     model.addAttribute("availableSeats", availableSeats);
     model.addAttribute("seatLevel", seatLevel);
     model.addAttribute("insurancePrice", BookingTourService.INSURANCE_PRICE_PER_PERSON);
      model.addAttribute("schedules", schedules);
-
+    // ✅ ส่งรอบที่ pre-select ไปให้ template ใช้ (checked/selected ในฟอร์ม, หรือ auto-fill hidden input)
+    model.addAttribute("selectedSchedule", selectedSchedule);
+    model.addAttribute("selectedScheduleId", selectedSchedule != null ? selectedSchedule.getScheduleid() : null);
+  // ใน BookingTourController.java
+// ✅ แก้ไขตรงนี้ใน BookingTourController.java
+model.addAttribute("selectedTourDate", 
+    selectedSchedule != null ? selectedSchedule.getOpendate().toLocalDate().toString() : tourDateParam);
     return "Member/booking_tour";
 }
 

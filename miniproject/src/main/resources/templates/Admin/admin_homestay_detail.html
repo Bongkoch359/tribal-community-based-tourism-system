@@ -147,7 +147,6 @@
     font-weight: 700; font-size: 18px; color: #fff; flex-shrink: 0;
   }
 
-  /* สไตล์สำหรับตัวเลขแจ้งเตือนบน Navbar */
   .nav-badge {
     background-color: var(--error);
     color: #fff;
@@ -263,8 +262,20 @@
     margin-bottom: 18px;
     background: var(--surface-container-low);
   }
-  .hs-block h3 { color: var(--primary); font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-  .hs-address { font-size: 14px; color: var(--outline); margin-bottom: 12px; }
+
+  /* ปรับให้รูปภาพขึ้นมาก่อน */
+  .hs-images { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .hs-images img {
+    width: 160px; height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--surface-variant);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .hs-block h3 { color: var(--primary); font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .hs-address { font-size: 14px; color: var(--outline); margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+  
   .hs-desc-box {
     background: var(--surface-container-lowest);
     border: 1px solid var(--surface-variant);
@@ -273,14 +284,7 @@
     font-size: 15px;
     line-height: 1.6;
     color: var(--on-surface-variant);
-  }
-
-  .hs-images { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-  .hs-images img {
-    width: 150px; height: 105px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid var(--surface-variant);
+    margin-bottom: 14px;
   }
 
   .room-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 15px; background: var(--surface-container-lowest); border-radius: 8px; overflow: hidden; border: 1px solid var(--surface-variant); }
@@ -424,17 +428,29 @@
 
     <p class="empty-note" th:if="${h.homestays == null or h.homestays.isEmpty()}">ยังไม่มีข้อมูลโฮมสเตย์</p>
 
+    <!-- สลับให้รูปภาพอยู่ด้านบนสุด -->
     <div th:each="hs : ${h.homestays}" class="hs-block">
-      <h3 th:text="${hs.homestayname}">ชื่อโฮมสเตย์</h3>
-      <div class="hs-address" th:text="${hs.address}">ที่อยู่</div>
-      <div class="hs-desc-box" th:text="${hs.description != null and !hs.description.isEmpty()} ? ${hs.description} : 'ไม่มีคำอธิบาย'">รายละเอียด</div>
-
+      
+      <!-- 1. รูปภาพโฮมสเตย์ (อยู่บนสุด) -->
       <div class="hs-images" th:if="${hs.images != null and !hs.images.isEmpty()}">
         <th:block th:each="img : ${#strings.arraySplit(hs.images, ',')}">
           <img th:src="${img}" alt="homestay image" onerror="this.style.display='none'"/>
         </th:block>
       </div>
 
+      <!-- 2. ชื่อโฮมสเตย์ -->
+      <h3 th:text="${hs.homestayname}">ชื่อโฮมสเตย์</h3>
+      
+      <!-- 3. ที่อยู่ -->
+      <div class="hs-address">
+        <span class="material-symbols-outlined" style="font-size: 16px;">location_on</span>
+        <span th:text="${hs.address}">ที่อยู่</span>
+      </div>
+      
+      <!-- 4. คำอธิบาย -->
+      <div class="hs-desc-box" th:text="${hs.description != null and !hs.description.isEmpty()} ? ${hs.description} : 'ไม่มีคำอธิบาย'">รายละเอียด</div>
+
+      <!-- 5. ตารางประเภทห้องพัก -->
       <table class="room-table" th:if="${hs.roomtypes != null and !hs.roomtypes.isEmpty()}">
         <thead>
           <tr><th>ประเภทห้อง</th><th>เตียง</th><th>ราคา/คืน</th><th>รับสูงสุด</th><th>จำนวนห้อง</th></tr>
@@ -452,7 +468,7 @@
     </div>
   </div>
 
-  <!-- หมายเหตุ: รายการที่ยังรออนุมัติ ให้กลับไปกดอนุมัติ/ปฏิเสธที่หน้ารายการ -->
+  <!-- หมายเหตุ -->
   <div class="back-note" th:if="${isPending and !isRejected}">
     💡 หากต้องการอนุมัติหรือปฏิเสธคำขอนี้ กรุณากลับไปที่
     <a href="/admin/homestay">หน้ารายการคำขอโฮมสเตย์</a>

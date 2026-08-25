@@ -82,17 +82,20 @@ private Date enddate;
     // (ใส่ไว้ที่นี่เป็น convenience method เผื่อใช้ตรงๆ ใน view)
     // ─────────────────────────────────────────────────────────
     @Transient
-    public int getBookedSeatsRaw() {
-        if (bookingtourdetails == null)
-            return 0;
-        return bookingtourdetails.stream()
-                .mapToInt(b -> {
-                    int adult = b.getNumofadult() != null ? b.getNumofadult() : 0;
-                    int child = b.getNumofchild() != null ? b.getNumofchild() : 0;
-                    return adult + child;
-                })
-                .sum();
-    }
+public int getBookedSeatsRaw() {
+    if (bookingtourdetails == null)
+        return 0;
+    return bookingtourdetails.stream()
+            .filter(b -> b.getBooking() != null
+                    && b.getBooking().getBookingStatus() != null
+                    && b.getBooking().getBookingStatus() != com.example.miniproject.entity.enums.BookingStatus.CANCEL)
+            .mapToInt(b -> {
+                int adult = b.getNumofadult() != null ? b.getNumofadult() : 0;
+                int child = b.getNumofchild() != null ? b.getNumofchild() : 0;
+                return adult + child;
+            })
+            .sum();
+}
 
 
     public Date getEnddate() {

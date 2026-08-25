@@ -20,8 +20,18 @@ public class TourPaymentController {
 
     // GET: แสดงหน้าชำระเงินทัวร์
     @GetMapping("/{bookingId}")
-    public String showPaymentPage(@PathVariable String bookingId, Model model) {
+    public String showPaymentPage(@PathVariable String bookingId, Model model,
+                                   RedirectAttributes redirectAttributes) {
         try {
+            // ★ เช็คและยกเลิกอัตโนมัติก่อน ถ้าเลยเวลาแล้ว
+            paymentService.cancelIfExpired(bookingId);
+
+            if (paymentService.isPaymentExpired(bookingId)) {
+                redirectAttributes.addFlashAttribute("errorMsg",
+                        "เลยกำหนดชำระเงินแล้ว การจองนี้ถูกยกเลิกอัตโนมัติ กรุณาจองใหม่อีกครั้ง");
+                return "redirect:/member/bookings/detail/" + bookingId;
+            }
+
             TourReceiptDTO payment = paymentService.getPaymentPageData(bookingId);
             model.addAttribute("payment", payment);
         } catch (Exception e) {

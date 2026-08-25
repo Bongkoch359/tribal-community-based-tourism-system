@@ -1,6 +1,7 @@
 package com.example.miniproject.dto.Member;
 
 import java.sql.Date;
+import java.time.format.DateTimeFormatter;
 
 public class TourReceiptDTO {
 
@@ -32,7 +33,7 @@ public class TourReceiptDTO {
     // ── จาก Tour ────────────────────────────────────────────────
     private String tourName;        // tourmname
     private String tourDuration;    // Tour.getTourDuration() เช่น "3 วัน 2 คืน"
-     private String tourImageUrl;
+    private String tourImageUrl;
     private Double adultPrice;      // adultprice
     private Double childPrice;      // childprice
 
@@ -46,11 +47,11 @@ public class TourReceiptDTO {
     // ── ประกันภัย (จาก Booking) ────────────────────────────────
     private Boolean wantInsurance;
     private Double subtotalInsurance;
+
     // เพิ่มใน RoomReceiptDTO และ TourReceiptDTO
     private Date paymentDeadline;
 
-     private String signatureImageUrl;
-
+    private String signatureImageUrl;
 
     public TourReceiptDTO() {}
 
@@ -134,21 +135,24 @@ public class TourReceiptDTO {
     public Double getSubtotalInsurance() { return subtotalInsurance; }
     public void setSubtotalInsurance(Double subtotalInsurance) { this.subtotalInsurance = subtotalInsurance; }
 
-
     public Date getPaymentDeadline() { return paymentDeadline; }
-public void setPaymentDeadline(Date paymentDeadline) { this.paymentDeadline = paymentDeadline; }
+    public void setPaymentDeadline(Date paymentDeadline) { this.paymentDeadline = paymentDeadline; }
 
+    /**
+     * คืนค่า paymentDeadline เป็น ISO string "yyyy-MM-dd" แบบที่ควบคุมได้แน่นอน
+     * ใช้แทนการพึ่ง Thymeleaf serialize java.sql.Date อัตโนมัติเข้า JS
+     * (representation ขึ้นกับเวอร์ชัน Thymeleaf/JVM timezone → new Date() ฝั่ง JS
+     * อาจ parse พังแบบเงียบๆ กลายเป็น Invalid Date)
+     */
+    public String getPaymentDeadlineIso() {
+        return paymentDeadline != null
+                ? paymentDeadline.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                : null;
+    }
 
     public String getTourImageUrl() { return tourImageUrl; }
     public void setTourImageUrl(String tourImageUrl) { this.tourImageUrl = tourImageUrl; }
 
-   
-
-public String getSignatureImageUrl() {
-    return signatureImageUrl;
-}
-
-public void setSignatureImageUrl(String signatureImageUrl) {
-    this.signatureImageUrl = signatureImageUrl;
-}
+    public String getSignatureImageUrl() { return signatureImageUrl; }
+    public void setSignatureImageUrl(String signatureImageUrl) { this.signatureImageUrl = signatureImageUrl; }
 }

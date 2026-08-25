@@ -116,17 +116,25 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     box-shadow: 0 3px 18px rgba(15,33,20,.35);
     border-bottom: 3px solid var(--amber-500);
 }
+
 .navbar-brand {
     color: #fff;
     margin-right: auto;
-    display: flex; align-items: center; gap: 12px;
+    display: flex; align-items: center; gap: 0;   /* ให้ตรงกับหน้า search */
     flex-shrink: 0; text-decoration: none;
 }
-.brand-logo {
-    width: 130px; height: 100px; flex-shrink: 0;
+.brand-logo{
+    width:160px;
+    height:120px;
+    flex-shrink:0;
 }
-.brand-logo img { width: 100%; height: 100%; object-fit: contain; }
-.brand-name { display: flex; flex-direction: column; }
+
+.brand-logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+.brand-name { display: flex; flex-direction: column;margin-left: -25px; }
 .brand-name-line1 { font-size: 22px; font-weight: 700; line-height: 1; }
 .brand-name-line2 { font-size: 12px; font-weight: 400; color: var(--green-200); margin-top: 4px; opacity: .85; }
 
@@ -413,7 +421,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
 <nav class="navbar">
     <a href="/search" class="navbar-brand">
         <div class="brand-logo">
-            <img th:src="@{/images/logo3.png}" src="../static/images/logo3.png" alt="Logo">
+            <img th:src="@{/images/logo5.png}" src="../static/images/logo5.png" alt="Logo">
         </div>
         <div class="brand-name">
             <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
@@ -743,9 +751,13 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
 /*<![CDATA[*/
 
 (function () {
-    const deadlineStr = /*[[${payment.paymentDeadline}]]*/ null;
+    const deadlineStr = /*[[${payment.paymentDeadlineIso}]]*/ null;
     if (!deadlineStr) return;
     const deadline = new Date(deadlineStr);
+    if (isNaN(deadline.getTime())) {
+        console.error('Invalid deadline date:', deadlineStr);
+        return;
+    }
     deadline.setHours(23, 59, 59, 0);
     const el = document.getElementById('remainText');
     function tick() {
@@ -787,21 +799,23 @@ function copyAccount(btn) {
         setTimeout(() => { btn.textContent = 'คัดลอก'; btn.classList.remove('copied'); }, 2000);
     });
 }
-
 function handleFileSelect(input) {
     const file = input.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { alert('ไฟล์ขนาดเกิน 5 MB'); input.value = ''; return; }
+    const img = document.getElementById('previewImg');
     if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = e => {
-            document.getElementById('previewImg').src = e.target.result;
+            img.src = e.target.result;
+            img.style.display = 'block';
             document.getElementById('fileName').textContent = file.name;
             document.getElementById('uploadArea').style.display = 'none';
             document.getElementById('previewArea').style.display = 'block';
         };
         reader.readAsDataURL(file);
     } else {
+        img.style.display = 'none';   // ซ่อนรูปพัง สำหรับไฟล์ PDF
         document.getElementById('fileName').textContent = '📄 ' + file.name;
         document.getElementById('uploadArea').style.display = 'none';
         document.getElementById('previewArea').style.display = 'block';
@@ -828,9 +842,12 @@ function submitPayment() {
     if (!document.getElementById('slipFile').files[0]) { alert('กรุณาอัปโหลดสลิปการโอนเงิน'); return; }
     if (!confirm('ยืนยันการส่งหลักฐานการชำระเงินใช่หรือไม่?')) return;
     const form = document.getElementById('paymentForm');
-    const cloned = document.getElementById('slipFile').cloneNode(true);
-    cloned.name = 'slipFile';
-    form.appendChild(cloned);
+
+    // ย้าย input ตัวจริงเข้าฟอร์ม (ไม่ clone) เพื่อให้ .files ไม่หาย
+    const fileInput = document.getElementById('slipFile');
+    fileInput.name = 'slipFile';
+    form.appendChild(fileInput);
+
     document.getElementById('hPayNote').value = document.getElementById('payNoteInput').value;
     const btn = document.getElementById('submitBtn');
     btn.disabled = true; btn.textContent = '⏳ กำลังส่งข้อมูล…';

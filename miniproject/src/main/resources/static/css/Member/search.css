@@ -111,7 +111,8 @@ img { display: block; }
   background-image: linear-gradient(180deg, var(--green-800), var(--green-900));
   height: var(--navbar-h);
   display: flex; align-items: center;
-  padding: 0 5%; gap: 8px;
+  padding: 0 5% 0 3%; 
+   gap: 8px;
   position: sticky; top: 0; z-index: 1000;
   box-shadow: 0 3px 18px rgba(15,33,20,0.35);
   border-bottom: 3px solid var(--amber-500);

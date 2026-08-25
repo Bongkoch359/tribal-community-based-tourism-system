@@ -10,4 +10,9 @@ public interface PaymentService<T> {
     void confirmPayment(String bookingId, MultipartFile slipFile, String payNote);
 
     T getReceiptData(String bookingId);
+
+    // ── เพิ่มใหม่ สำหรับเช็ค/ยกเลิกเมื่อหมดกำหนดชำระเงิน ──
+    boolean isPaymentExpired(String bookingId);
+
+    void cancelIfExpired(String bookingId);
 }
