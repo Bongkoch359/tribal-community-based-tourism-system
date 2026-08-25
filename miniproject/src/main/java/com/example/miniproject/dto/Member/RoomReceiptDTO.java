@@ -1,6 +1,8 @@
 package com.example.miniproject.dto.Member;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 
 public class RoomReceiptDTO {
 
@@ -43,7 +45,7 @@ public class RoomReceiptDTO {
     // ── ประกันภัย (จาก Booking) ────────────────────────────────
     private Boolean wantInsurance;
     private Double subtotalInsurance;
-    private Date paymentDeadline;
+    private Timestamp paymentDeadline;   // ★ เปลี่ยนจาก Date เป็น Timestamp
 
     private String signatureImageUrl;
 
@@ -129,10 +131,17 @@ public class RoomReceiptDTO {
     public Double getSubtotalInsurance() { return subtotalInsurance; }
     public void setSubtotalInsurance(Double subtotalInsurance) { this.subtotalInsurance = subtotalInsurance; }
 
-public Date getPaymentDeadline() { return paymentDeadline; }
-public void setPaymentDeadline(Date paymentDeadline) { this.paymentDeadline = paymentDeadline; }
+    // ★ เปลี่ยน type ของ getter/setter คู่นี้เป็น Timestamp
+    public Timestamp getPaymentDeadline() { return paymentDeadline; }
+    public void setPaymentDeadline(Timestamp paymentDeadline) { this.paymentDeadline = paymentDeadline; }
 
+    // ★ เพิ่มใหม่ — ส่งเป็น ISO datetime string ให้ JS parse ได้ชัวร์
+    public String getPaymentDeadlineIso() {
+        return paymentDeadline != null
+                ? paymentDeadline.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                : null;
+    }
 
-public String getSignatureImageUrl() { return signatureImageUrl; }
-public void setSignatureImageUrl(String signatureImageUrl) { this.signatureImageUrl = signatureImageUrl; }
+    public String getSignatureImageUrl() { return signatureImageUrl; }
+    public void setSignatureImageUrl(String signatureImageUrl) { this.signatureImageUrl = signatureImageUrl; }
 }

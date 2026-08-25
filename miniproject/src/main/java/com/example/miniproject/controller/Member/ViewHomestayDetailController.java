@@ -91,8 +91,8 @@ public class ViewHomestayDetailController {
 
         Map<String, Integer> availableRooms = new HashMap<>();
         for (Roomtype room : homestay.getRoomtypes()) {
-            Integer booked = bookingroomdetailRepository
-                    .countBookedRooms(room.getRoomtypeid(), sd, ed);
+         Integer booked = bookingroomdetailRepository
+        .countBookedRoomsInRange(room.getRoomtypeid(), sd, ed);
             int remaining = room.getTotalrooms() - (booked != null ? booked : 0);
             availableRooms.put(room.getRoomtypeid(), Math.max(0, remaining));
         }

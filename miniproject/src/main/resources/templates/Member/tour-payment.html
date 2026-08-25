@@ -140,13 +140,13 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
 
 .nav-links { display: flex; align-items: center; gap: 2px; }
 .nav-link {
-    color: rgba(255,255,255,0.82);
-    font-size: 16px; font-weight: 600;
-    padding: 10px 16px; border-radius: 8px;
-    transition: background .15s, color .15s;
-    white-space: nowrap;
-    display: flex; align-items: center; gap: 7px;
-    text-decoration: none;
+  color: rgba(255,255,255,0.82);
+  font-size: 16px; font-weight: 600;
+  padding: 10px 16px; border-radius: var(--r-sm);
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 7px;
+  position: relative;
 }
 .nav-link svg { width: 17px; height: 17px; opacity: .75; flex-shrink: 0; }
 .nav-link:hover { background: rgba(255,255,255,0.10); color: var(--amber-400); }
@@ -568,9 +568,9 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
         <div class="deadline-icon">📅</div>
         <div style="flex:1;">
             <div class="deadline-label">กรุณาชำระเงินก่อนวันที่</div>
-            <div class="deadline-date"
-                 th:text="${payment.paymentDeadline != null ?
-                    #dates.format(payment.paymentDeadline,'dd/MM/yyyy') : '-'}">-</div>
+          <div class="deadline-date"
+     th:text="${payment.paymentDeadline != null ?
+        #dates.format(payment.paymentDeadline,'dd/MM/yyyy HH:mm') : '-'}">-</div>
             <div class="deadline-remain" id="remainText"></div>
             <div class="deadline-sub">หากเลยกำหนดการจองจะถูกยกเลิกอัตโนมัติ</div>
         </div>
@@ -749,7 +749,6 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
 
 <script th:inline="javascript">
 /*<![CDATA[*/
-
 (function () {
     const deadlineStr = /*[[${payment.paymentDeadlineIso}]]*/ null;
     if (!deadlineStr) return;
@@ -758,7 +757,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
         console.error('Invalid deadline date:', deadlineStr);
         return;
     }
-    deadline.setHours(23, 59, 59, 0);
+    // ★ ลบบรรทัด deadline.setHours(23, 59, 59, 0); ทิ้ง — ใช้เวลาที่ parse มาตรงๆ
     const el = document.getElementById('remainText');
     function tick() {
         const diff = deadline - Date.now();

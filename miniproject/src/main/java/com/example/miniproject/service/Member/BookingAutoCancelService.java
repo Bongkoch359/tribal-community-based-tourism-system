@@ -35,7 +35,7 @@ public class BookingAutoCancelService {
      * รันทุกต้นชั่วโมง — sweep booking ทัวร์ที่ยัง PENDING แต่ deadline ผ่านไปแล้ว
      * แล้วเปลี่ยนสถานะเป็น CANCEL พร้อมบันทึกเหตุผล
      */
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 60000) 
 @Transactional
 public void cancelExpiredPendingBookings() {
     List<Booking> expiredTours = bookingRepository.findExpiredPendingTourBookings();

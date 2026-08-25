@@ -1031,9 +1031,12 @@ textarea.form-control { resize:vertical; min-height:110px; }
     </div>
 
     <!-- CANCEL FORM -->
-    <form id="cancelForm"
-          th:action="@{/booking/homestay/cancel/{id}(id=${booking.bookingid})}"
-          method="post" style="display:none;"></form>
+    <!-- CANCEL FORM -->
+<form id="cancelForm"
+      th:action="@{/booking/homestay/cancel/{id}(id=${booking.bookingid})}"
+      method="post" style="display:none;">
+    <input type="hidden" name="cancelReason" id="cancelReasonInput">
+</form>
 
 </div>
 </div><!-- /page-wrap -->
@@ -1155,6 +1158,11 @@ function checkReviewReady() {
 
 /* ════ Cancel ════ */
 function confirmCancel() {
+    const reason = prompt('กรุณาระบุเหตุผลในการยกเลิก (ถ้ามี):', '');
+    if (reason === null) return; // กดยกเลิกใน prompt = ไม่ทำอะไรต่อ
+
+    document.getElementById('cancelReasonInput').value = reason;
+
     if (confirm('ต้องการยกเลิกการจองใช่หรือไม่?')) {
         document.getElementById('cancelForm').submit();
     }

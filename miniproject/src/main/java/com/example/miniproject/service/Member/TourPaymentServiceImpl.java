@@ -76,10 +76,9 @@ private TourScheduleRepository tourScheduleRepository;
                     : null;
 
             dto.setScheduleOpenDate(openDate);
-            if (openDate != null) {
-                Date deadline = Date.valueOf(openDate.toLocalDate().minusDays(1));
-                dto.setPaymentDeadline(deadline);
-            }
+
+// ★ deadline ดึงจาก booking ตรงๆ ไม่คำนวณจาก opendate อีกต่อไป
+dto.setPaymentDeadline(booking.getPaymentDeadline());
 
             // จำนวนผู้ใหญ่ / เด็ก
             dto.setNumOfAdults(detail.getNumofadult());
@@ -207,19 +206,12 @@ if (tour.getMaxSeatstour() != null) {
      * deadline = วันเดินทาง(opendate) - 1 วัน (23:59:59)
      * ถือว่าหมดเวลาเมื่อ "วันนี้" มาหลังจากวัน deadline นั้นแล้ว
      */
-    private boolean isExpired(Booking booking) {
-        List<Bookingtourdetail> tourDetails = booking.getTourDetails();
-        if (tourDetails == null || tourDetails.isEmpty()) {
-            return false;
-        }
-        Bookingtourdetail detail = tourDetails.get(0);
-        if (detail.getTourschedule() == null || detail.getTourschedule().getOpendate() == null) {
-            return false;
-        }
-        LocalDate openDate = detail.getTourschedule().getOpendate().toLocalDate();
-        LocalDate deadline = openDate.minusDays(1);
-        return LocalDate.now().isAfter(deadline);
+  private boolean isExpired(Booking booking) {
+    if (booking.getPaymentDeadline() == null) {
+        return false;
     }
+    return new java.sql.Timestamp(System.currentTimeMillis()).after(booking.getPaymentDeadline());
+}
 
     // ─────────────────────────────────────────────────────────────
     // Helper: บันทึกไฟล์สลิปลง disk

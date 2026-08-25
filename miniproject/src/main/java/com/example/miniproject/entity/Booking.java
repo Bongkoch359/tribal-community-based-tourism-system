@@ -5,6 +5,7 @@ import com.example.miniproject.entity.enums.BookingStatus;
 import java.sql.Date;
 import java.util.List;
 import java.util.Set;
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 
@@ -24,6 +25,10 @@ public class Booking {
 	private Boolean isBookerGoing;
 	@Column(name = "bookingdate")
 	private Date bookingdate;
+
+	// ★ เพิ่มใหม่ — เวลาที่ต้องชำระเงินให้เสร็จก่อน (bookingdate + 30 นาที)
+	@Column(name = "payment_deadline")
+	private Timestamp paymentDeadline;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "booking_status", length = 50)
@@ -91,6 +96,15 @@ public class Booking {
 	public void setBookingdate(Date bookingdate) {
 		this.bookingdate = bookingdate;
 	}
+
+	public Timestamp getPaymentDeadline() {
+		return paymentDeadline;
+	}
+
+	public void setPaymentDeadline(Timestamp paymentDeadline) {
+		this.paymentDeadline = paymentDeadline;
+	}
+
 
 	public BookingType getBookingType() {
 		return bookingType;

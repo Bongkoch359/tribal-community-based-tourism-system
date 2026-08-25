@@ -1314,9 +1314,11 @@ textarea.form-control { resize:vertical; min-height:110px; }
     </div>
 
     <!-- CANCEL FORM -->
-    <form id="cancelForm"
-          th:action="@{/booking/tour/cancel/{id}(id=${booking.bookingid})}"
-          method="post" style="display:none;"></form>
+<form id="cancelForm"
+      th:action="@{/booking/tour/cancel/{id}(id=${booking.bookingid})}"
+      method="post" style="display:none;">
+    <input type="hidden" name="cancelReason" id="cancelReasonInput">
+</form>
 
 </div><!-- /th:with -->
 </div><!-- /page-wrap -->
@@ -1442,11 +1444,15 @@ function checkReviewReady() {
 
 /* ════ Cancel ════ */
 function confirmCancel() {
+    const reason = prompt('กรุณาระบุเหตุผลในการยกเลิก (ถ้ามี):', '');
+    if (reason === null) return; // กดยกเลิกใน prompt = ไม่ทำอะไรต่อ
+
+    document.getElementById('cancelReasonInput').value = reason;
+
     if (confirm('ต้องการยกเลิกการจองทัวร์นี้ใช่หรือไม่?\nการยกเลิกอาจมีเงื่อนไขตามนโยบายของทัวร์')) {
         document.getElementById('cancelForm').submit();
     }
 }
-
 document.addEventListener('DOMContentLoaded', function () {
     const toast = document.getElementById('toastSuccess');
     if (toast) {

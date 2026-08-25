@@ -26,12 +26,21 @@ public class BookingHomestayController {
     //  GET : หน้าจองโฮมสเตย์
     // ════════════════════════════════════════════════════════
 
-    @GetMapping("/booking/homestay/{id}")
-    public String bookingPage(@PathVariable("id") String id, Model model) {
-        Roomtype room = roomtypeService.getRoomById(id);
-        model.addAttribute("room", room);
-        return "Member/booking_homestay";
-    }
+ @GetMapping("/booking/homestay/{id}")
+public String bookingPage(
+        @PathVariable("id") String id,
+        @RequestParam(value = "checkin", required = false) String checkin,
+        @RequestParam(value = "checkout", required = false) String checkout,
+        @RequestParam(value = "guest", required = false) Integer guest,
+        Model model) {
+
+    Roomtype room = roomtypeService.getRoomById(id);
+    model.addAttribute("room", room);
+    model.addAttribute("checkinParam", checkin);
+    model.addAttribute("checkoutParam", checkout);
+    model.addAttribute("guestParam", guest != null ? guest : 1);
+    return "Member/booking_homestay";
+}
 
     // ════════════════════════════════════════════════════════
     //  POST : สร้างการจองใหม่
@@ -120,28 +129,29 @@ public class BookingHomestayController {
     //  POST : ยกเลิกการจอง
     // ════════════════════════════════════════════════════════
 
-    @PostMapping("/booking/homestay/cancel/{id}")
-    public String cancelBooking(
-            @PathVariable("id") String bookingId,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+   @PostMapping("/booking/homestay/cancel/{id}")
+public String cancelBooking(
+        @PathVariable("id") String bookingId,
+        @RequestParam(value = "cancelReason", required = false) String cancelReason,
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
 
-        Member member = (Member) session.getAttribute("loggedInMember");
-        if (member == null) return "redirect:/member/login";
+    Member member = (Member) session.getAttribute("loggedInMember");
+    if (member == null) return "redirect:/member/login";
 
-        try {
-            bookingService.cancelHomestayBooking(bookingId, member.getMemberid());
+    try {
+        bookingService.cancelHomestayBooking(bookingId, member.getMemberid(), cancelReason);
 
-            redirectAttributes.addFlashAttribute("successMsg", "ยกเลิกการจองเรียบร้อยแล้ว");
-            return "redirect:/member/bookings/detail/" + bookingId;
+        redirectAttributes.addFlashAttribute("successMsg", "ยกเลิกการจองเรียบร้อยแล้ว");
+        return "redirect:/member/bookings/detail/" + bookingId;
 
-        } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
-            return "redirect:/member/bookings/detail/" + bookingId;
+    } catch (IllegalStateException e) {
+        redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+        return "redirect:/member/bookings/detail/" + bookingId;
 
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถยกเลิกการจองได้ กรุณาลองใหม่อีกครั้ง");
-            return "redirect:/member/bookings/detail/" + bookingId;
-        }
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถยกเลิกการจองได้ กรุณาลองใหม่อีกครั้ง");
+        return "redirect:/member/bookings/detail/" + bookingId;
     }
+}
 }

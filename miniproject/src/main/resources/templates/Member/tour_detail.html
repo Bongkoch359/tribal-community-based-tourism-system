@@ -1240,16 +1240,7 @@ img { display: block; max-width: 100%; }
   var scheduleCalendarData = /*[[${scheduleCalendarJson}]]*/ [];
   /*]]>*/
 </script>
-<!--
-  แก้ 2 จุดจากไฟล์เดิม:
-  1) ลบ <script><script> ที่ซ้อนกันผิดๆ (บั๊กเดิมที่ทำให้ทั้งบล็อกเสี่ยงพัง)
-  2) เพิ่ม logic ให้กดวันไหนในรอบทัวร์เดียวกัน (scheduleid เดียวกัน) จะไฮไลต์ทั้งช่วง
-     เช่น รอบทัวร์ 29-31 ส.ค. กด 29 -> ไฮไลต์ 29,30,31 พร้อมกัน
 
-  ข้อกำหนด: backend ต้องส่ง field "scheduleid" มาในแต่ละ entry ของ scheduleCalendarJson ด้วย
-  เช่น: [{ "date": "2026-08-29", "status": "available", "availableSeats": 3, "scheduleid": 12 }, ...]
-  ถ้าไม่มี scheduleid โค้ดจะ fallback ไปไฮไลต์แค่วันเดียว (ไม่ error แต่ไม่ครอบช่วง)
--->
 <script>
   function toggleUserMenu() {
     const w = document.getElementById('userMenuWrapper');
@@ -1350,6 +1341,18 @@ img { display: block; max-width: 100%; }
     calendarCursor = newCursor;
     renderCalendar();
   }
+// เช็กว่าวันที่กำหนดเป็น "วันแรก" ของ scheduleid นั้นๆ หรือไม่
+  function isFirstDateOfSchedule(iso) {
+    var info = scheduleByDate[iso];
+    if (!info || info.scheduleid == null) return true; // ถ้าไม่มีระบบกลุ่ม ให้ถือว่าปกติ
+    
+    var groupDates = datesByScheduleId[info.scheduleid];
+    if (!groupDates || groupDates.length === 0) return true;
+
+    // เรียงวันที่ในกลุ่ม แล้วเช็กว่า iso นี้คือน้องเล็กสุด (วันแรก) หรือไม่
+    var sorted = groupDates.slice().sort();
+    return sorted[0] === iso;
+  }
 
   function renderCalendar() {
     var y = calendarCursor.getFullYear(), m = calendarCursor.getMonth();
@@ -1369,35 +1372,47 @@ img { display: block; max-width: 100%; }
     for (var d = 1; d <= daysInMonth; d++) {
       var iso = toISO(y, m, d);
       var info = scheduleByDate[iso];
-      var status = info ? info.status : 'none';
-
       var cell = document.createElement('div');
+
+      // ตรวจสอบว่าเป็นวันแรกของรอบทัวร์ไหม (ถ้ามีรอบ แต่ไม่ใช่วันแรก ให้มองว่าไม่มีรอบในมุมมองปฏิทินนี้)
+      var showAsTourStart = true;
+      if (info && (info.status === 'available' || info.status === 'low')) {
+        showAsTourStart = isFirstDateOfSchedule(iso);
+      }
+
+      var status = (info && showAsTourStart) ? info.status : 'none';
       cell.className = 'cal-day st-' + status;
-        cell.title = status === 'full'   ? 'ที่นั่งเต็มแล้ว' :
+
+      cell.title = status === 'full'   ? 'ที่นั่งเต็มแล้ว' :
                    status === 'closed' ? 'ยังไม่เปิดรับจองรอบนี้' :
                    status === 'past'   ? 'วันที่ผ่านมาแล้ว' :
-                   status === 'none'   ? 'ไม่มีรอบทัวร์วันนี้' : '';
-      // ไฮไลต์ทุกวันที่อยู่ใน group เดียวกับวันที่เลือกไว้ (ไม่ใช่แค่วันเดียว)
-      if (selectedDateGroup.indexOf(iso) !== -1) cell.classList.add('selected');
+                   status === 'none'   ? 'ไม่มีรอบทัวร์เริ่มต้นวันนี้' : '';
+
+      // ไฮไลต์ทุกวันที่อยู่ใน group เดียวกับวันที่เลือกไว้
+      if (selectedDateGroup.indexOf(iso) !== -1) {
+        cell.classList.add('selected');
+      }
 
       var num = document.createElement('div');
       num.className = 'dnum';
       num.textContent = d;
       cell.appendChild(num);
 
-      if (info && (status === 'available' || status === 'low')) {
+      // ให้คลิกและแสดงจำนวนที่นั่งเฉพาะ "วันแรกของรอบ" ที่สถานะ available หรือ low เท่านั้น
+      if (info && showAsTourStart && (status === 'available' || status === 'low')) {
         var seats = document.createElement('div');
         seats.className = 'dseats';
         seats.textContent = info.availableSeats + ' ที่';
         cell.appendChild(seats);
+        
         cell.addEventListener('click', (function (dateVal) {
           return function () { selectScheduleDate(dateVal); };
         })(iso));
       }
+      
       grid.appendChild(cell);
     }
   }
-
   // ตอนคลิกเลือกวัน ให้แค่ไฮไลต์และเปลี่ยนข้อความโชว์รอบ แต่ "ยังไม่ปิด Modal"
   function selectScheduleDate(iso) {
     var info = scheduleByDate[iso];

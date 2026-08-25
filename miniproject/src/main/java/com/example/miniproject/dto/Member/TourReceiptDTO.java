@@ -1,6 +1,7 @@
 package com.example.miniproject.dto.Member;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 
 public class TourReceiptDTO {
@@ -49,7 +50,7 @@ public class TourReceiptDTO {
     private Double subtotalInsurance;
 
     // เพิ่มใน RoomReceiptDTO และ TourReceiptDTO
-    private Date paymentDeadline;
+    private Timestamp paymentDeadline;
 
     private String signatureImageUrl;
 
@@ -135,18 +136,13 @@ public class TourReceiptDTO {
     public Double getSubtotalInsurance() { return subtotalInsurance; }
     public void setSubtotalInsurance(Double subtotalInsurance) { this.subtotalInsurance = subtotalInsurance; }
 
-    public Date getPaymentDeadline() { return paymentDeadline; }
-    public void setPaymentDeadline(Date paymentDeadline) { this.paymentDeadline = paymentDeadline; }
+    public Timestamp getPaymentDeadline() { return paymentDeadline; }
+    public void setPaymentDeadline(Timestamp paymentDeadline) { this.paymentDeadline = paymentDeadline; }
 
-    /**
-     * คืนค่า paymentDeadline เป็น ISO string "yyyy-MM-dd" แบบที่ควบคุมได้แน่นอน
-     * ใช้แทนการพึ่ง Thymeleaf serialize java.sql.Date อัตโนมัติเข้า JS
-     * (representation ขึ้นกับเวอร์ชัน Thymeleaf/JVM timezone → new Date() ฝั่ง JS
-     * อาจ parse พังแบบเงียบๆ กลายเป็น Invalid Date)
-     */
+    // ★ ส่งเป็น ISO datetime string ให้ JS parse ได้ชัวร์ ไม่พึ่ง serialize อัตโนมัติ
     public String getPaymentDeadlineIso() {
         return paymentDeadline != null
-                ? paymentDeadline.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                ? paymentDeadline.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                 : null;
     }
 

@@ -149,7 +149,8 @@ private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
         booking.setMember(member);
         booking.setBookingType(BookingType.ACCOMMODATION);
         booking.setBookingStatus(BookingStatus.PENDING);
-        booking.setBookingdate(new Date(System.currentTimeMillis()));
+       booking.setBookingdate(new Date(System.currentTimeMillis()));
+booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 30 * 60 * 1000)); // ★ เพิ่ม
         booking.setNumofguest(adults + children);
         booking.setNote(note);
         booking.setIsBookerGoing(isBookerGoing != null ? isBookerGoing : true);
@@ -306,27 +307,32 @@ private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
     // ════════════════════════════════════════════════════════
 
     @Transactional
-    public void cancelHomestayBooking(String bookingId, String memberId) {
+public void cancelHomestayBooking(String bookingId, String memberId, String reason) {
 
-        // ── 1. ดึง Booking ─────────────────────────────────────
-        Booking booking = bookingRepository.findByIdWithDetails(bookingId)
-                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+    // ── 1. ดึง Booking ─────────────────────────────────────
+    Booking booking = bookingRepository.findByIdWithDetails(bookingId)
+            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
 
-        // ── 2. ตรวจสิทธิ์ ──────────────────────────────────────
-        if (!booking.getMember().getMemberid().equals(memberId))
-            throw new IllegalArgumentException("ไม่มีสิทธิ์ยกเลิกการจองนี้");
+    // ── 2. ตรวจสิทธิ์ ──────────────────────────────────────
+    if (!booking.getMember().getMemberid().equals(memberId))
+        throw new IllegalArgumentException("ไม่มีสิทธิ์ยกเลิกการจองนี้");
 
-        // ── 3. ตรวจสถานะ ───────────────────────────────────────
-        BookingStatus status = booking.getBookingStatus();
-        if (status == BookingStatus.CONFIRMED)
-            throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้ กรุณาติดต่อเจ้าหน้าที่");
-        if (status == BookingStatus.CANCEL)
-            throw new IllegalStateException("การจองนี้ถูกยกเลิกไปแล้ว");
+    // ── 3. ตรวจสถานะ ───────────────────────────────────────
+    BookingStatus status = booking.getBookingStatus();
+    if (status == BookingStatus.CONFIRMED)
+        throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้ กรุณาติดต่อเจ้าหน้าที่");
+    if (status == BookingStatus.CANCEL)
+        throw new IllegalStateException("การจองนี้ถูกยกเลิกไปแล้ว");
+    if (status == BookingStatus.COMPLETED)
+        throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่เสร็จสิ้นแล้วได้");
 
-        // ── 4. อัปเดต status เป็น CANCEL ──────────────────────
-        booking.setBookingStatus(BookingStatus.CANCEL);
-        bookingRepository.save(booking);
-    }
+    // ── 4. อัปเดต status เป็น CANCEL ──────────────────────
+    booking.setBookingStatus(BookingStatus.CANCEL);
+    booking.setCancelReason(
+        "ยกเลิกโดยผู้จอง" + (reason != null && !reason.isBlank() ? ": " + reason.trim() : "")
+    );
+    bookingRepository.save(booking);
+}
 
 //══════════════════════════════════════════════
     //  HELPERS

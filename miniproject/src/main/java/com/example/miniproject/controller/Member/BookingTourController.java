@@ -197,34 +197,34 @@ public String editBooking(
 
     // ════════════════════════════════════════════════════════
     // POST : ยกเลิกการจองทัวร์
-    // ════════════════════════════════════════════════════════
-    @PostMapping("/booking/tour/cancel/{id}")
-    public String cancelBooking(
-            @PathVariable("id") String bookingId,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+ @PostMapping("/booking/tour/cancel/{id}")
+public String cancelBooking(
+        @PathVariable("id") String bookingId,
+        @RequestParam(value = "cancelReason", required = false) String cancelReason,
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
 
-        Member member = (Member) session.getAttribute("loggedInMember");
+    Member member = (Member) session.getAttribute("loggedInMember");
 
-        if (member == null) {
-            return "redirect:/member/login";
-        }
-
-        try {
-            tourBookingService.cancelTourBooking(bookingId, member.getMemberid());
-
-            redirectAttributes.addFlashAttribute("successMsg", "ยกเลิกการจองเรียบร้อยแล้ว");
-            return "redirect:/member/bookings/detail/" + bookingId;
-
-        } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
-            return "redirect:/member/bookings/detail/" + bookingId;
-
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(
-                    "errorMsg",
-                    "ไม่สามารถยกเลิกการจองได้ กรุณาลองใหม่อีกครั้ง");
-            return "redirect:/member/bookings/detail/" + bookingId;
-        }
+    if (member == null) {
+        return "redirect:/member/login";
     }
+
+    try {
+        tourBookingService.cancelTourBooking(bookingId, member.getMemberid(), cancelReason);
+
+        redirectAttributes.addFlashAttribute("successMsg", "ยกเลิกการจองเรียบร้อยแล้ว");
+        return "redirect:/member/bookings/detail/" + bookingId;
+
+    } catch (IllegalStateException e) {
+        redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+        return "redirect:/member/bookings/detail/" + bookingId;
+
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute(
+                "errorMsg",
+                "ไม่สามารถยกเลิกการจองได้ กรุณาลองใหม่อีกครั้ง");
+        return "redirect:/member/bookings/detail/" + bookingId;
+    }
+}
 }

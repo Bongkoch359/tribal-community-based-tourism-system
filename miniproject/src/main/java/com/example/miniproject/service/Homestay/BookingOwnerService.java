@@ -69,7 +69,7 @@ public class BookingOwnerService {
         }
 
         booking.setBookingStatus(BookingStatus.CANCEL);
-        booking.setCancelReason(reason.trim());
+        booking.setCancelReason("ยกเลิกโดยเจ้าของโฮมสเตย์: " + reason.trim());
         bookingRepository.save(booking);
     }
 

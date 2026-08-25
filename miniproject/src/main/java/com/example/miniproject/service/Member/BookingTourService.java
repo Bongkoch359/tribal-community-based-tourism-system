@@ -115,29 +115,29 @@ public class BookingTourService {
      * หรือยกเลิกรายการที่เสร็จสิ้นแล้วไม่ได้
      */
     @Transactional
-    public void cancelTourBookingByManager(String bookingId, String managerId, String reason) {
-        if (reason == null || reason.isBlank()) {
-            throw new IllegalArgumentException("กรุณาระบุเหตุผลในการยกเลิก");
-        }
-
-        Booking booking = bookingRepository
-                .findTourBookingDetailForManager(bookingId, managerId)
-                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง หรือไม่มีสิทธิ์เข้าถึงการจองนี้"));
-
-        if (booking.getBookingStatus() == BookingStatus.CANCEL) {
-            throw new IllegalStateException("การจองนี้ถูกยกเลิกไปแล้ว");
-        }
-        if (booking.getBookingStatus() == BookingStatus.CONFIRMED) {
-            throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้");
-        }
-        if (booking.getBookingStatus() == BookingStatus.COMPLETED) {
-            throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่เสร็จสิ้นแล้วได้");
-        }
-
-        booking.setBookingStatus(BookingStatus.CANCEL);
-        booking.setCancelReason(reason.trim());
-        bookingRepository.save(booking);
+public void cancelTourBookingByManager(String bookingId, String managerId, String reason) {
+    if (reason == null || reason.isBlank()) {
+        throw new IllegalArgumentException("กรุณาระบุเหตุผลในการยกเลิก");
     }
+
+    Booking booking = bookingRepository
+            .findTourBookingDetailForManager(bookingId, managerId)
+            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง หรือไม่มีสิทธิ์เข้าถึงการจองนี้"));
+
+    if (booking.getBookingStatus() == BookingStatus.CANCEL) {
+        throw new IllegalStateException("การจองนี้ถูกยกเลิกไปแล้ว");
+    }
+    if (booking.getBookingStatus() == BookingStatus.CONFIRMED) {
+        throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้");
+    }
+    if (booking.getBookingStatus() == BookingStatus.COMPLETED) {
+        throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่เสร็จสิ้นแล้วได้");
+    }
+
+    booking.setBookingStatus(BookingStatus.CANCEL);
+    booking.setCancelReason("ยกเลิกโดยผู้ดูแลชุมชน: " + reason.trim());   // ← เติม prefix
+    bookingRepository.save(booking);
+}
 
     // ════════════════════════════════════════════════════════
     // CREATE TOUR BOOKING
@@ -240,6 +240,7 @@ public class BookingTourService {
         booking.setBookingType(BookingType.TOUR);
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setBookingdate(new Date(System.currentTimeMillis()));
+booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 30 * 60 * 1000)); // ★ เพิ่ม — deadline = ตอนนี้ + 30 นาที
         booking.setNumofguest(totalGuest);
         booking.setNote(note);
         booking.setIsBookerGoing(isBookerGoing != null ? isBookerGoing : true);
@@ -527,9 +528,7 @@ public class BookingTourService {
     // ════════════════════════════════════════════════════════
 
     @Transactional
-    public void cancelTourBooking(
-            String bookingId,
-            String memberId) {
+    public void cancelTourBooking(String bookingId, String memberId, String reason) {
 
         Booking booking = bookingRepository
                 .findByIdWithDetails(bookingId)
@@ -561,8 +560,12 @@ public class BookingTourService {
             throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่เสร็จสิ้นแล้วได้");
         }
 
-        booking.setBookingStatus(BookingStatus.CANCEL);
+          booking.setBookingStatus(BookingStatus.CANCEL);
+     booking.setCancelReason(
+        "ยกเลิกโดยผู้จอง" + (reason != null && !reason.isBlank() ? ": " + reason.trim() : "")
+    );
+    bookingRepository.save(booking);
 
-        bookingRepository.save(booking);
+      
     }
 }

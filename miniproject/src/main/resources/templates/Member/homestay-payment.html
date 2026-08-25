@@ -73,9 +73,12 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
     box-shadow:0 3px 18px rgba(15,33,20,.35);
     border-bottom:3px solid var(--amber-500);
 }
+
 .navbar-brand {
-    color:#fff; margin-right:auto;
-    display:flex; align-items:center; gap:12px; flex-shrink:0;
+    color: #fff;
+    margin-right: auto;
+    display: flex; align-items: center; gap: 0;   /* ให้ตรงกับหน้า search */
+    flex-shrink: 0; text-decoration: none;
 }
 .brand-logo{
     width:160px;
@@ -536,9 +539,9 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
         <div class="deadline-icon">📅</div>
         <div style="flex:1;">
             <div class="deadline-label">กรุณาชำระเงินก่อนวันที่</div>
-            <div class="deadline-date"
-                 th:text="${payment.paymentDeadline != null ?
-                    #dates.format(payment.paymentDeadline,'dd/MM/yyyy') : '-'}">-</div>
+           <div class="deadline-date"
+     th:text="${payment.paymentDeadline != null ?
+        #dates.format(payment.paymentDeadline,'dd/MM/yyyy HH:mm') : '-'}">-</div>
             <div class="deadline-remain" id="remainText"></div>
             <div class="deadline-sub">หากเลยกำหนดการจองจะถูกยกเลิกอัตโนมัติ</div>
         </div>
@@ -729,10 +732,14 @@ const checkOut = /*[[${payment.checkOut}]]*/ null;
 
 /* ── DEADLINE countdown ── */
 (function(){
-    const deadlineStr = /*[[${payment.paymentDeadline}]]*/ null;
+    const deadlineStr = /*[[${payment.paymentDeadlineIso}]]*/ null;   // ★ เปลี่ยนจาก paymentDeadline
     if(!deadlineStr) return;
     const deadline = new Date(deadlineStr);
-    deadline.setHours(23,59,59,0);
+    if (isNaN(deadline.getTime())) {
+        console.error('Invalid deadline date:', deadlineStr);
+        return;
+    }
+    // ★ ลบบรรทัด deadline.setHours(23,59,59,0); ทิ้ง
     const el = document.getElementById('remainText');
     function tick(){
         const diff = deadline - Date.now();

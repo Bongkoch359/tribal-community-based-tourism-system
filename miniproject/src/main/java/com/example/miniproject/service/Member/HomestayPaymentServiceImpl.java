@@ -71,14 +71,11 @@ private BookingroomdetailRepository bookingroomdetailRepository;
             Bookingroomdetail detail = roomDetails.get(0);
 
             // วันเช็คอิน / เช็คเอาท์
-            dto.setCheckIn(detail.getCheckindate());
-            if (detail.getCheckindate() != null) {
-                Date deadline = Date.valueOf(
-                        detail.getCheckindate().toLocalDate().minusDays(1)
-                );
-                dto.setPaymentDeadline(deadline);
-            }
-            dto.setCheckOut(detail.getCheckoutdate());
+dto.setCheckIn(detail.getCheckindate());
+dto.setCheckOut(detail.getCheckoutdate());
+
+// ★ deadline ดึงจาก booking ตรงๆ ไม่คำนวณจาก checkindate อีกต่อไป
+dto.setPaymentDeadline(booking.getPaymentDeadline());
 
             // จำนวนห้อง / ผู้ใหญ่ / เด็ก
             dto.setNumOfRooms(detail.getNumofrooms());
@@ -242,11 +239,9 @@ public void cancelIfExpired(String bookingId) {
 }
 
 private boolean isExpired(Booking booking) {
-    List<Bookingroomdetail> roomDetails = booking.getRoomDetails();
-    if (roomDetails == null || roomDetails.isEmpty()) return false;
-    Bookingroomdetail detail = roomDetails.get(0);
-    if (detail.getCheckindate() == null) return false;
-    LocalDate deadline = detail.getCheckindate().toLocalDate().minusDays(1);
-    return LocalDate.now().isAfter(deadline);
+    if (booking.getPaymentDeadline() == null) {
+        return false;
+    }
+    return new java.sql.Timestamp(System.currentTimeMillis()).after(booking.getPaymentDeadline());
 }
 }

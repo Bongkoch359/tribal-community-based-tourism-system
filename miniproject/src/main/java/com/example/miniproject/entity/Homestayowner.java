@@ -8,8 +8,7 @@ import java.util.List;
 @Table(name="Homestayowner")
 public class Homestayowner {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Id
     @Column(name = "ownerid", length = 10)
     private String ownerid;
 

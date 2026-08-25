@@ -62,4 +62,11 @@ public interface HomestayOwnerRepository extends JpaRepository<Homestayowner, St
     @Query("SELECT o.password FROM Homestayowner o WHERE o.ownerid = :ownerid")
     Optional<String> findPasswordById(@Param("ownerid") String  ownerid);
 
+    @Query("""
+    SELECT MAX(CAST(SUBSTRING(o.ownerid, 3) AS integer))
+    FROM Homestayowner o
+    WHERE o.ownerid LIKE 'OW%'
+""")
+Integer findMaxOwnerNumber();
+
 }

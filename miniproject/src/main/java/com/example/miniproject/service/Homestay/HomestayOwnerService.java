@@ -37,8 +37,10 @@ public class HomestayOwnerService {
             throw new IllegalArgumentException("อีเมลนี้ถูกใช้งานแล้ว");
         }
 
-        Homestayowner owner = new Homestayowner();
-        owner.setFirstname(req.getFirstname());
+       Homestayowner owner = new Homestayowner();
+
+owner.setOwnerid(generateOwnerId());
+owner.setFirstname(req.getFirstname());
         owner.setLastname(req.getLastname());
         owner.setEmail(req.getEmail());
         owner.setPhone(req.getPhone());
@@ -175,4 +177,12 @@ public class HomestayOwnerService {
         ownerRepository.save(owner);
     }
 
+  
+    private String generateOwnerId() {
+    Integer maxNumber = ownerRepository.findMaxOwnerNumber();
+
+    int nextNumber = (maxNumber == null) ? 1 : maxNumber + 1;
+
+    return String.format("OW%06d", nextNumber);
+}
 }

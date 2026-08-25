@@ -59,7 +59,7 @@ body {
 }
 
 /* ============================================================
-   TOP BAR (เหมือนหน้า search)
+   TOP BAR (เหมือนหน้า search / ทัวร์)
 ============================================================ */
 .top-bar {
     background:var(--green-950);
@@ -79,15 +79,16 @@ body {
     gap:5px;
     text-decoration:none;
 }
-.top-bar a:hover { color:#fff; }
+.top-bar a:hover { color: var(--amber-400); }
 .top-bar a svg { width:14px; height:14px; }
 .top-bar-divider { width:1px; height:14px; background:rgba(255,255,255,0.14); }
 
 /* ============================================================
-   NAVBAR (เหมือนหน้า search — green-800, height 100px)
+   NAVBAR (เหมือนหน้าทัวร์ — gradient + ขอบล่างสีอำพัน)
 ============================================================ */
 .navbar {
-    background:var(--green-800);
+    background:var(--green-900);
+    background-image:linear-gradient(180deg, var(--green-800), var(--green-900));
     height:var(--navbar-h);
     display:flex;
     align-items:center;
@@ -96,7 +97,8 @@ body {
     position:sticky;
     top:0;
     z-index:1000;
-    box-shadow:0 3px 16px rgba(0,0,0,0.28);
+    box-shadow:0 3px 18px rgba(10,31,18,0.35);
+    border-bottom:3px solid var(--amber-500);
 }
 
 /* Brand */
@@ -118,10 +120,27 @@ body {
     box-shadow:0 4px 12px rgba(82,183,136,0.35);
 }
 .brand-icon svg { width:26px; height:26px; }
-.brand-name { display: flex; flex-direction: column;margin-left: -25px; }
-.brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; }
-.brand-name-line2 { font-size:13px; font-weight:400; color:var(--green-200); opacity:.8; }
+.brand-logo{
+    width:160px;
+    height:120px;
+    flex-shrink:0;
+}
 
+.brand-logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+.brand-name { display: flex; flex-direction: column;margin-left: -25px; }
+.brand-name-line1 { font-size: 20px; font-weight: 800; line-height: 1.15; color: #fff; }
+.brand-name-line2 { font-size: 13px; font-weight: 400; color: var(--green-200); opacity: .85; }
+.nav-links { display: flex; align-items: center; gap: 2px; }
+.nav-link {
+  color: rgba(255,255,255,0.82); font-size: 16px; font-weight: 600;
+  padding: 10px 16px; border-radius: var(--r-sm);
+  transition: background .15s, color .15s;
+  white-space: nowrap; display: flex; align-items: center; gap: 7px;
+}
 /* Nav links */
 .nav-links { display:flex; align-items:center; gap:2px; }
 .nav-link {
@@ -135,32 +154,32 @@ body {
     display:flex; align-items:center; gap:7px;
     text-decoration:none;
 }
-.nav-link svg { width:17px; height:17px; opacity:.7; flex-shrink:0; }
-.nav-link:hover { background:rgba(255,255,255,0.12); color:#fff; }
+.nav-link svg { width:17px; height:17px; opacity:.75; flex-shrink:0; }
+.nav-link:hover { background: rgba(255,255,255,0.10); color: var(--amber-400); }
 
 .nav-divider { width:1px; height:32px; background:rgba(255,255,255,0.14); margin:0 8px; }
 
 /* ============================================================
-   USER MENU (logged-in เท่านั้น — เหมือนหน้า search)
+   USER MENU (logged-in เท่านั้น — เหมือนหน้าทัวร์)
 ============================================================ */
 .auth-group { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 
 .user-menu-wrapper { position:relative; }
 .btn-user-menu {
     display:flex; align-items:center; gap:10px;
-    background:rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.10);
     border:1.5px solid rgba(255,255,255,0.25);
     border-radius:50px;
     padding:8px 18px 8px 8px;
     cursor:pointer; color:white;
     transition:background .2s, border-color .2s;
 }
-.btn-user-menu:hover { background:rgba(255,255,255,0.22); border-color:rgba(255,255,255,0.45); }
+.btn-user-menu:hover { background:rgba(255,255,255,0.20); border-color: var(--amber-400); }
 
 .user-avatar {
     width:40px; height:40px;
     border-radius:50%;
-    background:linear-gradient(135deg, var(--green-400), var(--green-600));
+    background:linear-gradient(135deg, var(--amber-400), var(--amber-600));
     display:flex; align-items:center; justify-content:center;
     font-weight:800; font-size:17px; color:white;
     flex-shrink:0;
@@ -439,10 +458,9 @@ body {
     .summary-card { position:static; }
     .form-grid.cols3 { grid-template-columns:1fr 1fr; }
 }
-@media(max-width:768px) {
+@media(max-width:900px) {
     :root { --navbar-h:auto; }
     .navbar { height:auto; padding:14px 5%; flex-wrap:wrap; gap:10px; }
-    .top-bar { display:none; }
 }
 @media(max-width:560px) {
     .form-grid, .form-grid.cols3 { grid-template-columns:1fr; }
@@ -511,7 +529,7 @@ body {
 <body>
 
 <!-- ══════════════════════════════════════════
-     TOP BAR (เหมือนหน้า search)
+     TOP BAR (เหมือนหน้าทัวร์)
 ══════════════════════════════════════════ -->
 <div class="top-bar">
     <a href="#">
@@ -537,20 +555,19 @@ body {
 </div>
 
 <!-- ══════════════════════════════════════════
-     NAVBAR (green-800 + user menu logged-in)
+     NAVBAR (gradient เขียว + ขอบล่างอำพัน + user menu เหมือนหน้าทัวร์)
 ══════════════════════════════════════════ -->
+
 <nav class="navbar">
-    <a href="/member/home" class="navbar-brand">
-        <div class="brand-icon">
-            <svg viewBox="0 0 24 24" fill="white">
-                <path d="M3 17l6-8 4 5 3-3 5 6H3z"/>
-            </svg>
-        </div>
-        <div class="brand-name">
-            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนแม่เหม้า</span>
-            <span class="brand-name-line2">Mae Hma Community Tourism</span>
-        </div>
-    </a>
+  <a href="/search" class="navbar-brand">
+    <div class="brand-logo">
+      <img th:src="@{/images/logo5.png}" alt="Logo">
+    </div>
+    <div class="brand-name">
+      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+      <span class="brand-name-line2">Tribal Community-Based Tourism System</span>
+    </div>
+  </a>
 
     <div class="nav-links">
         <a href="/member/home" class="nav-link">
@@ -560,7 +577,7 @@ body {
             หน้าแรก
         </a>
        <a th:href="@{/tribe-info}" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;margin-right:5px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
       </svg>
       ข้อมูลชนเผ่า
@@ -784,16 +801,18 @@ body {
                     รายละเอียดการเข้าพัก
                 </div>
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>วันที่เช็คอิน</label>
-                        <input class="form-control" type="date"
-                               id="checkin" name="checkin" required onchange="updateSummary()">
-                    </div>
-                    <div class="form-group">
-                        <label>วันที่เช็คเอาท์</label>
-                        <input class="form-control" type="date"
-                               id="checkout" name="checkout" required onchange="updateSummary()">
-                    </div>
+                 <div class="form-group">
+    <label>วันที่เช็คอิน</label>
+    <input class="form-control" type="date"
+           id="checkin" name="checkin" required onchange="updateSummary()"
+           th:value="${checkinParam}">
+</div>
+<div class="form-group">
+    <label>วันที่เช็คเอาท์</label>
+    <input class="form-control" type="date"
+           id="checkout" name="checkout" required onchange="updateSummary()"
+           th:value="${checkoutParam}">
+</div>
                 </div>
                 <br>
                 <div class="form-grid cols3">
@@ -811,9 +830,8 @@ body {
                         <label>จำนวนผู้ใหญ่</label>
                         <div class="num-input-wrap">
                             <button type="button" class="num-btn" onclick="changeNum('guest',-1)">−</button>
-                            <input class="num-val" type="number" id="guest" name="guest"
-                                   value="1" min="1" th:max="${room.maxguest}" oninput="updateSummary()">
-                            <span class="num-unit">ท่าน</span>
+                           <input class="num-val" type="number" id="guest" name="guest"
+       th:value="${guestParam != null ? guestParam : 1}" min="1" th:max="${room.maxguest}" oninput="updateSummary()">
                             <button type="button" class="num-btn" onclick="changeNum('guest',1)">+</button>
                         </div>
                     </div>
@@ -895,9 +913,10 @@ body {
         </div>
         <div class="price-note">*ราคาเปลี่ยนตามจำนวนคืนและห้อง</div>
 
-        <button type="button" class="btn-confirm" onclick="confirmBooking()">
-            ✅ ยืนยันการจองของฉัน
-        </button>
+<!-- ค้นหาปุ่มเดิม .btn-confirm แล้วเปลี่ยนเป็นแบบนี้ -->
+<button type="button" class="btn-confirm" onclick="openConfirmModal()">
+    ยืนยันการจองโฮมสเตย์
+</button>
         <div class="cancel-note">สามารถแก้ไขข้อมูลได้ภายหลัง</div>
     </div>
 </div>
@@ -1015,6 +1034,33 @@ function showSuccessModal(redirectUrl){
         window.location.href = redirectUrl;
     }, 2500);
 }
+let pendingForm = null;
+
+function openConfirmModal() {
+    const form = document.getElementById('bookingForm');
+    
+    // ตรวจสอบความถูกต้องของฟอร์ม (เช่น เลือกวันที่หรือยัง) ก่อนแสดง Modal
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    pendingForm = form;
+    document.getElementById('confirmModal').classList.add('show');
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.remove('show');
+    pendingForm = null;
+}
+
+function executeBooking() {
+    if (pendingForm) {
+        document.getElementById('confirmModal').classList.remove('show');
+        pendingForm.submit(); // ส่งข้อมูลไปยัง Controller
+    }
+
+}
 </script>
 
 <!-- ═══ SUCCESS MODAL ═══ -->
@@ -1030,6 +1076,28 @@ function showSuccessModal(redirectUrl){
       <div class="modal-progress-fill" id="progressFill"></div>
     </div>
   </div>
+</div>
+
+<!-- ═══════════════════════════
+     CONFIRM MODAL (ยืนยันก่อนจอง)
+═══════════════════════════ -->
+<div class="modal-backdrop" id="confirmModal">
+    <div class="modal-box" style="text-align: center;">
+        <div class="checkmark-wrap" style="background: linear-gradient(135deg, var(--green-800), var(--green-600)); box-shadow: 0 8px 24px rgba(22,49,29,0.35);">
+            <div class="checkmark-icon" style="font-size: 32px;">❓</div>
+        </div>
+        <div class="modal-title" style="color: var(--green-850, #0a1f12);">ยืนยันการจองโฮมสเตย์</div>
+        <div class="modal-desc">คุณต้องการทำรายการจองนี้ใช่หรือไม่?</div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 24px;">
+            <button type="button" onclick="closeConfirmModal()" style="flex: 1; padding: 12px; border-radius: 8px; border: 1.5px solid var(--neutral-300); background: #fff; font-weight: 700; cursor: pointer; font-family: inherit; color: var(--neutral-700); transition: background .15s;">
+                ยกเลิก
+            </button>
+            <button type="button" onclick="executeBooking()" style="flex: 1; padding: 12px; border-radius: 8px; border: none; background: var(--green-700); font-weight: 700; cursor: pointer; font-family: inherit; color: #fff; box-shadow: 0 4px 12px rgba(33,92,53,0.35); transition: background .15s;">
+                ยืนยัน
+            </button>
+        </div>
+    </div>
 </div>
 </body>
 </html>

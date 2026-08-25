@@ -595,7 +595,7 @@
 
       <!-- Homestays -->
       <th:block th:each="h,iterStat : ${homestays}" th:if="${iterStat.index < 4}">
-        <a th:href="@{/homestay/{id}(id=${h.homestayid})}" class="fcard" data-type="homestay">
+       <a th:href="@{/homestay/{id}(id=${h.homestayid}, checkin=${startDate}, checkout=${endDate}, guest=${numGuest})}" class="fcard" data-type="homestay">
           <div class="fcard-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
            <img th:if="${imgs != null and imgs.length > 0}"
      th:src="@{${imgs[0]}}"
@@ -868,7 +868,7 @@
                 <div class="card-price-label">ราคา</div>
                 <div class="card-price" style="color:#0369a1;font-size:18px;">ดูรายละเอียดราคา</div>
               </div>
-              <a th:href="@{/homestay/{id}(id=${h.homestayid})}" class="btn-book" style="background:#0369a1;">ดูห้อง</a>
+              <a th:href="@{/homestay/{id}(id=${h.homestayid}, checkin=${startDate}, checkout=${endDate}, guest=${numGuest})}" class="btn-book" style="background:#0369a1;">ดูห้อง</a>
             </div>
           </div>
         </div>
