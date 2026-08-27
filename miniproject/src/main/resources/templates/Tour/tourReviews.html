@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รีวิวทัวร์</title>
+    <title>รีวิวทัวร์ทั้งหมด</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -17,22 +17,21 @@
         }
 
         :root {
-            --green-dark: #3a7d1e;
-            --green-mid: #65a30d;
-            --green-light: #d9f99d;
-            --amber: #65a30d;
-            --amber-hover: #4d7c0a;
-            --bg-page: #f3fae8;
+            --green-dark: #006e2f;
+            --green-mid: #22c55e;
+            --green-light: #6bff8f;
+            --amber: #ff8e4d;
+            --amber-hover: #9d4300;
+            --bg-page: #faf7ef;
             --bg-card: #ffffff;
-            --bg-hero: #f4f1e7;
-            --border: #e2ddd4;
-            --text-main: #1c1c1a;
-            --text-muted: #6b6b68;
-            --text-hint: #9a9a96;
+            --border: #e4e0d4;
+            --text-main: #0b1c30;
+            --text-muted: #3d4a3d;
+            --text-hint: #6d7b6c;
             --radius-card: 12px;
             --radius-sm: 6px;
             --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07);
-            --red: #c0392b;
+            --red: #ba1a1a;
             --white: #ffffff;
         }
 
@@ -50,117 +49,11 @@
             display: flex;
             align-items: center;
             padding: 0 2rem;
-            height: 83px;
+            height: 90px;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
-        }
-
-        .nav-dropdown {
-            position: relative;
-            margin-left: auto;
-        }
-
-        .nav-dropdown-trigger {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255, 255, 255, .85);
-            font-size: .92rem;
-            font-weight: 500;
-            cursor: pointer;
-            padding: .4rem .6rem;
-            border-radius: 8px;
-            transition: background .2s;
-            user-select: none;
-        }
-
-        .nav-dropdown-trigger:hover {
-            background: rgba(255, 255, 255, .1);
-        }
-
-        .nav-dropdown-trigger .chevron {
-            font-size: .75rem;
-            color: rgba(255, 255, 255, .6);
-            transition: transform .2s;
-        }
-
-        .nav-dropdown:hover .chevron {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: calc(100% + 8px);
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, .15);
-            border: 1px solid #e8e8e8;
-            min-width: 200px;
-            padding: 6px 0;
-            z-index: 200;
-        }
-
-        .nav-dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-header {
-            padding: .7rem 1rem .5rem;
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 4px;
-        }
-
-        .dropdown-header .d-name {
-            font-size: .88rem;
-            font-weight: 700;
-            color: #1a2e1c;
-        }
-
-        .dropdown-header .d-role {
-            font-size: .78rem;
-            color: #6b7c6e;
-            margin-top: 1px;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-            padding: .6rem 1rem;
-            font-size: .88rem;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .dropdown-item:hover {
-            background: #eefcda;
-            color: var(--green-dark);
-        }
-
-        .dropdown-divider {
-            border-top: 1px solid #f0f0f0;
-            margin: 4px 0;
-        }
-
-        .dropdown-item.logout {
-            color: #c0392b;
-        }
-
-        .nav-avatar {
-            width: 36px;
-            height: 36px;
-            background: var(--amber);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .85rem;
-            font-weight: 700;
-            color: #fff;
         }
 
         .brand-logo-link {
@@ -178,7 +71,7 @@
         }
 
         .brand-logo img {
-            height: 100px;
+            height: 110px;
             width: auto;
             max-width: 180px;
             object-fit: contain;
@@ -192,36 +85,173 @@
             white-space: nowrap;
         }
 
+        /* ── Profile Dropdown ── */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: .45rem .75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            transition: background .2s, border-color .2s;
+        }
+
+        .profile-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .22);
+        }
+
+        .nav-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #e08a00, #f5a623);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
+            flex-shrink: 0;
+        }
+
+        .owner-name {
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .owner-role {
+            color: rgba(255, 255, 255, .6);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .profile-chevron {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .6);
+            margin-left: 2px;
+            transition: transform .2s;
+        }
+
+        .profile-dropdown:hover .profile-chevron {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #ffffff;
+            min-width: 210px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            z-index: 1000;
+            border-radius: 12px;
+            margin-top: 10px;
+            padding: 6px 0;
+            border: 1px solid #e8e8e8;
+        }
+
+        .dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            display: block;
+        }
+
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: .75rem 1rem .55rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+
+        .dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--green-dark);
+        }
+
+        .dropdown-header .d-email {
+            font-size: .75rem;
+            color: #6b7c6e;
+            margin-top: 2px;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: .6rem 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: .88rem;
+            transition: background .15s;
+        }
+
+        .dropdown-content a i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #faf7ef;
+            color: var(--green-dark);
+        }
+
+        .dropdown-content a:hover i {
+            color: var(--green-dark);
+        }
+
+        .dropdown-content hr {
+            margin: 4px 0;
+            border: 0;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .dropdown-content a.logout-item {
+            color: #ba1a1a;
+        }
+
+        .dropdown-content a.logout-item i {
+            color: #ba1a1a;
+        }
+
+        .dropdown-content a.logout-item:hover {
+            background-color: #fff5f5;
+        }
+
         /* ── Layout ── */
         .page {
             padding: 28px 28px 60px;
             max-width: 1180px;
             margin: auto;
-        }
-
-        .page-header-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 18px;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-muted);
-            font-size: 13px;
-            text-decoration: none;
-            padding: 5px 12px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            transition: background .15s;
-        }
-
-        .back-btn:hover {
-            background: var(--bg-page);
         }
 
         .page-title {
@@ -255,26 +285,25 @@
         }
 
         .back-icon-btn:hover {
-            background: #f3fae8;
+            background: #faf7ef;
             color: var(--green-dark);
             border-color: var(--green-dark);
             transform: translateX(-2px);
         }
 
-        /* ── Summary card (ข้อมูลทัวร์ + คะแนนรวม) ── */
+        /* ── Summary card ── */
         .summary-card {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
             background: #ffffff;
-            /* เดิมเป็น var(--bg-hero) เปลี่ยนเป็น #ffffff */
-            border: 1px solid #e5e7eb;
-            /* เดิมเป็น var(--border) ปรับให้เป็นเส้นเทาอ่อนคลีนๆ */
+            border: 1px solid var(--border);
             border-radius: var(--radius-card);
             padding: 18px 22px;
             margin-bottom: 22px;
             flex-wrap: wrap;
+            box-shadow: var(--shadow-card);
         }
 
         .summary-left {
@@ -283,20 +312,11 @@
             gap: 14px;
         }
 
-        .summary-left img {
-            width: 64px;
-            height: 64px;
-            border-radius: 10px;
-            object-fit: cover;
-            flex-shrink: 0;
-            background: var(--green-light);
-        }
-
         .summary-left .thumb-fallback {
             width: 64px;
             height: 64px;
             border-radius: 10px;
-            background: var(--green-light);
+            background: #eafaf0;
             color: var(--green-dark);
             display: flex;
             align-items: center;
@@ -317,7 +337,7 @@
             gap: 5px;
             font-size: 11.5px;
             color: var(--green-dark);
-            background: var(--green-light);
+            background: rgba(34, 197, 94, .18);
             border-radius: 20px;
             padding: 2px 10px;
             margin-top: 6px;
@@ -352,18 +372,11 @@
             color: var(--text-hint);
         }
 
-        /* ── Reviews layout: sidebar (sticky) + main ── */
+        /* ── Reviews layout ── */
         .reviews-layout {
             display: flex;
             align-items: flex-start;
             gap: 20px;
-        }
-
-        .reviews-sidebar {
-            flex: 0 0 260px;
-            position: sticky;
-            top: 100px;
-            align-self: flex-start;
         }
 
         .reviews-main {
@@ -379,19 +392,13 @@
             .reviews-layout {
                 flex-direction: column;
             }
-
-            .reviews-sidebar {
-                position: static;
-                width: 100%;
-                flex: 1 1 auto;
-            }
         }
 
         .panel {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-card);
-            padding: 16px 18px;
+            padding: 18px 20px;
             box-shadow: var(--shadow-card);
         }
 
@@ -404,63 +411,10 @@
             gap: 6px;
             margin-bottom: 14px;
             padding-left: 8px;
-            border-left: 3px solid #f59e0b;
-            /* เดิมเป็น var(--amber) */
+            border-left: 3px solid var(--amber);
         }
 
-
-
-        /* rating bars (สรุปคะแนน) */
-        .rating-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            margin-bottom: 8px;
-        }
-
-        .rating-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .rating-row .stars-label {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            width: 34px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .rating-row .stars-label i {
-            font-size: 10px;
-        }
-
-        .bar-track {
-            flex: 1;
-            height: 8px;
-            background: var(--bg-page);
-            border-radius: 4px;
-            overflow: hidden;
-            display: block;
-        }
-
-        .bar-fill {
-            height: 100%;
-            display: block;
-            background: #f59e0b;
-            /* เดิมเป็น var(--amber) */
-            border-radius: 4px;
-            transition: width .4s ease;
-        }
-
-        .rating-count {
-            width: 20px;
-            text-align: right;
-            color: var(--text-hint);
-        }
-
-        /* กรองรีวิว - ชิปแนวนอน */
+        /* กรองรีวิว */
         .filter-row {
             display: flex;
             flex-wrap: wrap;
@@ -471,7 +425,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 7px 14px;
+            padding: 7px 15px;
             border: 1px solid var(--border);
             background: #fff;
             border-radius: 20px;
@@ -492,17 +446,25 @@
         }
 
         .filter-chip:hover {
-            background: var(--bg-page);
+            border-color: var(--green-dark);
+            color: var(--green-dark);
         }
 
         .filter-chip.active {
             background: var(--green-dark);
             border-color: var(--green-dark);
             color: #fff;
+            font-weight: 600;
         }
 
         .filter-chip.active .star-gold {
             color: #fff;
+        }
+
+        .filter-chip.disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         /* ── Review card ── */
@@ -530,8 +492,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #FFC79C;
-            /* เดิมเป็น var(--amber) */
+            background: linear-gradient(135deg, #e08a00, #f5a623);
             color: #fff;
             display: flex;
             align-items: center;
@@ -547,22 +508,22 @@
             margin-right: 8px;
         }
 
-        .verified-badge {
+        .review-meta {
+            font-size: 11.5px;
+            color: var(--text-hint);
+            margin-top: 5px;
+        }
+
+        .tour-badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
             font-size: 11px;
             font-weight: 600;
             color: var(--green-dark);
-            background: var(--green-light);
+            background: rgba(34, 197, 94, .18);
             border-radius: 20px;
             padding: 2px 9px;
-        }
-
-        .review-meta {
-            font-size: 11.5px;
-            color: var(--text-hint);
-            margin-top: 5px;
         }
 
         .review-stars {
@@ -605,7 +566,7 @@
 
         /* ── Star colors ── */
         .star-gold {
-            color: #f59e0b;
+            color: var(--amber);
         }
 
         .star-empty {
@@ -667,6 +628,49 @@
         .lightbox-close:hover {
             opacity: 1;
         }
+
+        /* ── Dropdown Filter Styling ── */
+        .select-wrapper {
+            position: relative;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 8px 36px 8px 14px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13.5px;
+            color: var(--text-main);
+            background-color: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .filter-select:hover {
+            border-color: var(--green-mid);
+        }
+
+        .filter-select:focus {
+            border-color: var(--green-dark);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        }
+
+        .select-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-hint);
+            font-size: 12px;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -680,34 +684,39 @@
             </div>
             <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
-        <div class="nav-dropdown">
-            <div class="nav-dropdown-trigger">
-                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
-                           ? ${#strings.substring(loggedInManager.firstname,0,1)} : 'CM'">CM</div>
-                <span
-                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ผู้จัดการ</span>
-                <i class="fas fa-chevron-down chevron"></i>
-            </div>
-            <div class="dropdown-menu">
-                <div class="dropdown-header">
-                    <div class="d-name"
-                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">
-                        ชื่อผู้จัดการ</div>
-                    <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
-                        manager@community.th</div>
+        <div class="nav-right">
+            <div class="profile-dropdown">
+                <div class="profile-trigger">
+                    <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
+                               ? ${#strings.substring(loggedInManager.firstname,0,1)} : 'C'">C</div>
+                    <div>
+                        <span class="owner-name"
+                            th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                        <span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
+    ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
+    : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                    </div>
+                    <i class="fas fa-chevron-down profile-chevron"></i>
                 </div>
-                <a class="dropdown-item" th:href="@{/manager/profile}">
-                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-                </a>
-                <hr class="dropdown-divider">
-                <a class="dropdown-item logout" th:href="@{/logout}">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
+                <div class="dropdown-content">
+                    <div class="dropdown-header">
+                        <div class="d-name"
+                            th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
+                            ผู้จัดการชุมชน</div>
+                        <div class="d-email" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''"></div>
+                    </div>
+                    <a class="dropdown-item" th:href="@{/manager/profile}">
+                        <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+                    </a>
+                    <hr>
+                    <a class="dropdown-item logout" th:href="@{/logout}">
+                        <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- ── Page ── -->
     <!-- ── Page ── -->
     <div class="page">
 
@@ -716,24 +725,21 @@
                 <a class="back-icon-btn" th:href="@{/manager/tours}" title="ย้อนกลับ">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <h1 class="page-title">รีวิวทัวร์</h1>
+                <h1 class="page-title">รีวิวทัวร์ทั้งหมด</h1>
             </div>
         </div>
 
-        <!-- ── Summary card: ข้อมูลทัวร์ + คะแนนรวม ── -->
+        <!-- ── Summary card ── -->
         <div class="summary-card">
             <div class="summary-left">
-                <!-- tour.images เก็บเป็นชื่อไฟล์ คั่นด้วย "||" ต้อง split เอารูปแรก แล้วเติม /uploads/tours/ นำหน้าเอง -->
-                <img th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
-                    th:src="@{'/uploads/tours/' + ${#strings.arraySplit(tour.images, '\|\|')[0]}}" alt="รูปทัวร์">
-                <div th:unless="${tour.images != null and !#strings.isEmpty(tour.images)}" class="thumb-fallback">
-                    <i class="fas fa-mountain-sun"></i>
+                <div class="thumb-fallback">
+                    <i class="fas fa-comments"></i>
                 </div>
                 <div>
-                    <div class="name" th:text="${tour.tourmname}">ชื่อทัวร์</div>
-                    <div class="meta" th:if="${tour.tourtype != null}">
-                        <i class="fas fa-tag"></i>
-                        <span th:text="${tour.tourtype.typename}">ประเภททัวร์</span>
+                    <div class="name">รีวิวจากทุกทัวร์ในความดูแลของคุณ</div>
+                    <div class="meta" th:if="${reviewedTourCount != null and reviewedTourCount > 0}">
+                        <i class="fas fa-route"></i>
+                        <span th:text="'จาก ' + ${reviewedTourCount} + ' ทัวร์'">จาก 0 ทัวร์</span>
                     </div>
                 </div>
             </div>
@@ -748,42 +754,41 @@
             </div>
         </div>
 
-        <!-- ── เนื้อหา: sidebar (sticky) + main (กรอง+รีวิว เลื่อนด้วยกัน) ── -->
+        <!-- ── เนื้อหา: กรอง + รายการรีวิว ── -->
         <div class="reviews-layout" th:if="${reviews != null and !reviews.isEmpty()}">
 
-            <!-- ฝั่งซ้าย: สรุปคะแนน (อยู่นิ่ง ไม่เลื่อนตาม) -->
-            <div class="reviews-sidebar">
-                <div class="panel">
-                    <div class="panel-title">สรุปคะแนน</div>
-                    <!-- loop จาก entrySet ของ ratingCounts ตรง ๆ (Map เรียง 5→1 มาจาก Service แล้ว) -->
-                    <div class="rating-row" th:each="entry : ${ratingCounts}" th:with="star=${entry.key}, cnt=${entry.value},
-                                  pct=${reviews.size() > 0 ? (cnt * 100.0 / reviews.size()) : 0}">
-                        <span class="stars-label">
-                            <span th:text="${star}">5</span>
-                            <i class="fas fa-star star-gold"></i>
-                        </span>
-                        <span class="bar-track">
-                            <span class="bar-fill"
-                                th:style="'width:' + ${#numbers.formatDecimal(pct, 1, 0)} + '%'"></span>
-                        </span>
-                        <span class="rating-count" th:text="${cnt}">0</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ฝั่งขวา: กรองรีวิว + รายการรีวิว (เลื่อนไปด้วยกัน) -->
+            <!-- กรองรีวิว + รายการรีวิว -->
             <div class="reviews-main">
 
                 <div class="panel">
-                    <div class="panel-title">กรองรีวิว</div>
-                    <div class="filter-row" id="filterList">
-                        <span class="filter-chip active" data-star="0" onclick="filterReviews(0, this)">
+                    <!-- กรองประเภททัวร์แบบ Dropdown -->
+                    <div style="margin-bottom: 16px;">
+                        <label for="tourTypeSelect" class="panel-title"
+                            style="margin-bottom: 8px; border-left: 3px solid var(--amber); padding-left: 8px; display: inline-block;">
+                            กรองรีวิวตามประเภททัวร์
+                        </label>
+                        <div class="select-wrapper">
+                            <select id="tourTypeSelect" class="filter-select" onchange="filterByType(this.value)">
+                                <option value="all" th:text="'ทั้งหมด (' + ${reviews.size()} + ')'">ทั้งหมด (0)</option>
+                                <option th:each="typeName : ${allTourTypes}" th:value="${typeName}"
+                                    th:text="${typeName} + ' (' + (${tourTypeCounts.get(typeName)} ?: 0) + ')'">
+                                    ประเภททัวร์ (0)
+                                </option>
+                            </select>
+                            <i class="fas fa-chevron-down select-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- กรองดาว -->
+                    <div class="panel-title">กรองรีวิวตามดาว</div>
+                    <div class="filter-row" id="starFilterList">
+                        <span class="filter-chip active" data-star="0" onclick="filterByStar(0, this)">
                             <i class="fas fa-list"></i>
                             <span th:text="'ทั้งหมด (' + ${reviews.size()} + ')'">ทั้งหมด (0)</span>
                         </span>
                         <th:block th:each="entry : ${ratingCounts}" th:with="star=${entry.key}, cnt=${entry.value}">
                             <span class="filter-chip" th:attr="data-star=${star}"
-                                onclick="filterReviews(this.dataset.star, this)">
+                                onclick="filterByStar(this.dataset.star, this)">
                                 <i class="fas fa-star star-gold"></i>
                                 <span th:text="${star} + ' ดาว (' + ${cnt} + ')'">5 ดาว (0)</span>
                             </span>
@@ -793,21 +798,25 @@
 
                 <!-- รายการรีวิว -->
                 <div id="reviewList">
-                    <div class="review-card" th:each="review : ${reviews}" th:attr="data-rating=${review.rating}">
+                    <div class="review-card" th:each="item : ${reviews}"
+                        th:with="review=${item.review}, tour=${item.tour}" th:attr="data-type=${tour != null and tour.tourtype != null} ? ${tour.tourtype.typename} : '',
+                                 data-rating=${review.rating}">
 
                         <div class="review-head">
-                            <div class="avatar-circle"
-                                th:text="${(review.booking.member.firstname != null ? #strings.substring(review.booking.member.firstname, 0, 1) : '') 
-                                           + (review.booking.member.lastname != null ? #strings.substring(review.booking.member.lastname, 0, 1) : '')}">
+                            <div class="avatar-circle" th:with="fn=${review.booking?.member?.firstname} ?: '',
+                                         fi=${#strings.length(fn) > 0} ? ${#strings.substring(fn,0,1)} : ''"
+                                th:text="${review.anonymous} ? '?' : ${fi}">
                                 U
                             </div>
                             <div>
-                                <span class="reviewer-name"
-                                    th:text="${review.booking.member.firstname + ' ' + review.booking.member.lastname}">
+                                <span class="reviewer-name" th:with="fn=${review.booking?.member?.firstname} ?: '',
+                                             ln=${review.booking?.member?.lastname} ?: ''"
+                                    th:text="${review.anonymous} ? 'ผู้ใช้ไม่ระบุชื่อ' : (${fn} + ' ' + ${ln})">
                                     ผู้รีวิว</span>
-                                <!-- <span class="verified-badge">
-                                    <i class="fas fa-circle-check"></i> จองผ่านระบบ
-                                </span> -->
+                                <span class="tour-badge" th:if="${tour != null}">
+                                    <i class="fas fa-route"></i>
+                                    <span th:text="'รีวิวทัวร์: ' + ${tour.tourmname}">รีวิวทัวร์: ชื่อทัวร์</span>
+                                </span>
                                 <div class="review-meta" th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}">-
                                 </div>
                             </div>
@@ -829,7 +838,7 @@
                             ไม่มีความคิดเห็น
                         </div>
 
-                        <!-- Review images (แสดงได้หลายรูป) -->
+                        <!-- Review images -->
                         <div th:if="${review.reviewimages != null and !#strings.isEmpty(review.reviewimages)}"
                             class="review-images-row">
                             <img th:each="imgPath : ${#strings.arraySplit(review.reviewimages, ',')}"
@@ -839,18 +848,37 @@
 
                     </div>
                 </div>
+
+                <!-- ไม่พบผลลัพธ์ -->
+                <div id="noFilterResults" class="empty-state" style="display:none;">
+                    <i class="fas fa-star-half-stroke"></i>
+                    <p>ยังไม่มีรีวิวในหมวดหมู่นี้</p>
+                </div>
+
+                <!-- Pagination -->
+                <div id="paginationControls"
+                    style="display:none; justify-content:center; align-items:center; gap:16px; margin-top:20px;">
+                    <span id="prevPageBtn" class="filter-chip" onclick="goToPage(-1)">
+                        <i class="fas fa-chevron-left"></i> ก่อนหน้า
+                    </span>
+                    <span id="pageInfo" style="font-size:13px; color:var(--text-muted); font-weight:600;">หน้า 1 /
+                        1</span>
+                    <span id="nextPageBtn" class="filter-chip" onclick="goToPage(1)">
+                        ถัดไป <i class="fas fa-chevron-right"></i>
+                    </span>
+                </div>
             </div>
         </div>
 
-        <!-- ── Empty state ── -->
+        <!-- Empty state -->
         <div class="empty-state" th:if="${reviews == null or reviews.isEmpty()}">
             <i class="fas fa-star-half-stroke"></i>
-            <p>ยังไม่มีรีวิวสำหรับทัวร์นี้</p>
+            <p>ยังไม่มีรีวิวสำหรับทัวร์ของคุณเลย</p>
         </div>
 
     </div>
 
-    <!-- ── Lightbox ── -->
+    <!-- Lightbox -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <span class="lightbox-close"><i class="fas fa-xmark"></i></span>
         <img id="lightboxImg" src="" alt="รูปรีวิวขยาย">
@@ -866,17 +894,73 @@
         }
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-        function filterReviews(star, chipEl) {
-            const val = parseInt(star);
-            const cards = document.querySelectorAll('#reviewList .review-card');
-            cards.forEach(card => {
+        let currentTypeFilter = 'all';
+        let currentStarFilter = 0;
+        let currentPage = 1;
+        const PAGE_SIZE = 6;
+
+        function applyFilters() {
+            const cards = Array.from(document.querySelectorAll('#reviewList .review-card'));
+            const matched = cards.filter(card => {
+                const t = card.dataset.type;
                 const r = parseInt(card.dataset.rating);
-                const show = val === 0 || r === val;
-                card.style.display = show ? '' : 'none';
+                const typeMatch = currentTypeFilter === 'all' || t === currentTypeFilter;
+                const starMatch = currentStarFilter === 0 || r === currentStarFilter;
+                return typeMatch && starMatch;
             });
-            document.querySelectorAll('#filterList .filter-chip').forEach(c => c.classList.remove('active'));
-            if (chipEl) chipEl.classList.add('active');
+            renderPage(cards, matched);
         }
+
+        function renderPage(allCards, matched) {
+            const totalPages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            allCards.forEach(card => card.style.display = 'none');
+
+            const noResults = document.getElementById('noFilterResults');
+            const pagination = document.getElementById('paginationControls');
+
+            if (matched.length === 0) {
+                noResults.style.display = '';
+                pagination.style.display = 'none';
+                document.getElementById('pageInfo').textContent = 'หน้า 0 / 0';
+                return;
+            }
+            noResults.style.display = 'none';
+
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const end = start + PAGE_SIZE;
+            matched.slice(start, end).forEach(card => card.style.display = '');
+
+            pagination.style.display = totalPages > 1 ? 'flex' : 'none';
+            document.getElementById('pageInfo').textContent = 'หน้า ' + currentPage + ' / ' + totalPages;
+            document.getElementById('prevPageBtn').classList.toggle('disabled', currentPage <= 1);
+            document.getElementById('nextPageBtn').classList.toggle('disabled', currentPage >= totalPages);
+        }
+
+        function goToPage(delta) {
+            currentPage += delta;
+            applyFilters();
+        }
+
+        function filterByType(type, chipEl) {
+            currentTypeFilter = type;
+            currentPage = 1;
+            document.querySelectorAll('#typeFilterList .filter-chip').forEach(c => c.classList.remove('active'));
+            if (chipEl) chipEl.classList.add('active');
+            applyFilters();
+        }
+
+        function filterByStar(star, chipEl) {
+            currentStarFilter = parseInt(star);
+            currentPage = 1;
+            document.querySelectorAll('#starFilterList .filter-chip').forEach(c => c.classList.remove('active'));
+            if (chipEl) chipEl.classList.add('active');
+            applyFilters();
+        }
+
+        document.addEventListener('DOMContentLoaded', applyFilters);
     </script>
 
 </body>

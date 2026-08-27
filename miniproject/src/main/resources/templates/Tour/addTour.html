@@ -22,29 +22,39 @@
             <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
         <div class="nav-dropdown">
-            <div class="nav-dropdown-trigger">
-                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
-                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
-                           : 'CM'">CM</div>
-                <span
-                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-                <i class="fas fa-chevron-down chevron"></i>
-            </div>
-            <div class="dropdown-menu">
-                <div class="dropdown-header">
-                    <div class="d-name"
-                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
-                        ผู้จัดการชุมชน</div>
-                    <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
-                        manager@community.th</div>
+            <div class="nav-right">
+                <div class="profile-dropdown">
+                    <div class="profile-trigger">
+                        <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
+   ? ${#strings.substring(loggedInManager.firstname,0,1)}
+   : 'C'"></div>
+                        <div>
+                            <span class="owner-name" th:text="${loggedInManager != null}
+                           ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
+                           : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                            <span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
+    ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
+    : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                        </div>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <div class="dropdown-header">
+                            <div class="d-name"
+                                th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
+                                ผู้จัดการชุมชน</div>
+                            <div class="d-email" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
+                            </div>
+                        </div>
+                        <a th:href="@{/manager/profile}">
+                            <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+                        </a>
+                        <hr>
+                        <a th:href="@{/logout}" class="logout-item">
+                            <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                        </a>
+                    </div>
                 </div>
-                <a th:href="@{/manager/profile}" class="dropdown-item">
-                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-                </a>
-                <hr class="dropdown-divider">
-                <a th:href="@{/logout}" class="dropdown-item logout">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
             </div>
         </div>
     </nav>
@@ -69,15 +79,15 @@
     <!-- ═══ PAGE ═══ -->
     <div class="page">
 
-       <div class="page-header">
-        <div class="page-title-row">
-            <a class="back-icon-btn" th:href="@{/manager/tours}" title="ย้อนกลับ">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <div class="page-title">เพิ่มทัวร์</div>
+        <div class="page-header">
+            <div class="page-title-row">
+                <a class="back-icon-btn" th:href="@{/manager/tours}" title="ย้อนกลับ">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="page-title">เพิ่มทัวร์</div>
+            </div>
+            <div class="page-subtitle">กรอกข้อมูลให้ครบถ้วนเพื่อเผยแพร่ทัวร์ให้นักท่องเที่ยวจอง</div>
         </div>
-        <div class="page-subtitle">กรอกข้อมูลให้ครบถ้วนเพื่อเผยแพร่ทัวร์ให้นักท่องเที่ยวจอง</div>
-    </div>
 
         <div th:if="${errorMessage}" class="alert-error"> <i class="fas fa-circle-exclamation"></i> <span
                 th:text="${errorMessage}"></span></div>

@@ -68,26 +68,10 @@
                 </div>
             </div>
 
-            <!-- ===== เนื้อหา: sidebar (sticky) + main (กรอง+รีวิว เลื่อนด้วยกัน) ===== -->
+            <!-- ===== เนื้อหา: กรอง + รายการรีวิว ===== -->
             <div class="reviews-layout">
 
-                <!-- ฝั่งซ้าย: สรุปคะแนน (อยู่นิ่ง ไม่เลื่อนตาม) -->
-                <div class="reviews-sidebar">
-                    <div class="panel">
-                        <div class="panel-title">สรุปคะแนน</div>
-                        <div class="rating-row" th:each="s : ${#numbers.sequence(5, 1)}">
-                            <span class="stars-label" th:text="'★ ' + ${s}"></span>
-                            <span class="bar-track">
-                                <span class="bar-fill"
-                                    th:style="'width:' + (${totalCount} > 0 ? (${starCounts.get(s)} != null ? ${starCounts.get(s)} : 0) * 100 / ${totalCount} : 0) + '%'"></span>
-                            </span>
-                            <span class="rating-count"
-                                th:text="${starCounts.get(s)} != null ? ${starCounts.get(s)} : 0"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ฝั่งขวา: กรองรีวิว + รายการรีวิว (เลื่อนไปด้วยกัน) -->
+                <!-- กรองรีวิว + รายการรีวิว -->
                 <div class="reviews-main">
 
                     <div class="panel">
@@ -112,34 +96,49 @@
                             ยังไม่มีรีวิวในหมวดนี้
                         </div>
 
-                        <div class="review-card" th:each="review, iter : ${reviews}">
-                            <div class="review-head">
-                                <div class="avatar-circle" th:classappend="'avatar-' + ${iter.index % 5}"
-                                    th:text="${#strings.substring(review.booking.member.firstname, 0, 1)} + ${#strings.substring(review.booking.member.lastname, 0, 1)}">
-                                    
+                        <div id="reviewList">
+                            <div class="review-card" th:each="review, iter : ${reviews}">
+                                <div class="review-head">
+                                    <div class="avatar-circle" th:classappend="'avatar-' + ${iter.index % 5}"
+                                        th:text="${#strings.substring(review.booking.member.firstname, 0, 1)} + ${#strings.substring(review.booking.member.lastname, 0, 1)}">
+
+                                    </div>
+                                    <div>
+                                        <span class="reviewer-name"
+                                            th:text="${review.booking.member.firstname} + ' ' + ${review.booking.member.lastname}"></span>
+                                        <!-- <span class="verified-badge">✓ จองผ่านระบบ</span> -->
+                                        <div class="review-meta"
+                                            th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}"></div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span class="reviewer-name"
-                                        th:text="${review.booking.member.firstname} + ' ' + ${review.booking.member.lastname}"></span>
-                                    <!-- <span class="verified-badge">✓ จองผ่านระบบ</span> -->
-                                    <div class="review-meta"
-                                        th:text="${#dates.format(review.reviewdate, 'd MMM yyyy')}"></div>
+
+                                <div class="review-stars">
+                                    <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                        th:text="${i <= review.rating} ? '★' : '☆'"></span>
+                                </div>
+
+                                <div class="review-comment" th:text="${review.comment}">
+
+                                </div>
+                                <div th:if="${review.reviewimages != null and !#strings.isEmpty(review.reviewimages)}"
+                                    class="review-images-row">
+                                    <img th:each="imgPath : ${#strings.arraySplit(review.reviewimages, ',')}"
+                                        class="review-image" th:src="@{${imgPath}}" alt="รูปรีวิว">
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="review-stars">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}"
-                                    th:text="${i <= review.rating} ? '★' : '☆'"></span>
-                            </div>
-
-                            <div class="review-comment" th:text="${review.comment}">
-
-                            </div>
-                            <div th:if="${review.reviewimages != null and !#strings.isEmpty(review.reviewimages)}"
-                                class="review-images-row">
-                                <img th:each="imgPath : ${#strings.arraySplit(review.reviewimages, ',')}"
-                                    class="review-image" th:src="@{${imgPath}}" alt="รูปรีวิว">
-                            </div>
+                        <!-- ── Pagination ── -->
+                        <div id="paginationControls"
+                            style="display:none; justify-content:center; align-items:center; gap:16px; margin-top:20px;">
+                            <span id="prevPageBtn" class="filter-chip" onclick="goToPage(-1)">
+                                <i class="fas fa-chevron-left"></i> ก่อนหน้า
+                            </span>
+                            <span id="pageInfo" style="font-size:13px; color:var(--text-muted); font-weight:600;">หน้า
+                                1 / 1</span>
+                            <span id="nextPageBtn" class="filter-chip" onclick="goToPage(1)">
+                                ถัดไป <i class="fas fa-chevron-right"></i>
+                            </span>
                         </div>
                     </div>
 
@@ -162,6 +161,36 @@
             </span>
         </div>
     </footer>
+
+    <script>
+        const PAGE_SIZE = 6;
+        let currentPage = 1;
+
+        function paginate() {
+            const cards = Array.from(document.querySelectorAll('#reviewList .review-card'));
+            const totalPages = Math.max(1, Math.ceil(cards.length / PAGE_SIZE));
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            cards.forEach(card => card.style.display = 'none');
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const end = start + PAGE_SIZE;
+            cards.slice(start, end).forEach(card => card.style.display = '');
+
+            const pagination = document.getElementById('paginationControls');
+            pagination.style.display = (cards.length > PAGE_SIZE) ? 'flex' : 'none';
+            document.getElementById('pageInfo').textContent = 'หน้า ' + currentPage + ' / ' + totalPages;
+            document.getElementById('prevPageBtn').classList.toggle('disabled', currentPage <= 1);
+            document.getElementById('nextPageBtn').classList.toggle('disabled', currentPage >= totalPages);
+        }
+
+        function goToPage(delta) {
+            currentPage += delta;
+            paginate();
+        }
+
+        document.addEventListener('DOMContentLoaded', paginate);
+    </script>
 
 </body>
 

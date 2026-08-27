@@ -392,84 +392,109 @@ function initHotelMap() {
     }
 })();
 
-// ── Validate ──
+/* ═══════════════════════════════════════════
+   SUCCESS MODAL + REDIRECT
+═══════════════════════════════════════════ */
+function showSuccessModal(redirectUrl) {
+    const modal = document.getElementById('successModal');
+    const fill = document.getElementById('progressFill');
+
+    modal.classList.add('show');
+
+    fill.style.animation = 'none';
+    fill.offsetHeight; // trigger reflow
+    fill.style.animation = 'progress-drain 2s linear forwards';
+
+    setTimeout(() => {
+        window.location.href = redirectUrl || '/manager/tours';
+    }, 2000);
+}
+
+// ── Validate & Submit ผ่าน Fetch ──
 document.getElementById('editForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
     const min = parseInt(document.querySelector('[name="minSeatstour"]').value);
     const max = parseInt(document.querySelector('[name="maxSeatstour"]').value);
     if (min > max) {
-        e.preventDefault();
         alert('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด');
         return;
     }
 
     if (tourtypeSelect.value === '') {
-        e.preventDefault();
         alert('กรุณาเลือกประเภททัวร์');
         return;
     }
     if (tourtypeSelect.value === '__custom__' && tourtypeCustom.value.trim() === '') {
-        e.preventDefault();
         alert('กรุณาระบุชื่อประเภททัวร์');
         return;
     }
 
-    // ✅ เพิ่มใหม่: ตรวจความสอดคล้องของประเภททัวร์กับจำนวนวัน/คืน
-    //    (เดิมฟอร์มนี้ไม่มีเช็คนี้เลย ต่างจากฟอร์มเพิ่มทัวร์ที่มีอยู่แล้ว
-    //    ทำให้กรอกเช่น "3 วัน 5 คืน" หลุดผ่านการบันทึกได้)
     const d = parseInt(daysInput.value);
     const n = parseInt(nightsInput.value);
     if (tourtypeSelect.value === 'ทัวร์รายวัน') {
         if (d !== 1 || n !== 0) {
-            e.preventDefault();
             alert('ทัวร์รายวันต้องเป็น 1 วัน 0 คืน');
             return;
         }
     } else {
         if (isNaN(d) || d <= 1) {
-            e.preventDefault();
             alert('ทัวร์หลายวันต้องมากกว่า 1 วัน');
             return;
         }
         if (isNaN(n) || n >= d) {
-            e.preventDefault();
             alert('จำนวนคืนต้องน้อยกว่าจำนวนวัน');
             return;
         }
     }
 
-    // ✅ เพิ่มใหม่: ต้องเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง และกรอกรายละเอียดให้ครบ
     if (!allowMeetingPointChk.checked && !allowHotelPickupChk.checked) {
-        e.preventDefault();
         if (pickupOptionErr) pickupOptionErr.style.display = 'block';
         alert('กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง (จุดรวมพล หรือ รับที่โรงแรม)');
         return;
     }
     if (allowMeetingPointChk.checked && meetingPointDetailInput.value.trim() === '') {
-        e.preventDefault();
         alert('กรุณาระบุสถานที่จุดรวมพล');
         return;
     }
     if (allowHotelPickupChk.checked && hotelPickupAreaInput.value.trim() === '') {
-        e.preventDefault();
         alert('กรุณาระบุเขตพื้นที่ที่รับได้');
         return;
     }
     const meetingTimeInput = document.getElementById('meetingTime');
     if (!meetingTimeInput || meetingTimeInput.value.trim() === '') {
-        e.preventDefault();
         alert('กรุณาระบุเวลานัดพบ');
         return;
     }
 
-    // ส่งค่า tourtype จริงไปเป็น hidden field เพื่อให้ backend อ่านได้ (select ใช้ name="tourtypeUi" เฉยๆ)
+    // อัปเดตข้อมูลภาพล่าสุด
+    packImages();
+
+    const formData = new FormData(this);
     const finalTourType = tourtypeSelect.value === '__custom__'
         ? tourtypeCustom.value.trim()
         : tourtypeSelect.value;
-    const hidden = document.createElement('input');
-    hidden.type = 'hidden';
-    hidden.name = 'tourtype';
-    hidden.value = finalTourType;
-    this.appendChild(hidden);
+    formData.set('tourtype', finalTourType);
+
+    fetch(this.action, {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(() => {
+                throw new Error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (status ' + response.status + ')');
+            });
+        }
+        return response.url;
+    })
+    .then((redirectUrl) => {
+        showSuccessModal(redirectUrl);
+    })
+    .catch(err => {
+        console.error('บันทึกการแก้ไขไม่สำเร็จ:', err);
+        alert('เกิดข้อผิดพลาด: ' + err.message);
+    });
 });
 
 /* ═══════════════════════════════════════════
@@ -483,11 +508,11 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         'calSelLabel', 'calSelNote', 'calOpenBtn', 'calCloseBtn', 'calCreateBtn', 'calDeleteBtn', 'calClearBtn'];
     const missing = REQUIRED_IDS.filter(id => !document.getElementById(id));
     if (missing.length > 0) {
-        console.error('❌ ปฏิทินรอบทัวร์: หา element ไม่เจอ ->', missing);
+        console.error(' ปฏิทินรอบทัวร์: หา element ไม่เจอ ->', missing);
     }
-    console.log('📅 window.scheduleData ตอนโหลดหน้า:', window.scheduleData);
+    console.log(' window.scheduleData ตอนโหลดหน้า:', window.scheduleData);
     if (!Array.isArray(window.scheduleData)) {
-        console.error('❌ window.scheduleData ไม่ใช่ array! อาจเกิดจาก syntax error ใน script ก่อนหน้า (ตัว th:inline="javascript")');
+        console.error(' window.scheduleData ไม่ใช่ array! อาจเกิดจาก syntax error ใน script ก่อนหน้า (ตัว th:inline="javascript")');
     }
     const THAI_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
         'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];

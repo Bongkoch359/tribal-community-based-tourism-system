@@ -1,4 +1,4 @@
- /* ===== โทนสีเดียวกับ login.css ===== */
+/* ===== โทนสีเดียวกับ login.css ===== */
  :root {
      --green-dark: #0d3d30;
      ;
@@ -437,13 +437,6 @@
      gap: 20px;
  }
 
- .reviews-sidebar {
-     flex: 0 0 280px;
-     position: sticky;
-     top: 20px;
-     align-self: flex-start;
- }
-
  .reviews-main {
      flex: 1;
      min-width: 0;
@@ -457,11 +450,12 @@
      .reviews-layout {
          flex-direction: column;
      }
+ }
 
-     .reviews-sidebar {
-         position: static;
-         width: 100%;
-     }
+ .filter-chip.disabled {
+     opacity: .4;
+     cursor: not-allowed;
+     pointer-events: none;
  }
 
  /* ลดช่องว่างด้านบนที่เหลือเยอะเกินไป + จัดปุ่มย้อนกลับให้อยู่แถวเดียวกับหัวข้อ */

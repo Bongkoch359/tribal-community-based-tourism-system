@@ -4,14 +4,13 @@ function blockAddRoom(e) {
     return false;
 }
 
-// ใช้ map สถานะ -> key (ภาษาอังกฤษ) เพื่ออ้างอิง id/class ให้ปลอดภัย
 const statusKeyMap = {
     'เปิดจอง': 'available',
     'เต็ม': 'full',
     'ปิดปรับปรุง': 'maintenance',
 };
 
-// นับจำนวนห้องแต่ละสถานะจากแถวในตาราง แล้วเติมตัวเลขลง badge
+// นับจำนวนห้องแต่ละสถานะ แล้วอัปเดต Badge
 function computeStatusCounts() {
     const rows = document.querySelectorAll('#roomBody tr[data-status]');
     const counts = {};
@@ -22,25 +21,23 @@ function computeStatusCounts() {
 
     Object.keys(statusKeyMap).forEach(status => {
         const key = statusKeyMap[status];
-        const badge = document.getElementById('count-' + key);
-        if (badge) badge.textContent = counts[status] || 0;
-    });
-}
+        const count = counts[status] || 0;
 
-function filterRooms(status, btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.remove('active', 'active-available', 'active-full', 'active-maintenance');
+        const badgeTrigger = document.getElementById('count-' + key);
+        const badgeMenu = document.getElementById('count-' + key + '-menu');
+
+        if (badgeTrigger) badgeTrigger.textContent = count;
+        if (badgeMenu) badgeMenu.textContent = count;
     });
-    btn.classList.add('active', 'active-' + statusKeyMap[status]);
-    filterByStatus(status);
 }
 
 function filterByStatus(status) {
     const rows = document.querySelectorAll('#roomBody tr[data-status]');
     let visibleCount = 0;
+
     rows.forEach(row => {
         const rowStatus = row.getAttribute('data-status');
-        const match = rowStatus === status;
+        const match = (rowStatus === status);
         row.style.display = match ? '' : 'none';
         if (match) visibleCount++;
     });
@@ -48,7 +45,6 @@ function filterByStatus(status) {
     const oldNotice = document.getElementById('noStatusRow');
     if (oldNotice) oldNotice.remove();
 
-    // ถ้าไม่มีห้องพักในสถานะที่เลือก ให้ขึ้นข้อความแจ้งเตือน
     if (visibleCount === 0) {
         const tbody = document.getElementById('roomBody');
         const tr = document.createElement('tr');
@@ -65,10 +61,45 @@ function filterByStatus(status) {
     }
 }
 
+function toggleStatusDropdown() {
+    document.getElementById('statusFilterDropdown').classList.toggle('open');
+}
+
+window.addEventListener('click', function (e) {
+    const dropdown = document.getElementById('statusFilterDropdown');
+    if (dropdown && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+    }
+});
+
+function selectStatusFilter(status, itemEl) {
+    const triggerBtn = document.getElementById('dropdownTriggerBtn');
+    const selectedTextContainer = triggerBtn.querySelector('.selected-text');
+
+    const iconClass = itemEl.querySelector('i').className;
+    const badgeText = itemEl.querySelector('.count-badge').textContent;
+
+    // อัปเดตข้อความ + ไอคอน + ตัวเลขบนปุ่ม
+    selectedTextContainer.innerHTML = `
+        <i class="${iconClass}"></i>
+        <span>${status}</span>
+        <span class="count-badge" id="count-${statusKeyMap[status]}">${badgeText}</span>
+    `;
+
+    // อัปเดตสีกรอบและพื้นหลังปุ่ม
+    triggerBtn.className = 'filter-dropdown-trigger status-' + statusKeyMap[status];
+
+    // เปลี่ยน Active class
+    document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
+    itemEl.classList.add('active');
+
+    // ปิดเมนูและกรองข้อมูล
+    document.getElementById('statusFilterDropdown').classList.remove('open');
+    filterByStatus(status);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     computeStatusCounts();
-
-    // เปิดสถานะแรกเป็นค่า default (ตามปุ่มแรกใน HTML)
-    const firstBtn = document.querySelector('#filterBar .filter-btn');
-    if (firstBtn) filterByStatus(firstBtn.dataset.status);
+    // เริ่มต้นแสดงสถานะ "เปิดจอง"
+    filterByStatus('เปิดจอง');
 });

@@ -2,6 +2,9 @@ package com.example.miniproject.controller.Tour;
 
 import com.example.miniproject.entity.Activitypost;
 import com.example.miniproject.entity.Communitymanager;
+import com.example.miniproject.entity.Tour;
+import com.example.miniproject.entity.Tourschedule;
+import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.service.Member.ActivityPostService;
 import com.example.miniproject.service.Member.TourService;
 import jakarta.servlet.http.HttpSession;
@@ -9,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/manager/posts")
@@ -19,6 +27,19 @@ public class ActivityPostController {
 
     @Autowired
     private TourService tourService;
+
+    @Autowired
+    private TourScheduleRepository tourScheduleRepository;
+
+    // ─── ฟังก์ชันช่วยกรองเฉพาะทัวร์ที่มีรอบเปิดรับจองและยังไม่หมดอายุ ───
+    private List<Tour> getActiveOpenTours(Communitymanager manager) {
+        Date today = Date.valueOf(LocalDate.now());
+        return tourService.getToursByManager(manager).stream().filter(tour -> {
+            List<Tourschedule> bookableSchedules = 
+                    tourScheduleRepository.findBookableSchedules(tour.getTourid(), today);
+            return bookableSchedules != null && !bookableSchedules.isEmpty();
+        }).collect(Collectors.toList());
+    }
 
     // ─── แสดงรายการโพสต์ ───
     @GetMapping
@@ -64,7 +85,7 @@ public class ActivityPostController {
         }
 
         model.addAttribute("loggedInManager", manager);
-        model.addAttribute("tours", tourService.getToursByManager(manager)); // สำหรับ dropdown เลือกทัวร์ที่จะโปรโมท
+        model.addAttribute("tours", getActiveOpenTours(manager)); // ดึงเฉพาะทัวร์ที่เปิดจอง
         return "Tour/createPost";
     }
 
@@ -86,11 +107,11 @@ public class ActivityPostController {
         try {
             activityPostService.createPost(title, location, description, images, tourId, manager);
             model.addAttribute("loggedInManager", manager);
-            model.addAttribute("tours", tourService.getToursByManager(manager));
+            model.addAttribute("tours", getActiveOpenTours(manager));
             model.addAttribute("successMessage", "บันทึกโพสต์สำเร็จ!");
             return "Tour/createPost";
         } catch (Exception e) {
-            model.addAttribute("tours", tourService.getToursByManager(manager));
+            model.addAttribute("tours", getActiveOpenTours(manager));
             model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
             return "Tour/listPost";
         }
@@ -111,7 +132,7 @@ public class ActivityPostController {
 
         model.addAttribute("post", post);
         model.addAttribute("loggedInManager", manager);
-        model.addAttribute("tours", tourService.getToursByManager(manager)); // สำหรับ dropdown เลือกทัวร์ที่จะโปรโมท
+        model.addAttribute("tours", getActiveOpenTours(manager)); // ดึงเฉพาะทัวร์ที่เปิดจอง
         return "Tour/editPost";
     }
 
@@ -139,13 +160,13 @@ public class ActivityPostController {
 
             model.addAttribute("loggedInManager", manager);
             model.addAttribute("post", updated);
-            model.addAttribute("tours", tourService.getToursByManager(manager));
+            model.addAttribute("tours", getActiveOpenTours(manager));
             model.addAttribute("successMessage", "แก้ไขโพสต์กิจกรรมสำเร็จ!");
             return "Tour/editPost";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "เกิดข้อผิดพลาด: " + e.getMessage());
             model.addAttribute("post", activityPostService.getPostById(activityId));
-            model.addAttribute("tours", tourService.getToursByManager(manager));
+            model.addAttribute("tours", getActiveOpenTours(manager));
             return "Tour/editPost";
         }
     }

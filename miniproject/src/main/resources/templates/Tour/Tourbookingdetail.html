@@ -18,23 +18,23 @@
         }
 
         :root {
-            --green-dark: #3a7d1e;
-            --green-mid: #65a30d;
-            --green-light: #d4edda;
-            --amber: #f0a500;
-            --amber-hover: #4d7c0a;
+            --green-dark: #006e2f;
+            --green-mid: #22c55e;
+            --green-light: #6bff8f;
+            --amber: #ff8e4d;
+            --amber-hover: #e6733d;
             --amber-light: #fff3cd;
             --amber-text: #856404;
             --red-light: #fde8e8;
             --red-text: #a32d2d;
             --gray-light: #e9ecef;
             --gray-text: #555;
-            --bg-page: #f3fae8;
+            --bg-page: #faf7ef;
             --bg-card: #ffffff;
-            --border: #e2ddd4;
-            --text-main: #1c1c1a;
-            --text-muted: #6b6b68;
-            --text-hint: #9a9a96;
+            --border: #e4e0d4;
+            --text-main: #0b1c30;
+            --text-muted: #3d4a3d;
+            --text-hint: #6d7b6c;
             --white: #ffffff;
             --radius-card: 12px;
             --radius-sm: 8px;
@@ -57,7 +57,7 @@
             display: flex;
             align-items: center;
             padding: 0 2rem;
-            height: 72px;
+            height: 90px;
             gap: .25rem;
             position: sticky;
             top: 0;
@@ -102,7 +102,7 @@
 
         .nav-link.active {
             color: #fff;
-            border-bottom: 3px solid #65a30d;
+            border-bottom: 3px solid #22c55e;
             border-radius: 0;
             padding-bottom: calc(.45rem - 3px);
         }
@@ -111,58 +111,108 @@
             font-size: .9rem;
         }
 
-        .nav-dropdown {
-            position: relative;
-        }
-
-        .nav-dropdown-trigger {
+        /* ─── PROFILE AREA  ─── */
+        .nav-right {
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: rgba(255, 255, 255, .85);
-            font-size: .92rem;
-            font-weight: 500;
+            margin-left: 1rem;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
             cursor: pointer;
-            padding: .4rem .6rem;
-            border-radius: 8px;
-            transition: background .2s;
-            user-select: none;
         }
 
-        .nav-dropdown-trigger:hover {
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: .45rem .75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            transition: background .2s, border-color .2s;
+        }
+
+        .profile-trigger:hover {
             background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .22);
         }
 
-        .nav-dropdown-trigger .chevron {
-            font-size: .75rem;
+        .nav-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #e08a00, #f5a623);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
+            flex-shrink: 0;
+        }
+
+        .owner-name {
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .owner-role {
             color: rgba(255, 255, 255, .6);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .profile-chevron {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .6);
+            margin-left: 2px;
             transition: transform .2s;
         }
 
-        .nav-dropdown:hover .chevron {
+        .profile-dropdown:hover .profile-chevron {
             transform: rotate(180deg);
         }
 
-        .dropdown-menu {
+        /* ─── DROPDOWN MENU ─── */
+        .dropdown-content {
             display: none;
             position: absolute;
             right: 0;
-            top: calc(100% + 8px);
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, .15);
-            border: 1px solid #e8e8e8;
-            min-width: 200px;
+            top: 100%;
+            background-color: #ffffff;
+            min-width: 210px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            z-index: 1000;
+            border-radius: 12px;
+            margin-top: 10px;
             padding: 6px 0;
-            z-index: 200;
+            border: 1px solid #e8e8e8;
         }
 
-        .nav-dropdown:hover .dropdown-menu {
+        .dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            display: block;
+        }
+
+        .profile-dropdown:hover .dropdown-content {
             display: block;
         }
 
         .dropdown-header {
-            padding: .7rem 1rem .5rem;
+            padding: .75rem 1rem .55rem;
             border-bottom: 1px solid #f0f0f0;
             margin-bottom: 4px;
         }
@@ -170,71 +220,58 @@
         .dropdown-header .d-name {
             font-size: .88rem;
             font-weight: 700;
-            color: #1a2e1c;
+            color: var(--green-dark);
         }
 
-        .dropdown-header .d-role {
-            font-size: .78rem;
+        .dropdown-header .d-email {
+            font-size: .75rem;
             color: #6b7c6e;
-            margin-top: 1px;
+            margin-top: 2px;
         }
 
-        .dropdown-item {
+        .dropdown-content a {
+            color: #333;
+            padding: .6rem 1rem;
+            text-decoration: none;
             display: flex;
             align-items: center;
             gap: .65rem;
-            padding: .6rem 1rem;
             font-size: .88rem;
-            color: #333;
-            text-decoration: none;
             transition: background .15s;
         }
 
-        .dropdown-item i {
+        .dropdown-content a i {
             width: 16px;
             text-align: center;
             color: #6b7c6e;
             font-size: .85rem;
         }
 
-        .dropdown-item:hover {
-            background: #f5f8f5;
+        .dropdown-content a:hover {
+            background-color: #faf7ef;
             color: var(--green-dark);
         }
 
-        .dropdown-item:hover i {
+        .dropdown-content a:hover i {
             color: var(--green-dark);
         }
 
-        .dropdown-divider {
-            border: none;
-            border-top: 1px solid #f0f0f0;
+        .dropdown-content hr {
             margin: 4px 0;
+            border: 0;
+            border-top: 1px solid #f0f0f0;
         }
 
-        .dropdown-item.logout {
-            color: #c0392b;
+        .dropdown-content a.logout-item {
+            color: #ba1a1a;
         }
 
-        .dropdown-item.logout i {
-            color: #c0392b;
+        .dropdown-content a.logout-item i {
+            color: #ba1a1a;
         }
 
-        .dropdown-item.logout:hover {
-            background: #fff5f5;
-        }
-
-        .nav-avatar {
-            width: 34px;
-            height: 34px;
-            background: var(--amber);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .8rem;
-            font-weight: 700;
-            color: #fff;
+        .dropdown-content a.logout-item:hover {
+            background-color: #fff5f5;
         }
 
         .brand-logo-link {
@@ -252,7 +289,7 @@
         }
 
         .brand-logo img {
-            height: 100px;
+            height: 110px;
             width: auto;
             max-width: 170px;
             object-fit: contain;
@@ -378,7 +415,7 @@
             font-size: .84rem;
             font-weight: 700;
             color: var(--green-dark);
-            background: #f0ebd9;
+            background: #faf7ef;
         }
 
         .card-header i {
@@ -432,7 +469,7 @@
 
         .field-divider {
             grid-column: 1 / -1;
-            border-top: 1px solid #f2f0ea;
+            border-top: 1px solid #faf7ef;
             margin: 2px 0;
         }
 
@@ -635,7 +672,7 @@
         }
 
         .booking-note {
-            background: #f3fae8;
+            background: #faf7ef;
             border-left: 3px solid var(--green-mid);
             border-radius: 0 8px 8px 0;
             padding: 9px 12px;
@@ -727,7 +764,7 @@
         }
 
         .tour-block+.tour-block {
-            border-top: 1px solid #f0ebd9;
+            border-top: 1px solid #faf7ef;
             padding-top: 12px;
             margin-top: 12px;
         }
@@ -737,7 +774,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 6px 0;
-            border-bottom: 1px solid #f2f0ea;
+            border-bottom: 1px solid #faf7ef;
             font-size: .84rem;
         }
 
@@ -898,7 +935,7 @@
         }
 
         .btn-confirm-booking:hover {
-            background: linear-gradient(135deg, #2d611a, var(--green-mid));
+            background: linear-gradient(135deg, #00551f, var(--green-mid));
             transform: translateY(-1px);
         }
 
@@ -1006,7 +1043,7 @@
         }
 
         .btn-modal-confirm-green:hover {
-            background: #2d611a;
+            background: #00551f;
         }
 
         .btn-modal-confirm-red {
@@ -1079,8 +1116,47 @@
             margin-top: auto;
             padding: .8rem 2rem;
             background: var(--green-dark);
-            color: #d8f3dc;
+            color: #e3f9ea;
             font-size: .84rem;
+        }
+
+        /* ─── CANCEL REASON CARD ─── */
+        .card-cancel-reason {
+            border-color: #f5c6cb;
+            background: #fff8f8;
+        }
+
+        .cancel-header {
+            background: #fde8e8 !important;
+            color: var(--red-text) !important;
+        }
+
+        .cancel-header i {
+            color: var(--red-text) !important;
+        }
+
+        .cancel-reason-box {
+            background: #fff;
+            border-left: 3px solid var(--red-text);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            padding: 10px 14px;
+            font-size: .84rem;
+        }
+
+        .cancel-reason-label {
+            font-size: .74rem;
+            font-weight: 700;
+            color: var(--red-text);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cancel-reason-text {
+            color: var(--text-main);
+            line-height: 1.5;
+            word-break: break-word;
         }
 
         .footer-content {
@@ -1090,7 +1166,7 @@
         }
 
         .footer a {
-            color: #95d5b2;
+            color: #a8f0be;
             text-decoration: none;
             margin-left: 8px;
         }
@@ -1132,30 +1208,37 @@
         <div style="flex:1;"></div>
 
 
-        <div class="nav-dropdown" style="margin-left:1rem;">
-            <div class="nav-dropdown-trigger">
-                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
-                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
-                           : 'CM'">CM</div>
-                <span
-                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-                <i class="fas fa-chevron-down chevron"></i>
-            </div>
-            <div class="dropdown-menu">
-                <div class="dropdown-header">
-                    <div class="d-name"
-                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
-                        ผู้จัดการชุมชน</div>
-                    <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
-                        manager@community.th</div>
+        <div class="nav-right">
+            <div class="profile-dropdown">
+                <div class="profile-trigger">
+                    <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
+   ? ${#strings.substring(loggedInManager.firstname,0,1)}
+   : 'C'"></div>
+                    <div>
+                        <span class="owner-name" th:text="${loggedInManager != null}
+                           ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
+                           : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                        <span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
+    ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
+    : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                    </div>
+                    <i class="fas fa-chevron-down profile-chevron"></i>
                 </div>
-                <a th:href="@{/manager/profile}" class="dropdown-item">
-                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-                </a>
-                <hr class="dropdown-divider">
-                <a th:href="@{/logout}" class="dropdown-item logout">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
+                <div class="dropdown-content">
+                    <div class="dropdown-header">
+                        <div class="d-name"
+                            th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
+                            ผู้จัดการชุมชน</div>
+                        <div class="d-email" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''"></div>
+                    </div>
+                    <a th:href="@{/manager/profile}">
+                        <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+                    </a>
+                    <hr>
+                    <a th:href="@{/logout}" class="logout-item">
+                        <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -1181,7 +1264,7 @@
                                : '-'">29 มกราคม 2567, 14:30 น.</span>
                 </div>
             </div>
-            
+
             <div class="page-header-status">
                 <span style="font-size:.8rem;color:var(--text-muted);font-weight:600;">สถานะ</span>
                 <span style="width:1px;height:16px;background:var(--border);"></span>
@@ -1239,7 +1322,7 @@
                         </div>
 
                         <div th:if="${booking.guests != null and !booking.guests.isEmpty()}"
-                            style="margin-top:12px;padding-top:10px;border-top:1px solid #f2f0ea;">
+                            style="margin-top:12px;padding-top:10px;border-top:1px solid #faf7ef;">
                             <div class="note-label" style="color:var(--green-dark);">
                                 <i class="fas fa-users"></i> ผู้ร่วมเดินทาง
                             </div>
@@ -1458,6 +1541,23 @@
                                     <span class="field-value"
                                         th:text="${booking.payment.paymentdate != null ? #dates.format(booking.payment.paymentdate,'dd MMM yyyy HH:mm') : '-'}">-</span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- การ์ดแสดงเหตุผลการยกเลิก (แสดงเฉพาะเมื่อสถานะเป็น CANCEL) -->
+                <div class="card card-cancel-reason" th:if="${booking.bookingStatus?.name() == 'CANCEL'}">
+                    <div class="card-header cancel-header">
+                        <i class="fas fa-circle-xmark"></i> ข้อมูลการยกเลิก
+                    </div>
+                    <div class="card-body">
+                        <div class="cancel-reason-box">
+                            <div class="cancel-reason-label">
+                                <i class="fas fa-comment-dots"></i> เหตุผลที่ยกเลิก:
+                            </div>
+                            <div class="cancel-reason-text"
+                                th:text="${booking.cancelReason != null and !#strings.isEmpty(booking.cancelReason) ? booking.cancelReason : 'ไม่ได้ระบุเหตุผล'}">
+                                ยอดชำระเงินไม่ตรงกับยอดที่ต้องชำระ
                             </div>
                         </div>
                     </div>

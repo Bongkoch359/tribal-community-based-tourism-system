@@ -42,6 +42,9 @@ public class DashboardController {
         @GetMapping("/owner/dashboard")
         public String dashboard(
                         @RequestParam(value = "homestayid", required = false) Integer homestayid,
+                        @RequestParam(value = "range", required = false, defaultValue = "6") String range,
+                        @RequestParam(value = "startMonth", required = false) String startMonthParam,
+                        @RequestParam(value = "endMonth", required = false) String endMonthParam,
                         HttpSession session,
                         Model model) {
 
@@ -52,7 +55,7 @@ public class DashboardController {
                 // ดึงโฮมสเตย์ทั้งหมดของเจ้าของคนนี้
                 List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
 
-                // ถ้าไม่ได้ส่ง homestayid มา → ใช้อันแรกของรายการ
+                // ถ้าไม่ได้ส่ง homestayid มา ใช้อันแรกของรายการ
                 if (homestayid == null) {
                         if (!myHomestays.isEmpty()) {
                                 homestayid = myHomestays.get(0).getHomestayid();
@@ -105,18 +108,58 @@ public class DashboardController {
                                 ? bookingRepository.findTop5ByHomestayIdAndStatus(homestayid,
                                                 BookingStatus.WAITING_APPROVAL)
                                 : new java.util.ArrayList<>();
-                // ─── แนวโน้มรายได้ต่อเดือน (6 เดือนล่าสุด, เติม 0 ในเดือนที่ไม่มีรายได้) ───
+                // ─── แนวโน้มรายได้ ───
                 java.time.YearMonth currentYM = java.time.YearMonth.now();
-                java.time.YearMonth startYM = currentYM.minusMonths(5);
+                java.time.YearMonth startYM;
+                java.time.YearMonth endYM;
+
+                if ("custom".equals(range) && startMonthParam != null && !startMonthParam.isBlank()
+                                && endMonthParam != null && !endMonthParam.isBlank()) {
+                        try {
+                                startYM = java.time.YearMonth.parse(startMonthParam);
+                                endYM = java.time.YearMonth.parse(endMonthParam);
+                        } catch (Exception e) {
+                                startYM = currentYM.minusMonths(5);
+                                endYM = currentYM;
+                                range = "6";
+                        }
+                } else {
+                        int months;
+                        try {
+                                months = Integer.parseInt(range);
+                        } catch (NumberFormatException e) {
+                                months = 6;
+                                range = "6";
+                        }
+                        endYM = currentYM;
+                        startYM = currentYM.minusMonths(months - 1);
+                }
+
+                // กันเลือกกลับด้าน (start > end)
+                if (startYM.isAfter(endYM)) {
+                        java.time.YearMonth tmp = startYM;
+                        startYM = endYM;
+                        endYM = tmp;
+                }
+
+                // กันเลือกช่วงยาวเกินไป (cap ไว้ 24 เดือน กันกราฟแน่นเกินไป)
+                if (java.time.temporal.ChronoUnit.MONTHS.between(startYM, endYM) > 23) {
+                        endYM = startYM.plusMonths(23);
+                }
+
                 java.sql.Date startOfRange = java.sql.Date.valueOf(startYM.atDay(1));
+                java.sql.Date endOfRange = java.sql.Date.valueOf(endYM.atEndOfMonth());
 
                 Map<java.time.YearMonth, Double> revenueByMonth = new LinkedHashMap<>();
-                for (int i = 5; i >= 0; i--) {
-                        revenueByMonth.put(currentYM.minusMonths(i), 0.0);
+                java.time.YearMonth cursorYM = startYM;
+                while (!cursorYM.isAfter(endYM)) {
+                        revenueByMonth.put(cursorYM, 0.0);
+                        cursorYM = cursorYM.plusMonths(1);
                 }
+
                 if (homestayid != null) {
-                        List<Object[]> rows = bookingRepository.sumRevenueByMonthByHomestayId(homestayid,
-                                        startOfRange);
+                        List<Object[]> rows = bookingRepository.sumRevenueByMonthRangeByHomestayId(
+                                        homestayid, startOfRange, endOfRange);
                         for (Object[] row : rows) {
                                 int yr = ((Number) row[0]).intValue();
                                 int mo = ((Number) row[1]).intValue();
@@ -181,6 +224,40 @@ public class DashboardController {
                                 gradient.append(", ");
                         cursor = end;
                 }
+                // ─── ยอดจองรายเดือน (ใช้ช่วงเวลาเดียวกับ revenueTrend) ───
+                Map<java.time.YearMonth, Long> bookingCountByMonth = new LinkedHashMap<>();
+                java.time.YearMonth cursorYM2 = startYM;
+                while (!cursorYM2.isAfter(endYM)) {
+                        bookingCountByMonth.put(cursorYM2, 0L);
+                        cursorYM2 = cursorYM2.plusMonths(1);
+                }
+                if (homestayid != null) {
+                        List<Object[]> countRows = bookingRepository.countBookingsByMonthRangeByHomestayId(
+                                        homestayid, startOfRange, endOfRange);
+                        for (Object[] row : countRows) {
+                                int yr = ((Number) row[0]).intValue();
+                                int mo = ((Number) row[1]).intValue();
+                                long cnt = ((Number) row[2]).longValue();
+                                bookingCountByMonth.put(java.time.YearMonth.of(yr, mo), cnt);
+                        }
+                }
+
+                List<Map<String, Object>> bookingCountTrend = new ArrayList<>();
+                long maxMonthlyBookingCount = bookingCountByMonth.values().stream()
+                                .max(Long::compareTo).orElse(0L);
+                for (Map.Entry<java.time.YearMonth, Long> e : bookingCountByMonth.entrySet()) {
+                        java.time.YearMonth ym = e.getKey();
+                        Map<String, Object> point = new LinkedHashMap<>();
+                        int beYearShort = (ym.getYear() + 543) % 100;
+                        point.put("label", thaiMonths[ym.getMonthValue() - 1] + " " + beYearShort);
+                        point.put("count", e.getValue());
+                        int heightPct = maxMonthlyBookingCount > 0
+                                        ? (int) Math.round((e.getValue() * 100.0) / maxMonthlyBookingCount)
+                                        : 0;
+                        point.put("heightPct", Math.max(heightPct, e.getValue() > 0 ? 6 : 2));
+                        bookingCountTrend.add(point);
+                }
+
                 gradient.append(")");
                 String donutGradientStyle = totalBookingsForDonut > 0
                                 ? gradient.toString()
@@ -200,6 +277,11 @@ public class DashboardController {
                 model.addAttribute("totalBookingsForDonut", totalBookingsForDonut);
                 model.addAttribute("donutGradientStyle", donutGradientStyle);
                 model.addAttribute("revenueTrend", revenueTrend);
+                model.addAttribute("revenueTrend", revenueTrend);
+                model.addAttribute("selectedRange", range);
+                model.addAttribute("selectedStartMonth", startYM.toString()); // เช่น 2026-03
+                model.addAttribute("selectedEndMonth", endYM.toString());
+                model.addAttribute("bookingCountTrend", bookingCountTrend);
 
                 // ── ตรวจสอบข้อมูลธนาคาร + ลายเซ็น ──
                 try {

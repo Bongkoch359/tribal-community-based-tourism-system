@@ -19,20 +19,21 @@
         }
 
         :root {
-            --green-dark: #3a7d1e;
-            --green-mid: #65a30d;
-            --green-light: #d9f99d;
-            --amber: #f0a500;
-            --amber-hover: #c27f00;
-            --bg-page: #f3fae8;
+            --green-dark: #006e2f;
+            --green-mid: #22c55e;
+            --green-light: #6bff8f;
+            --amber: #ff8e4d;
+            --amber-hover: #e6733d;
+            --bg-page: #faf7ef;
             --bg-card: #ffffff;
-            --border: #e2ddd4;
-            --text-main: #1c1c1a;
-            --text-muted: #6b6b68;
-            --text-hint: #9a9a96;
+            --border: #e4e0d4;
+            --text-main: #0b1c30;
+            --text-muted: #3d4a3d;
+            --text-hint: #6d7b6c;
             --radius-card: 14px;
             --radius-sm: 8px;
             --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.06);
+            --red: #ba1a1a;
             --white: #ffffff;
         }
 
@@ -50,7 +51,7 @@
             display: flex;
             align-items: center;
             padding: 0 2rem;
-            height: 83px;
+            height: 90px;
             gap: .25rem;
             position: sticky;
             top: 0;
@@ -67,7 +68,7 @@
         }
 
         .brand-logo img {
-            height: 100px;
+            height: 110px;
             width: auto;
             max-width: 160px;
             object-fit: contain;
@@ -81,137 +82,54 @@
             white-space: nowrap;
         }
 
-        .nav-dropdown {
-            position: relative;
+        /* ─── PROFILE AREA  ─── */
+        /* ─── PROFILE AREA (STATIC - ไม่มี DROPDOWN) ─── */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
         }
 
-        .nav-dropdown-trigger {
+        .profile-static {
             display: flex;
             align-items: center;
             gap: 10px;
-            cursor: pointer;
-            padding: .4rem .7rem;
+            padding: .45rem .75rem;
             border-radius: 10px;
-            transition: background .2s;
+            border: 1px solid rgba(255, 255, 255, .12);
             user-select: none;
-        }
-
-        .nav-dropdown-trigger:hover {
-            background: rgba(255, 255, 255, .1);
+            cursor: default;
         }
 
         .nav-avatar {
-            width: 38px;
-            height: 38px;
-            background: var(--amber);
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #e08a00, #f5a623);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: .82rem;
+            font-size: .85rem;
             font-weight: 700;
             color: #fff;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
             flex-shrink: 0;
         }
 
-        .nav-name-stack {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.25;
-        }
-
-        .nav-owner-name {
+        .owner-name {
             color: #fff;
-            font-size: .88rem;
+            font-size: .9rem;
             font-weight: 600;
-        }
-
-        .nav-owner-role {
-            color: rgba(255, 255, 255, .65);
-            font-size: .72rem;
-        }
-
-        .nav-dropdown-trigger .chevron {
-            font-size: .7rem;
-            color: rgba(255, 255, 255, .6);
-            transition: transform .2s;
-            margin-left: 2px;
-        }
-
-        .nav-dropdown:hover .chevron {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: calc(100% + 8px);
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, .15);
-            border: 1px solid #e8e8e8;
-            min-width: 200px;
-            padding: 6px 0;
-            z-index: 200;
-        }
-
-        .dropdown-menu::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 0;
-            right: 0;
-            height: 10px;
-        }
-
-        .nav-dropdown:hover .dropdown-menu {
             display: block;
+            line-height: 1.2;
         }
 
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-            padding: .6rem 1rem;
-            font-size: .88rem;
-            color: #333;
-            text-decoration: none;
-            transition: background .15s;
-        }
-
-        .dropdown-item i {
-            width: 16px;
-            text-align: center;
-            color: #6b7c6e;
-            font-size: .85rem;
-        }
-
-        .dropdown-item:hover {
-            background: #eefcda;
-            color: var(--green-dark);
-        }
-
-        .dropdown-item:hover i {
-            color: var(--green-dark);
-        }
-
-        .dropdown-divider {
-            border: none;
-            border-top: 1px solid #f0f0f0;
-            margin: 4px 0;
-        }
-
-        .dropdown-item.logout {
-            color: #c0392b;
-        }
-
-        .dropdown-item.logout i {
-            color: #c0392b;
-        }
-
-        .dropdown-item.logout:hover {
-            background: #fff5f5;
+        .owner-role {
+            color: rgba(255, 255, 255, .6);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+            margin-top: 2px;
         }
 
         /* ─── MAIN CONTAINER ─── */
@@ -219,22 +137,6 @@
             padding: 28px 28px 60px;
             max-width: 720px;
             margin: auto;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-muted);
-            font-size: 13px;
-            text-decoration: none;
-            margin-bottom: 16px;
-            cursor: pointer;
-            transition: color 0.15s;
-        }
-
-        .back-btn:hover {
-            color: var(--green-dark);
         }
 
         .page-header {
@@ -271,7 +173,7 @@
         }
 
         .back-icon-btn:hover {
-            background: #f3fae8;
+            background: #faf7ef;
             color: var(--green-dark);
             border-color: var(--green-dark);
             transform: translateX(-2px);
@@ -321,7 +223,7 @@
             align-items: center;
             gap: 5px;
             margin-top: 8px;
-            background: #e8f5e9;
+            background: #e3f9ea;
             color: var(--green-mid);
             font-size: 11px;
             font-weight: 600;
@@ -477,7 +379,7 @@
         }
 
         .error-msg.ok {
-            color: #2e7d32;
+            color: #00551f;
         }
 
         .password-hint {
@@ -513,7 +415,7 @@
             max-height: 110px;
             border: 1.5px solid var(--border);
             border-radius: 8px;
-            background: #fafdf7;
+            background: #faf7ef;
             padding: 6px;
             display: block;
         }
@@ -544,14 +446,14 @@
             background: var(--amber-hover);
         }
 
-        /* ─── TOAST ─── */
+        /* ─── TOAST (สำรองสำหรับ error message) ─── */
         .toast {
             position: fixed;
             left: 50%;
             bottom: 30px;
             transform: translateX(-50%) translateY(20px);
-            background: #1a3d1f;
-            color: #d8f3dc;
+            background: #072e14;
+            color: #e3f9ea;
             padding: 12px 22px;
             border-radius: 10px;
             font-size: 13.5px;
@@ -580,7 +482,7 @@
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             content: '\f058';
-            color: #7ed957;
+            color: #22c55e;
         }
 
         .toast.error::before {
@@ -588,12 +490,156 @@
             color: #ff8a8a;
         }
 
+        /* ═══════════════════════════
+           SUCCESS MODAL (แบบ addtour)
+        ═══════════════════════════ */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 30, 12, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 36px 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            transform: scale(0.85) translateY(20px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .modal-backdrop.show .modal-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .checkmark-wrap {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #072e14, #00551f);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(26, 61, 31, 0.35);
+        }
+
+        .checkmark-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 3px solid rgba(26, 61, 31, 0.15);
+        }
+
+        .checkmark-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(26, 61, 31, 0.08);
+            animation: ring-pulse 1.5s ease-out 0.4s both;
+        }
+
+        @keyframes ring-pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .checkmark-icon {
+            font-size: 36px;
+            color: #fff;
+            animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+        }
+
+        @keyframes pop-in {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .modal-progress-bar {
+            height: 3px;
+            background: #e3f9ea;
+            border-radius: 0 0 20px 20px;
+            margin: 24px -36px -32px;
+            overflow: hidden;
+        }
+
+        .modal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-mid), var(--amber));
+            border-radius: 3px;
+            width: 100%;
+            transform-origin: left;
+            animation: progress-drain 2.2s linear forwards;
+        }
+
+        @keyframes progress-drain {
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
+        }
+
         /* ─── FOOTER ─── */
         .footer {
             margin-top: 3rem;
             padding: 1rem 2rem;
-            background: #1a3d1f;
-            color: #d8f3dc;
+            background: #072e14;
+            color: #e3f9ea;
             font-size: 0.9rem;
         }
 
@@ -604,7 +650,7 @@
         }
 
         .footer a {
-            color: #95d5b2;
+            color: #a8f0be;
             text-decoration: none;
             margin-left: 8px;
         }
@@ -640,29 +686,38 @@
             <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
         </a>
 
-        <div class="nav-dropdown">
-            <div class="nav-dropdown-trigger">
-                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
-                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
-                           : 'CM'">CM</div>
-                <div class="nav-name-stack">
-                    <span class="nav-owner-name"
-                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-                    <span class="nav-owner-role">ผู้จัดการท่องเที่ยวชุมชน</span>
+        <div class="nav-right">
+            <div class="profile-static">
+                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
+   ? ${#strings.substring(loggedInManager.firstname,0,1)}
+   : 'C'"></div>
+                <div>
+                    <span class="owner-name" th:text="${loggedInManager != null}
+               ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
+               : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                    <span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
+    ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
+    : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
                 </div>
-                <i class="fas fa-chevron-down chevron"></i>
-            </div>
-            <div class="dropdown-menu">
-                <a th:href="@{/manager/profile}" class="dropdown-item">
-                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-                </a>
-                <hr class="dropdown-divider">
-                <a th:href="@{/logout}" class="dropdown-item logout">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
             </div>
         </div>
     </nav>
+
+    <!-- ═══ SUCCESS MODAL (เหมือนหน้า addtour) ═══ -->
+    <div class="modal-backdrop" id="successModal">
+        <div class="modal-box">
+            <div class="checkmark-wrap">
+                <div class="checkmark-ring"></div>
+                <i class="fas fa-check checkmark-icon"></i>
+            </div>
+            <div class="modal-title" id="modalTitle">บันทึกสำเร็จ!</div>
+            <div class="modal-desc" id="modalDesc">ข้อมูลของคุณได้รับการอัปเดตเรียบร้อยแล้ว</div>
+            <div class="modal-btn-row"></div>
+            <div class="modal-progress-bar">
+                <div class="modal-progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Thymeleaf pass message to JS -->
     <div id="serverMsg" th:data-success="${successMessage}" th:data-error="${errorMessage}" style="display:none;"></div>
@@ -946,7 +1001,7 @@
             </section>
         </form>
 
-        <!-- Toast Notification -->
+        <!-- Toast Notification (กรณี Error) -->
         <div class="toast" id="toast"></div>
 
     </main>
@@ -966,7 +1021,7 @@
         const phoneRegex = /^0[689][0-9]{8}$/;
         const accountRegex = /^[0-9\-]{10,20}$/;
 
-        // ─── Toast helper ───
+        // ─── Toast helper (Error / Alert) ───
         function showToast(message, isError) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -976,13 +1031,33 @@
             setTimeout(() => toast.classList.remove('show'), 3200);
         }
 
-        // ─── Auto-show toast ถ้ามี successMessage / errorMessage จาก server ───
+        // ─── Success Modal (แบบเดียวกับ addtour) ───
+        function showSuccessModal(title, desc) {
+            const modal = document.getElementById('successModal');
+            const fill = document.getElementById('progressFill');
+
+            if (title) document.getElementById('modalTitle').textContent = title;
+            if (desc) document.getElementById('modalDesc').textContent = desc;
+
+            modal.classList.add('show');
+
+            fill.style.animation = 'none';
+            fill.offsetHeight; // trigger reflow
+            fill.style.animation = 'progress-drain 2.2s linear forwards';
+
+            setTimeout(() => {
+                modal.classList.remove('show');
+            }, 2200);
+        }
+
+        // ─── Auto-show Success Modal หรือ Error Toast เมื่อโหลดหน้าจาก Server ───
         (function () {
             const el = document.getElementById('serverMsg');
             const success = el ? el.dataset.success : null;
             const error = el ? el.dataset.error : null;
+
             if (success && success !== 'null' && success.trim() !== '') {
-                showToast(success, false);
+                showSuccessModal('บันทึกสำเร็จ!', success);
             } else if (error && error !== 'null' && error.trim() !== '') {
                 showToast(error, true);
             }

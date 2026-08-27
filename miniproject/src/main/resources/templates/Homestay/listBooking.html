@@ -19,9 +19,9 @@
         </a>
         <div class="hs-nav-links">
             <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
-            <a class="hs-nav-link" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
+            <a class="hs-nav-link" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> ห้องพัก</a>
             <a class="hs-nav-link active" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i>
-                การจองโฮมสเตย์</a>
+                ตรวจสอบการจอง</a>
             <a class="hs-nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
         </div>
         <div class="hs-nav-right">
@@ -52,51 +52,73 @@
         <div class="page-header">
             <div class="page-title">
                 <i class="fas fa-calendar-check"></i>
-                รายการจองโฮมสเตย์
+                รายการจองที่พัก
                 <!-- <span class="count-chip" th:text="${bookings.size()} + ' รายการ'">0 รายการ</span> -->
             </div>
         </div>
 
-        <!-- Homestay Selector -->
-        <div class="homestay-selector" th:if="${myHomestays != null and myHomestays.size() > 1}">
-            <label><i class="fas fa-house"></i> โฮมสเตย์ :</label>
-            <select onchange="location.href='/owner/bookings?homestayid='+this.value">
-                <option th:each="hs : ${myHomestays}" th:value="${hs.homestayid}" th:text="${hs.homestayname}"
-                    th:selected="${hs.homestayid == homestayid}">
-                </option>
-            </select>
-        </div>
+        <!-- ── Control Toolbar (โฮมสเตย์ + สถานะการจอง) ── -->
+        <div class="control-toolbar">
+            <!-- โฮมสเตย์ Selector (กรณีมีมากกว่า 1) -->
+            <div class="filter-item-group" th:if="${myHomestays != null and myHomestays.size() > 1}">
+                <label class="filter-item-label"><i class="fas fa-house"></i> โฮมสเตย์ :</label>
+                <select class="homestay-select-input" onchange="location.href='/owner/bookings?homestayid='+this.value">
+                    <option th:each="hs : ${myHomestays}" th:value="${hs.homestayid}" th:text="${hs.homestayname}"
+                        th:selected="${hs.homestayid == homestayid}">
+                    </option>
+                </select>
+            </div>
 
-        <!-- Stat Strip / Filter Tabs (client-side filter, no page reload) -->
-        <div class="stat-strip">
-            <a class="stat-pill pill-waiting" href="javascript:void(0)"
-                onclick="filterBookings('WAITING_APPROVAL', this)">
-                <i class="fas fa-clock" style="color:#e07b00;font-size:1.1rem;"></i>
-                <div class="pill-label">
-                    รอตรวจสอบ <span class="pill-count" th:text="${countWaiting}">0</span>
-                </div>
-            </a>
+            <!-- สถานะการจอง Custom Dropdown -->
+            <div class="filter-item-group">
+                <label class="filter-item-label"><i class="fas fa-filter"></i> สถานะการจอง :</label>
+                <div class="custom-filter-dropdown" id="bookingStatusDropdown">
+                    <button type="button" class="filter-dropdown-trigger status-waiting" id="bookingDropdownTriggerBtn"
+                        onclick="toggleBookingDropdown()">
+                        <span class="selected-text">
+                            <i class="fas fa-clock"></i>
+                            <span>รอตรวจสอบ</span>
+                            <span class="count-badge" id="count-waiting-trigger" th:text="${countWaiting}">0</span>
+                        </span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </button>
 
-            <a class="stat-pill pill-confirmed" href="javascript:void(0)" onclick="filterBookings('CONFIRMED', this)">
-                <i class="fas fa-circle-check" style="color:#1a6b52;font-size:1.1rem;"></i>
-                <div class="pill-label">
-                    ยืนยันแล้ว <span class="pill-count" th:text="${countConfirmed}">0</span>
+                    <div class="filter-dropdown-menu" id="bookingDropdownMenu">
+                        <!-- 1. รอตรวจสอบ -->
+                        <div class="dropdown-item status-opt-waiting active" data-status="WAITING_APPROVAL"
+                            onclick="selectBookingFilter('WAITING_APPROVAL', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-clock"></i>
+                            <span class="label-text">รอตรวจสอบ</span>
+                            <span class="count-badge" th:text="${countWaiting}">0</span>
+                        </div>
+                        <!-- 2. ยืนยันแล้ว -->
+                        <div class="dropdown-item status-opt-confirmed" data-status="CONFIRMED"
+                            onclick="selectBookingFilter('CONFIRMED', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-circle-check"></i>
+                            <span class="label-text">ยืนยันแล้ว</span>
+                            <span class="count-badge" th:text="${countConfirmed}">0</span>
+                        </div>
+                        <!-- 3. เสร็จสิ้นแล้ว -->
+                        <div class="dropdown-item status-opt-completed" data-status="COMPLETED"
+                            onclick="selectBookingFilter('COMPLETED', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-flag-checkered"></i>
+                            <span class="label-text">เสร็จสิ้นแล้ว</span>
+                            <span class="count-badge" th:text="${countCompleted}">0</span>
+                        </div>
+                        <!-- 4. ยกเลิก -->
+                        <div class="dropdown-item status-opt-cancel" data-status="CANCEL"
+                            onclick="selectBookingFilter('CANCEL', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-circle-xmark"></i>
+                            <span class="label-text">ยกเลิก</span>
+                            <span class="count-badge" th:text="${countCancel}">0</span>
+                        </div>
+                    </div>
                 </div>
-            </a>
-
-            <a class="stat-pill pill-completed" href="javascript:void(0)" onclick="filterBookings('COMPLETED', this)">
-                <i class="fas fa-flag-checkered" style="color:#3d7dbf;font-size:1.1rem;"></i>
-                <div class="pill-label">
-                    เสร็จสิ้นแล้ว <span class="pill-count" th:text="${countCompleted}">0</span>
-                </div>
-            </a>
-
-            <a class="stat-pill pill-cancel" href="javascript:void(0)" onclick="filterBookings('CANCEL', this)">
-                <i class="fas fa-circle-xmark" style="color:#c0392b;font-size:1.1rem;"></i>
-                <div class="pill-label">
-                    ยกเลิก <span class="pill-count" th:text="${countCancel}">0</span>
-                </div>
-            </a>
+            </div>
         </div>
 
         <!-- Table -->
@@ -254,124 +276,164 @@
             <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a></span>
         </div>
     </footer>
+<script th:inline="javascript">
+    const HOMESTAY_ID = /*[[${homestayid}]]*/ 0;
 
-    <script th:inline="javascript">
-        const HOMESTAY_ID = /*[[${homestayid}]]*/ 0;
+    let pendingBookingId = null;
 
-        let pendingBookingId = null;
-        let currentFilter = null; // null = แสดงทั้งหมด
+    // ── Map สถานะ -> Class สไตล์สีของปุ่ม Dropdown ──────
+    const bookingStatusClassMap = {
+        'WAITING_APPROVAL': 'status-waiting',
+        'CONFIRMED': 'status-confirmed',
+        'COMPLETED': 'status-completed',
+        'CANCEL': 'status-cancel'
+    };
 
-        // ── Status filter (client-side, ไม่ reload หน้า) ──────
-        function filterBookings(status, el) {
-            const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
-            const pills = document.querySelectorAll('.stat-pill');
-            const noResults = document.getElementById('noFilterResults');
+    // ── Dropdown Controller ────────────────────────────────
+    function toggleBookingDropdown() {
+        document.getElementById('bookingStatusDropdown').classList.toggle('open');
+    }
 
-            const statusList = Array.isArray(status) ? status : [status];
-            const filterKey = statusList.join(',');
+    // ปิด Dropdown เมื่อคลิกนอกพื้นที่
+    window.addEventListener('click', function (e) {
+        const dropdown = document.getElementById('bookingStatusDropdown');
+        if (dropdown && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
 
-            // กดสถานะเดิมซ้ำ = ยกเลิกฟิลเตอร์
-            if (currentFilter === filterKey) {
-                currentFilter = null;
-                pills.forEach(p => p.classList.remove('active'));
-                rows.forEach(r => r.style.display = '');
-                noResults.style.display = 'none';
-                return;
-            }
+    // ฟังก์ชันเลือกฟิลเตอร์จาก Dropdown
+    function selectBookingFilter(statusKey, itemEl) {
+        const triggerBtn = document.getElementById('bookingDropdownTriggerBtn');
+        const selectedTextContainer = triggerBtn.querySelector('.selected-text');
 
-            currentFilter = filterKey;
-            pills.forEach(p => p.classList.remove('active'));
-            el.classList.add('active');
+        const iconClass = itemEl.querySelector('i').className;
+        const label = itemEl.querySelector('.label-text').textContent;
+        const badgeCount = itemEl.querySelector('.count-badge').textContent;
 
-            let visibleCount = 0;
-            rows.forEach(r => {
-                const match = statusList.includes(r.dataset.status);
-                r.style.display = match ? '' : 'none';
-                if (match) visibleCount++;
-            });
+        // อัปเดตข้อความ ไอคอน และจำนวนบนปุ่ม
+        selectedTextContainer.innerHTML = `
+            <i class="${iconClass}"></i>
+            <span>${label}</span>
+            <span class="count-badge">${badgeCount}</span>
+        `;
 
+        // อัปเดตสีพื้นหลังและขอบปุ่มตามสถานะ
+        triggerBtn.className = 'filter-dropdown-trigger ' + bookingStatusClassMap[statusKey];
+
+        // สลับสถานะ Active ในเมนู
+        document.querySelectorAll('#bookingDropdownMenu .dropdown-item').forEach(el => el.classList.remove('active'));
+        itemEl.classList.add('active');
+
+        // ปิดเมนู
+        document.getElementById('bookingStatusDropdown').classList.remove('open');
+
+        // กรองข้อมูลในตาราง
+        filterBookings(statusKey);
+    }
+
+    // ── กรองแถวในตารางตามสถานะ (Client-side) ──────────────
+    function filterBookings(statusKey) {
+        const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
+        const noResults = document.getElementById('noFilterResults');
+        let visibleCount = 0;
+
+        rows.forEach(r => {
+            const match = (r.dataset.status === statusKey);
+            r.style.display = match ? '' : 'none';
+            if (match) visibleCount++;
+        });
+
+        if (noResults) {
             noResults.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
         }
+    }
 
-        // ── Modal helpers ──────────────────────────────────────
-        function openConfirmModal(bookingId) {
-            pendingBookingId = bookingId;
-            document.getElementById('confirmModal').classList.add('open');
-        }
-        function openCancelModal(bookingId) {
-            pendingBookingId = bookingId;
-            document.getElementById('cancelModal').classList.add('open');
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('open');
-            pendingBookingId = null;
-        }
+    // ── Modal Helpers ──────────────────────────────────────
+    function openConfirmModal(bookingId) {
+        pendingBookingId = bookingId;
+        document.getElementById('confirmModal').classList.add('open');
+    }
 
-        // ── Actions ────────────────────────────────────────────
-        async function doConfirm() {
-            closeModal('confirmModal');
-            await postAction('/owner/bookings/confirm', pendingBookingId, 'ยืนยันการจองสำเร็จ');
-        }
-        async function doCancel() {
-            closeModal('cancelModal');
-            await postAction('/owner/bookings/cancel', pendingBookingId, 'ยกเลิกการจองแล้ว');
-        }
+    function openCancelModal(bookingId) {
+        pendingBookingId = bookingId;
+        document.getElementById('cancelModal').classList.add('open');
+    }
 
-        async function postAction(url, bookingId, successMsg) {
-            const params = new URLSearchParams({ bookingid: bookingId, homestayid: HOMESTAY_ID });
-            try {
-                const res = await fetch(url, { method: 'POST', body: params });
-                const data = await res.json();
-                if (data.success) {
-                    showToast(successMsg, false);
-                    setTimeout(() => location.reload(), 1200);
-                } else {
-                    showToast(data.message || 'เกิดข้อผิดพลาด', true);
-                }
-            } catch (e) {
-                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', true);
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+        pendingBookingId = null;
+    }
+
+    // ── Actions ────────────────────────────────────────────
+    async function doConfirm() {
+        closeModal('confirmModal');
+        await postAction('/owner/bookings/confirm', pendingBookingId, 'ยืนยันการจองสำเร็จ');
+    }
+
+    async function doCancel() {
+        closeModal('cancelModal');
+        await postAction('/owner/bookings/cancel', pendingBookingId, 'ยกเลิกการจองแล้ว');
+    }
+
+    async function postAction(url, bookingId, successMsg) {
+        const params = new URLSearchParams({ bookingid: bookingId, homestayid: HOMESTAY_ID });
+        try {
+            const res = await fetch(url, { method: 'POST', body: params });
+            const data = await res.json();
+            if (data.success) {
+                showToast(successMsg, false);
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                showToast(data.message || 'เกิดข้อผิดพลาด', true);
+            }
+        } catch (e) {
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', true);
+        }
+    }
+
+    // ── Toast ──────────────────────────────────────────────
+    function showToast(msg, isError = false) {
+        const t = document.getElementById('toast');
+        if (!t) return;
+        t.textContent = msg;
+        t.className = 'toast' + (isError ? ' error' : '');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── Close modal on backdrop click ──────────────────────
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', e => {
+            if (e.target === el) el.classList.remove('open');
+        });
+    });
+
+    // ── Default Filter on Load ─────────────────────────────
+    // ลำดับความสำคัญสถานะเริ่มต้น (รอตรวจสอบ > ยืนยันแล้ว > เสร็จสิ้นแล้ว > ยกเลิก)
+    document.addEventListener('DOMContentLoaded', () => {
+        const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
+        if (rows.length === 0) return;
+
+        const priorityOrder = ['WAITING_APPROVAL', 'CONFIRMED', 'COMPLETED', 'CANCEL'];
+        let selectedStatus = 'WAITING_APPROVAL';
+
+        for (const status of priorityOrder) {
+            const hasAny = Array.from(rows).some(r => r.dataset.status === status);
+            if (hasAny) {
+                selectedStatus = status;
+                break;
             }
         }
 
-        // ── Toast ──────────────────────────────────────────────
-        function showToast(msg, isError = false) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast' + (isError ? ' error' : '');
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+        const targetItem = document.querySelector(`#bookingDropdownMenu .dropdown-item[data-status="${selectedStatus}"]`);
+        if (targetItem) {
+            selectBookingFilter(selectedStatus, targetItem);
+        } else {
+            filterBookings(selectedStatus);
         }
-
-        // ── Close modal on backdrop click ──────────────────────
-        document.querySelectorAll('.modal-overlay').forEach(el => {
-            el.addEventListener('click', e => {
-                if (e.target === el) el.classList.remove('open');
-            });
-        });
-
-        // ── Default filter on page load ─────────────────────────
-        // เปิดหน้ามาให้ขึ้น "รอตรวจสอบ" ก่อนเสมอ ถ้าไม่มีรายการรอตรวจสอบ
-        // ให้ไปแสดงสถานะแรกที่มีข้อมูลอยู่แทน (ยืนยันแล้ว > ยกเลิก)
-        document.addEventListener('DOMContentLoaded', () => {
-            const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
-            if (rows.length === 0) return;
-
-            const priorityOrder = [
-                { key: 'WAITING_APPROVAL', statuses: ['WAITING_APPROVAL'], pill: document.querySelector('.stat-pill.pill-waiting') },
-                { key: 'CONFIRMED', statuses: ['CONFIRMED'], pill: document.querySelector('.stat-pill.pill-confirmed') },
-                { key: 'COMPLETED', statuses: ['COMPLETED'], pill: document.querySelector('.stat-pill.pill-completed') },
-                { key: 'CANCEL', statuses: ['CANCEL'], pill: document.querySelector('.stat-pill.pill-cancel') }
-            ];
-
-            for (const item of priorityOrder) {
-                const hasAny = Array.from(rows).some(r => item.statuses.includes(r.dataset.status));
-                if (hasAny) {
-                    filterBookings(item.statuses, item.pill);
-                    break;
-                }
-            }
-        });
-    </script>
+    });
+</script>
 
 </body>
 

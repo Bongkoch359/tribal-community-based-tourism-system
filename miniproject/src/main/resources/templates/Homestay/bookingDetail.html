@@ -375,7 +375,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Action Buttons -->
                 <div class="card"
                     th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL' or booking.bookingStatus?.name() == 'PENDING'}">
@@ -409,8 +408,7 @@
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-box">
             <h3><i class="fas fa-circle-check" style="color:var(--green-dark);"></i> ยืนยันการจอง</h3>
-            <p>คุณต้องการ <strong>ยืนยัน</strong> การจองนี้ใช่หรือไม่?<br>เมื่อยืนยันแล้วสถานะจะเปลี่ยนเป็น
-                <strong>"ยืนยันแล้ว"</strong>
+            <p>คุณต้องการ <strong>ยืนยัน</strong> การจองนี้ใช่หรือไม่?<br>
             </p>
             <div class="modal-actions">
                 <button class="btn-modal-cancel" onclick="closeModal('confirmModal')">ยกเลิก</button>

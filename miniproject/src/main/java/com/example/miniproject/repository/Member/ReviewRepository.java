@@ -80,4 +80,17 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
 
     @Query("SELECT COUNT(r) FROM Review r")
     long countAll();
+
+    // ─── รีวิวรวมของ manager (ทุกทัวร์ในความดูแล) ─────────
+    // SELECT r, t เพื่อให้ได้ Tour ของแต่ละรีวิวติดมาด้วยเลย
+    // (กัน lazy-loading ผ่าน booking.tourDetails ตอนแสดงผลในหน้าเว็บ)
+    @Query("""
+        SELECT DISTINCT r, t FROM Review r
+        JOIN r.booking b
+        JOIN b.tourDetails btd
+        JOIN btd.tour t
+        WHERE t.communitymanager.managerid = :managerId
+        ORDER BY r.reviewdate DESC
+    """)
+    List<Object[]> findReviewsWithTourByManagerId(@Param("managerId") String managerId);
 }

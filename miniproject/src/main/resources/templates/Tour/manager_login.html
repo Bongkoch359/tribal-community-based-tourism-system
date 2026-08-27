@@ -18,10 +18,23 @@
       padding: 0;
     }
 
+    :root {
+      --green-dark: #006e2f;       /* primary (เดิม navbar/avatar/footer #3a7d1e) */
+      --green-mid: #22c55e;        /* primary-container (เดิม focus/link #65a30d, #95d5b2) */
+      --green-light: #6bff8f;      /* primary-fixed (เดิม footer text #d8f3dc) */
+      --orange: #ff8e4d;           /* tertiary-container (เดิมปุ่ม submit #f0a500) */
+      --bg: #faf7ef;               /* พื้นหลังหน้า (เดิม #f3fae8) */
+      --text-muted: #3d4a3d;
+      --white: #ffffff;
+      --border: #e4e0d4;           /* เส้นขอบ input (เดิม #d6d1c8) */
+      --text-main: #0b1c30;        /* สีหัวข้อ (เดิม #1e2d1a) */
+      --text-hint: #6d7b6c;        /* สี subtitle (เดิม #7a7060) */
+    }
+
     body {
       font-family: 'Sarabun', sans-serif;
-      background: #f3fae8;
-      color: #1e2d1a;
+      background: var(--bg);
+      color: var(--text-main);
       min-height: 100vh;
       font-size: 16px;
       -webkit-font-smoothing: antialiased;
@@ -29,8 +42,8 @@
 
     /* ─── NAVBAR ─── */
     .navbar {
-      background: #3a7d1e;
-      height: 84px;
+      background: var(--green-dark);
+      height: 90px;
       display: flex;
       align-items: center;
       padding: 0 28px;
@@ -94,7 +107,7 @@
       width: 90px;
       height: 90px;
       border-radius: 50%;
-      background-color: #3a7d1e;
+      background-color: var(--green-dark);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -121,8 +134,7 @@
     }
 
     .brand-logo img {
-      height: 100px;
-      /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+      height: 110px;
       width: auto;
       max-width: 180px;
       object-fit: contain;
@@ -146,13 +158,13 @@
     .form-card-header h1 {
       font-size: 1.55rem;
       font-weight: 800;
-      color: #1e2d1a;
+      color: var(--text-main);
       margin-bottom: 6px;
     }
 
     .form-card-header p {
       font-size: .92rem;
-      color: #7a7060;
+      color: var(--text-hint);
     }
 
     /* ─── ALERT ─── */
@@ -181,12 +193,12 @@
 
     .form-control {
       width: 100%;
-      border: 1.5px solid #d6d1c8;
+      border: 1.5px solid var(--border);
       border-radius: 8px;
       padding: 11px 14px;
       font-size: .95rem;
       font-family: 'Sarabun', sans-serif;
-      color: #1e2d1a;
+      color: var(--text-main);
       background: #fff;
       outline: none;
       transition: border-color .18s, box-shadow .18s;
@@ -197,8 +209,8 @@
     }
 
     .form-control:focus {
-      border-color: #65a30d;
-      box-shadow: 0 0 0 3px rgba(101, 163, 13, .15);
+      border-color: var(--green-mid);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .15);
     }
 
     /* ─── PASSWORD FIELD WITH EYE TOGGLE ─── */
@@ -228,7 +240,7 @@
     }
 
     .password-toggle:hover {
-      color: #3a7d1e;
+      color: var(--green-dark);
     }
 
     .password-toggle:focus {
@@ -238,8 +250,7 @@
     /* ─── SUBMIT ─── */
     .btn-submit {
       width: 100%;
-      background: #f0a500;
-      ;
+      background: var(--orange);
       border: none;
       border-radius: 8px;
       padding: 13px;
@@ -254,11 +265,11 @@
     }
 
     .btn-submit:hover {
-      background: #A86D00;
+      background: #e6702c;
     }
 
     .btn-submit:active {
-      background: #3a7d1e;
+      background: var(--green-dark);
     }
 
     @media (max-width: 480px) {
@@ -280,8 +291,8 @@
 
         .footer {
             padding: 1rem 2rem;
-            background: #3a7d1e;
-            color: #d8f3dc;
+            background: var(--green-dark);
+            color: var(--green-light);
             font-size: 0.9rem;
             margin-top: auto;
         }
@@ -293,7 +304,7 @@
         }
 
         .footer a {
-            color: #95d5b2;
+            color: var(--green-mid);
             text-decoration: none;
             margin-left: 8px;
         }

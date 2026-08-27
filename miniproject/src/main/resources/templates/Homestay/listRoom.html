@@ -21,8 +21,8 @@
         </a>
         <div class="hs-nav-links">
             <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
-            <a class="hs-nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> จัดการห้องพัก</a>
-            <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> การจองโฮมสเตย์</a>
+            <a class="hs-nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> ห้องพัก</a>
+            <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> ตรวจสอบการจอง</a>
             <a class="hs-nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
         </div>
         <div class="hs-nav-right">
@@ -63,31 +63,60 @@
             </a>
         </div>
 
-        <!-- ── Homestay Selector ── -->
-        <div class="homestay-selector" th:if="${myHomestays != null and myHomestays.size() > 1}">
-            <label><i class="fas fa-house"></i> โฮมสเตย์ :</label>
-            <select onchange="location.href='/owner/rooms?homestayid='+this.value">
-                <option th:each="hs : ${myHomestays}" th:value="${hs.homestayid}" th:text="${hs.homestayname}"
-                    th:selected="${hs.homestayid == homestayid}">
-                </option>
-            </select>
-        </div>
+        <!-- ── Filter & Homestay Toolbar ── -->
+        <div class="control-toolbar">
+            <!-- โฮมสเตย์ Selector (ถ้ามีมากกว่า 1) -->
+            <div class="filter-item-group" th:if="${myHomestays != null and myHomestays.size() > 1}">
+                <label class="filter-item-label"><i class="fas fa-house"></i> โฮมสเตย์ :</label>
+                <select class="homestay-select-input" onchange="location.href='/owner/rooms?homestayid='+this.value">
+                    <option th:each="hs : ${myHomestays}" th:value="${hs.homestayid}" th:text="${hs.homestayname}"
+                        th:selected="${hs.homestayid == homestayid}">
+                    </option>
+                </select>
+            </div>
 
-        <!-- ── Filter Bar (สถานะ + จำนวน) ── -->
-        <div class="filter-bar" id="filterBar">
-            <button class="filter-btn active active-available" data-status="เปิดจอง"
-                onclick="filterRooms('เปิดจอง', this)">
-                <i class="fas fa-circle-check"></i> เปิดจอง
-                <span class="count-badge" id="count-available">0</span>
-            </button>
-            <button class="filter-btn" data-status="เต็ม" onclick="filterRooms('เต็ม', this)">
-                <i class="fas fa-ban"></i> เต็ม
-                <span class="count-badge" id="count-full">0</span>
-            </button>
-            <button class="filter-btn" data-status="ปิดปรับปรุง" onclick="filterRooms('ปิดปรับปรุง', this)">
-                <i class="fas fa-screwdriver-wrench"></i> ปิดปรับปรุง
-                <span class="count-badge" id="count-maintenance">0</span>
-            </button>
+            <!-- สถานะห้องพัก Dropdown -->
+            <div class="filter-item-group">
+                <label class="filter-item-label"><i class="fas fa-filter"></i> สถานะห้องพัก :</label>
+                <div class="custom-filter-dropdown" id="statusFilterDropdown">
+                    <button type="button" class="filter-dropdown-trigger status-available" id="dropdownTriggerBtn"
+                        onclick="toggleStatusDropdown()">
+                        <span class="selected-text">
+                            <i class="fas fa-circle-check"></i>
+                            <span>เปิดจอง</span>
+                            <span class="count-badge" id="count-available">0</span>
+                        </span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </button>
+
+                    <div class="filter-dropdown-menu" id="dropdownMenu">
+                        <!-- 1. เปิดจอง -->
+                        <div class="dropdown-item status-opt-available active" data-status="เปิดจอง"
+                            onclick="selectStatusFilter('เปิดจอง', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-circle-check"></i>
+                            <span class="label-text">เปิดจอง</span>
+                            <span class="count-badge" id="count-available-menu">0</span>
+                        </div>
+                        <!-- 2. เต็ม -->
+                        <div class="dropdown-item status-opt-full" data-status="เต็ม"
+                            onclick="selectStatusFilter('เต็ม', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-ban"></i>
+                            <span class="label-text">เต็ม</span>
+                            <span class="count-badge" id="count-full-menu">0</span>
+                        </div>
+                        <!-- 3. ปิดปรับปรุง -->
+                        <div class="dropdown-item status-opt-maintenance" data-status="ปิดปรับปรุง"
+                            onclick="selectStatusFilter('ปิดปรับปรุง', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-screwdriver-wrench"></i>
+                            <span class="label-text">ปิดปรับปรุง</span>
+                            <span class="count-badge" id="count-maintenance-menu">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Table -->

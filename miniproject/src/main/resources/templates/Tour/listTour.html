@@ -15,7 +15,7 @@
     <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
         <a class="hs-navbar-brand" th:href="@{/}">
-            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img" style="height: 75px;">
+            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img">
             ระบบท่องเที่ยวชุมชนชนเผ่า
         </a>
 
@@ -27,41 +27,48 @@
         </a>
         <a th:href="@{/manager/posts}" class="nav-link">
             <i class="fas fa-bullhorn"></i>
-            จัดการโพสต์
+            โพสต์กิจกรรม
         </a>
         <a th:href="@{/manager/tours}" class="nav-link active">
             <i class="fas fa-bus"></i>
-            จัดการทัวร์
+            ทัวร์
         </a>
         <a th:href="@{/manager/bookings}" class="nav-link">
             <i class="fas fa-calendar-days"></i>
             ตรวจสอบการจอง
         </a>
 
-        <div class="nav-dropdown" style="margin-left:1rem;">
-            <div class="nav-dropdown-trigger">
-                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
-                           ? ${#strings.substring(loggedInManager.firstname,0,1) + (#strings.length(loggedInManager.lastname) > 0 ? #strings.substring(loggedInManager.lastname,0,1) : '')}
-                           : 'CM'">CM</div>
-                <span
-                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-                <i class="fas fa-chevron-down chevron"></i>
-            </div>
-            <div class="dropdown-menu">
-                <div class="dropdown-header">
-                    <div class="d-name"
-                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
-                        ผู้จัดการชุมชน</div>
-                    <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
-                        manager@community.th</div>
+        <div class="nav-right">
+            <div class="profile-dropdown">
+                <div class="profile-trigger">
+                   <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
+   ? ${#strings.substring(loggedInManager.firstname,0,1)}
+   : 'C'"></div>
+                    <div>
+                        <span class="owner-name" th:text="${loggedInManager != null}
+                           ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
+                           : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                        <span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
+    ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
+    : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                    </div>
+                    <i class="fas fa-chevron-down profile-chevron"></i>
                 </div>
-                <a th:href="@{/manager/profile}" class="dropdown-item">
-                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-                </a>
-                <hr class="dropdown-divider">
-                <a th:href="@{/logout}" class="dropdown-item logout">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
+                <div class="dropdown-content">
+                    <div class="dropdown-header">
+                        <div class="d-name"
+                            th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
+                            ผู้จัดการชุมชน</div>
+                        <div class="d-email" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''"></div>
+                    </div>
+                    <a th:href="@{/manager/profile}">
+                        <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+                    </a>
+                    <hr>
+                    <a th:href="@{/logout}" class="logout-item">
+                        <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -75,21 +82,15 @@
                 <i class="fas fa-bus"></i>
                 รายการทัวร์
             </div>
-            <a th:href="@{/manager/tours/create}" class="btn-create">
-                <i class="fas fa-plus"></i> เพิ่มทัวร์
-            </a>
-        </div>
-
-        <!-- Success alert -->
-        <div th:if="${param.success != null}" class="alert-success">
-            <i class="fas fa-circle-check"></i>
-            <span th:if="${param.success[0] == 'created'}">เพิ่มทัวร์เรียบร้อยแล้ว</span>
-            <span th:if="${param.success[0] == 'updated'}">อัปเดตสถานะเรียบร้อยแล้ว</span>
-            <span th:if="${param.success[0] == 'closed'}">ปิดรับการจองเรียบร้อยแล้ว</span>
-        </div>
-        <div th:if="${successMessage}" class="alert-success">
-            <i class="fas fa-circle-check"></i>
-            <span th:text="${successMessage}"></span>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <a th:href="@{/manager/tours/create}" class="btn-create">
+                    <i class="fas fa-plus"></i> เพิ่มทัวร์
+                </a>
+                <a th:href="@{/manager/tours/reviews}" class="btn-create"
+                    style="background:#ffffff; color:#3a7d1e; border:1px solid #3a7d1e;">
+                    <i class="fas fa-star"></i> ดูรีวิว
+                </a>
+            </div>
         </div>
 
         <!-- Filter Tabs by Status (คำนวณจากสถานะรอบทัวร์) -->
@@ -114,14 +115,14 @@
             <table class="tbl" id="tourTable">
                 <thead>
                     <tr>
-                        <th style="width:74px;">รูปภาพ</th>
-                        <th>ชื่อทัวร์</th>
-                        <th style="width:130px;">ประเภท</th>
-                        <th style="width:140px;">ราคาผู้ใหญ่</th>
-                        <th style="width:140px;">ราคาเด็ก</th>
-                        <th style="width:130px;">ที่นั่ง</th>
-                        <th style="width:140px;">สถานะ</th>
-                        <th style="width:260px;">จัดการ</th>
+                        <th style="width: 110px;">รูปภาพ</th>
+                        <th style="width: 26%;">ชื่อทัวร์</th>
+                        <th style="width: 130px;">ประเภท</th>
+                        <th style="width: 110px;">ราคาผู้ใหญ่</th>
+                        <th style="width: 110px;">ราคาเด็ก</th>
+                        <th style="width: 90px;">ที่นั่ง</th>
+                        <th style="width: 120px;">สถานะ</th>
+                        <th style="width: 100px; text-align: center;">จัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -197,9 +198,7 @@
                                 <a class="btn-view" th:href="@{/manager/tours/{id}/edit(id=${tour.tourid})}">
                                     <i class="fas fa-pen"></i> แก้ไข
                                 </a>
-                                <a class="btn-reviews" th:href="@{/manager/tours/{id}/reviews(id=${tour.tourid})}">
-                                    <i class="fas fa-star"></i> ดูรีวิว
-                                </a>
+
                             </div>
                         </td>
                     </tr>

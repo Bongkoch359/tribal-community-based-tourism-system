@@ -37,29 +37,38 @@
             <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img" style="height: 75px;">
             ระบบท่องเที่ยวชุมชนชนเผ่า
         </a>
-        <div class="nav-dropdown">
-            <div class="nav-dropdown-trigger">
-                <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null}
-                           ? ${#strings.substring(loggedInManager.firstname,0,1)} : 'CM'">CM</div>
-                <span
-                    th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">ผู้จัดการ</span>
-                <i class="fas fa-chevron-down chevron"></i>
-            </div>
-            <div class="dropdown-menu">
-                <div class="dropdown-header">
-                    <div class="d-name"
-                        th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการ'">
-                        ชื่อผู้จัดการ</div>
-                    <div class="d-role" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''">
-                        manager@community.th</div>
+        <div style="flex: 1;"></div>
+        <div class="nav-right">
+            <div class="profile-dropdown">
+                <div class="profile-trigger">
+                    <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
+   ? ${#strings.substring(loggedInManager.firstname,0,1)}
+   : 'C'"></div>
+                    <div>
+                        <span class="owner-name" th:text="${loggedInManager != null}
+                           ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
+                           : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                        <<span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
+    ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
+    : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                    </div>
+                    <i class="fas fa-chevron-down profile-chevron"></i>
                 </div>
-                <a class="dropdown-item" th:href="@{/manager/profile}">
-                    <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
-                </a>
-                <hr class="dropdown-divider">
-                <a class="dropdown-item logout" th:href="@{/logout}">
-                    <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                </a>
+                <div class="dropdown-content">
+                    <div class="dropdown-header">
+                        <div class="d-name"
+                            th:text="${loggedInManager != null} ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname} : 'ผู้จัดการชุมชน'">
+                            ผู้จัดการชุมชน</div>
+                        <div class="d-email" th:text="${loggedInManager != null} ? ${loggedInManager.email} : ''"></div>
+                    </div>
+                    <a th:href="@{/manager/profile}">
+                        <i class="fas fa-user-pen"></i> แก้ไขโปรไฟล์
+                    </a>
+                    <hr>
+                    <a th:href="@{/logout}" class="logout-item">
+                        <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -75,316 +84,334 @@
             </div>
             <div class="page-subtitle">รหัสทัวร์: <span th:text="${tour.tourid}">-</span></div>
         </div>
-    
-    <!-- Alert messages -->
-    <div class="alert alert-error" th:if="${errorMessage}">
-        <i class="fas fa-circle-exclamation"></i>
-        <span th:text="${errorMessage}"></span>
-    </div>
-    <div class="alert alert-success" th:if="${successMessage}">
-        <i class="fas fa-circle-check"></i>
-        <span th:text="${successMessage}"></span>
-    </div>
 
-    <form th:action="@{/manager/tours/{id}/edit(id=${tour.tourid})}" method="post" id="editForm">
-
-        <div class="form-grid">
-
-            <!-- ── ซ้าย: รูปภาพ + สถานะ + ราคา ── -->
-            <div class="left-col">
-
-                <!-- รูปภาพ -->
-                <div class="card">
-                    <div class="card-title">รูปภาพทัวร์</div>
-
-                    <!-- zone drag & drop -->
-                    <div class="img-upload-zone" id="uploadZone" ondragover="handleDragOver(event)"
-                        ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
-                        onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-cloud-arrow-up"></i>
-                        <div class="upload-title">ลากรูปมาวางหรือคลิกเพื่อเลือก</div>
-                        <label class="upload-btn-label" onclick="event.stopPropagation()">
-                            <i class="fas fa-folder-open"></i> เลือกรูป
-                            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
-                                onchange="addFiles(Array.from(this.files)); this.value='';">
-                        </label>
-                        <div class="upload-hint">jpg · png · webp | สูงสุด 5 รูป</div>
-                    </div>
-
-                    <!-- grid รูป -->
-                    <div class="img-grid" id="imgGrid"></div>
-                    <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
-
-                    <!-- hidden inputs -->
-                    <!-- เก็บ filename เดิมจาก DB เพื่อให้ JS โหลดแสดง -->
-                    <input type="hidden" id="imgData" th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
-                        th:value="${tour.images}" />
-                    <!-- ส่งผลลัพธ์ไปยัง Controller: JSON array base64 หรือ __KEEP__ -->
-                    <input type="hidden" name="images" id="imagesInput" value="__KEEP__">
-                </div>
-
-                <div class="card">
-                    <div class="card-title">สถานะทัวร์</div>
-                    <div class="form-group">
-                        <label>สถานะปัจจุบัน (คำนวณจากรอบทัวร์)</label>
-                        <div class="status-select-wrap">
-                            <div class="status-dot"></div>
-                            <input type="text" th:value="${tour.overallStatus}" disabled
-                                style="padding-left:26px; background:#f5f5f3; color:#555;">
-                        </div>
-                        <div style="margin-top:8px; font-size:12.5px; color:var(--text-hint);">
-                            แก้ไข/เปิด-ปิดรอบทัวร์ได้ที่ปฏิทินด้านล่าง
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════
-                     ปฏิทินรอบทัวร์ 
-                ═══════════════════════════════════════════ -->
-                <div class="card" id="scheduleCard">
-                    <div class="card-title">รอบทัวร์ (วันที่เปิดทัวร์)</div>
-
-                    <div class="cal-compact">
-                        <div class="cal-legend">
-                            <span class="cal-legend-item"><i class="cal-dot dot-open"></i> เปิดรับจอง</span>
-                            <span class="cal-legend-item"><i class="cal-dot dot-full"></i> เต็ม</span>
-                            <span class="cal-legend-item"><i class="cal-dot dot-closed"></i> ปิด</span>
-                            <span class="cal-legend-item"><i class="cal-dot dot-none"></i> ยังไม่มีรอบ</span>
-                            <span class="cal-legend-item"><i class="cal-dot" style="background:#f1f0ec;border:1px solid #d8d4c8;"></i> ผ่านไปแล้ว</span>
-                        </div>
-
-                        <div class="cal-header">
-                            <button type="button" class="cal-nav-btn" id="calPrevBtn"><i
-                                    class="fas fa-chevron-left"></i></button>
-                            <div class="cal-month-label" id="calMonthLabel">-</div>
-                            <button type="button" class="cal-nav-btn" id="calNextBtn"><i
-                                    class="fas fa-chevron-right"></i></button>
-                        </div>
-
-                        <div class="cal-weekdays">
-                            <div>อา</div>
-                            <div>จ</div>
-                            <div>อ</div>
-                            <div>พ</div>
-                            <div>พฤ</div>
-                            <div>ศ</div>
-                            <div>ส</div>
-                        </div>
-                        <div class="cal-grid" id="calGrid"></div>
-
-                        <div class="cal-hint">
-                            <i class="fas fa-circle-info"></i>
-                            คลิกวันเดียว หรือคลิกค้างแล้วลากเลือกช่วงวันที่ แล้วเลือกการดำเนินการด้านล่าง
-                        </div>
-
-                        <!-- Toolbar หลังเลือกช่วงวันที่ -->
-                        <div class="cal-selection-toolbar" id="calToolbar" style="display:none;">
-                            <div class="cal-sel-label" id="calSelLabel"></div>
-                            <div class="cal-sel-actions">
-                                <button type="button" class="cal-action-btn cal-btn-open" id="calOpenBtn">
-                                    <i class="fas fa-lock-open"></i> เปิดรับจอง
-                                </button>
-                                <button type="button" class="cal-action-btn cal-btn-close" id="calCloseBtn">
-                                    <i class="fas fa-lock"></i> ปิดรับจอง
-                                </button>
-                                <button type="button" class="cal-action-btn cal-btn-create" id="calCreateBtn">
-                                    <i class="fas fa-plus"></i> สร้างรอบ
-                                </button>
-                                <button type="button" class="cal-action-btn cal-btn-delete" id="calDeleteBtn">
-                                    <i class="fas fa-trash"></i> ลบรอบ
-                                </button>
-                                <button type="button" class="cal-action-btn cal-btn-clear" id="calClearBtn">
-                                    <i class="fas fa-xmark"></i> ยกเลิก
-                                </button>
-                            </div>
-                            <div class="cal-sel-note" id="calSelNote"></div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-            </div>
-
-            <!-- ── ขวา: ข้อมูลหลัก ── -->
-            <div class="right-col">
-
-                <!-- ข้อมูลพื้นฐาน -->
-                <div class="card">
-                    <div class="card-title">ข้อมูลพื้นฐาน</div>
-
-                    <div class="form-group">
-                        <label>ชื่อทัวร์ <span class="req">*</span></label>
-                        <input type="text" name="tourmname" th:value="${tour.tourmname}" placeholder="ชื่อทัวร์"
-                            required maxlength="200">
-                    </div>
-
-                    <!-- ประเภททัวร์ -->
-                    <div class="form-group">
-                        <label>ประเภททัวร์ <span class="req">*</span></label>
-                        <select id="tourtypeSelect" name="tourtypeUi" required>
-                            <option value="" disabled>— เลือกประเภททัวร์ —</option>
-                            <option value="ทัวร์รายวัน">ทัวร์รายวัน (1 วัน ไม่พักค้าง)</option>
-                            <option value="ทัวร์วัฒนธรรมชนเผ่า">ทัวร์วัฒนธรรมชนเผ่า</option>
-                            <option value="ทัวร์วิถีชีวิต">ทัวร์วิถีชีวิต</option>
-                            <option value="__custom__">อื่นๆ (ระบุชื่อประเภทเอง)</option>
-                        </select>
-                    </div>
-
-                    <!-- ช่องระบุชื่อเอง แสดงเฉพาะกรณีเลือก "อื่นๆ" -->
-                    <div class="form-group" id="customTypeGroup" style="display:none;">
-                        <label>ระบุชื่อประเภททัวร์ <span class="req">*</span></label>
-                        <input type="text" id="tourtypeCustom" placeholder="เช่น ทัวร์เกษตรอินทรีย์ 4 วัน 3 คืน">
-                    </div>
-
-                    <div class="two-col">
-                        <div class="form-group">
-                            <label>จำนวนวัน <span class="req">*</span></label>
-                            <input type="number" id="numberOfDays" name="numberOfDays" min="1"
-                                th:value="${tour.numberOfDays}" required>
-                            <p class="hint">วัน</p>
-                        </div>
-                        <div class="form-group">
-                            <label>จำนวนคืน</label>
-                            <input type="number" id="numberOfNights" name="numberOfNights" min="0"
-                                th:value="${tour.numberOfNights}">
-                            <p class="hint">คืน (ทัวร์รายวันระบบจะตั้ง 0 ให้อัตโนมัติ)</p>
-                        </div>
-                    </div>
-
-                    <div class="two-col">
-                        <div class="form-group">
-                            <label>ราคาผู้ใหญ่ <span class="req">*</span></label>
-                            <div class="price-input-wrap">
-                                <input type="number" name="adultprice" min="0" step="1" th:value="${tour.adultprice}"
-                                    required>
-                                <span class="price-unit">฿</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>ราคาเด็ก <span class="req">*</span></label>
-                            <div class="price-input-wrap">
-                                <input type="number" name="childprice" min="0" step="1" th:value="${tour.childprice}"
-                                    required>
-                                <span class="price-unit">฿</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="two-col">
-                        <div class="form-group">
-                            <label>ที่นั่งขั้นต่ำ <span class="req">*</span></label>
-                            <input type="number" name="minSeatstour" min="1" th:value="${tour.minSeatstour}" required>
-                            <p class="hint">ท่าน</p>
-                        </div>
-                        <div class="form-group">
-                            <label>ที่นั่งสูงสุด <span class="req">*</span></label>
-                            <input type="number" name="maxSeatstour" min="1" th:value="${tour.maxSeatstour}" required>
-                            <p class="hint">ท่าน</p>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- จุดรับ / นัดพบ -->
-                <div class="card">
-                    <div class="card-title">จุดรับ / นัดพบ <span class="req">*</span></div>
-                    <p class="hint" style="margin-bottom:14px;">
-                        เลือกได้มากกว่า 1 ช่องทาง
-                    </p>
-
-                    <div class="form-group" style="display:flex; align-items:flex-start; gap:8px;">
-                        <input type="checkbox" id="allowMeetingPointChk" name="allowMeetingPoint" value="true"
-                            style="margin-top:4px;" th:checked="${tour.allowMeetingPoint}" />
-                        <label for="allowMeetingPointChk" style="margin-bottom:0;">
-                            📍 นัดพบที่จุดรวมพล (ไม่มีค่าใช้จ่ายเพิ่มเติม)
-                        </label>
-                    </div>
-                    <div class="form-group" id="meetingPointDetailGroup" style="display:none;">
-                        <label>สถานที่จุดรวมพล <span class="req">*</span></label>
-                        <div class="search-input-wrap">
-                            <input type="text" id="meetingPointDetail" name="meetingPointDetail"
-                                placeholder="เช่น ลานจอดรถหน้าตลาดวโรรส อ.เมือง จ.เชียงใหม่"
-                                th:value="${tour.meetingPointDetail}" autocomplete="off" />
-                            <div class="search-suggest-box" id="meetingPointSuggest"></div>
-                        </div>
-
-                        <div class="map-box" id="meetingPointMap"></div>
-                        <p class="hint">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
-                            หรือคลิก/ลากหมุดบนแผนที่เพื่อให้ระบบเติมที่อยู่ให้อัตโนมัติ</p>
-                    </div>
-
-                    <div class="form-group" style="display:flex; align-items:flex-start; gap:8px; margin-top:10px;">
-                        <input type="checkbox" id="allowHotelPickupChk" name="allowHotelPickup" value="true"
-                            style="margin-top:4px;" th:checked="${tour.allowHotelPickup}" />
-                        <label for="allowHotelPickupChk" style="margin-bottom:0;">
-                            🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
-                        </label>
-                    </div>
-                    <div class="form-group" id="hotelPickupAreaGroup" style="display:none;">
-                        <label>เขตพื้นที่ที่รับได้ <span class="req">*</span></label>
-                        <input type="text" id="hotelPickupArea" name="hotelPickupArea"
-                            placeholder="เช่น อำเภอเมือง (เชียงใหม่)" th:value="${tour.hotelPickupArea}" />
-                        <!-- <p class="hint">ระบุให้ละเอียดระดับ<strong>อำเภอ</strong> เช่น "อำเภอเมือง" แทนที่จะระบุทั้งจังหวัด
-                                เพื่อจำกัดพื้นที่ให้บริการรับส่งให้แม่นยำ ระบบจะรับส่งเฉพาะที่พักที่มีคำนี้ในที่อยู่เท่านั้น
-                                สมาชิกต้องระบุคำนี้ในที่อยู่ตอนจอง</p> -->
-                    </div>
-                    <p class="hint" id="err-pickupOption" style="display:none; color:#c0392b;">
-                        กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง
-                    </p>
-
-                    <div class="two-col" style="margin-top:14px;">
-                        <div class="form-group">
-                            <label>เวลานัดพบ <span class="req">*</span></label>
-                            <input type="time" id="meetingTime" name="meetingTime" th:value="${tour.meetingTime}"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>กรุณาพร้อมก่อนเวลา</label>
-                            <div class="price-input-wrap">
-                                <input type="number" id="arriveBeforeMinutes" name="arriveBeforeMinutes" min="0"
-                                    placeholder="10" th:value="${tour.arriveBeforeMinutes}">
-                                <span class="price-unit">นาที</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- รายละเอียด -->
-                <div class="card">
-                    <div class="card-title">รายละเอียดทัวร์</div>
-                    <div class="form-group">
-                        <label>รายละเอียด <span class="req">*</span></label>
-                        <textarea name="tourdetail" rows="6" placeholder="อธิบายโปรแกรมทัวร์..." required
-                            th:text="${tour.tourdetail}"></textarea>
-                    </div>
-                </div>
-
-                <!-- เงื่อนไข -->
-                <div class="card">
-                    <div class="card-title">เงื่อนไขการจอง</div>
-                    <div class="form-group">
-                        <label>เงื่อนไข <span class="req">*</span></label>
-                        <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม..." required
-                            th:text="${tour.conditiontour}"></textarea>
-                    </div>
-                </div>
-
-
-
-                <!-- Action buttons -->
-                <div class="btn-row">
-                    <a class="btn btn-cancel" th:href="@{/manager/tours}">
-                        <i class="fas fa-xmark"></i> ยกเลิก
-                    </a>
-                    <button type="submit" class="btn btn-save">
-                        <i class="fas fa-floppy-disk"></i> บันทึกการแก้ไข
-                    </button>
-                </div>
-
-            </div>
+        <!-- Alert messages -->
+        <div class="alert alert-error" th:if="${errorMessage}">
+            <i class="fas fa-circle-exclamation"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+        <div class="alert alert-success" th:if="${successMessage}">
+            <i class="fas fa-circle-check"></i>
+            <span th:text="${successMessage}"></span>
         </div>
 
-    </form>
+        <form th:action="@{/manager/tours/{id}/edit(id=${tour.tourid})}" method="post" id="editForm">
+
+            <div class="form-grid">
+
+                <!-- ── ซ้าย: รูปภาพ + สถานะ + ราคา ── -->
+                <div class="left-col">
+
+                    <!-- รูปภาพ -->
+                    <div class="card">
+                        <div class="card-title">รูปภาพทัวร์</div>
+
+                        <!-- zone drag & drop -->
+                        <div class="img-upload-zone" id="uploadZone" ondragover="handleDragOver(event)"
+                            ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
+                            onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                            <div class="upload-title">ลากรูปมาวางหรือคลิกเพื่อเลือก</div>
+                            <label class="upload-btn-label" onclick="event.stopPropagation()">
+                                <i class="fas fa-folder-open"></i> เลือกรูป
+                                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
+                                    onchange="addFiles(Array.from(this.files)); this.value='';">
+                            </label>
+                            <div class="upload-hint">jpg · png · webp | สูงสุด 5 รูป</div>
+                        </div>
+
+                        <!-- grid รูป -->
+                        <div class="img-grid" id="imgGrid"></div>
+                        <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
+
+                        <!-- hidden inputs -->
+                        <!-- เก็บ filename เดิมจาก DB เพื่อให้ JS โหลดแสดง -->
+                        <input type="hidden" id="imgData"
+                            th:if="${tour.images != null and !#strings.isEmpty(tour.images)}"
+                            th:value="${tour.images}" />
+                        <!-- ส่งผลลัพธ์ไปยัง Controller: JSON array base64 หรือ __KEEP__ -->
+                        <input type="hidden" name="images" id="imagesInput" value="__KEEP__">
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">สถานะทัวร์</div>
+                        <div class="form-group">
+                            <label>สถานะปัจจุบัน (คำนวณจากรอบทัวร์)</label>
+                            <div class="status-select-wrap">
+                                <div class="status-dot"></div>
+                                <input type="text" th:value="${tour.overallStatus}" disabled
+                                    style="padding-left:26px; background:#f5f5f3; color:#555;">
+                            </div>
+                            <div style="margin-top:8px; font-size:12.5px; color:var(--text-hint);">
+                                แก้ไข/เปิด-ปิดรอบทัวร์ได้ที่ปฏิทินด้านล่าง
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════
+                     ปฏิทินรอบทัวร์ 
+                ═══════════════════════════════════════════ -->
+                    <div class="card" id="scheduleCard">
+                        <div class="card-title">รอบทัวร์ (วันที่เปิดทัวร์)</div>
+
+                        <div class="cal-compact">
+                            <div class="cal-legend">
+                                <span class="cal-legend-item"><i class="cal-dot dot-open"></i> เปิดรับจอง</span>
+                                <span class="cal-legend-item"><i class="cal-dot dot-full"></i> เต็ม</span>
+                                <span class="cal-legend-item"><i class="cal-dot dot-closed"></i> ปิด</span>
+                                <span class="cal-legend-item"><i class="cal-dot dot-none"></i> ยังไม่มีรอบ</span>
+                                <span class="cal-legend-item"><i class="cal-dot"
+                                        style="background:#f1f0ec;border:1px solid #d8d4c8;"></i> ผ่านไปแล้ว</span>
+                            </div>
+
+                            <div class="cal-header">
+                                <button type="button" class="cal-nav-btn" id="calPrevBtn"><i
+                                        class="fas fa-chevron-left"></i></button>
+                                <div class="cal-month-label" id="calMonthLabel">-</div>
+                                <button type="button" class="cal-nav-btn" id="calNextBtn"><i
+                                        class="fas fa-chevron-right"></i></button>
+                            </div>
+
+                            <div class="cal-weekdays">
+                                <div>อา</div>
+                                <div>จ</div>
+                                <div>อ</div>
+                                <div>พ</div>
+                                <div>พฤ</div>
+                                <div>ศ</div>
+                                <div>ส</div>
+                            </div>
+                            <div class="cal-grid" id="calGrid"></div>
+
+                            <div class="cal-hint">
+                                <i class="fas fa-circle-info"></i>
+                                คลิกวันเดียว หรือคลิกค้างแล้วลากเลือกช่วงวันที่ แล้วเลือกการดำเนินการด้านล่าง
+                            </div>
+
+                            <!-- Toolbar หลังเลือกช่วงวันที่ -->
+                            <div class="cal-selection-toolbar" id="calToolbar" style="display:none;">
+                                <div class="cal-sel-label" id="calSelLabel"></div>
+                                <div class="cal-sel-actions">
+                                    <button type="button" class="cal-action-btn cal-btn-open" id="calOpenBtn">
+                                        <i class="fas fa-lock-open"></i> เปิดรับจอง
+                                    </button>
+                                    <button type="button" class="cal-action-btn cal-btn-close" id="calCloseBtn">
+                                        <i class="fas fa-lock"></i> ปิดรับจอง
+                                    </button>
+                                    <button type="button" class="cal-action-btn cal-btn-create" id="calCreateBtn">
+                                        <i class="fas fa-plus"></i> สร้างรอบ
+                                    </button>
+                                    <button type="button" class="cal-action-btn cal-btn-delete" id="calDeleteBtn">
+                                        <i class="fas fa-trash"></i> ลบรอบ
+                                    </button>
+                                    <button type="button" class="cal-action-btn cal-btn-clear" id="calClearBtn">
+                                        <i class="fas fa-xmark"></i> ยกเลิก
+                                    </button>
+                                </div>
+                                <div class="cal-sel-note" id="calSelNote"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+                <!-- ── ขวา: ข้อมูลหลัก ── -->
+                <div class="right-col">
+
+                    <!-- ข้อมูลพื้นฐาน -->
+                    <div class="card">
+                        <div class="card-title">ข้อมูลพื้นฐาน</div>
+
+                        <div class="form-group">
+                            <label>ชื่อทัวร์ <span class="req">*</span></label>
+                            <input type="text" name="tourmname" th:value="${tour.tourmname}" placeholder="ชื่อทัวร์"
+                                required maxlength="200">
+                        </div>
+
+                        <!-- ประเภททัวร์ -->
+                        <div class="form-group">
+                            <label>ประเภททัวร์ <span class="req">*</span></label>
+                            <select id="tourtypeSelect" name="tourtypeUi" required>
+                                <option value="" disabled>— เลือกประเภททัวร์ —</option>
+                                <option value="ทัวร์รายวัน">ทัวร์รายวัน (1 วัน ไม่พักค้าง)</option>
+                                <option value="ทัวร์วัฒนธรรมชนเผ่า">ทัวร์วัฒนธรรมชนเผ่า</option>
+                                <option value="ทัวร์วิถีชีวิต">ทัวร์วิถีชีวิต</option>
+                                <option value="__custom__">อื่นๆ (ระบุชื่อประเภทเอง)</option>
+                            </select>
+                        </div>
+
+                        <!-- ช่องระบุชื่อเอง แสดงเฉพาะกรณีเลือก "อื่นๆ" -->
+                        <div class="form-group" id="customTypeGroup" style="display:none;">
+                            <label>ระบุชื่อประเภททัวร์ <span class="req">*</span></label>
+                            <input type="text" id="tourtypeCustom" placeholder="เช่น ทัวร์เกษตรอินทรีย์ 4 วัน 3 คืน">
+                        </div>
+
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label>จำนวนวัน <span class="req">*</span></label>
+                                <input type="number" id="numberOfDays" name="numberOfDays" min="1"
+                                    th:value="${tour.numberOfDays}" required>
+                                <p class="hint">วัน</p>
+                            </div>
+                            <div class="form-group">
+                                <label>จำนวนคืน</label>
+                                <input type="number" id="numberOfNights" name="numberOfNights" min="0"
+                                    th:value="${tour.numberOfNights}">
+                                <p class="hint">คืน (ทัวร์รายวันระบบจะตั้ง 0 ให้อัตโนมัติ)</p>
+                            </div>
+                        </div>
+
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label>ราคาผู้ใหญ่ <span class="req">*</span></label>
+                                <div class="price-input-wrap">
+                                    <input type="number" name="adultprice" min="0" step="1"
+                                        th:value="${tour.adultprice}" required>
+                                    <span class="price-unit">฿</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>ราคาเด็ก <span class="req">*</span></label>
+                                <div class="price-input-wrap">
+                                    <input type="number" name="childprice" min="0" step="1"
+                                        th:value="${tour.childprice}" required>
+                                    <span class="price-unit">฿</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label>ที่นั่งขั้นต่ำ <span class="req">*</span></label>
+                                <input type="number" name="minSeatstour" min="1" th:value="${tour.minSeatstour}"
+                                    required>
+                                <p class="hint">ท่าน</p>
+                            </div>
+                            <div class="form-group">
+                                <label>ที่นั่งสูงสุด <span class="req">*</span></label>
+                                <input type="number" name="maxSeatstour" min="1" th:value="${tour.maxSeatstour}"
+                                    required>
+                                <p class="hint">ท่าน</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- จุดรับ / นัดพบ -->
+                    <div class="card">
+                        <div class="card-title">จุดรับ / นัดพบ <span class="req">*</span></div>
+                        <p class="hint" style="margin-bottom:14px;">
+                            เลือกได้มากกว่า 1 ช่องทาง
+                        </p>
+
+                        <div class="form-group" style="display:flex; align-items:flex-start; gap:8px;">
+                            <input type="checkbox" id="allowMeetingPointChk" name="allowMeetingPoint" value="true"
+                                style="margin-top:4px;" th:checked="${tour.allowMeetingPoint}" />
+                            <label for="allowMeetingPointChk" style="margin-bottom:0;">
+                                📍 นัดพบที่จุดรวมพล (ไม่มีค่าใช้จ่ายเพิ่มเติม)
+                            </label>
+                        </div>
+                        <div class="form-group" id="meetingPointDetailGroup" style="display:none;">
+                            <label>สถานที่จุดรวมพล <span class="req">*</span></label>
+                            <div class="search-input-wrap">
+                                <input type="text" id="meetingPointDetail" name="meetingPointDetail"
+                                    placeholder="เช่น ลานจอดรถหน้าตลาดวโรรส อ.เมือง จ.เชียงใหม่"
+                                    th:value="${tour.meetingPointDetail}" autocomplete="off" />
+                                <div class="search-suggest-box" id="meetingPointSuggest"></div>
+                            </div>
+
+                            <div class="map-box" id="meetingPointMap"></div>
+                            <p class="hint">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
+                                หรือคลิก/ลากหมุดบนแผนที่เพื่อให้ระบบเติมที่อยู่ให้อัตโนมัติ</p>
+                        </div>
+
+                        <div class="form-group" style="display:flex; align-items:flex-start; gap:8px; margin-top:10px;">
+                            <input type="checkbox" id="allowHotelPickupChk" name="allowHotelPickup" value="true"
+                                style="margin-top:4px;" th:checked="${tour.allowHotelPickup}" />
+                            <label for="allowHotelPickupChk" style="margin-bottom:0;">
+                                🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
+                            </label>
+                        </div>
+                        <div class="form-group" id="hotelPickupAreaGroup" style="display:none;">
+                            <label>เขตพื้นที่ที่รับได้ <span class="req">*</span></label>
+                            <input type="text" id="hotelPickupArea" name="hotelPickupArea"
+                                placeholder="เช่น อำเภอเมือง (เชียงใหม่)" th:value="${tour.hotelPickupArea}" />
+                            <!-- <p class="hint">ระบุให้ละเอียดระดับ<strong>อำเภอ</strong> เช่น "อำเภอเมือง" แทนที่จะระบุทั้งจังหวัด
+                                เพื่อจำกัดพื้นที่ให้บริการรับส่งให้แม่นยำ ระบบจะรับส่งเฉพาะที่พักที่มีคำนี้ในที่อยู่เท่านั้น
+                                สมาชิกต้องระบุคำนี้ในที่อยู่ตอนจอง</p> -->
+                        </div>
+                        <p class="hint" id="err-pickupOption" style="display:none; color:#c0392b;">
+                            กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง
+                        </p>
+
+                        <div class="two-col" style="margin-top:14px;">
+                            <div class="form-group">
+                                <label>เวลานัดพบ <span class="req">*</span></label>
+                                <input type="time" id="meetingTime" name="meetingTime" th:value="${tour.meetingTime}"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>กรุณาพร้อมก่อนเวลา</label>
+                                <div class="price-input-wrap">
+                                    <input type="number" id="arriveBeforeMinutes" name="arriveBeforeMinutes" min="0"
+                                        placeholder="10" th:value="${tour.arriveBeforeMinutes}">
+                                    <span class="price-unit">นาที</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- รายละเอียด -->
+                    <div class="card">
+                        <div class="card-title">รายละเอียดทัวร์</div>
+                        <div class="form-group">
+                            <label>รายละเอียด <span class="req">*</span></label>
+                            <textarea name="tourdetail" rows="6" placeholder="อธิบายโปรแกรมทัวร์..." required
+                                th:text="${tour.tourdetail}"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- เงื่อนไข -->
+                    <div class="card">
+                        <div class="card-title">เงื่อนไขการจอง</div>
+                        <div class="form-group">
+                            <label>เงื่อนไข <span class="req">*</span></label>
+                            <textarea name="conditiontour" rows="5" placeholder="เงื่อนไขเพิ่มเติม..." required
+                                th:text="${tour.conditiontour}"></textarea>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Action buttons -->
+                    <div class="btn-row">
+                        <a class="btn btn-cancel" th:href="@{/manager/tours}">
+                            <i class="fas fa-xmark"></i> ยกเลิก
+                        </a>
+                        <button type="submit" class="btn btn-save">
+                            <i class="fas fa-floppy-disk"></i> บันทึกการแก้ไข
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <!-- ═══ SUCCESS MODAL ═══ -->
+    <div class="modal-backdrop" id="successModal">
+        <div class="modal-box">
+            <div class="checkmark-wrap">
+                <div class="checkmark-ring"></div>
+                <i class="fas fa-check checkmark-icon"></i>
+            </div>
+            <div class="modal-title">บันทึกการแก้ไขสำเร็จ!</div>
+            <div class="modal-desc">ข้อมูลทัวร์ของคุณถูกอัปเดตเรียบร้อยแล้ว</div>
+            <div class="modal-progress-bar">
+                <div class="modal-progress-fill" id="progressFill"></div>
+            </div>
+        </div>
     </div>
 
     <script th:inline="javascript">

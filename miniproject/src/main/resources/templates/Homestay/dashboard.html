@@ -8,456 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
+
     <style>
-        .booking-table-wrap {
-            background: #fff;
-            border-radius: 12px;
-            border: 1px solid #e2ddd4;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
-            overflow: hidden;
-            margin-top: 1.5rem;
-        }
 
-        .booking-table-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e2ddd4;
-        }
-
-        .booking-table-head h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1a3d1f;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0;
-        }
-
-        .booking-table-head a {
-            font-size: 12px;
-            color: #2d6a35;
-            text-decoration: none;
-        }
-
-        .booking-table-head a:hover {
-            text-decoration: underline;
-        }
-
-        table.b-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        table.b-table thead tr {
-            background: #f5f0e8;
-        }
-
-        table.b-table th {
-            padding: 10px 16px;
-            text-align: left;
-            font-weight: 600;
-            color: #6b6b68;
-            font-size: 12px;
-            white-space: nowrap;
-        }
-
-        table.b-table td {
-            padding: 12px 16px;
-            border-top: 1px solid #f0ece3;
-            color: #1c1c1a;
-            vertical-align: middle;
-        }
-
-        table.b-table tbody tr:hover {
-            background: #faf8f4;
-        }
-
-        .b-id {
-            font-family: monospace;
-            font-size: 12px;
-            color: #6b6b68;
-        }
-
-        .b-name {
-            font-weight: 500;
-        }
-
-        .b-amount {
-            font-weight: 600;
-            color: #1a3d1f;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .badge-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-waiting {
-            background: #cfe2ff;
-            color: #084298;
-        }
-
-        .badge-confirmed {
-            background: #d1e7dd;
-            color: #0a3622;
-        }
-
-        .badge-cancel {
-            background: #f8d7da;
-            color: #842029;
-        }
-
-        .badge-other {
-            background: #e2e3e5;
-            color: #41464b;
-        }
-
-        .empty-row td {
-            text-align: center;
-            color: #9a9a96;
-            padding: 28px;
-        }
-
-        .stat-card.teal {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        }
-
-        /* ── Homestay selector ── */
-        .homestay-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: #fff;
-            padding: 12px 18px;
-            border-radius: 10px;
-            box-shadow: 0 1px 6px rgba(0, 0, 0, .07);
-            width: fit-content;
-        }
-
-        .homestay-selector label {
-            font-weight: 600;
-            color: #1a3a1a;
-            font-size: .95rem;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .homestay-selector label i {
-            color: #2d6a2d;
-        }
-
-        .homestay-selector select {
-            padding: 7px 14px;
-            border-radius: 8px;
-            border: 1.5px solid #c5d6c5;
-            background: #f5f9f5;
-            font-family: 'Sarabun', sans-serif;
-            font-size: .95rem;
-            color: #1a3a1a;
-            cursor: pointer;
-            outline: none;
-            transition: border-color .2s;
-            min-width: 200px;
-        }
-
-        .homestay-selector select:hover,
-        .homestay-selector select:focus {
-            border-color: #2d6a2d;
-        }
-
-        /* ── Bank alert banner ── */
-        .bank-banner {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: #fff8e1;
-            border: 1.5px solid #f59e0b;
-            border-radius: 12px;
-            padding: 14px 20px;
-            margin-bottom: 20px;
-            color: #7c4a00;
-        }
-
-        .bank-banner i {
-            font-size: 1.4rem;
-            flex-shrink: 0;
-            color: #f59e0b;
-        }
-
-        .bank-banner-text {
-            flex: 1;
-            font-size: 0.93rem;
-            line-height: 1.5;
-        }
-
-        .bank-banner-text strong {
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .bank-banner-btn {
-            background: #f59e0b;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .bank-banner-btn:hover {
-            background: #d97706;
-            color: #fff;
-        }
-
-        /* ── กิจกรรมวันนี้ + แนวโน้มรายได้ ──
-           ใช้สีตามหลัก: เขียว = พร้อม/บวก, ส้ม = ต้องดำเนินการ,
-           น้ำเงิน = ข้อมูล/เงิน (สอดคล้องกับการ์ดรายได้ teal ด้านบน),
-           เทา = สถานะกลาง ๆ ไม่มีความหมายพิเศษ */
-        .today-revenue-grid {
-            margin-top: 1.5rem;
-        }
-
-        .revenue-trend-card {
-            background: #fff;
-            border-radius: 14px;
-            border: 1px solid #e2ddd4;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-            padding: 22px 26px 18px;
-        }
-
-        .revenue-trend-card h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1a3d1f;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0 0 22px;
-        }
-
-        .revenue-bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 18px;
-            height: 190px;
-        }
-
-        .revenue-bar-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        .revenue-bar-amount {
-            font-size: 12px;
-            font-weight: 600;
-            color: #2563eb;
-            opacity: 0;
-            transform: translateY(4px);
-            transition: opacity .2s, transform .2s;
-        }
-
-        .revenue-bar-col:hover .revenue-bar-amount,
-        .revenue-bar-col.is-current .revenue-bar-amount {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .revenue-bar-track {
-            width: 100%;
-            height: 140px;
-            display: flex;
-            align-items: flex-end;
-        }
-
-        .revenue-bar-fill {
-            width: 100%;
-            background: linear-gradient(180deg, #85b7eb 0%, #a9cdf2 100%);
-            border-radius: 8px 8px 0 0;
-            min-height: 4px;
-            transition: filter .2s, transform .2s;
-        }
-
-        .revenue-bar-col:hover .revenue-bar-fill {
-            filter: brightness(0.95);
-            transform: scaleY(1.01);
-        }
-
-        .revenue-bar-fill.bar-current {
-            background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%);
-        }
-
-        .revenue-bar-label {
-            font-size: 12px;
-            color: #8a8a86;
-            font-weight: 500;
-        }
-
-        .revenue-bar-col.is-current .revenue-bar-label {
-            color: #2563eb;
-            font-weight: 700;
-        }
-
-        .dashboard-mid-grid {
-            display: grid;
-            grid-template-columns: 65fr 35fr;
-            gap: 20px;
-            margin-top: 1.5rem;
-        }
-
-        .donut-card {
-            background: #fff;
-            border-radius: 14px;
-            border: 1px solid #e2ddd4;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-            padding: 22px 26px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .donut-card h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1a3d1f;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0 0 18px;
-        }
-
-        .donut-chart-wrap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin: 4px 0 22px;
-        }
-
-        .donut-chart {
-            width: 148px;
-            height: 148px;
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .donut-chart::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 92px;
-            height: 92px;
-            background: #fff;
-            border-radius: 50%;
-        }
-
-        .donut-center-label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 1;
-        }
-
-        .donut-center-label .num {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a3d1f;
-            line-height: 1.1;
-        }
-
-        .donut-center-label .txt {
-            font-size: 11px;
-            color: #9a9a96;
-            margin-top: 2px;
-        }
-
-        .donut-legend {
-            display: flex;
-            flex-direction: column;
-            gap: 11px;
-        }
-
-        .donut-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            font-size: 13px;
-            color: #333;
-        }
-
-        .donut-legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 3px;
-            flex-shrink: 0;
-        }
-
-        .donut-legend-pct {
-            margin-left: auto;
-            font-weight: 700;
-            color: #1a3d1f;
-        }
-
-        .view-detail-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #2563eb;
-            background: #eaf2fe;
-            padding: 6px 13px;
-            border-radius: 8px;
-            text-decoration: none;
-            white-space: nowrap;
-            transition: background .15s;
-        }
-
-        .view-detail-btn:hover {
-            background: #d7e6fd;
-        }
-
-        @media (max-width: 900px) {
-            .dashboard-mid-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 900px) {
-            .today-revenue-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 
@@ -469,17 +26,17 @@
             <div class="brand-logo">
                 <img th:src="@{/images/logo5.png}" alt="Logo">
             </div>
-            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="brand-text">ชนเผ่าพาเที่ยว</span>
         </a>
         <div class="nav-links">
             <a class="nav-link active" th:href="@{/owner/dashboard}">
                 <i class="fas fa-chart-pie"></i> ภาพรวม
             </a>
             <a class="nav-link" th:href="@{/owner/rooms}">
-                <i class="fas fa-door-open"></i> จัดการห้องพัก
+                <i class="fas fa-door-open"></i> ห้องพัก
             </a>
             <a class="nav-link" th:href="@{/owner/bookings}">
-                <i class="fas fa-calendar-check"></i> การจองโฮมสเตย์
+                <i class="fas fa-calendar-check"></i> ตรวจสอบการจอง
             </a>
             <a class="nav-link" th:href="@{/owner/homestays}">
                 <i class="fas fa-house"></i> ข้อมูลโฮมสเตย์
@@ -589,12 +146,60 @@
             </div>
         </div>
 
-        <!-- ─── โซนกลาง: กราฟรายได้ (65%) + โดนัทสัดส่วนการจอง (35%) ─── -->
+        <!-- ─── โซนกลาง: กราฟรายได้ (65%) + ห้องพักยอดจองสูงสุด (35%) ─── -->
         <div class="dashboard-mid-grid">
 
             <div class="revenue-trend-card">
-                <h3><i class="fas fa-chart-column"></i> แนวโน้มรายได้ต่อเดือน (6 เดือนล่าสุด)</h3>
-                <div class="revenue-bars">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                    <div class="trend-tab-group">
+                        <button type="button" class="trend-tab trend-tab-active" data-target="revenue"
+                            onclick="switchTrendTab('revenue')">
+                            <i class="fas fa-chart-column"></i> รายได้ต่อเดือน
+                        </button>
+                        <button type="button" class="trend-tab" data-target="bookingcount"
+                            onclick="switchTrendTab('bookingcount')">
+                            <i class="fas fa-bed"></i> จำนวนการจองต่อเดือน
+                        </button>
+                    </div>
+
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                        <a th:href="@{/owner/dashboard(homestayid=${homestayid}, range=3)}"
+                            th:classappend="${selectedRange == '3'} ? ' range-btn-active'" class="range-btn">3
+                            เดือน</a>
+                        <a th:href="@{/owner/dashboard(homestayid=${homestayid}, range=6)}"
+                            th:classappend="${selectedRange == '6'} ? ' range-btn-active'" class="range-btn">6
+                            เดือน</a>
+                        <a th:href="@{/owner/dashboard(homestayid=${homestayid}, range=12)}"
+                            th:classappend="${selectedRange == '12'} ? ' range-btn-active'" class="range-btn">12
+                            เดือน</a>
+
+                        <button type="button" class="range-btn" onclick="toggleCustomRange()">
+                            <i class="fas fa-calendar-days"></i> เลือกช่วงเวลา
+                        </button>
+                    </div>
+                </div>
+
+                <form method="get" th:action="@{/owner/dashboard}" id="customRangeForm" class="custom-range-box"
+                    th:style="${selectedRange == 'custom'} ? 'display:flex;' : 'display:none;'"
+                    style="gap:12px; align-items:center; margin-bottom:18px; flex-wrap:wrap;">
+                    <input type="hidden" name="homestayid" th:value="${homestayid}" />
+                    <input type="hidden" name="range" value="custom" />
+                    <label>
+                        ตั้งแต่
+                        <input type="month" name="startMonth" th:value="${selectedStartMonth}" required>
+                    </label>
+                    <label>
+                        ถึง
+                        <input type="month" name="endMonth" th:value="${selectedEndMonth}" required>
+                    </label>
+                    <button type="submit" class="range-search-btn">
+                        <i class="fas fa-magnifying-glass"></i> ค้นหา
+                    </button>
+                </form>
+
+                <!-- กราฟรายได้ -->
+                <div class="revenue-bars" id="trendPanel-revenue">
                     <div class="revenue-bar-col" th:each="p, iter : ${revenueTrend}"
                         th:classappend="${iter.last} ? ' is-current' : ''">
                         <span class="revenue-bar-amount"
@@ -607,82 +212,51 @@
                         <span class="revenue-bar-label" th:text="${p.label}">ม.ค. 68</span>
                     </div>
                 </div>
+
+                <!-- กราฟยอดจอง (ซ่อนไว้ก่อน) -->
+                <div class="revenue-bars" id="trendPanel-bookingcount" style="display:none;">
+                    <div class="revenue-bar-col" th:each="p, iter : ${bookingCountTrend}"
+                        th:classappend="${iter.last} ? ' is-current' : ''">
+                        <span class="revenue-bar-amount booking-count-amount" th:text="${p.count} + ' รายการ'">0</span>
+                        <div class="revenue-bar-track">
+                            <div class="revenue-bar-fill booking-count-fill"
+                                th:classappend="${iter.last} ? ' bar-current' : ''"
+                                th:style="'height:' + ${p.heightPct} + '%'"></div>
+                        </div>
+                        <span class="revenue-bar-label" th:text="${p.label}">ม.ค. 68</span>
+                    </div>
+                </div>
             </div>
 
             <div class="donut-card">
-                <h3><i class="fas fa-chart-pie"></i> สัดส่วนยอดจองตามประเภทห้อง</h3>
-                <div class="donut-chart-wrap">
-                    <div class="donut-chart" th:style="'background:' + ${donutGradientStyle}"></div>
-                    <div class="donut-center-label">
-                        <div class="num" th:text="${totalBookingsForDonut}">0</div>
-                        <div class="txt">การจองทั้งหมด</div>
+                <h3><i class="fas fa-ranking-star"></i> ห้องพักยอดนิยม</h3>
+
+                <div class="room-rank-list">
+                    <div class="room-rank-item" th:each="seg, iter : ${bookingRoomTypeDonut}">
+                        <span class="room-rank-medal"
+                            th:text="${iter.index == 0} ? '🥇' : (${iter.index == 1} ? '🥈' : (${iter.index == 2} ? '🥉' : (${iter.index + 1} + '.')))"></span>
+                        <span class="room-rank-name" th:text="${seg.label}">บ้านพัก</span>
+                        <div class="room-rank-bar-track">
+                            <div class="room-rank-bar-fill"
+                                th:style="'width:' + ${seg.percent} + '%; background:' + ${seg.color}"></div>
+                        </div>
+                        <span class="room-rank-count" th:text="${seg.count} + ' ครั้ง'">0 ครั้ง</span>
                     </div>
-                </div>
-                <div class="donut-legend">
-                    <div class="donut-legend-item" th:each="seg : ${bookingRoomTypeDonut}">
-                        <span class="donut-legend-dot" th:style="'background:' + ${seg.color}"></span>
-                        <span th:text="${seg.label}">ห้องเต็นท์</span>
-                        <span class="donut-legend-pct" th:text="${seg.percent} + '%'">0%</span>
-                    </div>
-                    <div class="donut-legend-item"
+                    <div class="room-rank-item"
                         th:if="${bookingRoomTypeDonut == null or bookingRoomTypeDonut.isEmpty()}">
                         <span style="color:#9a9a96; font-size:13px;">ยังไม่มีข้อมูลการจอง</span>
                     </div>
                 </div>
+
+                <div style="text-align:center; margin-top:16px; padding-top:14px; border-top:1px solid #f0ece3;">
+                    <span style="font-size:22px; font-weight:700; color:#1a3d1f;"
+                        th:text="${totalBookingsForDonut}">0</span>
+                    <span style="font-size:12px; color:#9a9a96; display:block;">การจองทั้งหมด</span>
+                </div>
             </div>
 
         </div>
 
-        <!-- ─── แถวล่าง: รายการจองล่าสุดที่รอตรวจสอบ ─── -->
-        <div class="booking-table-wrap">
-            <div class="booking-table-head">
-                <h3><i class="fas fa-hourglass-half"></i> รายการจองล่าสุดที่รอตรวจสอบ</h3>
-                <a th:href="@{/owner/bookings}">ดูทั้งหมด →</a>
-            </div>
-            <table class="b-table">
-                <thead>
-                    <tr>
-                        <th>รหัสการจอง</th>
-                        <th>ชื่อผู้จอง</th>
-                        <th>ห้องพัก</th>
-                        <th>วันที่จอง</th>
-                        <th>ยอดรวม</th>
-                        <th>สถานะ</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="b : ${recentPendingBookings}">
-                        <td class="b-id" th:text="${b.bookingid}">BK000001</td>
-                        <td class="b-name"
-                            th:text="${b.member != null} ? ${b.member.firstname + ' ' + b.member.lastname} : '-'">
-                        </td>
-                        <td th:text="${b.roomDetails != null and !b.roomDetails.isEmpty()}
-                                  ? ${b.roomDetails[0].roomtype.typename} : '-'">
-                        </td>
-                        <td th:text="${b.bookingdate != null}
-                                  ? ${#dates.format(b.bookingdate,'dd/MM/yyyy')} : '-'">
-                        </td>
-                        <td class="b-amount"
-                            th:text="${#numbers.formatDecimal(b.totalamount, 1, 'COMMA', 0, 'POINT')} + ' ฿'">
-                        </td>
-                        <td><span class="badge badge-waiting">รอตรวจสอบ</span></td>
-                        <td>
-                            <a class="view-detail-btn" th:href="@{/owner/bookings/{id}(id=${b.bookingid})}">
-                                <i class="fas fa-eye"></i> ดูรายละเอียด
-                            </a>
-                        </td>
-                    </tr>
-                    <tr class="empty-row" th:if="${recentPendingBookings == null or recentPendingBookings.isEmpty()}">
-                        <td colspan="7">
-                            <i class="fas fa-circle-check"
-                                style="font-size:1.4rem;margin-bottom:6px;display:block;"></i>
-                            ไม่มีรายการรอตรวจสอบ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
 
 
 
@@ -701,6 +275,20 @@
             </span>
         </div>
     </footer>
+    <script>
+        function toggleCustomRange() {
+            const form = document.getElementById('customRangeForm');
+            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+        }
+        function switchTrendTab(target) {
+            document.getElementById('trendPanel-revenue').style.display = target === 'revenue' ? 'flex' : 'none';
+            document.getElementById('trendPanel-bookingcount').style.display = target === 'bookingcount' ? 'flex' : 'none';
+
+            document.querySelectorAll('.trend-tab').forEach(btn => {
+                btn.classList.toggle('trend-tab-active', btn.dataset.target === target);
+            });
+        }
+    </script>
 
 </body>
 
