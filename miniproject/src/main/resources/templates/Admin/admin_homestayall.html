@@ -24,24 +24,37 @@
       <span class="brand-name-line2">Tribal Community-Based Tourism System</span>
     </div>
   </a>
+<div class="nav-group">
+  <a href="/admin/dashboard" class="nav-link">
+    <span class="material-symbols-outlined">dashboard</span>
+    Dashboard
+  </a>
 
-  <div class="nav-group">
-    <a href="/admin/dashboard" class="nav-link">
-      <span class="material-symbols-outlined">dashboard</span>
-      Dashboard
-    </a>
-    <a href="/admin/manager" class="nav-link">
-      <span class="material-symbols-outlined">group</span>
-      จัดการผู้จัดการ
-    </a>
-    <a href="/admin/homestay" class="nav-link active">
-      <span class="material-symbols-outlined">home</span>
-      จัดการโฮมสเตย์
-      <span th:if="${pendingCount != null and pendingCount > 0}" 
-            class="nav-badge" 
-            th:text="${pendingCount}">0</span>
-    </a>
-  </div>
+  <a href="/admin/manager" class="nav-link">
+    <span class="material-symbols-outlined">group</span>
+    จัดการผู้จัดการ
+  </a>
+
+  <a href="/admin/homestay" class="nav-link active">
+    <span class="material-symbols-outlined">home</span>
+    จัดการโฮมสเตย์
+
+    <span th:if="${pendingCount != null and pendingCount > 0}" 
+          class="nav-badge" 
+          th:text="${pendingCount}">0</span>
+  </a>
+
+  <a href="/admin/reports" class="nav-link">
+    <span class="material-symbols-outlined">flag</span>
+    จัดการรายงาน
+
+    <span th:if="${pendingReportCount != null and pendingReportCount > 0}"
+          class="nav-badge"
+          th:text="${pendingReportCount}">0</span>
+  </a>
+</div>
+
+
 
   <div class="nav-divider"></div>
 

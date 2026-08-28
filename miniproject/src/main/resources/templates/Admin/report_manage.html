@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จัดการรายงาน - ระบบท่องเที่ยวชุมชนเผ่า</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
+  }
+
+  :root {
+    --primary: #006c49;
+    --primary-container: #10b981;
+    --on-primary: #ffffff;
+
+    --secondary: #2b6954;
+    --secondary-container: #adedd3;
+
+    --background: #f4fbf4;
+    --surface-container-low: #eef6ee;
+    --surface-container: #e8f0e9;
+    --surface-container-lowest: #ffffff;
+    --surface-variant: #dde4dd;
+
+    --on-surface: #161d19;
+    --on-surface-variant: #3c4a42;
+    --outline: #6c7a71;
+    --outline-variant: #bbcabf;
+
+    --error: #ba1a1a;
+    --error-container: #ffdad6;
+
+    --gold-700: #92681b;
+    --gold-100: #fbedce;
+    --blue: #2563eb;
+    --blue-100: #eff6ff;
+    --green-dark: #15803d;
+    --green-100: #f0fdf4;
+
+    --navbar-h: 100px;
+    --r-md: 10px;
+    --r-lg: 16px;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--surface-container-low);
+    color: var(--on-surface);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { text-decoration: none; color: inherit; }
+  button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif; }
+
+  /* ── NAVBAR ── (เหมือนหน้า dashboard / homestay / manager ทุกประการ) */
+  .navbar {
+    background: var(--primary);
+    height: var(--navbar-h);
+    display: flex;
+    align-items: center;
+    padding: 0 4%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0, 108, 73, 0.15);
+  }
+
+  .navbar-brand { color: var(--on-primary); margin-right: auto; display: flex; align-items: center; }
+  .brand-logo { width: 160px; height: 120px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .brand-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .brand-name { display: flex; flex-direction: column; margin-left: -25px; }
+  .brand-name-line1 { display: block; font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+  .brand-name-line2 { display: block; font-size: 12px; color: var(--secondary-container); margin-top: 4px; }
+
+  .nav-badge {
+    background-color: var(--error); color: #fff; font-size: 12px; font-weight: 700;
+    padding: 2px 6px; border-radius: 10px; margin-left: 6px; line-height: 1; display: inline-block;
+  }
+
+  .nav-group { display: flex; align-items: center; gap: 6px; }
+  .nav-link {
+    color: rgba(255, 255, 255, 0.85); font-size: 16px; font-weight: 600;
+    padding: 8px 14px; border-radius: 8px; transition: background 0.15s, color 0.15s;
+    display: flex; align-items: center; gap: 6px; white-space: nowrap;
+  }
+  .nav-link:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+  .nav-link.active { background: rgba(255, 255, 255, 0.22); color: #fff; }
+
+  .nav-divider { width: 1px; height: 32px; background: rgba(255, 255, 255, 0.2); margin: 0 12px; }
+
+  .admin-area { display: flex; align-items: center; gap: 12px; }
+  .admin-info { text-align: right; }
+  .admin-name { color: #fff; font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .admin-role { color: rgba(255, 255, 255, 0.7); font-size: 12px; }
+  .admin-avatar {
+    width: 42px; height: 42px; background: var(--secondary); border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: #fff; flex-shrink: 0;
+  }
+  .logout-btn { color: rgba(255, 255, 255, 0.7); font-size: 14px; display: flex; align-items: center; gap: 4px; transition: color 0.15s; white-space: nowrap; margin-left: 6px; }
+  .logout-btn:hover { color: #fff; }
+
+  /* ── CONTENT ── */
+  .content { max-width: 1180px; margin: 0 auto; padding: 40px 24px; flex: 1; width: 100%; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 { font-size: 26px; font-weight: 700; color: var(--on-surface); margin-bottom: 6px; }
+  .page-header p { font-size: 15px; color: var(--outline); }
+
+  /* TOOLBAR / FILTER CHIPS */
+  .report-toolbar { display: flex; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
+  .filter-chip {
+    padding: 9px 18px; border-radius: 100px; font-size: 14.5px; font-weight: 600;
+    border: 1.5px solid var(--outline-variant); color: var(--on-surface-variant);
+    background: var(--surface-container-lowest); transition: background .15s, border-color .15s, color .15s;
+  }
+  .filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+  .filter-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  /* TABLE */
+  .report-table-wrap {
+    background: var(--surface-container-lowest); border: 1px solid var(--surface-variant);
+    border-radius: var(--r-lg); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  }
+  .report-table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  .report-table thead tr { background: var(--surface-container); }
+  .report-table th {
+    text-align: left; padding: 14px 18px; font-size: 12.5px; text-transform: uppercase;
+    color: var(--outline); font-weight: 700; letter-spacing: .04em;
+  }
+  .report-table td { padding: 16px 18px; border-top: 1px solid var(--surface-container); vertical-align: top; color: var(--on-surface-variant); }
+  .report-table tbody tr:hover { background: var(--surface-container-low); }
+
+  .report-target { font-weight: 700; color: var(--on-surface); font-size: 15px; }
+  .report-target-type {
+    display: inline-block; margin-top: 4px; font-size: 11.5px; font-weight: 700;
+    color: var(--primary); background: var(--green-100); padding: 2px 9px; border-radius: 20px;
+  }
+
+  .report-reason { font-weight: 600; color: var(--on-surface); }
+  .report-desc { max-width: 260px; color: var(--outline); font-size: 13.5px; line-height: 1.6; }
+
+  .report-date { font-size: 13.5px; color: var(--outline); white-space: nowrap; }
+
+  .report-status-badge { padding: 5px 13px; border-radius: 20px; font-size: 12.5px; font-weight: 700; display: inline-block; white-space: nowrap; }
+  .rs-pending  { background: var(--blue-100); color: var(--blue); }
+  .rs-resolved { background: var(--green-100); color: var(--green-dark); }
+  .rs-rejected { background: var(--error-container); color: var(--error); }
+
+  .report-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .act-btn {
+    font-size: 12.5px; font-weight: 700; padding: 7px 12px; border-radius: 8px; border: none;
+    transition: filter .15s, transform .1s;
+  }
+  .act-btn:hover { filter: brightness(0.96); }
+  .act-btn:active { transform: scale(0.97); }
+  .act-reject { background: var(--surface-container); color: var(--on-surface-variant); }
+  .act-suspend-listing { background: var(--gold-100); color: var(--gold-700); }
+  .act-suspend-account { background: var(--error-container); color: var(--error); }
+
+  .report-done-label { color: var(--outline); font-size: 13px; font-weight: 600; }
+
+  .empty-state { text-align: center; color: var(--outline); font-size: 15px; padding: 48px 20px; }
+  .empty-state .material-symbols-outlined { font-size: 40px; color: var(--outline-variant); display: block; margin: 0 auto 12px; }
+
+  /* FOOTER */
+  .footer {
+    background: var(--primary); border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 16px 5%; display: flex; align-items: center; justify-content: space-between; margin-top: auto;
+  }
+  .footer-text { font-size: 15px; color: rgba(255,255,255,0.9); }
+
+  /* ── MODALS (แพทเทิร์นเดียวกับหน้า homestay/manager) ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(22,29,25,0.6);
+    z-index: 3000; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: var(--surface-container-lowest); padding: 36px; border-radius: var(--r-lg);
+    max-width: 440px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    border: 1px solid var(--surface-variant);
+  }
+  .modal-icon {
+    width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-icon.reject  { background: var(--surface-container); color: var(--outline); }
+  .modal-icon.warn    { background: var(--gold-100); color: var(--gold-700); }
+  .modal-icon.suspend { background: var(--error-container); color: var(--error); }
+
+  .modal-title { font-size: 20px; font-weight: 700; color: var(--on-surface); margin-bottom: 8px; }
+  .modal-desc { color: var(--on-surface-variant); font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+  .modal-desc strong { color: var(--primary); }
+
+  /* ── ฟิลด์เหตุผล (เพิ่มใหม่) ── */
+  .modal-reason-field { margin-bottom: 22px; text-align: left; }
+  .modal-reason-field label {
+    display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--on-surface);
+  }
+  .modal-reason-field label .required { color: var(--error); }
+  .modal-reason-field textarea {
+    width: 100%; min-height: 90px; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--outline-variant); font-size: 15px; font-family: inherit;
+    background: var(--surface-container-lowest); color: var(--on-surface); resize: vertical;
+  }
+  .modal-reason-field textarea:focus { outline: none; border-color: var(--primary); }
+  .modal-reason-error {
+    display: none; color: var(--error); font-size: 13px; font-weight: 600; margin-top: 6px; text-align: left;
+  }
+  .modal-reason-error.show { display: block; }
+
+  .modal-actions { display: flex; gap: 12px; justify-content: center; }
+  .btn-modal-cancel {
+    flex: 1; padding: 11px 18px; border-radius: 8px; border: 1px solid var(--outline-variant);
+    background: var(--surface-container-lowest); color: var(--on-surface-variant); font-size: 15px; font-weight: 600;
+  }
+  .btn-modal-confirm {
+    flex: 1.2; padding: 11px 18px; border-radius: 8px; border: none;
+    background: var(--error); color: #fff; font-size: 15px; font-weight: 700;
+  }
+  .btn-modal-confirm.gold { background: var(--gold-700); }
+  .btn-modal-confirm.gray { background: var(--secondary); }
+  .btn-modal-confirm:disabled { opacity: .6; cursor: not-allowed; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .report-table-wrap { overflow-x: auto; }
+    .report-table { min-width: 720px; }
+  }
+  @media (max-width: 768px) {
+    .navbar { height: auto; min-height: 80px; padding: 10px 4%; flex-wrap: wrap; gap: 12px; }
+    .brand-logo { width: 120px; height: 90px; }
+    .brand-name-line1 { font-size: 20px; }
+    .nav-group { flex-wrap: wrap; gap: 4px; }
+    .footer { flex-direction: column; gap: 6px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <a href="/admin/dashboard" class="navbar-brand">
+    <div class="brand-logo">
+      <img th:src="@{/images/logo5.png}" alt="ตราสัญลักษณ์ระบบท่องเที่ยวชุมชนชนเผ่า">
+    </div>
+    <div class="brand-name">
+      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+      <span class="brand-name-line2">Tribal Community-Based Tourism System</span>
+    </div>
+  </a>
+
+  <div class="nav-group">
+    <a href="/admin/dashboard" class="nav-link">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+    <a href="/admin/manager" class="nav-link">
+      <span class="material-symbols-outlined">group</span>
+      จัดการผู้จัดการ
+    </a>
+    <a href="/admin/homestay" class="nav-link">
+      <span class="material-symbols-outlined">home</span>
+      จัดการโฮมสเตย์
+      <span th:if="${pendingCount != null and pendingCount > 0}"
+            class="nav-badge"
+            th:text="${pendingCount}">0</span>
+    </a>
+    <a href="/admin/reports" class="nav-link active">
+      <span class="material-symbols-outlined">flag</span>
+      จัดการรายงาน
+      <span th:if="${pendingReportCount != null and pendingReportCount > 0}"
+            class="nav-badge"
+            th:text="${pendingReportCount}">0</span>
+    </a>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="admin-area">
+    <div class="admin-info">
+      <div class="admin-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
+      <div class="admin-role">Super Admin</div>
+    </div>
+    <div class="admin-avatar">A</div>
+    <a href="/admin/logout" class="logout-btn">
+      <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+      ออกจากระบบ
+    </a>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <div class="page-header">
+    <h1>จัดการรายงาน</h1>
+    <p>ตรวจสอบรายงานที่ได้รับจากสมาชิก และดำเนินการกับทัวร์หรือโฮมสเตย์ที่ถูกรายงาน</p>
+  </div>
+
+  <div class="report-toolbar">
+    <a href="/admin/reports" class="filter-chip" th:classappend="${currentStatus == ''} ? ' active'">
+      ทั้งหมด
+    </a>
+    <a href="/admin/reports?status=PENDING" class="filter-chip" th:classappend="${currentStatus == 'PENDING'} ? ' active'">
+      รอดำเนินการ
+    </a>
+    <a href="/admin/reports?status=RESOLVED" class="filter-chip" th:classappend="${currentStatus == 'RESOLVED'} ? ' active'">
+      ดำเนินการแล้ว
+    </a>
+    <a href="/admin/reports?status=REJECTED" class="filter-chip" th:classappend="${currentStatus == 'REJECTED'} ? ' active'">
+      ปฏิเสธแล้ว
+    </a>
+  </div>
+
+  <div class="report-table-wrap">
+    <table class="report-table" th:if="${reports != null and !reports.isEmpty()}">
+      <thead>
+  <tr>
+    <th>รหัสรายงาน</th>
+    <th>รายการที่ถูกรายงาน</th>
+    <th>เหตุผล</th>
+    <th>รายละเอียด</th>
+    <th>วันที่แจ้ง</th>
+    <th>สถานะ</th>
+    <th>ดำเนินการ</th>
+  </tr>
+</thead>
+<tbody>
+  <tr th:each="r : ${reports}">
+    <td>
+      <div style="font-weight:700;color:var(--on-surface);">#<span th:text="${r.reportid}">1</span></div>
+    </td>
+    <td>
+      <div class="report-target"
+           th:text="${r.tour != null ? r.tour.tourmname : (r.homestay != null ? r.homestay.homestayname : '-')}">
+        ชื่อรายการ
+      </div>
+      <div style="font-size:12px;color:var(--outline);margin-top:2px;">
+        ID: <span th:text="${r.tour != null ? r.tour.tourid : (r.homestay != null ? r.homestay.owner?.ownerid : '-')}">-</span>
+      </div>
+      <span class="report-target-type" th:text="${r.tour != null} ? 'ทัวร์' : 'โฮมสเตย์'">ประเภท</span>
+    </td>
+    <td>
+      <div class="report-reason" th:text="${r.reason}">เหตุผล</div>
+    </td>
+    <td>
+      <div class="report-desc" th:text="${r.description != null and !r.description.isEmpty() ? r.description : '-'}">รายละเอียด</div>
+    </td>
+    <td>
+      <div class="report-date" th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">วันที่</div>
+    </td>
+    <td>
+      <span class="report-status-badge"
+            th:classappend="${r.status == 'PENDING'} ? 'rs-pending' : (${r.status == 'RESOLVED'} ? 'rs-resolved' : 'rs-rejected')"
+            th:text="${r.status == 'PENDING'} ? 'รอดำเนินการ' : (${r.status == 'RESOLVED'} ? 'ดำเนินการแล้ว' : 'ปฏิเสธแล้ว')">
+        สถานะ
+      </span>
+    </td>
+    <td>
+      <div class="report-actions" th:if="${r.status == 'PENDING'}">
+        <button type="button" class="act-btn act-reject"
+                th:attr="data-id=${r.reportid}"
+                onclick="openReportActionModal(this, 'REJECT')">
+          ปฏิเสธ
+        </button>
+        <button type="button" class="act-btn act-suspend-listing"
+                th:attr="data-id=${r.reportid}"
+                onclick="openReportActionModal(this, 'SUSPEND_LISTING')">
+          ระงับเฉพาะรายการนี้
+        </button>
+        <button type="button" class="act-btn act-suspend-account"
+                th:attr="data-id=${r.reportid}, data-target=${r.tour != null ? r.tour.tourmname : (r.homestay != null ? r.homestay.homestayname : '')}"
+                onclick="openReportActionModal(this, 'SUSPEND_ACCOUNT')">
+          ระงับทั้งบัญชี
+        </button>
+      </div>
+      <span th:if="${r.status != 'PENDING'}" class="report-done-label">ดำเนินการแล้ว</span>
+    </td>
+  </tr>
+</tbody>
+    </table>
+
+    <div class="empty-state" th:if="${reports == null or reports.isEmpty()}">
+      <span class="material-symbols-outlined">flag</span>
+      ไม่มีรายงานในหมวดนี้
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
+  <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
+</footer>
+
+<!-- ══════════════════════════════════════════
+     ACTION MODALS
+══════════════════════════════════════════ -->
+
+<!-- REJECT -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal-box">
+    <div class="modal-icon reject">
+      <span class="material-symbols-outlined" style="font-size: 32px;">close</span>
+    </div>
+    <div class="modal-title">ปฏิเสธรายงานนี้</div>
+    <div class="modal-desc">
+      รายงานนี้จะถูกปิดโดยไม่ดำเนินการใดๆ กับรายการที่ถูกรายงาน<br>
+      เจ้าของรายการและรายการนี้<strong>จะไม่ได้รับผลกระทบใดๆ ทั้งสิ้น</strong>
+    </div>
+
+    <div class="modal-reason-field">
+      <label for="rejectReasonInput">
+        เหตุผลในการปฏิเสธ <span class="required">*</span>
+      </label>
+      <textarea id="rejectReasonInput" rows="3"
+        placeholder="กรุณาระบุเหตุผล เช่น หลักฐานไม่เพียงพอ, ไม่พบการกระทำผิดตามที่รายงาน ฯลฯ"></textarea>
+      <div class="modal-reason-error" id="rejectReasonError">กรุณาระบุเหตุผลในการปฏิเสธ</div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-modal-cancel" onclick="closeReportModal('rejectModal')">ยกเลิก</button>
+      <button type="button" class="btn-modal-confirm gray" id="rejectConfirmBtn">ยืนยันปฏิเสธ</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUSPEND LISTING -->
+<div class="modal-overlay" id="suspendListingModal">
+  <div class="modal-box">
+    <div class="modal-icon warn">
+      <span class="material-symbols-outlined" style="font-size: 32px;">block</span>
+    </div>
+    <div class="modal-title">ระงับรายการนี้</div>
+    <div class="modal-desc">
+      ระบบจะปิดรับจองทุกรอบของทัวร์นี้ทันที (หรือระงับที่พักถ้าเป็นโฮมสเตย์)<br>
+      เจ้าของรายการจะยังเข้าระบบได้ตามปกติ แต่ลูกค้าจะจองรายการนี้ไม่ได้
+    </div>
+
+    <div class="modal-reason-field">
+      <label for="suspendListingReasonInput">
+        เหตุผลในการระงับรายการ <span class="required">*</span>
+      </label>
+      <textarea id="suspendListingReasonInput" rows="3"
+        placeholder="กรุณาระบุเหตุผล เช่น ข้อมูลรายการไม่ตรงกับความเป็นจริง, ราคาหรือรายละเอียดหลอกลวง ฯลฯ"></textarea>
+      <div class="modal-reason-error" id="suspendListingReasonError">กรุณาระบุเหตุผลในการระงับรายการ</div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-modal-cancel" onclick="closeReportModal('suspendListingModal')">ยกเลิก</button>
+      <button type="button" class="btn-modal-confirm gold" id="suspendListingConfirmBtn">ยืนยันระงับรายการ</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUSPEND ACCOUNT -->
+<div class="modal-overlay" id="suspendAccountModal">
+  <div class="modal-box">
+    <div class="modal-icon suspend">
+      <span class="material-symbols-outlined" style="font-size: 32px;">warning</span>
+    </div>
+    <div class="modal-title">ระงับบัญชีเจ้าของรายการ</div>
+    <div class="modal-desc">
+      คุณแน่ใจหรือไม่ว่าต้องการระงับบัญชีเจ้าของ<br>
+      <strong id="suspendAccountTargetName">-</strong> ?<br>
+      บัญชีนี้จะไม่สามารถเข้าใช้งานระบบได้จนกว่าแอดมินจะปลดล็อก
+    </div>
+
+    <div class="modal-reason-field">
+      <label for="suspendAccountReasonInput">
+        เหตุผลในการระงับบัญชี <span class="required">*</span>
+      </label>
+      <textarea id="suspendAccountReasonInput" rows="3"
+        placeholder="กรุณาระบุเหตุผล เช่น ถูกร้องเรียนซ้ำหลายครั้ง, พบพฤติกรรมฉ้อโกงนักท่องเที่ยว ฯลฯ"></textarea>
+      <div class="modal-reason-error" id="suspendAccountReasonError">กรุณาระบุเหตุผลในการระงับบัญชี</div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-modal-cancel" onclick="closeReportModal('suspendAccountModal')">ยกเลิก</button>
+      <button type="button" class="btn-modal-confirm" id="suspendAccountConfirmBtn">ยืนยันระงับบัญชี</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var currentReportId = null;
+  var currentAction = null;
+
+  // แมป action -> id ของ textarea/error ที่เกี่ยวข้อง เพื่อลดโค้ดซ้ำ
+  var REASON_FIELD_MAP = {
+    REJECT:           { input: 'rejectReasonInput',           error: 'rejectReasonError' },
+    SUSPEND_LISTING:  { input: 'suspendListingReasonInput',   error: 'suspendListingReasonError' },
+    SUSPEND_ACCOUNT:  { input: 'suspendAccountReasonInput',   error: 'suspendAccountReasonError' }
+  };
+
+  function openReportActionModal(btn, action) {
+    currentReportId = btn.dataset.id;
+    currentAction = action;
+
+    if (action === 'REJECT') {
+      document.getElementById('rejectModal').classList.add('show');
+    } else if (action === 'SUSPEND_LISTING') {
+      document.getElementById('suspendListingModal').classList.add('show');
+    } else if (action === 'SUSPEND_ACCOUNT') {
+      document.getElementById('suspendAccountTargetName').textContent = btn.dataset.target || '-';
+      document.getElementById('suspendAccountModal').classList.add('show');
+    }
+  }
+
+  function closeReportModal(modalId) {
+    document.getElementById(modalId).classList.remove('show');
+
+    // เคลียร์ค่าเหตุผลและข้อความ error ทุกครั้งที่ปิด modal
+    var fields = REASON_FIELD_MAP[currentAction];
+    if (fields) {
+      var input = document.getElementById(fields.input);
+      var error = document.getElementById(fields.error);
+      if (input) input.value = '';
+      if (error) error.classList.remove('show');
+    }
+
+    currentReportId = null;
+    currentAction = null;
+  }
+
+  function submitReportAction(btn) {
+    if (!currentReportId || !currentAction) return;
+
+    var fields = REASON_FIELD_MAP[currentAction];
+    var reason = '';
+
+    if (fields) {
+      var input = document.getElementById(fields.input);
+      var error = document.getElementById(fields.error);
+      reason = input.value.trim();
+
+      if (!reason) {
+        error.classList.add('show');
+        input.focus();
+        return;
+      }
+      error.classList.remove('show');
+    }
+
+    btn.disabled = true;
+    var originalText = btn.textContent;
+    btn.textContent = 'กำลังดำเนินการ...';
+
+    var url = '/api/admin/reports/' + encodeURIComponent(currentReportId) + '/action'
+      + '?action=' + encodeURIComponent(currentAction)
+      + '&reason=' + encodeURIComponent(reason);
+
+    fetch(url, { method: 'PUT' })
+      .then(function (res) {
+        if (!res.ok) {
+          return res.text().then(function (t) { throw new Error(t || 'ดำเนินการไม่สำเร็จ'); });
+        }
+        return res.json();
+      })
+      .then(function () {
+        location.reload();
+      })
+      .catch(function (err) {
+        alert(err.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+        btn.disabled = false;
+        btn.textContent = originalText;
+      });
+  }
+
+  document.getElementById('rejectConfirmBtn').addEventListener('click', function () { submitReportAction(this); });
+  document.getElementById('suspendListingConfirmBtn').addEventListener('click', function () { submitReportAction(this); });
+  document.getElementById('suspendAccountConfirmBtn').addEventListener('click', function () { submitReportAction(this); });
+
+  // ปิด modal เมื่อคลิกพื้นหลังนอกกล่อง
+  document.querySelectorAll('.modal-overlay').forEach(function (overlay) {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) {
+        closeReportModal(overlay.id);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,5 +1,4 @@
-
-    *, *::before, *::after { 
+*, *::before, *::after { 
       box-sizing: border-box; 
       margin: 0; 
       padding: 0; 
@@ -30,6 +29,11 @@
       --error: #ba1a1a;
       --error-container: #ffdad6;
       --on-error-container: #93000a;
+
+      /* 🌟 โทนสีส้ม Action (Amber/Orange Gold) สำหรับปุ่ม, ไฮไลต์ และเมนูแอคชัน */
+      --action-orange: #d68f14;
+      --action-orange-hover: #b9790c;
+      --action-orange-light: #faedd2;
       
       --navbar-h: 90px;
       --r-md: 10px;
@@ -104,6 +108,8 @@
     }
 
     .nav-group { display: flex; align-items: center; gap: 6px; }
+    
+    /* 🌟 ปรับแต่งลิงก์เมนูบน Navbar ให้เปลี่ยนเป็นสีส้มเวลา Hover หรือ Active */
     .nav-link {
       color: rgba(255, 255, 255, 0.85);
       font-size: 16px;
@@ -116,8 +122,15 @@
       gap: 6px;
       white-space: nowrap;
     }
-    .nav-link:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
-    .nav-link.active { background: rgba(255, 255, 255, 0.22); color: #fff; }
+    .nav-link:hover { 
+      background: rgba(214, 143, 20, 0.2); 
+      color: #fff; 
+    }
+    .nav-link.active { 
+      background: var(--action-orange); 
+      color: #fff; 
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
 
     .nav-divider { width: 1px; height: 32px; background: rgba(255, 255, 255, 0.2); margin: 0 12px; }
 
@@ -128,7 +141,7 @@
 
     .admin-avatar {
       width: 42px; height: 42px;
-      background: var(--secondary);
+      background: var(--action-orange);
       border: 1px solid rgba(255,255,255,0.3);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -145,7 +158,7 @@
       white-space: nowrap;
       margin-left: 6px;
     }
-    .logout-btn:hover { color: #fff; }
+    .logout-btn:hover { color: var(--action-orange-light); }
 
     /* ══════════════════ CONTENT & FORM ══════════════════ */
     .content { max-width: 850px; margin: 0 auto; padding: 40px 24px; flex: 1; width: 100%; }
@@ -154,7 +167,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: var(--primary);
+      color: var(--action-orange);
       font-weight: 600;
       font-size: 16px;
       margin-bottom: 20px;
@@ -162,18 +175,17 @@
     }
     .btn-back:hover { opacity: 0.8; }
 
-    /* สไตล์สำหรับตัวเลขแจ้งเตือนบน Navbar */
-  .nav-badge {
-    background-color: var(--error);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 10px;
-    margin-left: 6px;
-    line-height: 1;
-    display: inline-block;
-  }
+    .nav-badge {
+      background-color: var(--error);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 6px;
+      line-height: 1;
+      display: inline-block;
+    }
     .card {
       background: var(--surface-container-lowest);
       border-radius: var(--r-lg);
@@ -192,14 +204,13 @@
     }
     .card-header .header-icon {
       width: 46px; height: 46px;
-      background: var(--surface-container);
+      background: var(--action-orange-light);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      color: var(--primary);
+      color: var(--action-orange);
     }
     .card-header h2 { font-size: 22px; font-weight: 700; color: var(--on-surface); }
 
-    /* Alerts */
     .message {
       border-radius: 8px;
       padding: 12px 16px;
@@ -214,7 +225,7 @@
 
     .section-label {
       font-size: 14px;
-      color: var(--primary);
+      color: var(--action-orange);
       font-weight: 700;
       margin-bottom: 16px;
       margin-top: 24px;
@@ -251,9 +262,9 @@
       background: var(--surface-container-lowest);
       transition: all 0.2s ease;
     }
-    .form-group input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.12);
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--action-orange);
+      box-shadow: 0 0 0 3px rgba(214, 143, 20, 0.15);
     }
     .form-group input.input-error {
       border-color: var(--error);
@@ -284,8 +295,8 @@
     .btn-cancel:hover { background: var(--surface-container); }
 
     .btn-submit {
-      background: var(--primary);
-      color: var(--on-primary);
+      background: var(--action-orange);
+      color: #ffffff;
       border: none;
       border-radius: 8px;
       padding: 10px 28px;
@@ -295,11 +306,11 @@
       align-items: center;
       gap: 6px;
       transition: background 0.2s, box-shadow 0.2s;
-      box-shadow: 0 2px 6px rgba(0, 108, 73, 0.2);
+      box-shadow: 0 2px 6px rgba(214, 143, 20, 0.25);
     }
     .btn-submit:hover {
-      background: #005a3c;
-      box-shadow: 0 4px 10px rgba(0, 108, 73, 0.25);
+      background: var(--action-orange-hover);
+      box-shadow: 0 4px 10px rgba(214, 143, 20, 0.35);
     }
 
     /* ══════════════════ FOOTER ══════════════════ */
@@ -327,4 +338,43 @@
 
     @media (max-width: 600px) {
       .row { grid-template-columns: 1fr; gap: 0; }
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding-right: 40px;
+    }
+
+    .input-icon-right {
+      position: absolute;
+      right: 12px;
+      color: var(--outline);
+      user-select: none;
+      font-size: 20px;
+    }
+
+    .toggle-password:hover {
+      color: var(--action-orange);
+    }
+
+    .error-message {
+      color: var(--error);
+      font-size: 13px;
+      margin-top: 6px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .helper-text {
+      color: var(--outline);
+      font-size: 12px;
+      margin-top: 4px;
     }

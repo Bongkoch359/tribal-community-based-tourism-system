@@ -185,4 +185,24 @@ owner.setFirstname(req.getFirstname());
 
     return String.format("OW%06d", nextNumber);
 }
+
+@Transactional
+public boolean suspend(String ownerid, String reason) {
+    return ownerRepository.findById(ownerid).map(owner -> {
+        owner.setAccountstatus("SUSPENDED");
+        owner.setSuspensionReason(reason);
+        ownerRepository.save(owner);
+        return true;
+    }).orElse(false);
+}
+
+@Transactional
+public boolean activate(String ownerid) {
+    return ownerRepository.findById(ownerid).map(owner -> {
+        owner.setAccountstatus("ACTIVE");
+        owner.setSuspensionReason(null);
+        ownerRepository.save(owner);
+        return true;
+    }).orElse(false);
+}
 }

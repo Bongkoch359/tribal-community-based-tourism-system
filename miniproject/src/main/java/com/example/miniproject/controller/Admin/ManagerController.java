@@ -2,6 +2,7 @@ package com.example.miniproject.controller.Admin;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -72,17 +73,30 @@ public class ManagerController {
         return "Admin/admin_managerlist";
     }
 
-    // ============================================================
+  // ============================================================
     // GET /admin/manager/create
     // เปิดหน้าฟอร์ม Create Manager — step 1 open page
     // ============================================================
-   @GetMapping("/create")
-    public String createPage(HttpSession session, Model model) { // <-- เพิ่ม Model model เข้าไปตรงนี้
+    @GetMapping("/create")
+    public String createPage(HttpSession session, Model model) {
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
         
         addPendingHomestayCount(model);
+
+        // เพิ่มรายชื่อชุมชนชนเผ่าทั้ง 8 เผ่า เพื่อส่งไปแสดงผลใน Dropdown ของหน้า HTML
+        List<String> tribeNames = Arrays.asList(
+            "กะเหรี่ยง (ปกาเกอะญอ)",
+            "ม้ง (แม้ว)",
+            "อาข่า (อีก้อ)",
+            "ลาหู่ (มูเซอ)",
+            "ลีซู (ลีซอ)",
+            "กะเหรี่ยงคอยาว (ปะด่อง)",
+            "เย้า (เมี่ยน)",
+            "ลัวะ (ละว้า)"
+        );
+        model.addAttribute("tribeNames", tribeNames);
 
         return "Admin/admin_managercreate";
     }
@@ -225,5 +239,18 @@ public class ManagerController {
                       && !"REJECTED".equals(o.getAccountstatus()))
             .count();
         model.addAttribute("pendingCount", homestayPending);
+    }
+
+    // ============================================================
+    // GET /admin/manager/api/check-email
+    // API สำหรับเช็คอีเมลซ้ำแบบ Real-time (AJAX)
+    // ============================================================
+    @GetMapping("/api/check-email")
+    @ResponseBody
+    public boolean checkEmailDuplicate(@RequestParam("email") String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return managerService.emailExists(email);
     }
 }

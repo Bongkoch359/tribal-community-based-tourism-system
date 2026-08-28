@@ -30,6 +30,11 @@
     --error-container: #ffdad6;
     --on-error-container: #93000a;
 
+    /* 🌟 โทนสีส้ม Action (Amber/Gold) */
+    --action-orange: #d68f14;
+    --action-orange-hover: #b9790c;
+    --action-orange-light: #faedd2;
+
     --gold-700: #92681b;
     --gold-100: #fbedce;
     
@@ -117,8 +122,8 @@
     white-space: nowrap;
   }
 
-  .nav-link:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
-  .nav-link.active { background: rgba(255, 255, 255, 0.22); color: #fff; }
+  .nav-link:hover { background: rgba(214, 143, 20, 0.2); color: #fff; }
+  .nav-link.active { background: var(--action-orange); color: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
 
   .nav-divider { width: 1px; height: 32px; background: rgba(255, 255, 255, 0.2); margin: 0 12px; }
 
@@ -129,7 +134,7 @@
 
   .admin-avatar {
     width: 42px; height: 42px;
-    background: var(--secondary);
+    background: var(--action-orange);
     border: 1px solid rgba(255,255,255,0.3);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
@@ -146,7 +151,7 @@
     white-space: nowrap;
     margin-left: 6px;
   }
-  .logout-btn:hover { color: #fff; }
+  .logout-btn:hover { color: var(--action-orange-light); }
 
   /* ── CONTENT ── */
   .content {
@@ -188,9 +193,9 @@
   }
 
   .top-menu a.active {
-    background: var(--primary);
+    background: var(--action-orange);
     color: #fff;
-    border-color: var(--primary);
+    border-color: var(--action-orange);
   }
 
   /* สไตล์สำหรับตัวเลขแจ้งเตือนบน Navbar */
@@ -223,9 +228,9 @@
   }
 
   .filter-pill.active {
-    background: var(--primary);
+    background: var(--action-orange);
     color: #fff;
-    border-color: var(--primary);
+    border-color: var(--action-orange);
     font-weight: 700;
   }
 
@@ -291,10 +296,10 @@
   .btn-detail:hover { background: var(--surface-variant); }
 
   .btn-approve {
-    border-color: var(--primary);
-    color: var(--primary);
+    border-color: var(--action-orange);
+    color: var(--action-orange);
   }
-  .btn-approve:hover { background: var(--primary); color: #fff; }
+  .btn-approve:hover { background: var(--action-orange); color: #fff; }
 
   .btn-reject {
     border-color: var(--error);
@@ -305,7 +310,7 @@
   .empty { text-align: center; padding: 60px; color: var(--outline); font-size: 16px; }
 
   .owner-name { font-weight: 700; color: var(--on-surface); font-size: 16px; }
-  .homestay-name { font-weight: 700; color: var(--primary); }
+  .homestay-name { font-weight: 700; color: var(--action-orange); }
 
   /* FOOTER */
   .footer {
@@ -359,7 +364,7 @@
 
   .confirm-title { font-size: 20px; font-weight: 700; color: var(--on-surface); margin-bottom: 8px; }
   .confirm-desc  { font-size: 15px; color: var(--on-surface-variant); margin-bottom: 24px; line-height: 1.5; }
-  .confirm-desc strong { color: var(--primary); font-size: 16px; }
+  .confirm-desc strong { color: var(--action-orange); font-size: 16px; }
 
   .confirm-actions { display: flex; gap: 12px; justify-content: center; }
   .confirm-actions .btn-action { flex: 1; padding: 10px 20px; font-size: 15px; justify-content: center; }

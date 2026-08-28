@@ -619,31 +619,32 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
                 </div>
             </div>
 
-            <!-- ② อัปโหลดสลิป -->
-            <div class="card">
-                <div class="section-header">
-                    <div class="section-num">2</div>
-                    อัปโหลดหลักฐานการโอนเงิน
-                </div>
-                <div class="section-body">
-                    <div id="uploadArea">
-                        <div class="upload-zone" id="dropZone">
-                            <input type="file" id="slipFile" name="slipFile"
-                                   accept="image/*,.pdf" onchange="handleFileSelect(this)">
-                            <div class="upload-icon">🧾</div>
-                            <div class="upload-title">คลิกหรือลากไฟล์สลิปมาวาง</div>
-                            <div class="upload-sub">รองรับ JPG, PNG, PDF ขนาดไม่เกิน 5 MB</div>
-                        </div>
-                    </div>
-                    <div id="previewArea" style="display:none; text-align:center;">
-                        <div class="preview-wrap">
-                            <img id="previewImg" class="preview-img" src="" alt="สลิป">
-                            <button class="btn-remove-img" onclick="removeFile()" type="button">✕</button>
-                        </div>
-                        <div style="font-size:.78rem;color:var(--gray-600);margin-top:6px;" id="fileName"></div>
-                    </div>
-                </div>
+          
+<!-- ② อัปโหลดสลิป -->
+<div class="card">
+    <div class="section-header">
+        <div class="section-num">2</div>
+        อัปโหลดหลักฐานการโอนเงิน
+    </div>
+    <div class="section-body">
+        <div class="form-group">
+            <input type="file" class="form-control" id="slipFile" name="slipFile"
+                   accept="image/*,.pdf" onchange="handleFileSelect(this)">
+            <small style="color: var(--gray-600); font-size: 0.78rem; margin-top: 4px;">
+                รองรับไฟล์ภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5 MB
+            </small>
+        </div>
+        
+        <!-- ส่วนแสดงตัวอย่างรูปภาพ (ถ้ามีเลือกไฟล์รูป) -->
+        <div id="previewArea" style="display:none; text-align:center; margin-top: 12px;">
+            <div class="preview-wrap" style="position: relative; display: inline-block;">
+                <img id="previewImg" class="preview-img" src="" alt="สลิป" style="max-height: 160px; border-radius: 8px; border: 1px solid var(--gray-200);">
+                <button class="btn-remove-img" onclick="removeFile()" type="button" style="position: absolute; top: 6px; right: 6px; background: var(--red); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: .75rem; cursor: pointer;">✕</button>
             </div>
+            <div style="font-size:.78rem; color:var(--gray-600); margin-top:4px;" id="fileName"></div>
+        </div>
+    </div>
+</div>
 
             <!-- ③ หมายเหตุ -->
             <div class="card">
@@ -798,33 +799,31 @@ function copyAccount(btn) {
         setTimeout(() => { btn.textContent = 'คัดลอก'; btn.classList.remove('copied'); }, 2000);
     });
 }
+
 function handleFileSelect(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert('ไฟล์ขนาดเกิน 5 MB'); input.value = ''; return; }
-    const img = document.getElementById('previewImg');
-    if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            img.src = e.target.result;
-            img.style.display = 'block';
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('uploadArea').style.display = 'none';
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        document.getElementById('fileName').textContent = file.name;
+        
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('previewArea').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('previewImg').src = '';
             document.getElementById('previewArea').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    } else {
-        img.style.display = 'none';   // ซ่อนรูปพัง สำหรับไฟล์ PDF
-        document.getElementById('fileName').textContent = '📄 ' + file.name;
-        document.getElementById('uploadArea').style.display = 'none';
-        document.getElementById('previewArea').style.display = 'block';
+        }
     }
 }
+
 function removeFile() {
-    document.getElementById('slipFile').value = '';
-    document.getElementById('previewImg').src = '';
-    document.getElementById('uploadArea').style.display = 'block';
+    const fileInput = document.getElementById('slipFile');
+    fileInput.value = ''; //เคลียร์ค่าใน input
     document.getElementById('previewArea').style.display = 'none';
+    document.getElementById('fileName').textContent = '';
 }
 
 const dz = document.getElementById('dropZone');

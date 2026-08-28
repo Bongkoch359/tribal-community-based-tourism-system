@@ -58,7 +58,7 @@
     </div>
   </header>
 
-  <!-- Content Body -->
+<!-- Content Body -->
   <main class="content">
     <a href="/admin/manager" class="btn-back">
       <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
@@ -79,47 +79,76 @@
            th:class="'message ' + (${alertType} == 'error' ? 'error' : 'success')">
       </div>
 
-      <!-- Client Validate Message -->
+      <!-- Client Validate Message (Global) -->
       <div id="js-alert" class="message error" style="display:none;"></div>
 
-      <form action="/admin/manager/create" method="post" id="create-manager-form" novalidate>
+     <form action="/admin/manager/create" method="post" id="create-manager-form" novalidate>
         <div class="section-label">ข้อมูลส่วนบุคคล</div>
         <div class="row">
-          <div class="form-group">
+          <div class="form-group" id="group-firstname">
             <label for="firstname">ชื่อ <span class="required">*</span></label>
             <input type="text" name="firstname" id="firstname" placeholder="ระบุชื่อภาษาไทย" />
+            <div class="error-message" id="error-firstname" style="display:none;"></div>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="group-lastname">
             <label for="lastname">นามสกุล <span class="required">*</span></label>
             <input type="text" name="lastname" id="lastname" placeholder="ระบุนามสกุลภาษาไทย" />
+            <div class="error-message" id="error-lastname" style="display:none;"></div>
           </div>
         </div>
 
         <div class="row">
-          <div class="form-group">
+          <div class="form-group" id="group-phone">
             <label for="phone">เบอร์โทรศัพท์ <span class="required">*</span></label>
-            <input type="tel" name="phone" id="phone" placeholder="0xx-xxx-xxxx" />
+            <div class="input-wrapper">
+              <input type="tel" name="phone" id="phone" placeholder="0xx-xxx-xxxx" />
+              <span class="material-symbols-outlined input-icon-right" style="color: var(--outline);">smartphone</span>
+            </div>
+            <div class="error-message" id="error-phone" style="display:none;"></div>
           </div>
-          <div class="form-group">
+
+          <div class="form-group" id="group-tribe">
             <label for="tribe">ชุมชนที่รับผิดชอบ <span class="required">*</span></label>
-            <input type="text" name="tribe" id="tribe" placeholder="เช่น ชุมชนบ้านป่าเหมี้ยง" />
+            <select name="tribe" id="tribe" class="form-control">
+              <option value="" disabled selected>-- กรุณาเลือกชุมชนชนเผ่า --</option>
+              <option th:each="tribeName : ${tribeNames}" 
+                      th:value="${tribeName}" 
+                      th:text="${tribeName}">
+              </option>
+            </select>
+            <div class="error-message" id="error-tribe" style="display:none;"></div>
           </div>
-        </div>
+        </div> <!-- ✅ เพิ่มแท็กปิด div.row ตรงนี้ให้ครบถ้วน -->
 
         <div class="section-label">ข้อมูลความปลอดภัย</div>
-        <div class="form-group">
+        
+        <div class="form-group" id="group-email">
           <label for="email">อีเมล (ใช้เป็น Username) <span class="required">*</span></label>
-          <input type="email" name="email" id="email" placeholder="example@tourism.com" />
+          <div class="input-wrapper">
+            <input type="email" name="email" id="email" placeholder="example@tourism.com" />
+            <span class="material-symbols-outlined input-icon-right" style="color: var(--outline);">mail</span>
+          </div>
+          <div class="error-message" id="error-email" style="display:none;"></div>
         </div>
 
         <div class="row">
-          <div class="form-group">
+          <div class="form-group" id="group-pwd">
             <label for="pwd">กำหนดรหัสผ่าน <span class="required">*</span></label>
-            <input type="password" name="password" id="pwd" placeholder="ระบุรหัสผ่าน 8 ตัวขึ้นไป" />
+            <div class="input-wrapper">
+              <input type="password" name="password" id="pwd" placeholder="ระบุรหัสผ่าน 8-16 ตัวอักษร" />
+              <span class="material-symbols-outlined input-icon-right toggle-password" id="toggle-pwd" style="cursor: pointer;">visibility_off</span>
+            </div>
+            <div class="helper-text">อย่างน้อย 8 ตัวอักษร ผสมตัวเลขและตัวอักษรภาษาอังกฤษ</div>
+            <div class="error-message" id="error-pwd" style="display:none;"></div>
           </div>
-          <div class="form-group">
+
+          <div class="form-group" id="group-cpwd">
             <label for="cpwd">ยืนยันรหัสผ่านอีกครั้ง <span class="required">*</span></label>
-            <input type="password" name="confirmPassword" id="cpwd" placeholder="ระบุรหัสผ่านให้ตรงกัน" />
+            <div class="input-wrapper">
+              <input type="password" name="confirmPassword" id="cpwd" placeholder="ระบุรหัสผ่านให้ตรงกัน" />
+              <span class="material-symbols-outlined input-icon-right toggle-password" id="toggle-cpwd" style="cursor: pointer;">visibility_off</span>
+            </div>
+            <div class="error-message" id="error-cpwd" style="display:none;"></div>
           </div>
         </div>
 
@@ -133,7 +162,6 @@
       </form>
     </div>
   </main>
-
   <!-- Footer -->
   <footer class="footer">
     <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>

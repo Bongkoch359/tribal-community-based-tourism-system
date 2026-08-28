@@ -263,22 +263,33 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
 .btn-copy.copied { background:var(--green-main); }
 .bank-note { font-size:.75rem; color:var(--gray-600); padding:6px 2px 0; }
 
-/* ════ UPLOAD ════ */
-.upload-zone {
-    border:2px dashed var(--neutral-300); border-radius:12px; padding:28px 20px;
-    text-align:center; cursor:pointer; transition:.2s; position:relative;
+.preview-wrap {
+    position: relative;
+    display: inline-block;
 }
-.upload-zone:hover,.upload-zone.drag { border-color:var(--amber-500); background:var(--amber-100); }
-.upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-.upload-icon  { font-size:2rem; margin-bottom:8px; }
-.upload-title { font-weight:700; font-size:.9rem; }
-.upload-sub   { font-size:.75rem; color:var(--gray-600); margin-top:4px; }
-.preview-wrap { position:relative; display:inline-block; }
-.preview-img  { width:100%; max-height:240px; object-fit:contain; border-radius:10px; border:1px solid var(--gray-200); display:block; }
+.preview-img {
+    width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    display: block;
+}
 .btn-remove-img {
-    position:absolute; top:6px; right:6px; background:var(--red); color:#fff;
-    border:none; border-radius:50%; width:26px; height:26px; font-size:.85rem;
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    font-size: .85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ════ FORM ════ */
@@ -330,6 +341,86 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
     .nav-links { display:none; }
     .top-bar { display:none; }
 }
+
+/* ════ SUCCESS MODAL ════ */
+.pay-modal-overlay {
+    display:none;
+    position:fixed; inset:0; z-index:5000;
+    background:rgba(30,40,32,.55);
+    backdrop-filter:blur(3px);
+    align-items:center; justify-content:center;
+    padding:20px;
+    opacity:0;
+    transition:opacity .25s ease;
+}
+.pay-modal-overlay.show { display:flex; }
+.pay-modal-overlay.show.in { opacity:1; }
+
+.pay-modal-card {
+    background:var(--paper);
+    border-radius:var(--r-xl);
+    box-shadow:var(--shadow-xl);
+    max-width:380px; width:100%;
+    padding:34px 28px 0;
+    text-align:center;
+    overflow:hidden;
+    transform:translateY(14px) scale(.96);
+    opacity:0;
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+}
+.pay-modal-overlay.in .pay-modal-card {
+    transform:translateY(0) scale(1);
+    opacity:1;
+}
+
+.pay-modal-icon-wrap {
+    width:96px; height:96px; margin:0 auto 20px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--green-400),var(--green-700));
+    box-shadow:0 8px 22px rgba(41,87,54,.35), 0 0 0 6px rgba(76,140,95,.15);
+    display:flex; align-items:center; justify-content:center;
+}
+.pay-modal-icon-wrap svg { width:46px; height:46px; }
+.pay-modal-icon-wrap svg path {
+    stroke-dasharray:40;
+    stroke-dashoffset:40;
+    animation:payCheckDraw .45s ease .25s forwards;
+}
+@keyframes payCheckDraw { to { stroke-dashoffset:0; } }
+
+.pay-modal-title {
+    font-size:1.3rem; font-weight:800; color:var(--green-main);
+    margin-bottom:8px;
+}
+.pay-modal-sub {
+    font-size:.88rem; color:var(--gray-600); line-height:1.55;
+    margin-bottom:6px;
+}
+.pay-modal-note {
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--amber-100); color:var(--amber-700);
+    font-size:.76rem; font-weight:700;
+    border-radius:50px; padding:6px 14px;
+    margin:14px 0 22px;
+}
+.pay-modal-progress {
+    height:4px; width:100%;
+    background:var(--gray-100);
+    position:relative; overflow:hidden;
+    border-radius:0 0 var(--r-xl) var(--r-xl);
+}
+.pay-modal-progress-bar {
+    position:absolute; left:0; top:0; bottom:0;
+    width:0%;
+    background:linear-gradient(90deg,var(--green-main),var(--amber-500));
+    transition:width 1.6s linear;
+}
+.form-control.input-error { border-color: var(--red) !important; }
+.field-error {
+    display:none; color:var(--red); font-size:.78rem; font-weight:600;
+    margin-top:4px; display:flex; align-items:center; gap:4px;
+}
+.field-error.show { display:flex; }
 </style>
 </head>
 <body>
@@ -585,34 +676,42 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
                         ℹ️ ยังไม่ได้ระบุบัญชีธนาคาร กรุณาติดต่อเจ้าของโฮมสเตย์โดยตรง
                     </div>
                 </div>
-            </div>
+            </div><!-- ② อัปโหลดสลิป -->
+<div class="card">
+    <div class="section-header">
+        <div class="section-num">2</div>
+        อัปโหลดหลักฐานการโอนเงิน
+    </div>
+    <div class="section-body">
+        <div class="form-group">
+            <input type="file" class="form-control" id="slipFile" name="slipFile"
+                   accept="image/*,.pdf" onchange="handleFileSelect(this)">
+            <small style="color: var(--gray-600); font-size: 0.78rem; margin-top: 4px;">
+                รองรับไฟล์ภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5 MB
+            </small>
+            <div class="field-error" id="slipFileError">⚠️ กรุณาอัปโหลดสลิปการโอนเงินก่อนยืนยัน</div>
+        </div>
 
-            <!-- ② อัปโหลดสลิป -->
-            <div class="card">
-                <div class="section-header">
-                    <div class="section-num">2</div>
-                    อัปโหลดหลักฐานการโอนเงิน
-                </div>
-                <div class="section-body">
-                    <div id="uploadArea">
-                        <div class="upload-zone" id="dropZone">
-                            <input type="file" id="slipFile" name="slipFile"
-                                   accept="image/*,.pdf" onchange="handleFileSelect(this)">
-                            <div class="upload-icon">🧾</div>
-                            <div class="upload-title">คลิกหรือลากไฟล์สลิปมาวาง</div>
-                            <div class="upload-sub">รองรับ JPG, PNG, PDF ขนาดไม่เกิน 5 MB</div>
-                        </div>
-                    </div>
-                    <div id="previewArea" style="display:none; text-align:center;">
-                        <div class="preview-wrap">
-                            <img id="previewImg" class="preview-img" src="" alt="สลิป">
-                            <button class="btn-remove-img" onclick="removeFile()" type="button">✕</button>
-                        </div>
-                        <div style="font-size:.78rem;color:var(--gray-600);margin-top:6px;" id="fileName"></div>
-                    </div>
-                </div>
+        <!-- ส่วนแสดงตัวอย่างรูปภาพ (ถ้ามีเลือกไฟล์รูป) -->
+        <div id="previewArea" style="display:none; text-align:center; margin-top: 12px;">
+            <div class="preview-wrap">
+                <img id="previewImg" class="preview-img" src="" alt="สลิป">
+                <button class="btn-remove-img" onclick="removeFile()" type="button" title="ลบไฟล์">✕</button>
             </div>
+            <div style="font-size:.78rem; color:var(--gray-600); margin-top:4px;" id="fileName"></div>
+        </div>
 
+
+        <!-- ส่วนแสดงตัวอย่างรูปภาพ (ถ้ามีเลือกไฟล์รูป) -->
+        <div id="previewArea" style="display:none; text-align:center; margin-top: 12px;">
+            <div class="preview-wrap" style="position: relative; display: inline-block;">
+                <img id="previewImg" class="preview-img" src="" alt="สลิป" style="max-height: 160px; border-radius: 8px; border: 1px solid var(--gray-200);">
+                <button class="btn-remove-img" onclick="removeFile()" type="button" style="position: absolute; top: 6px; right: 6px; background: var(--red); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: .75rem; cursor: pointer;">✕</button>
+            </div>
+            <div style="font-size:.78rem; color:var(--gray-600); margin-top:4px;" id="fileName"></div>
+        </div>
+    </div>
+</div>
             <!-- ③ หมายเหตุ -->
             <div class="card">
                 <div class="section-header">
@@ -723,6 +822,41 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
         <input type="hidden" name="payNote" id="hPayNote">
     </form>
 
+</div><div class="pay-modal-overlay" id="confirmModalOverlay">
+    <div class="pay-modal-card" style="padding:30px 26px 26px;">
+        <div class="pay-modal-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 9v4m0 4h.01M10.29 3.86l-8.18 14.14A1.5 1.5 0 003.32 20h17.36a1.5 1.5 0 001.21-2L13.71 3.86a1.5 1.5 0 00-2.42 0z"/>
+            </svg>
+        </div>
+        <div class="pay-modal-title">ยืนยันการส่งหลักฐาน?</div>
+        <div class="pay-modal-sub" style="margin-bottom:22px;">
+            กรุณาตรวจสอบสลิปการโอนเงินให้ถูกต้อง<br>ก่อนกดยืนยันการชำระเงิน
+        </div>
+        <div style="display:flex;gap:10px;padding-bottom:26px;">
+            <button type="button" class="btn-back" style="margin-bottom:0;" onclick="closeConfirmModal()">ยกเลิก</button>
+            <button type="button" class="btn-submit" style="padding:12px;" onclick="confirmAndSubmit()">✅ ยืนยัน</button>
+        </div>
+    </div>
+</div>
+<!-- ════ SUCCESS MODAL (popup หลังกดยืนยันการชำระเงิน) ════ -->
+<div class="pay-modal-overlay" id="payModalOverlay">
+    <div class="pay-modal-card">
+        <div class="pay-modal-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="pay-modal-title">ชำระเงินสำเร็จ!</div>
+        <div class="pay-modal-sub">
+            เราได้รับหลักฐานการชำระเงินของคุณแล้ว<br>
+            กรุณารอการอนุมัติจากโฮมสเตย์
+        </div>
+        <div class="pay-modal-note">⏳ รอการอนุมัติจากโฮมสเตย์</div>
+        <div class="pay-modal-progress">
+            <div class="pay-modal-progress-bar" id="payModalProgressBar"></div>
+        </div>
+    </div>
 </div>
 
 <script th:inline="javascript">
@@ -780,57 +914,98 @@ function copyAccount(btn){
         btn.textContent='✅ คัดลอกแล้ว'; btn.classList.add('copied');
         setTimeout(()=>{ btn.textContent='คัดลอก'; btn.classList.remove('copied'); },2000);
     });
-}
-
-/* ── FILE UPLOAD ── */
-function handleFileSelect(input){
-    const file=input.files[0]; if(!file) return;
-    if(file.size>5*1024*1024){ alert('ไฟล์ขนาดเกิน 5 MB'); input.value=''; return; }
-    if(file.type.startsWith('image/')){
-        const r=new FileReader();
-        r.onload=e=>{
-            document.getElementById('previewImg').src=e.target.result;
-            document.getElementById('fileName').textContent=file.name;
-            document.getElementById('uploadArea').style.display='none';
-            document.getElementById('previewArea').style.display='block';
-        };
-        r.readAsDataURL(file);
-    } else {
-        document.getElementById('fileName').textContent='📄 '+file.name;
-        document.getElementById('uploadArea').style.display='none';
-        document.getElementById('previewArea').style.display='block';
+}function handleFileSelect(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        document.getElementById('fileName').textContent = file.name;
+        
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('previewArea').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('previewImg').src = '';
+            document.getElementById('previewArea').style.display = 'block';
+        }
     }
 }
-function removeFile(){
-    document.getElementById('slipFile').value='';
-    document.getElementById('previewImg').src='';
-    document.getElementById('uploadArea').style.display='block';
-    document.getElementById('previewArea').style.display='none';
-}
 
+function removeFile() {
+    const fileInput = document.getElementById('slipFile');
+    fileInput.value = '';
+    document.getElementById('previewArea').style.display = 'none';
+    document.getElementById('fileName').textContent = '';
+}
 /* ── DRAG & DROP ── */
 const dz=document.getElementById('dropZone');
-['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag');}));
-['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag');}));
-dz.addEventListener('drop',e=>{
-    const f=e.dataTransfer.files[0]; if(!f) return;
-    const dt=new DataTransfer(); dt.items.add(f);
-    const input=document.getElementById('slipFile'); input.files=dt.files; handleFileSelect(input);
-});
+if (dz) {
+    ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag');}));
+    ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag');}));
+    dz.addEventListener('drop',e=>{
+        const f=e.dataTransfer.files[0]; if(!f) return;
+        const dt=new DataTransfer(); dt.items.add(f);
+        const input=document.getElementById('slipFile'); input.files=dt.files; handleFileSelect(input);
+    });
+}
 
-/* ── SUBMIT ── */
-function submitPayment(){
+/* ── SUCCESS MODAL ── */
+function showPayModal(){
+    const overlay=document.getElementById('payModalOverlay');
+    const bar=document.getElementById('payModalProgressBar');
+    overlay.classList.add('show');
+    // force reflow ให้ transition ทำงาน
+    requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{ overlay.classList.add('in'); });
+    });
+    // เริ่ม progress bar หลัง modal เด้งขึ้น
+    setTimeout(()=>{ bar.style.width='100%'; },150);
+}function submitPayment(){
+    const fileInput = document.getElementById('slipFile');
+    const errorEl = document.getElementById('slipFileError');
+
+    if(!fileInput.files[0]){
+        fileInput.classList.add('input-error');
+        errorEl.classList.add('show');
+        fileInput.scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    fileInput.classList.remove('input-error');
+    errorEl.classList.remove('show');
+
+    const overlay=document.getElementById('confirmModalOverlay');
+    overlay.classList.add('show');
+    requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{ overlay.classList.add('in'); });
+    });
+}
+
+function closeConfirmModal(){
+    const overlay=document.getElementById('confirmModalOverlay');
+    overlay.classList.remove('in');
+    setTimeout(()=>{ overlay.classList.remove('show'); },200);
+}
+
+function confirmAndSubmit(){
+    closeConfirmModal();
+
     const fileInput=document.getElementById('slipFile');
-    if(!fileInput.files[0]){ alert('กรุณาอัปโหลดสลิปการโอนเงิน'); return; }
-    if(!confirm('ยืนยันการส่งหลักฐานการชำระเงินใช่หรือไม่?')) return;
     const form=document.getElementById('paymentForm');
     const cloned=fileInput.cloneNode(true); cloned.name='slipFile'; form.appendChild(cloned);
     document.getElementById('hPayNote').value=document.getElementById('payNoteInput').value;
+
     const btn=document.getElementById('submitBtn');
     btn.disabled=true; btn.textContent='⏳ กำลังส่งข้อมูล…';
-    form.submit();
-}
 
+    // รอ confirm modal ปิดก่อนค่อยเปิด success modal
+    setTimeout(()=>{
+        showPayModal();
+        setTimeout(()=>{ form.submit(); }, 1800);
+    }, 250);
+}
 /* ── USER MENU ── */
 function toggleUserMenu(){
     document.getElementById('userMenuWrapper').classList.toggle('open');
