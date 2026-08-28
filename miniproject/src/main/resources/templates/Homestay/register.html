@@ -11,6 +11,87 @@
     <link th:href="@{/css/Homestay/register-owner.css}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <style>
+        /* ── เงื่อนไขการใช้งาน: ติ๊กอ่านทีละข้อ + ช่องติ๊กเป็นวงกลม ── */
+        #termsBody .term-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 4px;
+            border-bottom: 1px solid #eee;
+        }
+        #termsBody .term-item:last-child { border-bottom: none; }
+        #termsBody .term-item.term-disabled { opacity: 0.45; }
+        #termsBody .term-check-circle {
+            appearance: none;
+            -webkit-appearance: none;
+            flex: 0 0 auto;
+            width: 22px;
+            height: 22px;
+            margin-top: 3px;
+            border: 2px solid #b5d5b7;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            transition: border-color .15s, background-color .15s;
+        }
+        #termsBody .term-check-circle:disabled {
+            cursor: not-allowed;
+            border-color: #ddd;
+            background: #f5f5f5;
+        }
+        #termsBody .term-check-circle:checked {
+            background-color: #2d6a2d;
+            border-color: #2d6a2d;
+        }
+        #termsBody .term-check-circle:checked::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 6px;
+            height: 11px;
+            border: solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: translate(-50%, -60%) rotate(45deg);
+        }
+        #termsBody .term-check-circle:indeterminate {
+            background-color: #fff;
+            border-color: #2d6a2d;
+        }
+        #termsBody .term-check-circle:indeterminate::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 10px;
+            height: 2px;
+            background: #2d6a2d;
+            transform: translate(-50%, -50%);
+        }
+        #termsBody .term-text { flex: 1 1 auto; line-height: 1.6; }
+        #termsBody .term-status {
+            flex: 0 0 auto;
+            font-size: 0.78rem;
+            color: #2d6a2d;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: right;
+        }
+        #termsProgress {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        #termsBody .term-check-all-item {
+            border-top: 2px solid #b5d5b7;
+            border-bottom: none;
+            margin-top: 4px;
+            padding-top: 14px;
+            background: #f9fdf9;
+        }
+        #termsBody .term-check-all-item .term-text { font-size: 0.95rem; }
+    </style>
 </head>
 
 <body>
@@ -192,21 +273,59 @@
                     <h5 class="modal-title" id="termsModalLabel">เงื่อนไขการใช้งาน</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="termsBody">
-                    <p>1. <strong>คุณสมบัติผู้สมัคร:</strong> ผู้สมัครต้องเป็นเจ้าของกิจการ
-                        หรือตัวแทนผู้มีอำนาจในการบริหารจัดการโฮมสเตย์ที่ได้รับอนุญาตอย่างถูกต้อง</p>
-                    <p>2. <strong>ความถูกต้องของข้อมูล:</strong>
-                        ข้อมูลและเอกสารทั้งหมดที่ใช้ในการลงทะเบียนต้องเป็นข้อมูลจริง ถูกต้อง
-                        และสามารถตรวจสอบได้ตามกฎหมาย</p>
-                    <p>3. <strong>การอนุมัติสิทธิ์เข้าใช้งาน:</strong>
-                        บัญชีผู้ใช้งานจะต้องผ่านการตรวจสอบและอนุมัติจากผู้ดูแลระบบ (Admin) ก่อน
-                        จึงจะสามารถเข้าสู่ระบบและเริ่มดำเนินการได้</p>
-                    <p>4. <strong>การระงับหรือยกเลิกสิทธิ์:</strong> ระบบขอสงวนสิทธิ์ในการปฏิเสธคำขอ ระงับ
-                        หรือยกเลิกบัญชีผู้ใช้งานทันที หากตรวจพบการให้ข้อมูลเท็จ
-                        หรือมีการกระทำที่ละเมิดข้อกำหนดและเงื่อนไขการให้บริการ</p>
-                    <p>5. <strong>การคุ้มครองข้อมูล:</strong>
-                        ข้อมูลส่วนบุคคลจะถูกเก็บรักษาและนำไปใช้เพื่อวัตถุประสงค์ในการยืนยันตัวตนและการให้บริการภายในระบบเท่านั้น
-                    </p>
+                <div class="modal-body">
+                    <div id="termsProgress">กรุณาอ่านและติ๊กยอมรับทุกข้อ (0/5 ข้อ)</div>
+                    <div id="termsBody">
+                        <div class="term-item" id="term-item-1">
+                            <input type="checkbox" class="term-check-circle" id="term1" data-idx="1">
+                            <div class="term-text">
+                                <strong>1. คุณสมบัติผู้สมัคร:</strong> ผู้สมัครต้องเป็นเจ้าของกิจการ
+                                หรือตัวแทนผู้มีอำนาจในการบริหารจัดการโฮมสเตย์ที่ได้รับอนุญาตอย่างถูกต้อง
+                            </div>
+                            <span class="term-status" id="term-status-1"></span>
+                        </div>
+                        <div class="term-item" id="term-item-2">
+                            <input type="checkbox" class="term-check-circle" id="term2" data-idx="2">
+                            <div class="term-text">
+                                <strong>2. ความถูกต้องของข้อมูล:</strong>
+                                ข้อมูลและเอกสารทั้งหมดที่ใช้ในการลงทะเบียนต้องเป็นข้อมูลจริง ถูกต้อง
+                                และสามารถตรวจสอบได้ตามกฎหมาย
+                            </div>
+                            <span class="term-status" id="term-status-2"></span>
+                        </div>
+                        <div class="term-item" id="term-item-3">
+                            <input type="checkbox" class="term-check-circle" id="term3" data-idx="3">
+                            <div class="term-text">
+                                <strong>3. การอนุมัติสิทธิ์เข้าใช้งาน:</strong>
+                                บัญชีผู้ใช้งานจะต้องผ่านการตรวจสอบและอนุมัติจากผู้ดูแลระบบ (Admin) ก่อน
+                                จึงจะสามารถเข้าสู่ระบบและเริ่มดำเนินการได้
+                            </div>
+                            <span class="term-status" id="term-status-3"></span>
+                        </div>
+                        <div class="term-item" id="term-item-4">
+                            <input type="checkbox" class="term-check-circle" id="term4" data-idx="4">
+                            <div class="term-text">
+                                <strong>4. การระงับหรือยกเลิกสิทธิ์:</strong> ระบบขอสงวนสิทธิ์ในการปฏิเสธคำขอ ระงับ
+                                หรือยกเลิกบัญชีผู้ใช้งานทันที หากตรวจพบการให้ข้อมูลเท็จ
+                                หรือมีการกระทำที่ละเมิดข้อกำหนดและเงื่อนไขการให้บริการ
+                            </div>
+                            <span class="term-status" id="term-status-4"></span>
+                        </div>
+                        <div class="term-item" id="term-item-5">
+                            <input type="checkbox" class="term-check-circle" id="term5" data-idx="5">
+                            <div class="term-text">
+                                <strong>5. การคุ้มครองข้อมูล:</strong>
+                                ข้อมูลส่วนบุคคลจะถูกเก็บรักษาและนำไปใช้เพื่อวัตถุประสงค์ในการยืนยันตัวตนและการให้บริการภายในระบบเท่านั้น
+                            </div>
+                            <span class="term-status" id="term-status-5"></span>
+                        </div>
+                        <div class="term-item term-check-all-item" id="term-item-all">
+                            <input type="checkbox" class="term-check-circle" id="termCheckAll">
+                            <div class="term-text">
+                                <strong>ยอมรับเงื่อนไขทั้งหมด</strong> 
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>

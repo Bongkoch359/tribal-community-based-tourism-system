@@ -40,12 +40,12 @@ public class DashboardService {
     };
 
     // รวมสถิติภาพรวม
-    public DashboardStatsDTO getDashboardStats() {
+    public DashboardStatsDTO getDashboardStats(String managerId) {
         DashboardStatsDTO dto = new DashboardStatsDTO();
         dto.setTotalTours(tourRepository.count());
         dto.setActiveTours(tourRepository.countActivePublished());
         dto.setTotalRevenue(paymentRepository.sumPaidAmount());
-        dto.setPendingBookings(bookingRepository.countPendingBookings());
+        dto.setPendingBookings(bookingRepository.countPendingTourBookingsByManagerId(managerId));
         return dto;
     }
 
@@ -74,7 +74,8 @@ public class DashboardService {
                 .collect(Collectors.toList());
     }
 
-    // โพสต์กิจกรรมล่าสุด (เก็บ method ไว้เผื่อใช้หน้าอื่น แม้ dashboard จะไม่แสดงแล้ว)
+    // โพสต์กิจกรรมล่าสุด (เก็บ method ไว้เผื่อใช้หน้าอื่น แม้ dashboard
+    // จะไม่แสดงแล้ว)
     public List<PostRowDTO> getPublishedPosts() {
         return activitypostRepository
                 .findAllByOrderByCreateddateDesc()
@@ -187,7 +188,8 @@ public class DashboardService {
             Object[] row = rows.get(i);
             String name = (String) row[0];
             long count = ((Number) row[1]).longValue();
-            if (count == 0) continue; // ข้ามทัวร์ที่ยังไม่มีการจองเลย
+            if (count == 0)
+                continue; // ข้ามทัวร์ที่ยังไม่มีการจองเลย
 
             double pct = total > 0 ? Math.round((count * 1000.0) / total) / 10.0 : 0;
             Map<String, Object> item = new LinkedHashMap<>();

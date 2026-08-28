@@ -1,3 +1,126 @@
+/* ═══════════════════════════════════════════
+   CUSTOM ALERT / CONFIRM MODAL
+   แทนที่ alert()/confirm() ของเบราว์เซอร์ ให้หน้าตาตรงกับ success modal
+   (ใช้คลาส .modal-backdrop / .modal-box / .checkmark-wrap / .modal-title /
+    .modal-desc / .modal-btn-row / .modal-btn-primary ที่มีอยู่แล้วใน CSS)
+   ═══════════════════════════════════════════ */
+(function () {
+    if (window.showAlertModal) return; // กันประกาศซ้ำถ้าโหลดไฟล์นี้มากกว่า 1 ครั้ง
+
+    const style = document.createElement('style');
+    style.textContent = `
+        .ui-modal-icon.error   { background: linear-gradient(135deg, #ba1a1a, #e14b4b); box-shadow: 0 8px 24px rgba(186,26,26,.35); }
+        .ui-modal-icon.warning { background: linear-gradient(135deg, #ff8e4d, #c9600f); box-shadow: 0 8px 24px rgba(255,142,77,.35); }
+        .ui-modal-icon.success { background: linear-gradient(135deg, var(--green-dark,#006e2f), var(--green-mid,#22c55e)); box-shadow: 0 8px 24px rgba(0,110,47,.35); }
+        .modal-btn-secondary {
+            font-size: 13px; font-family: 'Sarabun', sans-serif; padding: 10px 22px;
+            background: transparent; color: var(--text-muted, #3d4a3d);
+            border: 1px solid var(--border, #e4e0d4); border-radius: 8px;
+            cursor: pointer; font-weight: 700; transition: background .15s;
+        }
+        .modal-btn-secondary:hover { background: #faf7ef; }
+        .modal-btn-danger { background: #ba1a1a !important; }
+        .modal-btn-danger:hover { background: #931414 !important; }
+        .ui-modal-desc { white-space: pre-line; }
+    `;
+    document.head.appendChild(style);
+
+    const ICON_CLASS = { error: 'fa-circle-exclamation', warning: 'fa-triangle-exclamation', success: 'fa-check' };
+    const DEFAULT_TITLE = { error: 'เกิดข้อผิดพลาด', warning: 'แจ้งเตือน', success: 'สำเร็จ' };
+
+    function buildBackdrop() {
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop';
+        backdrop.innerHTML =
+            '<div class="modal-box">' +
+            '  <div class="checkmark-wrap ui-modal-icon">' +
+            '    <i class="fas checkmark-icon ui-modal-icon-glyph"></i>' +
+            '  </div>' +
+            '  <div class="modal-title ui-modal-title"></div>' +
+            '  <div class="modal-desc ui-modal-desc"></div>' +
+            '  <div class="modal-btn-row ui-modal-btn-row"></div>' +
+            '</div>';
+        document.body.appendChild(backdrop);
+        // trigger reflow แล้วค่อยเปิด class .show เพื่อให้ transition เล่น
+        requestAnimationFrame(() => requestAnimationFrame(() => backdrop.classList.add('show')));
+        return backdrop;
+    }
+
+    function closeBackdrop(backdrop) {
+        backdrop.classList.remove('show');
+        setTimeout(() => backdrop.remove(), 300);
+    }
+
+    /**
+     * แสดง modal แจ้งเตือนแทน alert()
+     * @param {string} message ข้อความที่จะแสดง
+     * @param {{type?: 'error'|'warning'|'success', title?: string}} [opts]
+     * @returns {Promise<void>} resolve เมื่อผู้ใช้กดตกลง
+     */
+    function showAlertModal(message, opts = {}) {
+        const type = opts.type || 'success';
+        const title = opts.title || DEFAULT_TITLE[type];
+
+        return new Promise((resolve) => {
+            const backdrop = buildBackdrop();
+            backdrop.querySelector('.ui-modal-icon').classList.add(type);
+            backdrop.querySelector('.ui-modal-icon-glyph').classList.add(ICON_CLASS[type]);
+            backdrop.querySelector('.ui-modal-title').textContent = title;
+            backdrop.querySelector('.ui-modal-desc').textContent = message;
+
+            const okBtn = document.createElement('button');
+            okBtn.type = 'button';
+            okBtn.className = 'modal-btn-primary';
+            okBtn.innerHTML = '<i class="fas fa-check"></i> ตกลง';
+            okBtn.onclick = () => { closeBackdrop(backdrop); resolve(); };
+            backdrop.querySelector('.ui-modal-btn-row').appendChild(okBtn);
+            okBtn.focus();
+        });
+    }
+
+    /**
+     * แสดง modal ยืนยันแทน confirm()
+     * @param {string} message ข้อความที่จะแสดง
+     * @param {{title?: string, confirmText?: string, cancelText?: string, danger?: boolean}} [opts]
+     * @returns {Promise<boolean>} resolve(true) ถ้ากดยืนยัน, resolve(false) ถ้ายกเลิก
+     */
+    function showConfirmModal(message, opts = {}) {
+        const danger = !!opts.danger;
+        const title = opts.title || (danger ? 'ยืนยันการลบ' : 'ยืนยันการทำรายการ');
+        const confirmText = opts.confirmText || 'ยืนยัน';
+        const cancelText = opts.cancelText || 'ยกเลิก';
+
+        return new Promise((resolve) => {
+            const backdrop = buildBackdrop();
+            backdrop.querySelector('.ui-modal-icon').classList.add(danger ? 'warning' : 'success');
+            backdrop.querySelector('.ui-modal-icon-glyph').classList.add(danger ? ICON_CLASS.warning : ICON_CLASS.success);
+            backdrop.querySelector('.ui-modal-title').textContent = title;
+            backdrop.querySelector('.ui-modal-desc').textContent = message;
+
+            const btnRow = backdrop.querySelector('.ui-modal-btn-row');
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'modal-btn-secondary';
+            cancelBtn.textContent = cancelText;
+            cancelBtn.onclick = () => { closeBackdrop(backdrop); resolve(false); };
+
+            const confirmBtn = document.createElement('button');
+            confirmBtn.type = 'button';
+            confirmBtn.className = 'modal-btn-primary' + (danger ? ' modal-btn-danger' : '');
+            confirmBtn.innerHTML = '<i class="fas fa-check"></i> ' + confirmText;
+            confirmBtn.onclick = () => { closeBackdrop(backdrop); resolve(true); };
+
+            btnRow.appendChild(cancelBtn);
+            btnRow.appendChild(confirmBtn);
+            confirmBtn.focus();
+        });
+    }
+
+    window.showAlertModal = showAlertModal;
+    window.showConfirmModal = showConfirmModal;
+})();
+
 // ✅ ปรับให้ตรงกับ requirement เดียวกับฟอร์มเพิ่มทัวร์ (สูงสุด 5 รูป)
 //    เดิมฟอร์มนี้ตั้งไว้ 10 รูป ทำให้ไม่ตรงกับฟอร์มเพิ่มทัวร์ที่จำกัดไว้ 5 รูป
 const MAX_IMAGES = 5;
@@ -43,9 +166,9 @@ function addFiles(files) {
     if (validFiles.length < files.length) {
         const invalidCount = files.filter(f => !f.type.match(/^image\/(jpeg|png|webp)$/)).length;
         if (invalidCount > 0) {
-            alert('มีไฟล์บางไฟล์ไม่ใช่รูปภาพชนิด jpg/png/webp จึงถูกข้ามไป');
+            showAlertModal('มีไฟล์บางไฟล์ไม่ใช่รูปภาพชนิด jpg/png/webp จึงถูกข้ามไป', { type: 'warning' });
         } else if (allowed <= 0 || files.length > allowed) {
-            alert(`เลือกรูปได้สูงสุด ${MAX_IMAGES} รูป มีบางไฟล์ถูกข้ามไปเนื่องจากเกินจำนวนที่กำหนด`);
+            showAlertModal(`เลือกรูปได้สูงสุด ${MAX_IMAGES} รูป มีบางไฟล์ถูกข้ามไปเนื่องจากเกินจำนวนที่กำหนด`, { type: 'warning' });
         }
     }
 
@@ -417,16 +540,16 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     const min = parseInt(document.querySelector('[name="minSeatstour"]').value);
     const max = parseInt(document.querySelector('[name="maxSeatstour"]').value);
     if (min > max) {
-        alert('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด');
+        showAlertModal('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด', { type: 'error' });
         return;
     }
 
     if (tourtypeSelect.value === '') {
-        alert('กรุณาเลือกประเภททัวร์');
+        showAlertModal('กรุณาเลือกประเภททัวร์', { type: 'error' });
         return;
     }
     if (tourtypeSelect.value === '__custom__' && tourtypeCustom.value.trim() === '') {
-        alert('กรุณาระบุชื่อประเภททัวร์');
+        showAlertModal('กรุณาระบุชื่อประเภททัวร์', { type: 'error' });
         return;
     }
 
@@ -434,36 +557,36 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     const n = parseInt(nightsInput.value);
     if (tourtypeSelect.value === 'ทัวร์รายวัน') {
         if (d !== 1 || n !== 0) {
-            alert('ทัวร์รายวันต้องเป็น 1 วัน 0 คืน');
+            showAlertModal('ทัวร์รายวันต้องเป็น 1 วัน 0 คืน', { type: 'error' });
             return;
         }
     } else {
         if (isNaN(d) || d <= 1) {
-            alert('ทัวร์หลายวันต้องมากกว่า 1 วัน');
+            showAlertModal('ทัวร์หลายวันต้องมากกว่า 1 วัน', { type: 'error' });
             return;
         }
         if (isNaN(n) || n >= d) {
-            alert('จำนวนคืนต้องน้อยกว่าจำนวนวัน');
+            showAlertModal('จำนวนคืนต้องน้อยกว่าจำนวนวัน', { type: 'error' });
             return;
         }
     }
 
     if (!allowMeetingPointChk.checked && !allowHotelPickupChk.checked) {
         if (pickupOptionErr) pickupOptionErr.style.display = 'block';
-        alert('กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง (จุดรวมพล หรือ รับที่โรงแรม)');
+        showAlertModal('กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง (จุดรวมพล หรือ รับที่โรงแรม)', { type: 'error' });
         return;
     }
     if (allowMeetingPointChk.checked && meetingPointDetailInput.value.trim() === '') {
-        alert('กรุณาระบุสถานที่จุดรวมพล');
+        showAlertModal('กรุณาระบุสถานที่จุดรวมพล', { type: 'error' });
         return;
     }
     if (allowHotelPickupChk.checked && hotelPickupAreaInput.value.trim() === '') {
-        alert('กรุณาระบุเขตพื้นที่ที่รับได้');
+        showAlertModal('กรุณาระบุเขตพื้นที่ที่รับได้', { type: 'error' });
         return;
     }
     const meetingTimeInput = document.getElementById('meetingTime');
     if (!meetingTimeInput || meetingTimeInput.value.trim() === '') {
-        alert('กรุณาระบุเวลานัดพบ');
+        showAlertModal('กรุณาระบุเวลานัดพบ', { type: 'error' });
         return;
     }
 
@@ -493,7 +616,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     })
     .catch(err => {
         console.error('บันทึกการแก้ไขไม่สำเร็จ:', err);
-        alert('เกิดข้อผิดพลาด: ' + err.message);
+        showAlertModal('เกิดข้อผิดพลาด: ' + err.message, { type: 'error' });
     });
 });
 
@@ -737,7 +860,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         const result = await bulkStatusRequest(selStart, selEnd, status);
         setToolbarBusy(false);
         if (!result.httpOk) {
-            alert(result.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+            await showAlertModal(result.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่', { type: 'error' });
         }
         await refreshScheduleData();
     }
@@ -756,7 +879,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
             cursor = addDaysISO(cursor, 1);
         }
         if (toCreate.length === 0) {
-            alert('ทุกวันในช่วงนี้มีรอบทัวร์อยู่แล้ว');
+            await showAlertModal('ทุกวันในช่วงนี้มีรอบทัวร์อยู่แล้ว', { type: 'warning' });
             return;
         }
         setToolbarBusy(true);
@@ -766,24 +889,25 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
             if (success) ok++; else fail++;
         }
         setToolbarBusy(false);
-        alert(`สร้างรอบทัวร์สำเร็จ ${ok} วัน` + (fail > 0 ? ` (ล้มเหลว ${fail} วัน กรุณาตรวจสอบอีกครั้ง)` : ''));
+        await showAlertModal(`สร้างรอบทัวร์สำเร็จ ${ok} วัน` + (fail > 0 ? ` (ล้มเหลว ${fail} วัน กรุณาตรวจสอบอีกครั้ง)` : ''), { type: 'success' });
         await refreshScheduleData();
     });
 
     // ── ปุ่ม: ลบรอบทัวร์ทั้งหมดในช่วงที่เลือก (ข้ามรอบที่มีคนจองแล้ว) ──
     calDeleteBtn.addEventListener('click', async () => {
         const inRange = window.scheduleData.filter(s => s.opendate >= selStart && s.opendate <= selEnd);
-        if (inRange.length === 0) { alert('ไม่มีรอบทัวร์ในช่วงที่เลือก'); return; }
+        if (inRange.length === 0) { await showAlertModal('ไม่มีรอบทัวร์ในช่วงที่เลือก', { type: 'warning' }); return; }
 
         const deletable = inRange.filter(s => (s.booked || 0) === 0);
         const blocked = inRange.length - deletable.length;
         if (deletable.length === 0) {
-            alert('รอบทัวร์ทั้งหมดในช่วงนี้มีคนจองแล้ว ไม่สามารถลบได้');
+            await showAlertModal('รอบทัวร์ทั้งหมดในช่วงนี้มีคนจองแล้ว ไม่สามารถลบได้', { type: 'warning' });
             return;
         }
-        const confirmed = confirm(
+        const confirmed = await showConfirmModal(
             `ยืนยันลบรอบทัวร์ ${deletable.length} รอบในช่วงนี้?` +
-            (blocked > 0 ? `\n(ข้าม ${blocked} รอบที่มีคนจองแล้ว ไม่สามารถลบได้)` : '')
+            (blocked > 0 ? `\n(ข้าม ${blocked} รอบที่มีคนจองแล้ว ไม่สามารถลบได้)` : ''),
+            { danger: true, confirmText: 'ลบรอบทัวร์' }
         );
         if (!confirmed) return;
 
@@ -794,8 +918,8 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
             if (success) ok++; else fail++;
         }
         setToolbarBusy(false);
-        alert(`ลบสำเร็จ ${ok} รอบ` + (fail > 0 ? ` (ล้มเหลว ${fail} รอบ)` : '') +
-            (blocked > 0 ? ` · ข้าม ${blocked} รอบที่มีคนจองแล้ว` : ''));
+        await showAlertModal(`ลบสำเร็จ ${ok} รอบ` + (fail > 0 ? ` (ล้มเหลว ${fail} รอบ)` : '') +
+            (blocked > 0 ? ` · ข้าม ${blocked} รอบที่มีคนจองแล้ว` : ''), { type: 'success' });
         await refreshScheduleData();
     });
 

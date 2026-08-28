@@ -1062,54 +1062,166 @@
             background: #8a2424;
         }
 
-        .toast-overlay {
-            display: none;
+        /* ═══ RESULT MODAL (ยืนยันสำเร็จ / ยกเลิกสำเร็จ) — รูปแบบเดียวกับหน้าเพิ่มทัวร์ ═══ */
+        .result-modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0);
-            z-index: 9999;
+            background: rgba(10, 30, 12, .55);
+            backdrop-filter: blur(4px);
+            z-index: 3000;
+            display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: none;
-            transition: background .35s ease;
-        }
-
-        .toast-overlay.show {
-            display: flex;
-            background: rgba(0, 0, 0, .25);
-        }
-
-        .toast {
-            background: #fff;
-            color: var(--text-main);
-            padding: 26px 36px;
-            border-radius: 16px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
-            font-size: 1rem;
-            font-weight: 600;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            text-align: center;
-            min-width: 240px;
-            transform: scale(.85);
             opacity: 0;
-            transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+            pointer-events: none;
+            transition: opacity .3s ease;
         }
 
-        .toast-overlay.show .toast {
-            transform: scale(1);
+        .result-modal-backdrop.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .result-modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 36px 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, .22);
+            transform: scale(.85) translateY(20px);
+            transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease;
+            opacity: 0;
+        }
+
+        .result-modal-backdrop.show .result-modal-box {
+            transform: scale(1) translateY(0);
             opacity: 1;
         }
 
-        .toast i.toast-icon {
-            font-size: 2.4rem;
-            color: var(--green-dark);
+        .result-checkmark-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+            background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+            box-shadow: 0 8px 24px rgba(0, 110, 47, .35);
         }
 
-        .toast.error i.toast-icon {
+        .result-checkmark-wrap.error {
+            background: linear-gradient(135deg, #ba1a1a, #e14b4b);
+            box-shadow: 0 8px 24px rgba(186, 26, 26, .35);
+        }
+
+        .result-checkmark-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 3px solid rgba(0, 110, 47, .15);
+        }
+
+        .result-checkmark-wrap.error::after {
+            border-color: rgba(186, 26, 26, .15);
+        }
+
+        .result-checkmark-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 110, 47, .08);
+            animation: result-ring-pulse 1.5s ease-out .4s both;
+        }
+
+        .result-checkmark-wrap.error .result-checkmark-ring {
+            border-color: rgba(186, 26, 26, .08);
+        }
+
+        @keyframes result-ring-pulse {
+            0% {
+                transform: scale(.9);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .result-checkmark-icon {
+            font-size: 36px;
+            color: #fff;
+            animation: result-pop-in .5s cubic-bezier(.34, 1.56, .64, 1) .2s both;
+        }
+
+        @keyframes result-pop-in {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 8px;
+        }
+
+        .result-modal-box.error .result-modal-title {
             color: var(--red-text);
+        }
+
+        .result-modal-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        .result-modal-progress-bar {
+            height: 3px;
+            background: #e8f4ea;
+            border-radius: 0 0 20px 20px;
+            margin: 24px -36px -32px;
+            overflow: hidden;
+        }
+
+        .result-modal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-mid), var(--amber));
+            border-radius: 3px;
+            width: 100%;
+            transform-origin: left;
+        }
+
+        .result-modal-progress-fill.run {
+            animation: result-progress-drain linear forwards;
+        }
+
+        @keyframes result-progress-drain {
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
         }
 
         .footer {
@@ -1637,10 +1749,18 @@
         <img id="slipLightboxImg" src="" alt="สลิปการชำระเงิน">
     </div>
 
-    <div class="toast-overlay" id="toastOverlay">
-        <div class="toast" id="toast">
-            <i class="fas fa-circle-check toast-icon" id="toastIcon"></i>
-            <span id="toastMsg"></span>
+    <!-- MODAL: แจ้งผลลัพธ์ (ยืนยันสำเร็จ / ยกเลิกสำเร็จ / เกิดข้อผิดพลาด) -->
+    <div class="result-modal-backdrop" id="resultModal">
+        <div class="result-modal-box" id="resultModalBox">
+            <div class="result-checkmark-wrap" id="resultIconWrap">
+                <div class="result-checkmark-ring"></div>
+                <i class="fas fa-check result-checkmark-icon" id="resultIcon"></i>
+            </div>
+            <div class="result-modal-title" id="resultTitle">ทำรายการสำเร็จ</div>
+            <div class="result-modal-desc" id="resultDesc"></div>
+            <div class="result-modal-progress-bar">
+                <div class="result-modal-progress-fill" id="resultProgressFill"></div>
+            </div>
         </div>
     </div>
 
@@ -1699,28 +1819,49 @@
                 const res = await fetch(url, { method: 'POST', body: params });
                 const data = await res.json();
                 if (data.success) {
-                    showToast(successMsg, false);
-                    setTimeout(() => window.location.href = '/manager/bookings', 1600);
+                    showResultModal(successMsg, false, {
+                        title: 'ทำรายการสำเร็จ',
+                        duration: 1800,
+                        onClose: () => { window.location.href = '/manager/bookings'; }
+                    });
                 } else {
-                    showToast(data.message || 'เกิดข้อผิดพลาด', true);
+                    showResultModal(data.message || 'เกิดข้อผิดพลาด', true, { title: 'เกิดข้อผิดพลาด' });
                 }
             } catch (e) {
-                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', true);
+                showResultModal('เกิดข้อผิดพลาดในการเชื่อมต่อ', true, { title: 'เกิดข้อผิดพลาด' });
             }
         }
 
-        function showToast(msg, isError = false) {
-            const overlay = document.getElementById('toastOverlay');
-            const box = document.getElementById('toast');
-            const icon = document.getElementById('toastIcon');
-            const msgEl = document.getElementById('toastMsg');
+        /* แจ้งผลลัพธ์แบบ modal เดียวกับหน้าเพิ่มทัวร์ (checkmark + วงแหวน + progress bar) */
+        function showResultModal(msg, isError = false, opts = {}) {
+            const backdrop = document.getElementById('resultModal');
+            const box = document.getElementById('resultModalBox');
+            const iconWrap = document.getElementById('resultIconWrap');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const desc = document.getElementById('resultDesc');
+            const fill = document.getElementById('resultProgressFill');
 
-            msgEl.textContent = msg;
-            box.className = 'toast' + (isError ? ' error' : '');
-            icon.className = 'fas toast-icon ' + (isError ? 'fa-circle-xmark' : 'fa-circle-check');
+            box.classList.toggle('error', isError);
+            iconWrap.classList.toggle('error', isError);
+            icon.className = 'fas result-checkmark-icon ' + (isError ? 'fa-xmark' : 'fa-check');
+            title.textContent = opts.title || (isError ? 'เกิดข้อผิดพลาด' : 'ทำรายการสำเร็จ');
+            desc.textContent = msg;
 
-            overlay.classList.add('show');
-            setTimeout(() => overlay.classList.remove('show'), 1800);
+            const duration = opts.duration ?? 1800;
+
+            backdrop.classList.add('show');
+
+            // รีสตาร์ต animation ของ progress bar ทุกครั้งที่เปิด modal
+            fill.classList.remove('run');
+            fill.style.animationDuration = duration + 'ms';
+            void fill.offsetHeight; // force reflow
+            fill.classList.add('run');
+
+            setTimeout(() => {
+                backdrop.classList.remove('show');
+                if (typeof opts.onClose === 'function') opts.onClose();
+            }, duration);
         }
 
         document.querySelectorAll('.modal-overlay').forEach(el => {

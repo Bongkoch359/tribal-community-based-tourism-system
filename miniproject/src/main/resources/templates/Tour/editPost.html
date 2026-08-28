@@ -7,6 +7,8 @@
     <title>แก้ไขโพสต์กิจกรรม</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <style>
         *,
         *::before,
@@ -818,6 +820,61 @@
                 transform: scaleX(0);
             }
         }
+
+        /* ─── LOCATION MAP ─── */
+        .map-box {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 400px;
+            border-radius: 10px;
+            border: 1px solid var(--border, #ddd);
+            margin-top: 8px;
+            background: #f2f2f2;
+            isolation: isolate;
+            /* กัน z-index ของ leaflet หลุดไปทับ navbar */
+        }
+
+        .search-input-wrap {
+            position: relative;
+        }
+
+        .search-suggest-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #fff;
+            border: 1px solid var(--border, #ddd);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
+        }
+
+        .search-suggest-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .search-suggest-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-suggest-item:hover {
+            background: #faf7ef;
+        }
+
+        .search-suggest-loading {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #999;
+        }
     </style>
 </head>
 
@@ -886,7 +943,6 @@
         </div>
     </div>
 
-    <!-- ═══ PAGE ═══ -->
     <!-- ═══ PAGE ═══ -->
     <div class="page">
 
@@ -1011,8 +1067,15 @@
                             <!-- ฟิลด์สถานที่ (แสดงเฉพาะเมื่อเลือกทัวร์) -->
                             <div class="form-group" id="locationGroup" style="display:none;">
                                 <label class="form-label">สถานที่ <span class="req">*</span></label>
-                                <input class="form-control" type="text" name="location" id="locationInput"
-                                    placeholder="จังหวัด / สถานที่ท่องเที่ยว" th:value="${post.location}" />
+                                <div class="search-input-wrap">
+                                    <input class="form-control" type="text" name="location" id="locationInput"
+                                        placeholder="เช่น อ.เมือง จ.เชียงใหม่" th:value="${post.location}"
+                                        autocomplete="off" />
+                                    <div class="search-suggest-box" id="locationSuggest"></div>
+                                </div>
+                                <div class="map-box" id="locationMap"></div>
+                                <small style="color:#888;">พิมพ์ค้นหาชื่อสถานที่ในช่องด้านบน
+                                    หรือคลิก/ลากหมุดบนแผนที่</small>
                             </div>
                         </div>
                     </div>
@@ -1146,6 +1209,153 @@
         const tourSelect = document.getElementById('tourSelect');
         const locationGroup = document.getElementById('locationGroup');
         const locationInput = document.getElementById('locationInput');
+        function toggleLocationField() {
+            if (tourSelect.value) {
+                locationGroup.style.display = '';
+                locationInput.setAttribute('required', 'required');
+                initLocationMap(); // ← เพิ่มบรรทัดนี้
+            } else {
+                locationGroup.style.display = 'none';
+                locationInput.removeAttribute('required');
+                locationInput.value = '';
+            }
+        }
+        tourSelect.addEventListener('change', toggleLocationField);
+        toggleLocationField(); // ถ้าตอนโหลดหน้ามีทัวร์ถูกเลือกอยู่แล้ว จะสร้างแผนที่ทันที
+
+        // ═══ LEAFLET + NOMINATIM สำหรับฟิลด์ "สถานที่" ═══
+        const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // เชียงใหม่
+        const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
+        let locationMap, locationMarker;
+
+        function createLeafletMap(divId) {
+            const map = L.map(divId, { center: DEFAULT_MAP_CENTER, zoom: 13 });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+            return map;
+        }
+
+        function reverseGeocode(lat, lng, callback) {
+            fetch(`${NOMINATIM_BASE}/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=th`)
+                .then(res => res.json())
+                .then(data => { if (data && data.display_name) callback(data.display_name); })
+                .catch(() => { });
+        }
+
+        function searchPlaces(query, callback) {
+            if (!query || query.trim().length < 3) { callback([]); return; }
+            const params = new URLSearchParams({
+                format: 'jsonv2', q: query, countrycodes: 'th',
+                'accept-language': 'th', limit: '5'
+            });
+            fetch(`${NOMINATIM_BASE}/search?${params.toString()}`)
+                .then(res => res.json())
+                .then(data => callback(data || []))
+                .catch(() => callback([]));
+        }
+
+        function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
+            inputEl.addEventListener('input', () => {
+                clearTimeout(timerRef.id);
+                const query = inputEl.value;
+                timerRef.id = setTimeout(() => {
+                    suggestBoxEl.innerHTML = '<div class="search-suggest-loading">กำลังค้นหา...</div>';
+                    suggestBoxEl.style.display = 'block';
+                    searchPlaces(query, (results) => {
+                        if (results.length === 0) { suggestBoxEl.style.display = 'none'; return; }
+                        suggestBoxEl.innerHTML = '';
+                        results.forEach(place => {
+                            const item = document.createElement('div');
+                            item.className = 'search-suggest-item';
+                            item.textContent = place.display_name;
+                            item.addEventListener('click', () => {
+                                inputEl.value = place.display_name;
+                                suggestBoxEl.style.display = 'none';
+                                onSelect(parseFloat(place.lat), parseFloat(place.lon), place.display_name);
+                            });
+                            suggestBoxEl.appendChild(item);
+                        });
+                        suggestBoxEl.style.display = 'block';
+                    });
+                }, 500);
+            });
+            document.addEventListener('click', (e) => {
+                if (!inputEl.contains(e.target) && !suggestBoxEl.contains(e.target)) {
+                    suggestBoxEl.style.display = 'none';
+                }
+            });
+        }
+
+        function getCurrentPositionOrDefault(onLocated, onFallback) {
+            if (!navigator.geolocation) { onFallback(); return; }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => onLocated([pos.coords.latitude, pos.coords.longitude]),
+                () => onFallback(),
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+            );
+        }
+
+        function initLocationMap() {
+            if (locationMap) return; // สร้างแผนที่แค่ครั้งเดียว
+
+            locationMap = createLeafletMap('locationMap');
+            locationMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(locationMap);
+
+            locationMarker.on('dragend', () => {
+                const pos = locationMarker.getLatLng();
+                reverseGeocode(pos.lat, pos.lng, (address) => { locationInput.value = address; });
+            });
+
+            locationMap.on('click', (e) => {
+                locationMarker.setLatLng(e.latlng);
+                reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => { locationInput.value = address; });
+            });
+
+            setTimeout(() => locationMap.invalidateSize(), 200); // กันแผนที่เบี้ยวตอนเพิ่งโผล่จาก display:none
+
+            const existingAddress = locationInput.value.trim();
+            if (existingAddress) {
+                // ✅ โหมดแก้ไข: มีที่อยู่เดิมอยู่แล้ว -> ค้นหาพิกัดจากข้อความแล้วปักหมุดตำแหน่งเดิม
+                const params = new URLSearchParams({
+                    format: 'jsonv2', q: existingAddress, countrycodes: 'th',
+                    'accept-language': 'th', limit: '1'
+                });
+                fetch(`${NOMINATIM_BASE}/search?${params.toString()}`)
+                    .then(res => res.json())
+                    .then(results => {
+                        if (results && results.length > 0) {
+                            const lat = parseFloat(results[0].lat);
+                            const lng = parseFloat(results[0].lon);
+                            locationMap.setView([lat, lng], 16);
+                            locationMarker.setLatLng([lat, lng]);
+                        }
+                        // ถ้าหาไม่เจอ ก็ปล่อยหมุดไว้ที่ศูนย์กลางเชียงใหม่ตามเดิม ผู้ใช้ลากเองได้
+                    })
+                    .catch(() => { });
+            } else {
+                // ยังไม่มีที่อยู่ -> ใช้ตำแหน่งปัจจุบันเหมือนหน้า add
+                getCurrentPositionOrDefault(
+                    ([lat, lng]) => {
+                        locationMap.setView([lat, lng], 16);
+                        locationMarker.setLatLng([lat, lng]);
+                        reverseGeocode(lat, lng, (address) => { locationInput.value = address; });
+                    },
+                    () => { /* หาไม่ได้ ใช้ศูนย์กลางเชียงใหม่ */ }
+                );
+            }
+
+            attachPlaceSearch(
+                locationInput,
+                document.getElementById('locationSuggest'),
+                (lat, lng) => {
+                    locationMap.setView([lat, lng], 16);
+                    locationMarker.setLatLng([lat, lng]);
+                },
+                { id: null }
+            );
+        }
 
         function toggleLocationField() {
             if (tourSelect.value) {

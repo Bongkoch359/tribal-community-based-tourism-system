@@ -50,7 +50,7 @@ public class DashboardTourController {
         model.addAttribute("signatureMissing", signatureMissing);
 
         // ─── Stats + จำนวนโพสต์ทั้งหมด ───
-        DashboardStatsDTO stats = dashboardService.getDashboardStats();
+        DashboardStatsDTO stats = dashboardService.getDashboardStats(manager.getManagerid());
         model.addAttribute("stats", stats);
         model.addAttribute("totalPosts", dashboardService.getTotalPostCount());
 

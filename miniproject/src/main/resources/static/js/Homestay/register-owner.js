@@ -268,12 +268,17 @@ function validateAgree() {
 //  TERMS & CONDITIONS MODAL
 // ============================================================
 (function () {
-    const termsLink   = document.getElementById('termsLink');
-    const termsBody   = document.getElementById('termsBody');
-    const acceptBtn   = document.getElementById('acceptTermsBtn');
+    const termsLink     = document.getElementById('termsLink');
+    const acceptBtn     = document.getElementById('acceptTermsBtn');
     const agreeCheckbox = document.getElementById('agree');
+    const progressLabel = document.getElementById('termsProgress');
+    const checkAllBox   = document.getElementById('termCheckAll');
+    const termChecks    = Array.from(document.querySelectorAll('.term-check-circle')).filter(cb => cb !== checkAllBox);
 
-    if (!termsLink || !termsBody || !acceptBtn || !agreeCheckbox) return;
+    if (!termsLink || !acceptBtn || !agreeCheckbox || termChecks.length === 0) return;
+
+    const TOTAL = termChecks.length;
+    let syncing = false; // กันไม่ให้ event ไล่วนกันเองระหว่าง checkAllBox <-> termChecks
 
     // กันไม่ให้ href="#" เลื่อนหน้า และกัน event ทะลุไปโดน label/checkbox
     termsLink.addEventListener('click', (e) => {
@@ -281,19 +286,45 @@ function validateAgree() {
         e.stopPropagation();
     });
 
-    // บังคับเลื่อนอ่านจนสุดก่อนถึงจะกดปุ่ม "ยอมรับเงื่อนไข" ได้
-    termsBody.addEventListener('scroll', () => {
-        const scrolledToBottom =
-            termsBody.scrollTop + termsBody.clientHeight >= termsBody.scrollHeight - 5;
-        if (scrolledToBottom) acceptBtn.disabled = false;
+    // ติ๊กได้ทุกข้อไม่จำกัดลำดับ — ปุ่ม "ยอมรับเงื่อนไข" จะกดได้ก็ต่อเมื่อติ๊กครบทุกข้อ
+    function updateTermsState() {
+        const checkedCount = termChecks.filter(cb => cb.checked).length;
+
+        if (progressLabel) {
+            progressLabel.textContent = `กรุณาอ่านและติ๊กยอมรับทุกข้อ (${checkedCount}/${TOTAL} ข้อ)`;
+        }
+
+        // ซิงก์สถานะวงกลม "ติ๊กทั้งหมด" ให้ตรงกับรายการย่อย
+        if (checkAllBox && !syncing) {
+            checkAllBox.checked = checkedCount === TOTAL;
+            checkAllBox.indeterminate = checkedCount > 0 && checkedCount < TOTAL;
+        }
+
+        acceptBtn.disabled = checkedCount < TOTAL;
+    }
+
+    termChecks.forEach(cb => cb.addEventListener('change', updateTermsState));
+
+    // วงกลม "ติ๊กทั้งหมด" — ติ๊ก/ยกเลิกรายการย่อยทั้งหมดพร้อมกัน
+    checkAllBox?.addEventListener('change', () => {
+        syncing = true;
+        termChecks.forEach(cb => { cb.checked = checkAllBox.checked; });
+        syncing = false;
+        updateTermsState();
     });
 
-    // เผื่อเนื้อหาสั้นจนไม่มี scrollbar เลย -> ปลดล็อกปุ่มให้อัตโนมัติ
+    // รีเซ็ตทุกครั้งที่เปิด modal ใหม่ (ถ้ายังไม่เคยกดยอมรับมาก่อน)
     document.getElementById('termsModal')?.addEventListener('shown.bs.modal', () => {
-        if (termsBody.scrollHeight <= termsBody.clientHeight) acceptBtn.disabled = false;
+        if (!agreeCheckbox.checked) {
+            termChecks.forEach(cb => { cb.checked = false; });
+            if (checkAllBox) checkAllBox.checked = false;
+        }
+        updateTermsState();
     });
 
-    // กดยอมรับใน modal -> ติ๊ก checkbox ให้ และปลดล็อกให้กดเองได้ต่อไป
+    updateTermsState();
+
+    // กดยอมรับใน modal -> ติ๊ก checkbox หลักให้ และปลดล็อกให้กดเองได้ต่อไป
     acceptBtn.addEventListener('click', () => {
         agreeCheckbox.checked = true;
         agreeCheckbox.disabled = false;

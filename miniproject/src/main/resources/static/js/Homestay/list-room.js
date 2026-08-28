@@ -1,6 +1,32 @@
+/* ═══ ALERT MODAL — แทน alert() ของเบราว์เซอร์ ═══ */
+function openAlertModal(message, title) {
+    const modal = document.getElementById('alertModal');
+    if (!modal) { alert(message); return; } // กันพังถ้าหน้าไหนลืมแปะ markup ไว้
+    const descEl = document.getElementById('alertModalDesc');
+    const titleEl = document.getElementById('alertModalTitle');
+    if (descEl) descEl.textContent = message;
+    if (titleEl) titleEl.textContent = title || 'แจ้งเตือน';
+    modal.classList.add('show');
+}
+
+function closeAlertModal() {
+    const modal = document.getElementById('alertModal');
+    if (modal) modal.classList.remove('show');
+}
+
+// ปิด modal เมื่อคลิกพื้นหลังนอกกล่อง
+document.addEventListener('DOMContentLoaded', function () {
+    const alertModal = document.getElementById('alertModal');
+    if (alertModal) {
+        alertModal.addEventListener('click', function (e) {
+            if (e.target === alertModal) closeAlertModal();
+        });
+    }
+});
+
 function blockAddRoom(e) {
     e.preventDefault();
-    alert('กรุณากรอกข้อมูลบัญชีธนาคารให้ครบก่อน จึงจะสามารถเพิ่มห้องพักได้');
+    openAlertModal('กรุณากรอกข้อมูลบัญชีธนาคารให้ครบก่อน จึงจะสามารถเพิ่มห้องพักได้');
     return false;
 }
 

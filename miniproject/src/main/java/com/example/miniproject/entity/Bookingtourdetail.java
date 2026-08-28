@@ -11,7 +11,6 @@ public class Bookingtourdetail {
 
     private Integer numofadult;
     private Integer numofchild;
-   
     private Double subtotaltour;
 
     @ManyToOne
