@@ -191,7 +191,36 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   cursor: pointer; text-decoration: none; transition: 0.2s; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
 }
 .filter-pill.active { background: var(--action-orange); color: #fff; border-color: var(--action-orange); font-weight: 700; }
+/* ══════════════════════════════════════════
+   เพิ่มใหม่: รวม top-menu + filter-group
+   ให้อยู่แถวเดียวกัน (wrap ได้ถ้าจอแคบ)
+   ══════════════════════════════════════════ */
+.toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
 
+/* ยกเลิก margin-bottom เดิมของ 2 กลุ่มนี้ เพราะย้ายมาไว้ที่ wrapper แล้ว */
+.toolbar-row .top-menu,
+.toolbar-row .filter-group {
+  margin-bottom: 0;
+}
+
+/* เส้นคั่นบางๆ ระหว่าง 2 กลุ่ม ให้ดูแยกส่วนชัดเจน (ตามรูปมีช่องว่างระหว่างกลุ่มพอสมควร) */
+.toolbar-row .filter-group {
+  padding-left: 14px;
+  border-left: 1px solid var(--outline-variant);
+}
+
+@media (max-width: 640px) {
+  .toolbar-row .filter-group {
+    border-left: none;
+    padding-left: 0;
+  }
+}
 .table-wrap {
   background: var(--surface-container-lowest); border-radius: var(--r-lg); border: 1px solid var(--surface-variant);
   overflow: hidden; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
@@ -306,3 +335,269 @@ tbody tr:hover { background: var(--surface-container-low); }
   .footer { flex-direction: column; gap: 6px; text-align: center; }
   .table-wrap { overflow-x: auto; }
 }
+
+/* ══════════════════════════════════════════
+   เพิ่มใหม่: การ์ด dropdown filter สถานะบัญชี
+   ══════════════════════════════════════════ */
+.status-filter-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-container-lowest);
+  border-radius: 999px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
+
+.sf-icon {
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.sf-label {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.sf-dropdown { position: relative; }
+
+.sf-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--action-orange-light);
+  border: 1px solid var(--action-orange);
+  color: var(--action-orange-hover);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
+}
+
+.sf-trigger-icon { font-size: 17px; color: var(--action-orange); }
+
+.sf-trigger-count {
+  background: var(--action-orange);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.sf-chevron { font-size: 18px; transition: transform 0.2s; }
+.sf-dropdown.open .sf-chevron { transform: rotate(180deg); }
+
+.sf-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--surface-variant);
+  border-radius: var(--r-md);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 100;
+}
+.sf-dropdown.open .sf-menu { display: block; }
+
+.sf-option {
+  display: block;
+  padding: 11px 16px;
+  font-size: 14.5px;
+  color: var(--on-surface-variant);
+  transition: background 0.15s;
+}
+.sf-option:hover { background: var(--surface-container); }
+.sf-option.active { color: var(--action-orange-hover); font-weight: 700; background: var(--action-orange-light); }
+
+.rm-reason-field textarea {
+  width: 100%; min-height: 90px; padding: 12px 14px; border-radius: 8px;
+  border: 1px solid var(--outline-variant); font-size: 15px; font-family: inherit;
+  background: var(--surface-container-lowest); color: var(--on-surface);
+  resize: vertical; line-height: 1.5;
+}
+.rm-reason-field textarea:focus { outline: none; border-color: var(--primary); }
+.rm-reason-field textarea::placeholder { color: var(--outline); }
+
+.rm-reason-field select:focus { outline: none; border-color: var(--primary); }
+
+/* ══════════════════════════════════════════
+   MODAL ยืนยันการระงับ (#suspendConfirmModal)
+   พื้นหลังขาว ธีมเขียว (--primary)
+   หมายเหตุ: markup จริงของ modal นี้ใช้ class
+   .confirm-box / .confirm-icon / .confirm-title /
+   .confirm-desc / .confirm-actions / .btn-action
+   (ไม่ใช่ .modal-box/.modal-title/.btn-modal-* แบบ
+   modal อื่น) เพราะฉะนั้น selector ด้านล่างต้อง
+   ผูกกับ class เหล่านี้เท่านั้น ไม่งั้นสีจะไม่ขึ้น
+   ══════════════════════════════════════════ */
+#suspendConfirmModal.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(22, 29, 25, 0.65) !important;
+  z-index: 99999 !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#suspendConfirmModal.modal-overlay.show {
+  display: flex !important;
+}
+
+/* กล่อง Modal สีขาว ขอบมนสวยงาม */
+#suspendConfirmModal .confirm-box {
+  background: #ffffff !important;
+  border-radius: var(--r-lg);
+  padding: 36px;
+  width: 450px;
+  max-width: 90vw;
+  text-align: center;
+  box-shadow: 0 25px 70px rgba(0, 108, 73, 0.18);
+  border: 1px solid var(--surface-variant);
+  z-index: 100000 !important;
+  position: relative;
+  box-sizing: border-box;
+  animation: popIn 0.2s ease;
+}
+
+/* ไอคอนเตือนภัย โทนสีเขียวหลัก */
+#suspendConfirmModal .confirm-icon,
+#suspendConfirmModal .confirm-icon.reject {
+  background: var(--surface-container-low) !important;
+  color: var(--primary) !important;
+  border: 1px solid var(--outline-variant);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 16px;
+}
+
+/* หัวข้อและข้อความ */
+#suspendConfirmModal .confirm-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary) !important;
+  margin-bottom: 8px;
+}
+
+#suspendConfirmModal .confirm-desc {
+  font-size: 15px;
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+  text-align: left;
+  margin-top: 8px;
+}
+
+#suspendConfirmModal .confirm-desc strong {
+  color: var(--primary);
+}
+
+/* กล่องแสดงเหตุผลด้านใน */
+#scReasonPreview {
+  background: var(--surface-container-low) !important;
+  border: 1px solid var(--outline-variant) !important;
+  color: var(--on-surface) !important;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 600;
+}
+
+/* แถวปุ่มกดภายใน Modal */
+#suspendConfirmModal .confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ปุ่มยกเลิก (Outline เขียว/เทา) */
+#suspendConfirmModal .btn-action.btn-cancel {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--outline-variant);
+  background: #ffffff;
+  color: var(--on-surface-variant);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.2s;
+}
+#suspendConfirmModal .btn-action.btn-cancel:hover {
+  background: var(--surface-container-low);
+  border-color: var(--outline);
+}
+
+/* ปุ่มยืนยัน (สีเขียวหลัก --primary) */
+#suspendConfirmModal .btn-action.btn-reject {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.2s;
+}
+#suspendConfirmModal .btn-action.btn-reject:hover {
+  background: var(--on-primary-container) !important;
+}
+
+/* ── กล่องรายละเอียดรายงาน / เหตุผลระงับ (reportDetailModal) ── */
+.rm-reason-field { margin-bottom: 20px; }
+.rm-reason-field label {
+  display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--on-surface);
+}
+.rm-reason-field label .required { color: var(--error); }
+
+.rm-actions { display: flex; gap: 12px; justify-content: center; }
+.rm-btn-cancel {
+  flex: 1; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--outline-variant);
+  background: var(--surface-container-lowest); color: var(--on-surface-variant);
+  font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.rm-btn-cancel:hover { background: var(--surface-container); }
+.rm-btn-suspend {
+  flex: 1.4; padding: 10px 18px; border-radius: 8px; border: none;
+  background: var(--error); color: #fff; font-size: 15px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+.rm-btn-suspend:disabled { opacity: .6; cursor: not-allowed; }

@@ -1,7 +1,11 @@
 package com.example.miniproject.controller.Member;
 
+import com.example.miniproject.entity.Tour;
 import com.example.miniproject.model.Tribe;
 import com.example.miniproject.model.Vocabulary;
+import com.example.miniproject.repository.Member.TourRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +15,9 @@ import java.util.List;
 
 @Controller
 public class TribeController {
+
+    @Autowired
+    private TourRepository tourRepository;
 
     private final List<Tribe> tribeList = Arrays.asList(
         new Tribe(1, "กะเหรี่ยง (ปกาเกอะญอ)",
@@ -209,6 +216,9 @@ public class TribeController {
     }
 
     model.addAttribute("tribe", selected);
+
+      List<Tour> tribeTours = tourRepository.findByTribeid(id);
+        model.addAttribute("tribeTours", tribeTours);
     return "Member/tribe-detail"; 
 }
 }

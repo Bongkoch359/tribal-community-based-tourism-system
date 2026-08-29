@@ -4,12 +4,8 @@ import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Report;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.entity.Tourschedule;
-import com.example.miniproject.entity.Communitymanager;
-import com.example.miniproject.entity.Homestayowner;
-import com.example.miniproject.entity.enums.ManagerStatus;
 
 import com.example.miniproject.repository.Admin.ReportRepository;
-// TODO: แก้ path ให้ตรงกับตำแหน่งจริงของ repository เหล่านี้ในโปรเจกต์เธอ
 import com.example.miniproject.repository.Member.TourRepository;
 import com.example.miniproject.repository.Homestay.HomestayRepository;
 import com.example.miniproject.repository.Admin.CommunitymanagerRepository;
@@ -18,8 +14,11 @@ import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.service.Homestay.HomestayOwnerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy; // <-- เพิ่ม Import ตัวนี้
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,30 +44,27 @@ public class ReportService {
     private TourScheduleRepository tourscheduleRepository;
 
     @Autowired
-private ManagerService managerService;              // package service.Admin
+    @Lazy // <-- เพิ่ม @Lazy ตรงนี้ เพื่อตัดวงจร Circular Reference กับ ManagerService
+    private ManagerService managerService;            
 
-@Autowired
-private HomestayOwnerService homestayOwnerService;   // package service.Homestay — import ให้ตรง
+    @Autowired
+    private HomestayOwnerService homestayOwnerService;   
 
-private String generateReportId() {
+    private String generateReportId() {
+        Optional<Report> latestReport = reportRepository.findTopByOrderByReportidDesc();
 
-    Optional<Report> latestReport = reportRepository.findTopByOrderByReportidDesc();
+        if (latestReport.isEmpty()) {
+            return "RP000001";
+        }
 
-    if (latestReport.isEmpty()) {
-        return "RP000001";
+        String lastId = latestReport.get().getReportid();
+        int lastNumber = Integer.parseInt(lastId.substring(2));
+        int newNumber = lastNumber + 1;
+
+        return String.format("RP%06d", newNumber);
     }
 
-    String lastId = latestReport.get().getReportid();
-
-    int lastNumber = Integer.parseInt(lastId.substring(2));
-
-    int newNumber = lastNumber + 1;
-
-    return String.format("RP%06d", newNumber);
-}
     // ===================== ฝั่งสมาชิก: สร้าง report =====================
-    // เรียกจากปุ่ม 🚩 ที่หน้า tour_detail (ส่ง tourId) หรือหน้า homestay_detail (ส่ง homestayId)
-    // ต้องส่งมาแค่ตัวเดียว ห้ามส่งทั้งคู่หรือไม่ส่งเลย
     public Report createReport(String reason, String description, String evidenceImage,
                                 String tourId, Integer homestayId) {
 
@@ -78,13 +74,13 @@ private String generateReportId() {
         if (hasTour == hasHomestay) {
             throw new IllegalArgumentException("ต้องระบุ tourId หรือ homestayId อย่างใดอย่างหนึ่งเท่านั้น");
         }
-Report report = new Report();
-
-report.setReportid(generateReportId());
-report.setReason(reason);
-report.setDescription(description);
-report.setEvidenceImage(evidenceImage);
-report.setStatus("PENDING");
+        
+        Report report = new Report();
+        report.setReportid(generateReportId());
+        report.setReason(reason);
+        report.setDescription(description);
+        report.setEvidenceImage(evidenceImage);
+        report.setStatus("PENDING");
 
         if (hasTour) {
             Tour tour = tourRepository.findById(tourId)
@@ -122,7 +118,6 @@ report.setStatus("PENDING");
     }
 
     // ===================== ฝั่ง Admin: ตัดสินใจดำเนินการ =====================
-    // action: "REJECT" | "SUSPEND_LISTING" | "SUSPEND_ACCOUNT"
     public Report resolveReport(String reportId, String action) {
         Report report = getReportById(reportId);
 
@@ -132,8 +127,6 @@ report.setStatus("PENDING");
             case "SUSPEND_LISTING" -> {
                 report.setStatus("RESOLVED");
                 if (report.getTour() != null) {
-                    // Tour ไม่มี field สถานะของตัวเอง — "ระงับทัวร์" ทำโดยปิดรับจองทุกรอบ
-                    // (Tourschedule.status) แทน ใช้ค่าเดียวกับที่ระบบใช้อยู่แล้วคือ "ปิด"
                     closeAllSchedules(report.getTour());
                 }
                 if (report.getHomestay() != null) {
@@ -142,16 +135,15 @@ report.setStatus("PENDING");
                 }
             }
 
-           case "SUSPEND_ACCOUNT" -> {
-    report.setStatus("RESOLVED");
-    if (report.getTour() != null && report.getTour().getCommunitymanager() != null) {
-        managerService.suspend(report.getTour().getCommunitymanager().getManagerid(), report.getReason());
-    }
-    if (report.getHomestay() != null && report.getHomestay().getOwner() != null) {
-        homestayOwnerService.suspend(report.getHomestay().getOwner().getOwnerid(), report.getReason());
-    }
-}
-            
+            case "SUSPEND_ACCOUNT" -> {
+                report.setStatus("RESOLVED");
+                if (report.getTour() != null && report.getTour().getCommunitymanager() != null) {
+                    managerService.suspend(report.getTour().getCommunitymanager().getManagerid(), report.getReason());
+                }
+                if (report.getHomestay() != null && report.getHomestay().getOwner() != null) {
+                    homestayOwnerService.suspend(report.getHomestay().getOwner().getOwnerid(), report.getReason());
+                }
+            }
 
             default -> throw new IllegalArgumentException("ไม่รู้จัก action นี้: " + action);
         }
@@ -159,7 +151,6 @@ report.setStatus("PENDING");
         return reportRepository.save(report);
     }
 
-    // ปิดรับจองทุกรอบของทัวร์นี้ (ใช้ตอน SUSPEND_LISTING)
     private void closeAllSchedules(Tour tour) {
         List<Tourschedule> schedules = tour.getTourSchedules();
         if (schedules == null || schedules.isEmpty()) {
@@ -169,5 +160,51 @@ report.setStatus("PENDING");
             schedule.setStatus("ปิด");
         }
         tourscheduleRepository.saveAll(schedules);
+    }
+
+    public Map<String, Long> getPendingCountByManager() {
+        Map<String, Long> map = new HashMap<>();
+        for (Object[] row : reportRepository.countPendingGroupedByManager()) {
+            map.put((String) row[0], (Long) row[1]);
+        }
+        return map;
+    }
+
+    public Map<String, Long> getPendingCountByHomestayOwner() {
+        Map<String, Long> map = new HashMap<>();
+        for (Object[] row : reportRepository.countPendingGroupedByHomestayOwner()) {
+            map.put((String) row[0], (Long) row[1]);
+        }
+        return map;
+    }
+
+    public List<Report> getReportsByManager(String managerId) {
+        return reportRepository.findByTour_Communitymanager_ManageridOrderByCreatedAtDesc(managerId);
+    }
+
+    public List<Report> getReportsByHomestayOwner(String ownerId) {
+        return reportRepository.findByHomestay_Owner_OwneridOrderByCreatedAtDesc(ownerId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void resolveReportsForHomestay(int homestayId) {
+        List<Report> pendingReports = reportRepository
+                .findByHomestay_HomestayidAndStatus(homestayId, "PENDING");
+
+        for (Report r : pendingReports) {
+            r.setStatus("RESOLVED");
+        }
+        reportRepository.saveAll(pendingReports);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void resolveReportsForManager(String managerId) {
+        List<Report> pendingReports = reportRepository
+                .findByTour_Communitymanager_ManageridAndStatus(managerId, "PENDING");
+
+        for (Report r : pendingReports) {
+            r.setStatus("RESOLVED");
+        }
+        reportRepository.saveAll(pendingReports);
     }
 }

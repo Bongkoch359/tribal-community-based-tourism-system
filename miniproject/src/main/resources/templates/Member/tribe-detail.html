@@ -50,6 +50,7 @@
             --neutral-50:  #f7f1e3;
             --white: #ffffff;
             --navbar-h: 92px;
+            --subnav-h: 56px;
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -95,17 +96,8 @@
             display: flex; align-items: center; gap: 12px; flex-shrink: 0;
             text-decoration: none;
         }
-       .brand-logo{
-    width:160px;
-    height:120px;
-    flex-shrink:0;
-}
-
-.brand-logo img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-}
+        .brand-logo{ width:160px; height:120px; flex-shrink:0; }
+        .brand-logo img{ width:100%; height:100%; object-fit:contain; }
         .brand-name { display: flex; flex-direction: column;margin-left: -25px; }
         .brand-name-line1 { font-size: 22px; font-weight: 700; line-height: 1; color: #fff; }
         .brand-name-line2 { font-size: 12px; font-weight: 400; color: var(--green-200); margin-top: 4px; opacity: .85; }
@@ -233,103 +225,232 @@
         .udrop-logout .udrop-text span { color: #b3462e; }
         .udrop-logout:hover .udrop-icon-red { background: #f6d1c5; }
 
-        /* ── HERO BANNER ── */
+        /* ══════════════════════════════════════════════
+           HERO — split layout so the portrait is shown
+           in FULL (object-fit: contain), never cropped.
+           ══════════════════════════════════════════════ */
         .tribe-hero {
-            position: relative; height: 480px; overflow: hidden;
+            position: relative;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            min-height: 540px;
+            background: linear-gradient(150deg, var(--green-950) 0%, var(--green-800) 55%, var(--green-700) 100%);
             border-bottom: 3px solid var(--amber-500);
+            overflow: hidden;
+        }
+        .tribe-hero::before {
+            /* soft decorative texture so the left panel isn't flat */
+            content: '';
+            position: absolute; inset: 0;
+            background-image: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.05) 0, transparent 40%),
+                               radial-gradient(circle at 85% 85%, rgba(214,143,20,0.10) 0, transparent 45%);
+            pointer-events: none;
+        }
+        .tribe-hero-info {
+            position: relative; z-index: 2;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 56px 4% 56px 5%;
+        }
+        .breadcrumb-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 22px; }
+        .breadcrumb-nav a { color: rgba(255,255,255,0.60); font-size: 14px; font-weight: 500; transition: color .15s; }
+        .breadcrumb-nav a:hover { color: var(--amber-400); }
+        .breadcrumb-nav span { color: rgba(255,255,255,0.35); font-size: 13px; }
+        .breadcrumb-nav .bc-current { color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 600; }
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+            background: rgba(214,143,20,0.16); border: 1px solid rgba(228,165,58,0.4);
+            color: var(--amber-400); border-radius: 100px; padding: 6px 16px 6px 12px;
+            font-size: 13px; font-weight: 700; letter-spacing: .3px; margin-bottom: 18px;
+        }
+        .hero-eyebrow svg { width: 14px; height: 14px; }
+        .tribe-hero h1 {
+            font-size: 50px; font-weight: 800; color: #fff;
+            line-height: 1.12; margin-bottom: 18px; letter-spacing: -.5px;
+        }
+        .tribe-hero-lede {
+            color: rgba(255,255,255,0.72); font-size: 16.5px; line-height: 1.8;
+            max-width: 480px; margin-bottom: 26px;
+        }
+        .tribe-hero-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+        .hero-tag {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16);
+            color: rgba(255,255,255,0.85); border-radius: 100px;
+            padding: 6px 16px; font-size: 13px; font-weight: 600;
+        }
+        .hero-cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
+        .hero-btn-primary {
+            display: inline-flex; align-items: center; gap: 9px;
+            background: linear-gradient(135deg, var(--amber-500), var(--amber-600));
+            color: #fff; border-radius: 100px; padding: 13px 26px;
+            font-size: 16px; font-weight: 700; box-shadow: 0 6px 20px rgba(214,143,20,0.35);
+            transition: filter .15s, transform .1s;
+        }
+        .hero-btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+        .hero-btn-primary svg { width: 18px; height: 18px; }
+        .hero-btn-ghost {
+            display: inline-flex; align-items: center; gap: 9px;
+            background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.28);
+            color: #fff; border-radius: 100px; padding: 12px 24px;
+            font-size: 16px; font-weight: 600; transition: background .15s, border-color .15s;
+        }
+        .hero-btn-ghost:hover { background: rgba(255,255,255,0.14); border-color: var(--amber-400); }
+        .hero-btn-ghost svg { width: 17px; height: 17px; }
+
+        /* right panel — full-body portrait, never cropped */
+        .tribe-hero-portrait {
+            position: relative; z-index: 1;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-top: 40px;
+        }
+        .tribe-hero-portrait::before {
+            /* decorative blob behind the person so contain-fit doesn't look empty */
+            content: '';
+            position: absolute; top: 8%; left: 50%; transform: translateX(-50%);
+            width: 82%; height: 84%;
+            background: linear-gradient(160deg, rgba(255,255,255,0.10), rgba(214,143,20,0.14));
+            border-radius: 46% 54% 58% 42% / 50% 46% 54% 50%;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .tribe-hero-portrait::after {
+            /* ground shadow so the figure feels grounded, not floating */
+            content: '';
+            position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+            width: 58%; height: 26px;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, transparent 72%);
+            filter: blur(2px);
         }
         .tribe-hero-img {
-            width: 100%; height: 100%; object-fit: cover;
-            object-position: center 30%;
+            position: relative; z-index: 2;
+            max-width: 84%;
+            max-height: 500px;
+            width: auto;
+            object-fit: contain;      /* shows the WHOLE person, head to toe — never cropped */
+            object-position: bottom center;
+            filter: drop-shadow(0 18px 30px rgba(0,0,0,0.35));
         }
-        .tribe-hero-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(
-                to bottom,
-                rgba(15,33,20,0.35) 0%,
-                rgba(15,33,20,0.18) 40%,
-                rgba(15,33,20,0.80) 100%
-            );
+
+        /* ── IN-PAGE SUB-NAV (ties the sections together, kills the "boxes everywhere" feel) ── */
+        .subnav {
+            position: sticky; top: var(--navbar-h); z-index: 900;
+            background: rgba(255,253,248,0.92); backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--neutral-200);
+            box-shadow: 0 2px 10px rgba(59,36,21,0.04);
         }
-        .tribe-hero-bottom {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            padding: 40px 5% 36px;
+        .subnav-inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 5%;
+            display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
         }
-        .tribe-hero-inner { max-width: 1200px; margin: 0 auto; }
-        .breadcrumb-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-        .breadcrumb-nav a { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: color .15s; }
-        .breadcrumb-nav a:hover { color: var(--amber-400); }
-        .breadcrumb-nav span { color: rgba(255,255,255,0.40); font-size: 13px; }
-        .breadcrumb-nav .bc-current { color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 600; }
-        .tribe-hero h1 {
-            font-size: 52px; font-weight: 800; color: #fff;
-            text-shadow: 0 3px 24px rgba(0,0,0,0.4); line-height: 1.1;
-            margin-bottom: 12px;
+        .subnav-inner::-webkit-scrollbar { display: none; }
+        .subnav-link {
+            flex-shrink: 0; padding: 15px 18px; font-size: 14.5px; font-weight: 600;
+            color: var(--neutral-500); border-bottom: 3px solid transparent;
+            transition: color .15s, border-color .15s; white-space: nowrap;
         }
-        .tribe-hero-tags { display: flex; gap: 10px; flex-wrap: wrap; }
-        .hero-tag {
-            background: rgba(214,143,20,0.20); border: 1px solid rgba(228,165,58,0.45);
-            color: var(--amber-400); border-radius: 100px;
-            padding: 5px 16px; font-size: 13px; font-weight: 600;
-            backdrop-filter: blur(4px);
-        }
+        .subnav-link:hover { color: var(--green-700); }
+        .subnav-link.is-active { color: var(--green-800); border-color: var(--amber-500); }
 
         /* ── DETAIL LAYOUT ── */
         .detail-wrap {
             max-width: 1200px; margin: 0 auto;
-            padding: 48px 5% 80px;
+            padding: 8px 5% 80px;
             display: grid;
             grid-template-columns: 1fr 320px;
-            gap: 36px; align-items: start;
+            gap: 48px; align-items: start;
         }
 
-        /* Main content */
-        .detail-main {}
-        .section-block {
+        /* Main content — ONE continuous surface instead of a stack of separately
+           bordered/shadowed cards, so the page reads as one story, not a pile of boxes */
+        .detail-main {
             background: var(--paper);
             border: 1px solid var(--neutral-200);
-            border-radius: 20px; padding: 36px 40px;
-            margin-bottom: 24px;
+            border-radius: 24px;
             box-shadow: 0 2px 8px rgba(59,36,21,0.05);
+            padding: 8px 44px 12px;
         }
-        .section-block:last-child { margin-bottom: 0; }
+        .content-section {
+            padding: 40px 0;
+            border-bottom: 1px solid var(--neutral-100);
+            scroll-margin-top: calc(var(--navbar-h) + var(--subnav-h) + 20px);
+        }
+        .content-section:last-child { border-bottom: none; }
 
-        .section-header-bar {
-            display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
-        }
-        .section-icon {
-            width: 44px; height: 44px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .section-icon svg { width: 22px; height: 22px; }
-        .section-header-bar h3 { font-size: 20px; font-weight: 800; color: var(--green-900); }
+        .section-header-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+        .section-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .section-icon svg { width: 21px; height: 21px; }
+        .section-header-bar h3 { font-size: 19px; font-weight: 800; color: var(--green-900); }
 
-        .content-text {
-            font-size: 17px; line-height: 1.95;
-            color: var(--neutral-700); text-align: justify;
+        .content-text { font-size: 16.5px; line-height: 1.95; color: var(--neutral-700); text-align: justify; }
+
+        /* vocab table */
+        .vocab-note { color: var(--neutral-500); margin-bottom: 20px; font-size: 15.5px; }
+        .vocab-table-wrap { overflow-x: auto; border: 1px solid var(--neutral-200); border-radius: 14px; }
+        .vocab-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
+        .vocab-table thead tr { background-color: var(--cream-50); border-bottom: 2px solid var(--neutral-200); }
+        .vocab-table th { padding: 13px 16px; font-weight: 700; color: var(--neutral-700); }
+        .vocab-table td { padding: 13px 16px; border-bottom: 1px solid var(--neutral-100); }
+        .vocab-table tbody tr:last-child td { border-bottom: none; }
+        .vocab-pill { background-color: var(--neutral-100); color: var(--neutral-600); padding: 4px 10px; border-radius: 12px; font-size: 12.5px; font-weight: 600; }
+        .vocab-word { font-weight: 700; color: var(--neutral-800); }
+        .vocab-karaoke { color: var(--neutral-500); font-family: monospace; }
+        .vocab-meaning { font-weight: 600; color: var(--green-700); }
+
+        /* ── TOURS FOR THIS TRIBE ── */
+        .tours-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+        .tours-head-text h4 { font-size: 15px; color: var(--neutral-500); font-weight: 600; margin-bottom: 3px; }
+        .tours-count-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--green-100); color: var(--green-800);
+            border-radius: 100px; padding: 4px 12px; font-size: 13px; font-weight: 700;
         }
+        .tours-see-all {
+            display: inline-flex; align-items: center; gap: 7px;
+            color: var(--amber-600); font-size: 15px; font-weight: 700;
+            transition: gap .15s;
+        }
+        .tours-see-all:hover { gap: 11px; }
+        .tours-see-all svg { width: 16px; height: 16px; }
+
+        .tours-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
+        .tour-card {
+            border: 1px solid var(--neutral-200); border-radius: 16px; overflow: hidden;
+            background: var(--paper); transition: box-shadow .18s, transform .18s, border-color .18s;
+            display: flex; flex-direction: column;
+        }
+        .tour-card:hover { box-shadow: 0 10px 26px rgba(59,36,21,0.10); transform: translateY(-3px); border-color: var(--green-200); }
+        .tour-card-img { width: 100%; height: 140px; object-fit: cover; background: var(--neutral-100); }
+        .tour-card-body { padding: 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .tour-card-body h5 { font-size: 15.5px; font-weight: 700; color: var(--neutral-800); line-height: 1.35; }
+        .tour-card-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--neutral-500); }
+        .tour-card-meta svg { width: 14px; height: 14px; }
+        .tour-card-price { margin-top: auto; padding-top: 10px; font-size: 15px; font-weight: 800; color: var(--amber-600); }
+
+        .tours-empty {
+            display: flex; align-items: center; gap: 14px;
+            background: var(--cream-50); border: 1px dashed var(--neutral-300); border-radius: 16px;
+            padding: 20px 22px; color: var(--neutral-600); font-size: 15px;
+        }
+        .tours-empty svg { width: 26px; height: 26px; color: var(--neutral-400); flex-shrink: 0; }
 
         /* Sidebar */
-        .detail-sidebar {}
         .sidebar-card {
             background: var(--paper); border: 1px solid var(--neutral-200);
             border-radius: 20px; overflow: hidden;
             box-shadow: 0 2px 8px rgba(59,36,21,0.05);
-            position: sticky; top: calc(var(--navbar-h) + 24px);
+            position: sticky; top: calc(var(--navbar-h) + var(--subnav-h) + 20px);
         }
         .sidebar-card-top {
             background: linear-gradient(135deg, var(--green-900), var(--green-700));
             padding: 28px 24px; text-align: center;
             border-bottom: 3px solid var(--amber-500);
         }
-        .sidebar-card-top .tribe-icon { font-size: 52px; margin-bottom: 12px; }
-        .sidebar-card-top h3 { color: #fff; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+        .sidebar-card-top .tribe-icon { font-size: 48px; margin-bottom: 10px; }
+        .sidebar-card-top h3 { color: #fff; font-size: 21px; font-weight: 800; margin-bottom: 5px; }
         .sidebar-card-top p { color: rgba(255,255,255,0.70); font-size: 14px; }
 
-        .sidebar-card-body { padding: 24px; }
+        .sidebar-card-body { padding: 22px 24px 24px; }
         .sidebar-info-row {
             display: flex; align-items: flex-start; gap: 12px;
-            padding: 14px 0; border-bottom: 1px solid var(--neutral-100);
+            padding: 13px 0; border-bottom: 1px solid var(--neutral-100);
         }
         .sidebar-info-row:last-of-type { border-bottom: none; padding-bottom: 0; }
         .si-icon {
@@ -345,18 +466,29 @@
             background: linear-gradient(135deg, var(--amber-500), var(--amber-600));
             color: #fff;
             border-radius: 100px; padding: 14px 24px;
-            font-size: 17px; font-weight: 700; width: 100%;
-            margin-top: 22px; border: none;
+            font-size: 16.5px; font-weight: 700; width: 100%;
+            margin-top: 20px; border: none;
             box-shadow: 0 4px 16px rgba(214,143,20,0.40);
             transition: box-shadow .15s, transform .1s, filter .15s;
         }
         .btn-book-tour:hover { box-shadow: 0 6px 22px rgba(214,143,20,0.5); filter: brightness(1.04); transform: translateY(-1px); }
         .btn-book-tour svg { width: 18px; height: 18px; }
 
+        .btn-see-tours {
+            display: flex; align-items: center; justify-content: center; gap: 9px;
+            background: var(--green-50); color: var(--green-800);
+            border: 1.5px solid var(--green-200);
+            border-radius: 100px; padding: 12px 24px;
+            font-size: 15.5px; font-weight: 700; width: 100%;
+            margin-top: 10px; transition: background .15s, border-color .15s;
+        }
+        .btn-see-tours:hover { background: var(--green-100); border-color: var(--green-400); }
+        .btn-see-tours svg { width: 17px; height: 17px; }
+
         .btn-back-link {
             display: inline-flex; align-items: center; gap: 8px;
             color: var(--wood-700); font-size: 15px; font-weight: 600;
-            padding: 10px 0; margin-top: 8px;
+            padding: 10px 0; margin-top: 28px;
             transition: color .15s;
         }
         .btn-back-link:hover { color: var(--amber-600); }
@@ -379,15 +511,18 @@
         .footer-bottom-links a:hover { color: rgba(255,255,255,0.85); }
 
         @media (max-width: 1024px) {
+            .tribe-hero { grid-template-columns: 1fr; min-height: auto; }
+            .tribe-hero-portrait { padding: 10px 0 30px; }
+            .tribe-hero-img { max-height: 320px; }
             .detail-wrap { grid-template-columns: 1fr; }
             .sidebar-card { position: static; }
         }
         @media (max-width: 768px) {
             :root { --navbar-h: auto; }
             .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 10px; }
-            .tribe-hero { height: 360px; }
-            .tribe-hero h1 { font-size: 34px; }
-            .section-block { padding: 24px; }
+            .tribe-hero h1 { font-size: 32px; }
+            .tribe-hero-info { padding: 40px 5% 30px; }
+            .detail-main { padding: 4px 22px 8px; }
             .footer-top { grid-template-columns: 1fr; gap: 26px; }
             .footer-bottom { flex-direction: column; gap: 14px; }
         }
@@ -444,7 +579,6 @@
             </svg>
             ข้อมูลชนเผ่า
         </a>
-       
     </div>
 
     <div class="nav-divider"></div>
@@ -565,34 +699,61 @@
     </div>
 </nav>
 
-<!-- HERO BANNER --><div class="tribe-hero">
-    <img class="tribe-hero-img"
-         th:src="@{'/images/tribes/' + ${tribe.image}}"
-         th:alt="${tribe.name}"
-         onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&h=480&fit=crop'">
-    <div class="tribe-hero-overlay"></div>
-    <div class="tribe-hero-bottom">
-        <div class="tribe-hero-inner">
-            <nav class="breadcrumb-nav">
-                <a th:href="@{/tribe-info}" href="/tribe-info">ข้อมูลชนเผ่า</a>
-                <span>›</span>
-                <span class="bc-current" th:text="${tribe.name}">ชื่อชนเผ่า</span>
-            </nav>
-            <h1 th:text="${tribe.name}">ชื่อชนเผ่า</h1>
-            <div class="tribe-hero-tags">
-                <span class="hero-tag">🏔️ ภาคเหนือ</span>
-                <span class="hero-tag">📖 ประวัติศาสตร์</span>
-                <span class="hero-tag">🎭 วัฒนธรรม</span>
-                <span class="hero-tag">🌿 วิถีชีวิต</span>
-            </div>
+<!-- HERO — split layout: text on the left, full-body portrait on the right (object-fit: contain, so nothing is cropped) -->
+<section class="tribe-hero">
+    <div class="tribe-hero-info">
+        <nav class="breadcrumb-nav">
+            <a th:href="@{/tribe-info}" href="/tribe-info">ข้อมูลชนเผ่า</a>
+            <span>›</span>
+            <span class="bc-current" th:text="${tribe.name}">ชื่อชนเผ่า</span>
+        </nav>
+        <span class="hero-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            กลุ่มชาติพันธุ์ภาคเหนือ
+        </span>
+        <h1 th:text="${tribe.name}">ชื่อชนเผ่า</h1>
+        <p class="tribe-hero-lede">รู้จักวิถีชีวิต ภาษา และวัฒนธรรมของชุมชน ก่อนออกเดินทางไปสัมผัสประสบการณ์จริงกับพวกเขา</p>
+        <div class="tribe-hero-tags">
+            <span class="hero-tag">🏔️ ภาคเหนือ</span>
+            <span class="hero-tag">📖 ประวัติศาสตร์</span>
+            <span class="hero-tag">🎭 วัฒนธรรม</span>
+            <span class="hero-tag">🌿 วิถีชีวิต</span>
         </div>
+        <div class="hero-cta-row">
+            <a href="#tours" class="hero-btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                ดูทัวร์ของเผ่านี้
+            </a>
+            <a href="#history" class="hero-btn-ghost">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                อ่านข้อมูลเผ่า
+            </a>
+        </div>
+    </div>
+    <div class="tribe-hero-portrait">
+        <img class="tribe-hero-img"
+             th:src="@{'/images/tribes/' + ${tribe.image}}"
+             th:alt="${tribe.name}"
+             onerror="this.src='https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&h=1000&fit=crop'">
+    </div>
+</section>
+
+<!-- IN-PAGE SUB-NAV — links all sections together as one page instead of separate boxes -->
+<div class="subnav">
+    <div class="subnav-inner" id="subnavInner">
+        <a href="#history" class="subnav-link" data-target="history">ประวัติความเป็นมา</a>
+        <a href="#language" class="subnav-link" data-target="language">ภาษาและอักษร</a>
+        <a href="#culture" class="subnav-link" data-target="culture">วัฒนธรรมและประเพณี</a>
+        <a href="#lifestyle" class="subnav-link" data-target="lifestyle">วิถีชีวิต</a>
+        <a th:if="${tribe.vocabularies != null and !tribe.vocabularies.isEmpty()}" href="#vocab" class="subnav-link" data-target="vocab">ห้องเรียนภาษา</a>
+        <a href="#tours" class="subnav-link" data-target="tours">ทัวร์ทั้งหมด</a>
     </div>
 </div>
 
 <div class="detail-wrap">
     <div class="detail-main">
 
-        <div class="section-block">
+        <section class="content-section" id="history">
             <div class="section-header-bar">
                 <div class="section-icon" style="background:#e2f0e5;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#295736" stroke-width="2">
@@ -602,9 +763,9 @@
                 <h3>ประวัติความเป็นมา</h3>
             </div>
             <p class="content-text" th:text="${tribe.history}">ประวัติของชนเผ่า...</p>
-        </div>
+        </section>
 
-        <div class="section-block">
+        <section class="content-section" id="language">
             <div class="section-header-bar">
                 <div class="section-icon" style="background:#faedd2;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#b9790c" stroke-width="2">
@@ -614,9 +775,9 @@
                 <h3>ภาษาและอักษร</h3>
             </div>
             <p class="content-text" th:text="${tribe.language}">ข้อมูลภาษา...</p>
-        </div>
+        </section>
 
-        <div class="section-block">
+        <section class="content-section" id="culture">
             <div class="section-header-bar">
                 <div class="section-icon" style="background:#dbeafe;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2">
@@ -626,9 +787,9 @@
                 <h3>วัฒนธรรมและประเพณี</h3>
             </div>
             <p class="content-text" th:text="${tribe.culture}">ข้อมูลวัฒนธรรม...</p>
-        </div>
+        </section>
 
-        <div class="section-block">
+        <section class="content-section" id="lifestyle">
             <div class="section-header-bar">
                 <div class="section-icon" style="background:#e2f0e5;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#367048" stroke-width="2">
@@ -638,9 +799,9 @@
                 <h3>วิถีชีวิต</h3>
             </div>
             <p class="content-text" th:text="${tribe.lifestyle}">ข้อมูลวิถีชีวิต...</p>
-        </div>
+        </section>
 
-        <div class="section-block" th:if="${tribe.vocabularies != null and !tribe.vocabularies.isEmpty()}">
+        <section class="content-section" id="vocab" th:if="${tribe.vocabularies != null and !tribe.vocabularies.isEmpty()}">
             <div class="section-header-bar">
                 <div class="section-icon" style="background:#f3e8ff;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -650,37 +811,86 @@
                 </div>
                 <h3>ห้องเรียนภาษาเบื้องต้น</h3>
             </div>
-            
-            <p class="content-text" style="color: var(--neutral-500); margin-bottom: 1.5rem;">
-                ฝึกออกเสียงภาษาท้องถิ่นง่าย ๆ เพื่อสร้างความประทับใจและมิตรภาพอันดีกับชุมชนเมื่อไปเยือน
-            </p>
 
-            <div style="overflow-x: auto; border: 1px solid var(--neutral-200); border-radius: 8px;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+            <p class="vocab-note">ฝึกออกเสียงภาษาท้องถิ่นง่าย ๆ เพื่อสร้างความประทับใจและมิตรภาพอันดีกับชุมชนเมื่อไปเยือน</p>
+
+            <div class="vocab-table-wrap">
+                <table class="vocab-table">
                     <thead>
-                        <tr style="background-color: var(--cream-50); border-bottom: 2px solid var(--neutral-200);">
-                            <th style="padding: 12px 16px; font-weight: 600; color: var(--neutral-700); width: 20%;">หมวดหมู่</th>
-                            <th style="padding: 12px 16px; font-weight: 600; color: var(--neutral-700); width: 30%;">คำศัพท์ประจำเผ่า</th>
-                            <th style="padding: 12px 16px; font-weight: 600; color: var(--neutral-700); width: 25%;">คำอ่านออกเสียง</th>
-                            <th style="padding: 12px 16px; font-weight: 600; color: var(--neutral-700); width: 25%;">ความหมาย</th>
+                        <tr>
+                            <th style="width:20%;">หมวดหมู่</th>
+                            <th style="width:30%;">คำศัพท์ประจำเผ่า</th>
+                            <th style="width:25%;">คำอ่านออกเสียง</th>
+                            <th style="width:25%;">ความหมาย</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="v : ${tribe.vocabularies}" style="border-bottom: 1px solid var(--neutral-200);">
-                            <td style="padding: 12px 16px;">
-                                <span th:text="${v.category}" 
-                                      style="background-color: var(--neutral-100); color: var(--neutral-600); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
-                                    ทักทาย
-                                </span>
-                            </td>
-                            <td th:text="${v.word}" style="padding: 12px 16px; font-weight: 600; color: var(--neutral-800);">-</td>
-                            <td th:text="${'[' + v.karaoke + ']'}" style="padding: 12px 16px; color: var(--neutral-500); font-family: monospace;">-</td>
-                            <td th:text="${v.meaning}" style="padding: 12px 16px; font-weight: 500; color: #295736;">-</td>
+                        <tr th:each="v : ${tribe.vocabularies}">
+                            <td><span class="vocab-pill" th:text="${v.category}">ทักทาย</span></td>
+                            <td class="vocab-word" th:text="${v.word}">-</td>
+                            <td class="vocab-karaoke" th:text="${'[' + v.karaoke + ']'}">-</td>
+                            <td class="vocab-meaning" th:text="${v.meaning}">-</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════
+             ทัวร์ทั้งหมดของเผ่านี้
+             หน้านี้คาดหวังตัวแปร model attribute "tribeTours" (List<Tour>)
+             ที่ Controller ดึงมาจาก DB ด้วยเงื่อนไข tribeid (Integer)
+             ซึ่งเป็น column ธรรมดาใน Tour ที่เก็บเลขอ้างอิงถึง Tribe.id (hardcoded)
+             ไม่ใช่ @ManyToOne เพราะ Tribe ไม่ใช่ @Entity
+             เช่น tourRepository.findByTribeid(tribe.getId())
+             ถ้ายังไม่ได้ส่งมา ให้เพิ่มใน Controller ก่อน (ดูคำอธิบายท้ายข้อความ)
+             ══════════════════════════════════════════════════════════ -->
+        <section class="content-section" id="tours">
+            <div class="section-header-bar">
+                <div class="section-icon" style="background:#faedd2;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#b9790c" stroke-width="2">
+                        <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                    </svg>
+                </div>
+                <h3>ทัวร์ทั้งหมดของเผ่านี้</h3>
+            </div>
+
+            <div class="tours-head">
+                <div class="tours-head-text">
+                    <span class="tours-count-badge" th:if="${tribeTours != null and !tribeTours.isEmpty()}">
+                        <span th:text="${#lists.size(tribeTours)}">0</span> ทัวร์ที่เปิดให้จอง
+                    </span>
+                </div>
+                <a th:href="@{/search(tribeId=${tribe.id}, tribeName=${tribe.name}, type='tour')}" href="/search" class="tours-see-all">
+                    ดูทัวร์ทั้งหมดของ <span th:text="${tribe.name}">เผ่านี้</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
+                </a>
+            </div>
+
+            <div class="tours-grid" th:if="${tribeTours != null and !tribeTours.isEmpty()}">
+                <a class="tour-card" th:each="tour : ${tribeTours}" th:href="@{'/tour/' + ${tour.tourid}}" href="#">
+                    <img class="tour-card-img"
+                         th:src="@{'/images/tours/' + ${tour.images}}"
+                         th:alt="${tour.tourmname}"
+                         onerror="this.src='https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=280&fit=crop'">
+                    <div class="tour-card-body">
+                        <h5 th:text="${tour.tourmname}">ชื่อทัวร์</h5>
+                        <div class="tour-card-meta">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                            <span th:text="${tour.tourDuration}">1 วัน</span>
+                        </div>
+                        <div class="tour-card-price">
+                            เริ่ม ฿<span th:text="${#numbers.formatDecimal(tour.startingPrice, 0, 0)}">0</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tours-empty" th:if="${tribeTours == null or tribeTours.isEmpty()}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                <span>ยังไม่มีทัวร์ที่ผูกกับเผ่านี้ในระบบตอนนี้ — กดปุ่ม "ดูทัวร์ทั้งหมด" ด้านบนเพื่อค้นหาด้วยตัวเอง</span>
+            </div>
+        </section>
 
         <a th:href="@{/tribe-info}" href="/tribe-info" class="btn-back-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
@@ -723,11 +933,11 @@
                         <div class="si-value">2026</div>
                     </div>
                 </div>
-                <a th:href="@{/search}" href="/search" class="btn-book-tour">
+                <a th:href="@{/search(tribeId=${tribe.id}, tribeName=${tribe.name}, type='tour')}" href="/search" class="btn-book-tour">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                         <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                     </svg>
-                    จองทัวร์ชุมชน
+                    ดูทัวร์ทั้งหมดของเผ่านี้
                 </a>
             </div>
         </div>
@@ -780,6 +990,26 @@ document.addEventListener('click', function(e) {
     const w = document.getElementById('userMenuWrapper');
     if (w && !w.contains(e.target)) w.classList.remove('open');
 });
+
+// highlight the active section in the sub-nav while scrolling
+(function() {
+    const links = Array.from(document.querySelectorAll('.subnav-link'));
+    const sections = links
+        .map(l => document.getElementById(l.dataset.target))
+        .filter(Boolean);
+    if (!sections.length) return;
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const link = document.querySelector('.subnav-link[data-target="' + entry.target.id + '"]');
+            if (!link) return;
+            if (entry.isIntersecting) {
+                links.forEach(l => l.classList.remove('is-active'));
+                link.classList.add('is-active');
+            }
+        });
+    }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+    sections.forEach(s => obs.observe(s));
+})();
 </script>
 </body>
 </html>

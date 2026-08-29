@@ -163,4 +163,14 @@ public class Homestayowner {
         this.signatureImageUrl = signatureImageUrl;
     }
 
+    @Transient
+private int pendingReportCount;
+
+public int getPendingReportCount() {
+    return pendingReportCount;
+}
+public void setPendingReportCount(int pendingReportCount) {
+    this.pendingReportCount = pendingReportCount;
+}
+
 }

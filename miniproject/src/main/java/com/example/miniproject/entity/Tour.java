@@ -303,4 +303,15 @@ public class Tour {
         return Math.min(adultprice, childprice);
     }
 
+    // เพิ่มใต้ field อื่นๆ ใน Tour.java
+@Column(name = "tribeid")
+private Integer tribeid;   // อ้างอิงถึง Tribe.id (hardcoded ใน TribeController) ไม่ใช่ FK จริง
+
+public Integer getTribeid() {
+    return tribeid;
+}
+
+public void setTribeid(Integer tribeid) {
+    this.tribeid = tribeid;
+}
 }

@@ -14,6 +14,7 @@ import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.enums.ManagerStatus;
 import com.example.miniproject.service.Admin.EmailService;
 import com.example.miniproject.service.Admin.ManagerService;
+import com.example.miniproject.service.Admin.ReportService;
 import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
 
@@ -32,46 +33,48 @@ public class ManagerController {
     @Autowired
     private HomestayOwnerRepository ownerRepository;
 
+    @Autowired 
+    private ReportService reportService;
+
     // ============================================================
     // GET /admin/manager
     // List Manager Account — step 2-5 (Sequence: List Manager)
     // ============================================================
-    @GetMapping
-    public String listManager(Model model, HttpSession session,
-                              RedirectAttributes redirectAttributes) {
+   @GetMapping
+public String listManager(Model model, HttpSession session,
+                          RedirectAttributes redirectAttributes) {
 
-        // ตรวจ session
-        if (session.getAttribute("loggedInAdmin") == null) {
-            return "redirect:/admin/login";
-        }
+    if (session.getAttribute("loggedInAdmin") == null) {
+        return "redirect:/admin/login";
+    }
 
-        addPendingHomestayCount(model);
+    addPendingHomestayCount(model);
 
-        // step 4.1: query data
-        List<Communitymanager> managers = managerService.getAll();
+    List<Communitymanager> managers = managerService.getAll();
 
-        // Alternate Flow 4.1.1 — ไม่พบข้อมูล
-        if (managers == null || managers.isEmpty()) {
-            model.addAttribute("managers", List.of());
-            model.addAttribute("allCount",      0);
-            model.addAttribute("activeCount",   0);
-            model.addAttribute("inactiveCount", 0);
-            model.addAttribute("message",   "ไม่พบรายการบัญชีผู้จัดการท่องเที่ยวชุมชน");
-            model.addAttribute("alertType", "error");
-            return "Admin/admin_managerlist";
-        }
+    // ══ เพิ่มบรรทัดนี้ ══
+    model.addAttribute("reportCountByManager", reportService.getPendingCountByManager());
 
-        // step 4.2 / step 5: display list
-        long activeCount   = managers.stream().filter(m -> m.getAccountstatus() == ManagerStatus.ACTIVE).count();
-        long inactiveCount = managers.stream().filter(m -> m.getAccountstatus() == ManagerStatus.INACTIVE).count();
-
-        model.addAttribute("managers",      managers);
-        model.addAttribute("allCount",      managers.size());
-        model.addAttribute("activeCount",   activeCount);
-        model.addAttribute("inactiveCount", inactiveCount);
-
+    if (managers == null || managers.isEmpty()) {
+        model.addAttribute("managers", List.of());
+        model.addAttribute("allCount",      0);
+        model.addAttribute("activeCount",   0);
+        model.addAttribute("inactiveCount", 0);
+        model.addAttribute("message",   "ไม่พบรายการบัญชีผู้จัดการท่องเที่ยวชุมชน");
+        model.addAttribute("alertType", "error");
         return "Admin/admin_managerlist";
     }
+
+    long activeCount   = managers.stream().filter(m -> m.getAccountstatus() == ManagerStatus.ACTIVE).count();
+    long inactiveCount = managers.stream().filter(m -> m.getAccountstatus() == ManagerStatus.INACTIVE).count();
+
+    model.addAttribute("managers",      managers);
+    model.addAttribute("allCount",      managers.size());
+    model.addAttribute("activeCount",   activeCount);
+    model.addAttribute("inactiveCount", inactiveCount);
+
+    return "Admin/admin_managerlist";
+}
 
   // ============================================================
     // GET /admin/manager/create

@@ -18,6 +18,7 @@ import com.example.miniproject.entity.Tour;
 import com.example.miniproject.repository.Member.ReviewRepository;
 import com.example.miniproject.service.Member.SearchInfoService;
 import com.example.miniproject.service.Member.TourService;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/search")
@@ -44,6 +45,8 @@ public class SearchInfoController {
             @RequestParam(defaultValue = "activity") String  type,
             @RequestParam(required = false)          String  managerId,
             @RequestParam(required = false)          String  tourTypeId,
+            @RequestParam(required = false)          String tribeName, 
+             @RequestParam(required = false)          Integer tribeId, 
             Model model) {
 
         if (numGuest < 1) {
@@ -85,7 +88,13 @@ public class SearchInfoController {
             }
         }
 
+        
         tourService.injectBookedSeats(tours);
+        if (tribeId != null) {
+    tours = tours.stream()
+            .filter(t -> t.getTribeid() != null && t.getTribeid().equals(tribeId))
+            .collect(Collectors.toList());
+}
 
         // เปลี่ยนจาก System.out.println เป็น logger — debug log จะไม่ไปโผล่ปนกับ log จริงบน production
         // และควบคุมเปิด/ปิดได้ผ่าน log level (DEBUG) โดยไม่ต้องแก้โค้ด
@@ -112,6 +121,8 @@ public class SearchInfoController {
         model.addAttribute("numGuest",      numGuest);
         model.addAttribute("currentType",   type);
         model.addAttribute("tourTypeId",    tourTypeId);
+        model.addAttribute("tribeId",       tribeId); 
+        model.addAttribute("tribeName", tribeName);
         model.addAttribute("tourTypes",     tourService.getAllTourTypes());
 
         // นับจำนวนนับตามกลุ่มข้อมูลที่ดึงได้จริงของแท็บนั้นๆ

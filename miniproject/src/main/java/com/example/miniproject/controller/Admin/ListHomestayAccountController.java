@@ -8,9 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
 import com.example.miniproject.service.Admin.EmailService;
+import com.example.miniproject.service.Admin.ReportService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -23,6 +25,9 @@ public class ListHomestayAccountController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ReportService reportService;
 
     // GET /admin/homestay → รายการคำขอสมัคร
     // Basic Flow 1-6 ของ List Homestay Account
@@ -78,6 +83,23 @@ public class ListHomestayAccountController {
 
         long activeCount  = approved.stream().filter(o -> !"SUSPENDED".equals(o.getAccountstatus())).count();
         long suspendCount = approved.stream().filter(o ->  "SUSPENDED".equals(o.getAccountstatus())).count();
+
+        // ══════════════════════════════════════════
+        // เพิ่มใหม่: คำนวณจำนวนรายงาน (PENDING) ของแต่ละ owner
+        // แล้ว set ลงใน field @Transient pendingReportCount ก่อนส่งเข้า Thymeleaf
+        // นับรวมจากทุกโฮมสเตย์ที่ owner คนนั้นมี ผ่าน reportService.countReportsForHomestay(homestayId)
+        // หมายเหตุ: ถ้า owner.getHomestays() เป็น lazy collection และไม่มี @Transactional
+        // ตรงนี้อาจเจอ LazyInitializationException — ถ้าเจอให้เพิ่ม @Transactional(readOnly = true)
+        // ที่ method นี้ หรือเปลี่ยน fetch เป็น EAGER/JOIN FETCH ใน repository
+        // ══════════════════════════════════════════
+        approved.forEach(owner -> {
+            List<Homestay> ownedHomestays = owner.getHomestays();
+            long pendingReports = (ownedHomestays == null) ? 0 :
+                ownedHomestays.stream()
+                    .mapToLong(hs -> reportService.countReportsForHomestay(hs.getHomestayid()))
+                    .sum();
+            owner.setPendingReportCount((int) pendingReports);
+        });
 
         model.addAttribute("homestays",    approved);
         model.addAttribute("allCount",     approved.size());
@@ -167,12 +189,9 @@ public class ListHomestayAccountController {
 
         return "redirect:/admin/homestay";
     }
-
-    // POST /admin/homestay/suspend/{id}@PostMapping("/suspend/{id}")
-// POST /admin/homestay/suspend/{id}
 @PostMapping("/suspend/{id}")
 public String suspendHomestay(@PathVariable String id,
-                            @RequestParam("reason") String reason, // <-- เพิ่มรับค่าเหตุผลจากฟอร์ม
+                            @RequestParam("reason") String reason,
                             HttpSession session,
                             RedirectAttributes redirectAttrs) {
 
@@ -184,12 +203,19 @@ public String suspendHomestay(@PathVariable String id,
             .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล"));
 
         // Basic Flow 5.1 — update status & reason
-        owner.setAccountstatus("SUSPENDED");
-        owner.setSuspensionReason(reason); // <-- บันทึกเหตุผลลง Entity
+               owner.setAccountstatus("SUSPENDED");
+        owner.setSuspensionReason(reason);
         ownerrepository.save(owner);
 
+        // resolve report ที่ PENDING ทั้งหมดของทุกโฮมสเตย์ที่ owner คนนี้เป็นเจ้าของ
+        List<Homestay> ownedHomestays = owner.getHomestays();
+        if (ownedHomestays != null) {
+            for (Homestay hs : ownedHomestays) {
+                reportService.resolveReportsForHomestay(hs.getHomestayid());
+            }
+        }
+
     } catch (Exception e) {
-        // Alternate Flow 5.1.1 — error query message
         redirectAttrs.addFlashAttribute("errorMessage",
             "ไม่สามารถระงับบัญชีโฮมสเตย์นี้ได้ กรุณาลองใหม่อีกครั้ง");
     }

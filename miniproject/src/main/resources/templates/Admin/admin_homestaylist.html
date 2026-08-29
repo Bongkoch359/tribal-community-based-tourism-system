@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <link rel="stylesheet" th:href="@{/css/Admin/homestaylist.css}" href="../static/css/Admin/homestaylist.css">
-
 </head>
 
 <body>
@@ -26,33 +25,24 @@
     </div>
   </a>
 
-<div class="nav-group">
-  <a href="/admin/dashboard" class="nav-link">
-    <span class="material-symbols-outlined">dashboard</span>
-    Dashboard
-  </a>
- <a href="/admin/manager" class="nav-link">
-  <span class="material-symbols-outlined">group</span>
-  จัดการผู้จัดการ
-</a>
+  <div class="nav-group">
+    <a href="/admin/dashboard" class="nav-link">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+    <a href="/admin/manager" class="nav-link">
+      <span class="material-symbols-outlined">group</span>
+      จัดการผู้จัดการ
+    </a>
 
-<a href="/admin/homestay" class="nav-link active">
-  <span class="material-symbols-outlined">home</span>
-  จัดการโฮมสเตย์
-  <span th:if="${pendingCount != null and pendingCount > 0}" 
-        class="nav-badge" 
-        th:text="${pendingCount}">0</span>
-</a>
-
-  <a href="/admin/reports" class="nav-link">
-    <span class="material-symbols-outlined">flag</span>
-    จัดการรายงาน
-    <span th:if="${pendingReportCount != null and pendingReportCount > 0}"
-          class="nav-badge"
-          th:text="${pendingReportCount}">0</span>
-  </a>
-</div>
-
+    <a href="/admin/homestay" class="nav-link active">
+      <span class="material-symbols-outlined">home</span>
+      จัดการโฮมสเตย์
+      <span th:if="${pendingCount != null and pendingCount > 0}"
+            class="nav-badge"
+            th:text="${pendingCount}">0</span>
+    </a>
+  </div>
 
   <div class="nav-divider"></div>
 
@@ -77,30 +67,78 @@
     <p>ตรวจสอบและอนุมัติการลงทะเบียนโฮมสเตย์ใหม่ในระบบ</p>
   </div>
 
-  <div class="top-menu">
-    <a href="/admin/homestay" class="active">📥 คำขอรออนุมัติ</a>
-    <a href="/admin/homestay/all">📋 บัญชีโฮมสเตย์ทั้งหมด</a>
-  </div>
-
   <div th:if="${errorMessage}" class="alert-error">
     <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
     <span th:text="${errorMessage}"></span>
   </div>
 
-  <!-- Filter Pills -->
-  <div class="filter-group">
-    <a href="#" class="filter-pill active" data-filter="all">
-      ทั้งหมด (<span th:text="${allCount}">0</span>)
-    </a>
-    <a href="#" class="filter-pill" data-filter="pending">
-      รออนุมัติ (<span th:text="${pendingCount}">0</span>)
-    </a>
-    <a href="#" class="filter-pill" data-filter="approved">
-      อนุมัติแล้ว (<span th:text="${approvedCount}">0</span>)
-    </a>
-    <a href="#" class="filter-pill" data-filter="rejected">
-      ปฏิเสธแล้ว (<span th:text="${rejectedCount}">0</span>)
-    </a>
+  <!-- ══════════════════════════════
+       แถว Dropdown: เปลี่ยนหน้า + กรองสถานะ
+       ══════════════════════════════ -->
+  <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+
+    <!-- Dropdown 1: เปลี่ยนหน้า (คำขอรออนุมัติ / บัญชีทั้งหมด) -->
+    <div class="status-filter-card">
+      <span class="material-symbols-outlined sf-icon">swap_horiz</span>
+      <span class="sf-label">มุมมอง :</span>
+
+      <div class="sf-dropdown" id="pageNavDropdown">
+        <button type="button" class="sf-trigger" onclick="togglePageNavMenu(event)">
+          <span class="material-symbols-outlined sf-trigger-icon" id="pageNavTriggerIcon">inbox</span>
+          <span id="pageNavTriggerText">คำขอรออนุมัติ</span>
+          <span class="material-symbols-outlined sf-chevron">expand_more</span>
+        </button>
+
+        <div class="sf-menu">
+          <a href="/admin/homestay"
+             class="sf-option page-nav-option"
+             th:classappend="${currentView == 'pending'} ? ' active'"
+             data-icon="inbox"
+             data-label="คำขอรออนุมัติ">
+            📥 คำขอรออนุมัติ
+          </a>
+
+          <a href="/admin/homestay/all"
+             class="sf-option page-nav-option"
+             th:classappend="${currentView == 'all'} ? ' active'"
+             data-icon="list_alt"
+             data-label="บัญชีโฮมสเตย์ทั้งหมด">
+            📋 บัญชีโฮมสเตย์ทั้งหมด
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dropdown 2: กรองตามสถานะบัญชี -->
+    <div class="status-filter-card">
+      <span class="material-symbols-outlined sf-icon">filter_alt</span>
+      <span class="sf-label">สถานะบัญชี :</span>
+
+      <div class="sf-dropdown" id="statusFilterDropdown">
+        <button type="button" class="sf-trigger" onclick="toggleStatusFilterMenu(event)">
+          <span class="material-symbols-outlined sf-trigger-icon" id="sfTriggerIcon">check_circle</span>
+          <span id="sfTriggerText">ทั้งหมด</span>
+          <span class="sf-trigger-count" id="sfTriggerCount" th:text="${allCount}">0</span>
+          <span class="material-symbols-outlined sf-chevron">expand_more</span>
+        </button>
+
+        <div class="sf-menu">
+          <a href="#" class="sf-option active" data-filter="all" data-icon="check_circle">
+            ทั้งหมด (<span th:text="${allCount}">0</span>)
+          </a>
+          <a href="#" class="sf-option" data-filter="pending" data-icon="schedule">
+            รออนุมัติ (<span th:text="${pendingCount}">0</span>)
+          </a>
+          <a href="#" class="sf-option" data-filter="approved" data-icon="task_alt">
+            อนุมัติแล้ว (<span th:text="${approvedCount}">0</span>)
+          </a>
+          <a href="#" class="sf-option" data-filter="rejected" data-icon="block">
+            ปฏิเสธแล้ว (<span th:text="${rejectedCount}">0</span>)
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div class="table-wrap">
@@ -152,33 +190,32 @@
 
           <td>
             <div class="action-group">
-              <!-- ปุ่มดูรายละเอียด -->
               <a th:href="@{/admin/homestay/detail/{id}(id=${h.ownerid})}"
                  class="btn-action btn-detail">
                 <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> ดูรายละเอียด
               </a>
 
-             <button type="button"
-        th:if="${isPending and !isRejected}"
-        class="btn-action btn-approve"
-        th:attr="data-owner-id=${h.ownerid},
-                 data-owner-name=${h.firstname + ' ' + h.lastname},
-                 data-action='approve'"
-        onclick="handleConfirmClick(this)">
-    <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
-    อนุมัติ
-</button>
+              <button type="button"
+                      th:if="${isPending and !isRejected}"
+                      class="btn-action btn-approve"
+                      th:attr="data-owner-id=${h.ownerid},
+                               data-owner-name=${h.firstname + ' ' + h.lastname},
+                               data-action='approve'"
+                      onclick="handleConfirmClick(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
+                อนุมัติ
+              </button>
 
-<button type="button"
-        th:if="${isPending and !isRejected}"
-        class="btn-action btn-reject"
-        th:attr="data-owner-id=${h.ownerid},
-                 data-owner-name=${h.firstname + ' ' + h.lastname},
-                 data-action='reject'"
-        onclick="handleConfirmClick(this)">
-    <span class="material-symbols-outlined" style="font-size: 16px;">block</span>
-    ปฏิเสธ
-</button>
+              <button type="button"
+                      th:if="${isPending and !isRejected}"
+                      class="btn-action btn-reject"
+                      th:attr="data-owner-id=${h.ownerid},
+                               data-owner-name=${h.firstname + ' ' + h.lastname},
+                               data-action='reject'"
+                      onclick="handleConfirmClick(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">block</span>
+                ปฏิเสธ
+              </button>
             </div>
           </td>
         </tr>
@@ -193,8 +230,7 @@
   </div>
 </main>
 
-<!-- CONFIRM MODAL -->
-<div id="confirmModal" class="confirm-overlay">
+<!-- CONFIRM MODAL --><div id="confirmModal" class="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-icon" id="confirm-icon">
       <span class="material-symbols-outlined" style="font-size: 32px;">check_circle</span>
@@ -203,9 +239,21 @@
     <div class="confirm-desc" id="confirm-desc">
       คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?
     </div>
-    <div class="confirm-actions">
+
+    <!-- ช่องเหตุผล — โชว์เฉพาะตอนปฏิเสธ -->
+    <div class="rm-reason-field" id="rejectReasonField" style="display:none; text-align:left; margin-top:16px;">
+      <label for="rejectReasonInput">
+        กรุณาระบุเหตุผลในการปฏิเสธ <span class="required" style="color: var(--error);">*</span>
+      </label>
+      <textarea id="rejectReasonInput"
+                placeholder="เช่น เอกสารไม่ครบถ้วน, ข้อมูลไม่ตรงกับที่ตรวจสอบ ฯลฯ"
+                style="width:100%; min-height:80px; padding:12px 14px; border-radius:8px; border:1px solid var(--outline-variant); font-size:15px; font-family:inherit; resize:vertical;"></textarea>
+    </div>
+
+    <div class="confirm-actions" style="margin-top:20px;">
       <button type="button" class="btn-action btn-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
       <form id="confirm-form" method="post" style="flex: 1; margin: 0;">
+        <input type="hidden" name="reason" id="confirmHiddenReason">
         <button type="submit" class="btn-action" id="confirm-submit-btn" style="width: 100%; justify-content: center;">ยืนยัน</button>
       </form>
     </div>
@@ -218,102 +266,7 @@
   <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
 </footer>
 
-<script>
-  
-  function handleConfirmClick(button) {
-    const ownerId = button.dataset.ownerId;
-    const ownerName = button.dataset.ownerName;
-    const action = button.dataset.action;
 
-    openConfirmModal(ownerId, action, ownerName);
-}
-  // Filter Pills — กรองแถวตาม data-status
-  document.querySelectorAll('.filter-pill').forEach(pill => {
-    pill.addEventListener('click', function (e) {
-      e.preventDefault();
-
-      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-      this.classList.add('active');
-
-      const filter = this.dataset.filter;
-      let visibleRows = 0;
-
-      document.querySelectorAll('tbody tr[data-status]').forEach(row => {
-        if (filter === 'all' || row.dataset.status === filter) {
-          row.style.display = '';
-          visibleRows++;
-        } else {
-          row.style.display = 'none';
-        }
-      });
-
-      const emptyRow = document.getElementById('empty-row');
-      if (emptyRow) {
-        emptyRow.style.display = visibleRows === 0 ? '' : 'none';
-      }
-    });
-  });
-
-  // เลือกแท็บ "รออนุมัติ" อัตโนมัติเมื่อโหลดหน้า
-  window.addEventListener('DOMContentLoaded', () => {
-    const pendingPill = document.querySelector('[data-filter="pending"]');
-    if (pendingPill) pendingPill.click();
-  });
-function openConfirmModal(ownerId, action, ownerName) {
-
-    const icon = document.getElementById('confirm-icon');
-    const title = document.getElementById('confirm-title');
-    const desc = document.getElementById('confirm-desc');
-    const form = document.getElementById('confirm-form');
-    const submitBtn = document.getElementById('confirm-submit-btn');
-
-    if (action === 'approve') {
-
-        icon.className = 'confirm-icon approve';
-
-        icon.innerHTML =
-            '<span class="material-symbols-outlined" style="font-size: 32px;">check_circle</span>';
-
-        title.textContent = 'ยืนยันการอนุมัติ';
-
-        desc.innerHTML =
-            'คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ ' +
-            '<strong id="confirm-name"></strong>?';
-
-        submitBtn.className = 'btn-action btn-approve';
-        submitBtn.textContent = 'ยืนยันการอนุมัติ';
-
-        form.action = '/admin/homestay/approve/' + ownerId;
-
-    } else {
-
-        icon.className = 'confirm-icon reject';
-
-        icon.innerHTML =
-            '<span class="material-symbols-outlined" style="font-size: 32px;">warning</span>';
-
-        title.textContent = 'ยืนยันการปฏิเสธ';
-
-        desc.innerHTML =
-            'คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธการสมัครสมาชิกเจ้าของโฮมสเตย์ ' +
-            '<strong id="confirm-name"></strong>?';
-
-        submitBtn.className = 'btn-action btn-reject';
-        submitBtn.textContent = 'ยืนยันการปฏิเสธ';
-
-        form.action = '/admin/homestay/reject/' + ownerId;
-    }
-
-    document.getElementById('confirm-name').textContent = ownerName;
-
-    document.getElementById('confirmModal').classList.add('show');
-}
-
-document.getElementById('confirmModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeConfirmModal();
-    }
-});
-</script>
+<script th:src="@{/js/Admin/admin_homestaylist.js}"></script>
 </body>
 </html>

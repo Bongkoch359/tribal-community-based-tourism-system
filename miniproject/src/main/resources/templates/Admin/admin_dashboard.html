@@ -471,13 +471,7 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
             class="nav-badge" 
             th:text="${pendingCount}">0</span>
     </a>
-    <a href="/admin/reports" class="nav-link">
-      <span class="material-symbols-outlined">flag</span>
-      จัดการรายงาน
-      <span th:if="${pendingReportCount != null and pendingReportCount > 0}"
-            class="nav-badge"
-            th:text="${pendingReportCount}">0</span>
-    </a>
+   
   </div>
 
   <div class="nav-divider"></div>

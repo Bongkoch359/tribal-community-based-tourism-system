@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.example.miniproject.model.TribeCode;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -35,6 +36,8 @@ public class TourController {
 
     @Autowired
     private ReviewService reviewService;
+
+    
 
     private static final String UPLOAD_DIR = "uploads/tours/";
 
@@ -345,6 +348,7 @@ public class TourController {
         tour.setHotelPickupArea(hotelPickupOn ? hotelPickupArea.trim() : null);
         tour.setMeetingTime(meetingTime.trim());
         tour.setArriveBeforeMinutes(arriveBeforeMinutes);
+         tour.setTribeid(TribeCode.resolveId(manager.getTribe()));
 
         try {
             Tour saved = tourService.createTour(tour, manager,
@@ -562,6 +566,7 @@ public class TourController {
         updated.setHotelPickupArea(hotelPickupOn ? hotelPickupArea.trim() : null);
         updated.setMeetingTime(meetingTime.trim());
         updated.setArriveBeforeMinutes(arriveBeforeMinutes);
+        updated.setTribeid(TribeCode.resolveId(manager.getTribe())); 
 
         // ถ้าเป็น __KEEP__ หรือ null = ไม่ได้เปลี่ยนรูป ให้คงรูปเดิม
         if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__")) {

@@ -16,6 +16,9 @@ public class ManagerService {
     @Autowired
     private CommunitymanagerRepository managerRepository;
 
+    @Autowired
+    private ReportService reportService; // เชื่อมต่อเพื่อเคลียร์รายงานอัตโนมัติ
+
     // List Manager Account — step 4.1-4.2
     public List<Communitymanager> getAll() {
         return managerRepository.findAll();
@@ -37,15 +40,22 @@ public class ManagerService {
         }
     }
 
-    // Suspend — เปลี่ยนสถานะเป็น INACTIVE
-   // Suspend — เปลี่ยนสถานะเป็น INACTIVE (หรือ SUSPENDED) พร้อมบันทึกเหตุผล
+    // Suspend — เปลี่ยนสถานะเป็น INACTIVE พร้อมบันทึกเหตุผลและเคลียร์รายงานที่ค้างอยู่
     public boolean suspend(String managerid, String reason) {
         Optional<Communitymanager> opt = managerRepository.findById(managerid);
         if (opt.isPresent()) {
             Communitymanager manager = opt.get();
-            manager.setAccountstatus(ManagerStatus.INACTIVE); // หรือ ManagerStatus.SUSPENDED ตามที่ใช้
-            manager.setSuspensionReason(reason); // บันทึกเหตุผล
+            manager.setAccountstatus(ManagerStatus.INACTIVE); 
+            manager.setSuspensionReason(reason); 
             managerRepository.save(manager);
+
+            // เคลียร์/อัปเดตสถานะรายงานที่เกี่ยวข้องกับผู้จัดการคนนี้ให้เป็น RESOLVED อัตโนมัติ
+            try {
+                reportService.resolveReportsForManager(managerid);
+            } catch (Exception e) {
+                System.err.println("ไม่สามารถอัปเดตสถานะรายงานได้: " + e.getMessage());
+            }
+
             return true;
         }
         return false;

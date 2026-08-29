@@ -399,3 +399,90 @@
     align-items: center;
     gap: 8px;
   }
+
+  /* ══════════════════════════════════════════
+   เพิ่มใหม่: การ์ด dropdown filter สถานะคำขอ
+   ══════════════════════════════════════════ */
+.status-filter-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-container-lowest);
+  border-radius: 999px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
+
+.sf-icon {
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.sf-label {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.sf-dropdown { position: relative; }
+
+.sf-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--action-orange-light);
+  border: 1px solid var(--action-orange);
+  color: var(--action-orange-hover);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
+}
+
+.sf-trigger-icon { font-size: 17px; color: var(--action-orange); }
+
+.sf-trigger-count {
+  background: var(--action-orange);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.sf-chevron { font-size: 18px; transition: transform 0.2s; }
+.sf-dropdown.open .sf-chevron { transform: rotate(180deg); }
+
+.sf-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--surface-variant);
+  border-radius: var(--r-md);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 100;
+}
+.sf-dropdown.open .sf-menu { display: block; }
+
+.sf-option {
+  display: block;
+  padding: 11px 16px;
+  font-size: 14.5px;
+  color: var(--on-surface-variant);
+  transition: background 0.15s;
+}
+.sf-option:hover { background: var(--surface-container); }
+.sf-option.active { color: var(--action-orange-hover); font-weight: 700; background: var(--action-orange-light); }

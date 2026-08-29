@@ -10,6 +10,136 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <link rel="stylesheet" th:href="@{/css/Admin/homestayall.css}" href="../static/css/Admin/homestayall.css">
 
+<!-- ══════════════════════════════════════════
+     เพิ่มใหม่: สไตล์สำหรับคอลัมน์ "การรายงาน" +
+     Modal รายละเอียดรายงาน/ระงับบัญชี (แบบขยาย: สรุปยอด + การ์ดกลุ่มรายการ)
+     (ถ้า homestayall.css มีตัวแปรชื่อเดียวกันอยู่แล้ว ส่วนนี้จะใช้ค่าเดิมโดยอัตโนมัติ)
+══════════════════════════════════════════ -->
+<style>
+  :root {
+    --primary: #006c49;
+    --error: #ba1a1a;
+    --error-container: #ffdad6;
+    --gold-700: #92681b;
+    --gold-100: #fbedce;
+    --outline: #6c7a71;
+    --outline-variant: #bbcabf;
+    --on-surface: #161d19;
+    --on-surface-variant: #3c4a42;
+    --surface-container: #e8f0e9;
+    --surface-container-lowest: #ffffff;
+    --surface-variant: #dde4dd;
+    --r-md: 10px;
+    --r-lg: 16px;
+  }
+
+  /* คอลัมน์การรายงาน */
+  .report-count-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 12px; border-radius: 20px; font-size: 13.5px; font-weight: 700;
+    background: var(--surface-container); color: var(--outline);
+  }
+  .report-count-badge.has-report {
+    background: var(--error-container); color: var(--error);
+  }
+  .report-count-badge .material-symbols-outlined { font-size: 15px; }
+
+  .btn-view-report {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 8px 14px; border-radius: 8px; border: 1.5px solid var(--outline-variant);
+    background: var(--surface-container-lowest); color: var(--on-surface-variant);
+    font-size: 13.5px; font-weight: 700; transition: border-color .15s, color .15s;
+  }
+  .btn-view-report:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-view-report.has-report { border-color: var(--error); color: var(--error); }
+  .btn-view-report .material-symbols-outlined { font-size: 16px; }
+
+  /* Modal รายละเอียดรายงาน */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(22,29,25,0.6); z-index: 3000; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+
+  .report-modal-box {
+    background: var(--surface-container-lowest); border-radius: var(--r-lg);
+    max-width: 560px; width: 100%; max-height: 85vh; display: flex; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18); border: 1px solid var(--surface-variant); overflow: hidden;
+  }
+  .report-modal-header { padding: 24px 28px 16px; border-bottom: 1px solid var(--surface-container); }
+  .report-modal-header .rm-target { font-size: 19px; font-weight: 700; color: var(--on-surface); }
+  .report-modal-header .rm-owner { font-size: 14px; color: var(--outline); margin-top: 2px; }
+
+  .report-modal-body { padding: 16px 28px; overflow-y: auto; flex: 1; }
+  .report-list-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--outline); margin-bottom: 10px; }
+
+  /* สรุปการรายงาน */
+  .rm-summary-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+  .rm-summary-chip {
+    flex: 1; min-width: 100px; text-align: center; padding: 12px 8px; border-radius: 10px;
+    background: var(--surface-container); border: 1px solid var(--surface-variant);
+  }
+  .rm-summary-chip .rm-summary-num { font-size: 20px; font-weight: 800; color: var(--on-surface); }
+  .rm-summary-chip.has-value .rm-summary-num { color: var(--error); }
+  .rm-summary-chip .rm-summary-label { font-size: 11.5px; color: var(--outline); margin-top: 2px; }
+
+  /* การ์ดกลุ่ม: รายการ (โฮมสเตย์) ที่ถูกรายงาน */
+  .rm-group-card {
+    border: 1px solid var(--surface-variant); border-radius: 10px; margin-bottom: 10px;
+    background: var(--surface-container); overflow: hidden;
+  }
+  .rm-group-top {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 12px 14px; cursor: pointer;
+  }
+  .rm-group-name { font-weight: 700; color: var(--on-surface); font-size: 14px; }
+  .rm-group-type { font-size: 12px; color: var(--outline); margin-top: 1px; }
+  .rm-group-count {
+    flex-shrink: 0; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    background: var(--error-container); color: var(--error);
+  }
+  .rm-group-toggle { font-size: 18px; color: var(--outline); transition: transform .15s; }
+  .rm-group-card.open .rm-group-toggle { transform: rotate(180deg); }
+  .rm-group-detail { display: none; padding: 0 14px 12px; }
+  .rm-group-card.open .rm-group-detail { display: block; }
+
+  .report-item {
+    padding: 12px 14px; border: 1px solid var(--surface-variant); border-radius: 10px;
+    margin-bottom: 10px; background: var(--surface-container-lowest);
+  }
+  .rm-group-detail .report-item:last-child { margin-bottom: 0; }
+  .report-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+  .report-item-reason { font-weight: 700; color: var(--on-surface); font-size: 14.5px; }
+  .report-item-date { font-size: 12px; color: var(--outline); white-space: nowrap; }
+  .report-item-desc { font-size: 13.5px; color: var(--on-surface-variant); line-height: 1.5; margin-top: 2px; }
+  .report-item-status { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
+  .report-item-footer { display: flex; align-items: center; flex-wrap: wrap; }
+  .ris-pending  { background: #eff6ff; color: #2563eb; }
+  .ris-resolved { background: #f0fdf4; color: #15803d; }
+  .ris-rejected { background: var(--error-container); color: var(--error); }
+
+  .report-empty { text-align: center; color: var(--outline); font-size: 14px; padding: 24px 0; }
+
+  .report-modal-footer { padding: 18px 28px 24px; border-top: 1px solid var(--surface-container); }
+  .rm-reason-field { margin-bottom: 16px; }
+  .rm-reason-field label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--on-surface); }
+  .rm-reason-field label .required { color: var(--error); }
+  .rm-reason-field select {
+    width: 100%; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--outline-variant); font-size: 15px; font-family: inherit;
+    background: var(--surface-container-lowest); color: var(--on-surface);
+  }
+  .rm-reason-field select:focus { outline: none; border-color: var(--primary); }
+
+  .rm-actions { display: flex; gap: 12px; justify-content: center; }
+  .rm-btn-cancel {
+    flex: 1; padding: 11px 18px; border-radius: 8px; border: 1px solid var(--outline-variant);
+    background: var(--surface-container-lowest); color: var(--on-surface-variant); font-size: 15px; font-weight: 600;
+  }
+  .rm-btn-suspend {
+    flex: 1.4; padding: 11px 18px; border-radius: 8px; border: none;
+    background: var(--error); color: #fff; font-size: 15px; font-weight: 700;
+  }
+  .rm-btn-suspend:disabled { opacity: .6; cursor: not-allowed; }
+</style>
+
 </head>
 <body>
 
@@ -43,18 +173,8 @@
           class="nav-badge" 
           th:text="${pendingCount}">0</span>
   </a>
-
-  <a href="/admin/reports" class="nav-link">
-    <span class="material-symbols-outlined">flag</span>
-    จัดการรายงาน
-
-    <span th:if="${pendingReportCount != null and pendingReportCount > 0}"
-          class="nav-badge"
-          th:text="${pendingReportCount}">0</span>
-  </a>
+  <!-- นำ nav-link "จัดการรายงาน" ออก เพราะรวมเข้ามาในหน้านี้และหน้าจัดการทัวร์แล้ว -->
 </div>
-
-
 
   <div class="nav-divider"></div>
 
@@ -70,41 +190,8 @@
     </a>
   </div>
 </header>
-<!-- SUSPEND MODAL -->
-<div class="modal-overlay" id="suspendModal">
-  <div class="modal-box">
-    <div class="modal-icon suspend">
-      <span class="material-symbols-outlined" style="font-size: 32px;">warning</span>
-    </div>
-    <div class="modal-title">ระงับบัญชีเจ้าของโฮมสเตย์</div>
-    <div class="modal-desc">
-      คุณแน่ใจหรือไม่ว่าต้องการระงับบัญชีของ<br>
-      <strong id="suspendOwnerName"></strong>?<br>
-      เจ้าของโฮมสเตย์จะไม่สามารถเข้าใช้งานระบบได้
-    </div>
-    
-    <!-- เพิ่มฟอร์มเลือกเหตุผลตรงนี้ -->
-    <div style="margin-bottom: 20px; text-align: left;">
-      <label for="suspendReasonSelect" style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--on-surface);">
-        กรุณาระบุเหตุผลในการระงับ <span style="color: var(--error);">*</span>
-      </label>
-      <select id="suspendReasonSelect" class="form-control" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--outline-variant); font-size: 15px; font-family: inherit; background: var(--surface-container-lowest); color: var(--on-surface);">
-        <option value="">-- เลือกเหตุผลการระงับบัญชี --</option>
-        <option value="ละเมิดข้อตกลงและเงื่อนไขการให้บริการ">ละเมิดข้อตกลงและเงื่อนไขการให้บริการ</option>
-        <option value="ข้อมูลบัญชีธนาคารหรือเอกสารไม่ถูกต้อง">ข้อมูลบัญชีธนาคารหรือเอกสารไม่ถูกต้อง</option>
-        <option value="ได้รับการร้องเรียนจากนักท่องเที่ยวหรือชุมชน">ได้รับการร้องเรียนจากนักท่องเที่ยวหรือชุมชน</option>
-        <option value="ปิดกิจการหรือยุติการดำเนินงานชั่วคราว">ปิดกิจการหรือยุติการดำเนินงานชั่วคราว</option>
-      </select>
-    </div>
 
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeModal('suspendModal')">ยกเลิก</button>
-      <button class="btn-modal-confirm" id="suspendConfirmBtn">ยืนยันระงับบัญชี</button>
-    </div>
-  </div>
-</div>
-
-<!-- ACTIVATE MODAL -->
+<!-- ACTIVATE MODAL (คงเดิม ไม่เกี่ยวกับรายงาน) -->
 <div class="modal-overlay" id="activateModal">
   <div class="modal-box">
     <div class="modal-icon activate">
@@ -123,24 +210,112 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     MODAL ใหม่: รายละเอียดรายงาน + ระงับบัญชี
+     (แทนที่ suspendModal เดิม — ปุ่ม "ดู" ในตารางจะเปิด modal นี้
+      แล้วมีปุ่ม "ยืนยันระงับบัญชี" อยู่ด้านล่างเลย)
+══════════════════════════════════════════ --><div class="modal-overlay" id="reportDetailModal">
+  <div class="report-modal-box">
+    <div class="report-modal-header">
+      <div class="rm-target" id="rmTargetName">-</div>
+      <div class="rm-owner" id="rmOwnerName">-</div>
+    </div>
+
+    <div class="report-modal-body">
+      <!-- สรุปการรายงาน -->
+      <div class="rm-summary-row" id="rmSummaryRow"></div>
+
+      <div class="report-list-title">ประวัติการรายงาน</div>
+      <div id="rmReportList"><!-- JS เติมการ์ดกลุ่ม/รายการ report ที่นี่ --></div>
+      <div class="report-empty" id="rmEmptyState" style="display:none;">
+        ยังไม่มีรายงานสำหรับรายการนี้
+      </div>
+    </div>
+
+    <div class="report-modal-footer">
+      <div class="rm-reason-field">
+        <label for="rmSuspendReasonInput">
+          กรุณาระบุเหตุผลในการระงับ <span class="required">*</span>
+        </label>
+        <textarea id="rmSuspendReasonInput"
+                  placeholder="เช่น ได้รับการร้องเรียนจากนักท่องเที่ยว, ข้อมูลบัญชีธนาคารไม่ถูกต้อง ฯลฯ"></textarea>
+      </div>
+
+      <div class="rm-actions">
+        <button type="button" class="rm-btn-cancel" onclick="closeModal('reportDetailModal')">ยกเลิก</button>
+        <button type="button" class="rm-btn-suspend" id="rmSuspendConfirmBtn">ยืนยันระงับบัญชี</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MAIN CONTENT -->
 <main class="content">
-
   <div class="page-header">
     <h1>บัญชีโฮมสเตย์ทั้งหมด</h1>
     <p>ตรวจสอบและจัดการสถานะบัญชีเจ้าของโฮมสเตย์ที่ได้รับอนุมัติแล้ว</p>
   </div>
 
-  <div class="top-menu">
-    <a href="/admin/homestay">📥 รายการคำขอ</a>
-    <a href="/admin/homestay/all" class="active">📋 รายการบัญชีโฮมสเตย์ทั้งหมด</a>
+  <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+
+    <!-- Dropdown: เปลี่ยนหน้า (มุมมอง) -->
+    <div class="status-filter-card">
+      <span class="material-symbols-outlined sf-icon">swap_horiz</span>
+      <span class="sf-label">มุมมอง :</span>
+
+      <div class="sf-dropdown" id="pageNavDropdown">
+        <button type="button" class="sf-trigger" onclick="togglePageNavMenu(event)">
+          <span class="material-symbols-outlined sf-trigger-icon" id="pageNavTriggerIcon">list_alt</span>
+          <span id="pageNavTriggerText">บัญชีโฮมสเตย์ทั้งหมด</span>
+          <span class="material-symbols-outlined sf-chevron">expand_more</span>
+        </button>
+
+        <div class="sf-menu">
+          <a href="/admin/homestay"
+             class="sf-option page-nav-option"
+             th:classappend="${currentView == 'pending'} ? ' active'"
+             data-icon="inbox"
+             data-label="คำขอรออนุมัติ">
+            📥 คำขอรออนุมัติ
+          </a>
+
+          <a href="/admin/homestay/all"
+             class="sf-option page-nav-option"
+             th:classappend="${currentView == 'all'} ? ' active'"
+             data-icon="list_alt"
+             data-label="บัญชีโฮมสเตย์ทั้งหมด">
+            📋 บัญชีโฮมสเตย์ทั้งหมด
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dropdown: กรองตามสถานะบัญชี (ของเดิม) -->
+    <div class="status-filter-card">
+      <span class="material-symbols-outlined sf-icon">filter_alt</span>
+      <span class="sf-label">สถานะบัญชี :</span>
+
+      <div class="sf-dropdown" id="statusFilterDropdown">
+        <button type="button" class="sf-trigger" id="sfTriggerBtn" onclick="toggleStatusFilterMenu()">
+          <span class="material-symbols-outlined sf-trigger-icon" id="sfTriggerIcon">check_circle</span>
+          <span class="sf-trigger-text" id="sfTriggerText">ทั้งหมด</span>
+          <span class="sf-trigger-count" id="sfTriggerCount" th:text="${allCount}">0</span>
+          <span class="material-symbols-outlined sf-chevron">expand_more</span>
+        </button>
+
+        <div class="sf-menu" id="sfMenu">
+          <a href="#" class="sf-option active" data-filter="all" data-icon="apps"
+             th:text="'ทั้งหมด (' + ${allCount} + ')'">ทั้งหมด (0)</a>
+          <a href="#" class="sf-option" data-filter="active" data-icon="check_circle"
+             th:text="'เปิดใช้งานอยู่ (' + ${activeCount} + ')'">เปิดใช้งานอยู่ (0)</a>
+          <a href="#" class="sf-option" data-filter="suspended" data-icon="block"
+             th:text="'ถูกระงับ (' + ${suspendCount} + ')'">ถูกระงับ (0)</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="filter-group">
-    <a href="#" class="filter-pill active" data-filter="all">ทั้งหมด (<span th:text="${allCount}">0</span>)</a>
-    <a href="#" class="filter-pill" data-filter="active">เปิดใช้งานอยู่ (<span th:text="${activeCount}">0</span>)</a>
-    <a href="#" class="filter-pill" data-filter="suspended">ถูกระงับ (<span th:text="${suspendCount}">0</span>)</a>
-  </div>
 
   <div class="table-wrap">
     <table>
@@ -149,6 +324,7 @@
           <th>ชื่อเจ้าของ</th>
           <th>ข้อมูลติดต่อ</th>
           <th>ชื่อโฮมสเตย์</th>
+          <th>การรายงาน</th>
           <th>สถานะ</th>
           <th style="text-align:center;">จัดการ</th>
         </tr>
@@ -170,19 +346,37 @@
               ชื่อโฮมสเตย์
             </div>
           </td>
+
+          <!-- ══ คอลัมน์ใหม่: การรายงาน (นับเฉพาะ PENDING) ══ -->
+          <td>
+            <span class="report-count-badge"
+                  th:classappend="${h.pendingReportCount != null and h.pendingReportCount > 0} ? ' has-report'">
+              <span class="material-symbols-outlined" th:if="${h.pendingReportCount != null and h.pendingReportCount > 0}">flag</span>
+              <span th:text="${h.pendingReportCount != null ? h.pendingReportCount : 0} + ' ครั้ง'">0 ครั้ง</span>
+            </span>
+          </td>
+
           <td>
             <span th:if="${h.accountstatus != 'SUSPENDED'}" class="badge-status active-status">✅ เปิดใช้งานอยู่</span>
             <span th:if="${h.accountstatus == 'SUSPENDED'}" class="badge-status suspended-status">🚫 ถูกระงับ</span>
           </td>
+
           <td style="text-align:center;">
+            <!-- บัญชีที่ยังเปิดใช้งานอยู่: ปุ่ม "ดู" เปิด modal รายละเอียดรายงาน + ระงับบัญชี -->
             <button th:if="${h.accountstatus != 'SUSPENDED'}"
                     type="button"
-                    class="btn-suspend"
-                    th:attr="data-id=${h.ownerid}, data-name=${h.firstname + ' ' + h.lastname}"
-                    onclick="openSuspendModal(this)">
-              <span class="material-symbols-outlined" style="font-size: 16px;">block</span> ระงับบัญชี
+                    class="btn-view-report"
+                    th:classappend="${h.pendingReportCount != null and h.pendingReportCount > 0} ? ' has-report'"
+                    th:attr="data-id=${h.ownerid},
+                             data-target=${h.homestays != null and !h.homestays.isEmpty() ? h.homestays[0].homestayname : '-'},
+                             data-owner=${h.firstname + ' ' + h.lastname}"
+                    onclick="openReportModal(this)">
+              <span class="material-symbols-outlined">visibility</span> ดู
             </button>
 
+          
+
+            <!-- บัญชีที่ถูกระงับแล้ว: ปุ่มเปิดใช้งานตามเดิม -->
             <button th:if="${h.accountstatus == 'SUSPENDED'}"
                     type="button"
                     class="btn-activate"
@@ -194,7 +388,7 @@
         </tr>
 
         <tr th:if="${#lists.isEmpty(homestays)}">
-          <td colspan="5" class="empty">
+          <td colspan="6" class="empty">
             ยังไม่มีบัญชีโฮมสเตย์ในระบบ
           </td>
         </tr>
@@ -202,7 +396,32 @@
     </table>
   </div>
 </main>
-
+<!-- ══════════════════════════════════════════
+     MODAL ยืนยันการระงับ (ซ้อนจาก reportDetailModal)
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="suspendConfirmModal">
+  <div class="confirm-box" style="max-width: 420px;">
+    <div class="confirm-icon reject" style="margin:0 auto 16px;">
+      <span class="material-symbols-outlined" style="font-size: 32px;">warning</span>
+    </div>
+    <div class="confirm-title">ยืนยันการระงับบัญชี</div>
+    <div class="confirm-desc" style="text-align:left; margin-top:8px;">
+      คุณต้องการ <strong>ระงับ</strong> บัญชีของ <strong id="scOwnerName"></strong> ใช่หรือไม่?<br>
+      การดำเนินการนี้เจ้าของบัญชีจะไม่สามารถเข้าใช้งานระบบได้ทันที
+      <div style="margin-top:12px; padding:12px 14px; background:var(--surface-container); border-radius:8px; font-size:14px;">
+        <div style="color:var(--outline); font-size:12.5px; margin-bottom:4px;">เหตุผลที่ระบุ</div>
+        <div id="scReasonPreview" style="color:var(--on-surface); font-weight:600;"></div>
+      </div>
+    </div>
+    <div class="confirm-actions" style="margin-top:20px;">
+      <button type="button" class="btn-action btn-cancel" onclick="closeModal('suspendConfirmModal')">ปิด</button>
+      <button type="button" class="btn-action btn-reject" id="suspendFinalConfirmBtn"
+              style="flex:1; justify-content:center;">
+        <span class="material-symbols-outlined" style="font-size:16px;">block</span> ยืนยันการระงับ
+      </button>
+    </div>
+  </div>
+</div>
 <!-- FOOTER -->
 <footer class="footer">
   <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
@@ -214,6 +433,7 @@
   <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
   <span id="errorToastMsg" th:text="${errorMessage}"></span>
 </div>
+
 <form id="suspendForm" method="post" style="display:none;">
   <input type="hidden" name="reason" id="hiddenReasonInput">
 </form>

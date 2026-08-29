@@ -349,6 +349,24 @@
 </div>
 
 
+<!-- ✅ เพิ่มบล็อกนี้ -->
+<div th:if="${tribeName != null and !#strings.isEmpty(tribeName)}"
+     style="max-width:1200px;margin:16px auto 0;padding:0 5%;">
+  <div style="display:inline-flex;align-items:center;gap:10px;
+              background:#e2f0e5;color:#1c4026;border:1px solid #bfdec8;
+              border-radius:100px;padding:9px 10px 9px 18px;
+              font-size:14.5px;font-weight:600;">
+    กำลังดูทัวร์ของเผ่า: <span th:text="${tribeName}">ชื่อเผ่า</span>
+    <a th:href="@{/search(type='tour')}"
+       style="display:flex;align-items:center;justify-content:center;
+              width:22px;height:22px;border-radius:50%;
+              background:rgba(28,64,38,0.14);color:inherit;
+              font-size:13px;line-height:1;"
+       aria-label="ล้างตัวกรองเผ่า">✕</a>
+  </div>
+</div>
+
+
 <!-- ══════════════════════════════════════════
      SEARCH BOX
 ══════════════════════════════════════════ -->
@@ -486,6 +504,7 @@
 <div class="featured-all" id="featuredAll"
      th:if="${param.managerId == null
              and param.type == null
+             and param.tribeId == null
              and (keyword == null or keyword == '')
              and (startDate == null or startDate == '')
              and (endDate == null or endDate == '')}">

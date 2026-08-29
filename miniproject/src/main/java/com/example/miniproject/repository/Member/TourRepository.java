@@ -181,4 +181,5 @@ public interface TourRepository extends JpaRepository<Tour, String> {
             """)
     List<String> findDistinctTourTypeNamesByManagerId(@Param("managerId") String managerId);
 
+    List<Tour> findByTribeid(Integer tribeid);
 }
