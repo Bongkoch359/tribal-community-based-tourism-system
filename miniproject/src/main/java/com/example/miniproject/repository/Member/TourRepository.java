@@ -14,6 +14,35 @@ public interface TourRepository extends JpaRepository<Tour, String> {
 
     List<Tour> findByCommunitymanagerManagerid(String managerId);
 
+    // นับจำนวนทัวร์ทั้งหมดของ manager คนนั้น (แทน tourRepository.count()
+    // ที่นับทุกคน)
+    long countByCommunitymanagerManagerid(String managerId);
+
+    //  นับทัวร์ "เผยแพร่/จองได้" เฉพาะของ manager คนนั้น (แทน
+    // countActivePublished() เดิมที่นับทุกคน)
+    @Query("""
+                SELECT COUNT(t) FROM Tour t
+                WHERE t.communitymanager.managerid = :managerId
+                AND EXISTS (
+                    SELECT 1 FROM Tourschedule s
+                    WHERE s.tour = t AND s.status = 'เปิดรับจอง'
+                )
+            """)
+    long countActivePublishedByManagerId(@Param("managerId") String managerId);
+
+    // : ทัวร์ยอดจองสูงสุด เฉพาะของ manager คนนั้น (แทน
+    @Query("""
+                SELECT t.tourmname, COUNT(d)
+                FROM Tour t
+                LEFT JOIN t.bookingTourDetails d
+                LEFT JOIN d.booking b
+                WHERE t.communitymanager.managerid = :managerId
+                AND (b IS NULL OR b.bookingStatus <> com.example.miniproject.entity.enums.BookingStatus.CANCEL)
+                GROUP BY t.tourid, t.tourmname
+                ORDER BY COUNT(d) DESC
+            """)
+    List<Object[]> countBookingsByTourNameForManager(@Param("managerId") String managerId);
+
     List<Tour> findByCommunitymanager(Communitymanager communitymanager);
 
     @Query("""
@@ -182,4 +211,5 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     List<String> findDistinctTourTypeNamesByManagerId(@Param("managerId") String managerId);
 
     List<Tour> findByTribeid(Integer tribeid);
+
 }

@@ -61,15 +61,16 @@ function handleFileSelect(files) {
     const currentCount = selectedFiles.filter(f => f !== null).length;
 
     if (currentCount >= MAX_IMAGES) {
-        showAlertModal('อัปโหลดได้สูงสุด ' + MAX_IMAGES + ' รูปเท่านั้น');
+        showAlertModal('คุณเลือกรูปครบ ' + MAX_IMAGES + ' รูปแล้ว กรุณาลบรูปเดิมก่อนเพิ่มรูปใหม่');
         document.getElementById('roomImages').value = '';
         return;
     }
 
+    let exceeded = false;
     let addedCount = 0;
     Array.from(files).forEach(file => {
         if (currentCount + addedCount >= MAX_IMAGES) {
-            showAlertModal('อัปโหลดได้สูงสุด ' + MAX_IMAGES + ' รูปเท่านั้น (บางไฟล์ไม่ถูกเพิ่ม)');
+            exceeded = true;
             return;
         }
         if (file.size > MAX_SIZE) {
@@ -82,6 +83,10 @@ function handleFileSelect(files) {
         addPreviewCard(file, selectedFiles.length - 1);
         addedCount++;
     });
+
+    if (exceeded) {
+        showAlertModal('เลือกรูปได้สูงสุด ' + MAX_IMAGES + ' รูป มีบางไฟล์ถูกข้ามไปเนื่องจากเกินจำนวนที่กำหนด');
+    }
 
     document.getElementById('roomImages').value = '';
     updateUI();

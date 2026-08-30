@@ -1,9 +1,4 @@
-/* ═══════════════════════════════════════════
-   CUSTOM ALERT / CONFIRM MODAL
-   แทนที่ alert()/confirm() ของเบราว์เซอร์ ให้หน้าตาตรงกับ success modal
-   (ใช้คลาส .modal-backdrop / .modal-box / .checkmark-wrap / .modal-title /
-    .modal-desc / .modal-btn-row / .modal-btn-primary ที่มีอยู่แล้วใน CSS)
-   ═══════════════════════════════════════════ */
+
 (function () {
     if (window.showAlertModal) return; // กันประกาศซ้ำถ้าโหลดไฟล์นี้มากกว่า 1 ครั้ง
 
@@ -60,6 +55,23 @@
     function showAlertModal(message, opts = {}) {
         const type = opts.type || 'success';
         const title = opts.title || DEFAULT_TITLE[type];
+
+        // แจ้งเตือนสำเร็จ: ไม่มีปุ่มตกลง ปิดอัตโนมัติหลังแสดง 1.5 วินาที
+        if (type === 'success') {
+            return new Promise((resolve) => {
+                const backdrop = buildBackdrop();
+                backdrop.querySelector('.ui-modal-icon').classList.add(type);
+                backdrop.querySelector('.ui-modal-icon-glyph').classList.add(ICON_CLASS[type]);
+                backdrop.querySelector('.ui-modal-title').textContent = title;
+                backdrop.querySelector('.ui-modal-desc').textContent = message;
+                // ไม่แสดงปุ่มตกลงสำหรับแจ้งเตือนสำเร็จ
+
+                setTimeout(() => {
+                    closeBackdrop(backdrop);
+                    resolve();
+                }, 1500);
+            });
+        }
 
         return new Promise((resolve) => {
             const backdrop = buildBackdrop();

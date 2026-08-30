@@ -6,6 +6,7 @@ import com.example.miniproject.dto.Tour.PostRowDTO;
 import com.example.miniproject.dto.Tour.MonthlyRevenueDTO;
 import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.TourRepository;
+import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.repository.Member.ActivitypostRepository;
 import com.example.miniproject.repository.Member.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class DashboardService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private TourScheduleRepository tourScheduleRepository;
+
     private static final String[] THAI_MONTHS = {
             "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
             "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
@@ -42,16 +46,17 @@ public class DashboardService {
     // รวมสถิติภาพรวม
     public DashboardStatsDTO getDashboardStats(String managerId) {
         DashboardStatsDTO dto = new DashboardStatsDTO();
-        dto.setTotalTours(tourRepository.count());
-        dto.setActiveTours(tourRepository.countActivePublished());
-        dto.setTotalRevenue(paymentRepository.sumPaidAmount());
+        dto.setTotalTours(tourRepository.countByCommunitymanagerManagerid(managerId));
+        dto.setActiveTours(tourRepository.countActivePublishedByManagerId(managerId));
+        Double revenue = paymentRepository.sumPaidAmountByManagerId(managerId);
+        dto.setTotalRevenue(revenue != null ? revenue : 0.0);
         dto.setPendingBookings(bookingRepository.countPendingTourBookingsByManagerId(managerId));
         return dto;
     }
 
-    // จำนวนโพสต์กิจกรรมทั้งหมด (ไม่ใช่แค่ล่าสุด)
-    public long getTotalPostCount() {
-        return activitypostRepository.count();
+    // จำนวนโพสต์กิจกรรมของ manager คนนั้น (ไม่ใช่ทั้งระบบ)
+    public long getTotalPostCount(String managerId) {
+        return activitypostRepository.countByCommunitymanagerManagerid(managerId);
     }
 
     // 5 การจองล่าสุด (เก็บ method ไว้เผื่อใช้หน้าอื่น แม้ dashboard จะไม่แสดงแล้ว)
@@ -74,22 +79,6 @@ public class DashboardService {
                 .collect(Collectors.toList());
     }
 
-    // โพสต์กิจกรรมล่าสุด (เก็บ method ไว้เผื่อใช้หน้าอื่น แม้ dashboard
-    // จะไม่แสดงแล้ว)
-    public List<PostRowDTO> getPublishedPosts() {
-        return activitypostRepository
-                .findAllByOrderByCreateddateDesc()
-                .stream()
-                .map(p -> {
-                    PostRowDTO row = new PostRowDTO();
-                    row.setActivityid(p.getActivityid());
-                    row.setTitle(p.getTitle());
-                    row.setLocation(p.getLocation());
-                    return row;
-                })
-                .collect(Collectors.toList());
-    }
-
     // รายได้รายเดือนของปีปัจจุบัน (12 เดือนครบ) — เก็บไว้เผื่อใช้ที่อื่น
     public List<MonthlyRevenueDTO> getMonthlyRevenue() {
         int year = LocalDate.now().getYear();
@@ -105,8 +94,8 @@ public class DashboardService {
         return result;
     }
 
-    // ─── ใหม่: แนวโน้มรายได้ทัวร์รายเดือน แบบเลือกช่วงได้ ───
-    public List<Map<String, Object>> getTourRevenueTrend(YearMonth startYM, YearMonth endYM) {
+    // ─── ใหม่: แนวโน้มรายได้ทัวร์รายเดือน แบบเลือกช่วงได้ (เฉพาะของ manager คนนั้น) ───
+    public List<Map<String, Object>> getTourRevenueTrend(String managerId, YearMonth startYM, YearMonth endYM) {
         java.sql.Date startDate = java.sql.Date.valueOf(startYM.atDay(1));
         java.sql.Date endDate = java.sql.Date.valueOf(endYM.atEndOfMonth());
 
@@ -117,7 +106,7 @@ public class DashboardService {
             cursor = cursor.plusMonths(1);
         }
 
-        List<Object[]> rows = bookingRepository.sumTourRevenueByMonthRange(startDate, endDate);
+        List<Object[]> rows = bookingRepository.sumTourRevenueByMonthRangeAndManager(managerId, startDate, endDate);
         for (Object[] row : rows) {
             int yr = ((Number) row[0]).intValue();
             int mo = ((Number) row[1]).intValue();
@@ -140,47 +129,61 @@ public class DashboardService {
         return result;
     }
 
-    // ─── ใหม่: แนวโน้มยอดจองทัวร์รายเดือน แบบเลือกช่วงได้ ───
-    public List<Map<String, Object>> getTourBookingCountTrend(YearMonth startYM, YearMonth endYM) {
+    // ─── ใหม่: อัตราการจองเต็มที่นั่งรายเดือน (Fill Rate) ของ manager คนนั้น ───
+    public List<Map<String, Object>> getTourFillRateTrend(String managerId, YearMonth startYM, YearMonth endYM) {
         java.sql.Date startDate = java.sql.Date.valueOf(startYM.atDay(1));
         java.sql.Date endDate = java.sql.Date.valueOf(endYM.atEndOfMonth());
 
-        Map<YearMonth, Long> byMonth = new LinkedHashMap<>();
+        Map<YearMonth, Long> bookedSeatsByMonth = new LinkedHashMap<>();
+        Map<YearMonth, Long> capacityByMonth = new LinkedHashMap<>();
         YearMonth cursor = startYM;
         while (!cursor.isAfter(endYM)) {
-            byMonth.put(cursor, 0L);
+            bookedSeatsByMonth.put(cursor, 0L);
+            capacityByMonth.put(cursor, 0L);
             cursor = cursor.plusMonths(1);
         }
 
-        List<Object[]> rows = bookingRepository.countTourBookingsByMonthRange(startDate, endDate);
+        List<Object[]> rows = tourScheduleRepository.findScheduleFillDataForManager(managerId, startDate, endDate);
         for (Object[] row : rows) {
-            int yr = ((Number) row[0]).intValue();
-            int mo = ((Number) row[1]).intValue();
-            long cnt = ((Number) row[2]).longValue();
-            byMonth.put(YearMonth.of(yr, mo), cnt);
+            java.sql.Date opendate = (java.sql.Date) row[0];
+            int maxSeats = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            long bookedSeats = ((Number) row[2]).longValue();
+
+            YearMonth ym = YearMonth.from(opendate.toLocalDate());
+            if (!bookedSeatsByMonth.containsKey(ym))
+                continue; // กันเหนียวเผื่อ opendate หลุดช่วง
+
+            bookedSeatsByMonth.merge(ym, bookedSeats, Long::sum);
+            capacityByMonth.merge(ym, (long) maxSeats, Long::sum);
         }
 
-        long maxVal = byMonth.values().stream().max(Long::compareTo).orElse(0L);
         List<Map<String, Object>> result = new ArrayList<>();
-        for (Map.Entry<YearMonth, Long> e : byMonth.entrySet()) {
-            YearMonth ym = e.getKey();
+        for (YearMonth ym : bookedSeatsByMonth.keySet()) {
+            long booked = bookedSeatsByMonth.get(ym);
+            long capacity = capacityByMonth.get(ym);
+
+            double fillRatePct = capacity > 0
+                    ? Math.round((booked * 1000.0) / capacity) / 10.0
+                    : 0.0;
+            fillRatePct = Math.min(fillRatePct, 100.0);
+
             Map<String, Object> point = new LinkedHashMap<>();
             int beYearShort = (ym.getYear() + 543) % 100;
             point.put("label", THAI_MONTHS[ym.getMonthValue() - 1] + " " + beYearShort);
-            point.put("count", e.getValue());
-            int heightPct = maxVal > 0 ? (int) Math.round((e.getValue() * 100.0) / maxVal) : 0;
-            point.put("heightPct", Math.max(heightPct, e.getValue() > 0 ? 6 : 2));
+            point.put("fillRatePct", fillRatePct);
+            int heightPct = (int) Math.round(fillRatePct);
+            point.put("heightPct", Math.max(heightPct, fillRatePct > 0 ? 6 : 2));
             result.add(point);
         }
         return result;
     }
 
-    // ─── ใหม่: ทัวร์ยอดจองสูงสุด (สำหรับ ranking list) ───
-    public List<Map<String, Object>> getTopToursByBookingCount() {
+    // ─── ใหม่: ทัวร์ยอดจองสูงสุด (สำหรับ ranking list) — เฉพาะของ manager คนนั้น ───
+    public List<Map<String, Object>> getTopToursByBookingCount(String managerId) {
         String[] colorPalette = { "#006e2f", "#22c55e", "#ff8e4d", "#735c00",
                 "#6d28d9", "#0ea5e9", "#84cc16", "#ec4899" };
 
-        List<Object[]> rows = tourRepository.countBookingsByTourName();
+        List<Object[]> rows = tourRepository.countBookingsByTourNameForManager(managerId);
         long total = rows.stream().mapToLong(r -> ((Number) r[1]).longValue()).sum();
 
         List<Map<String, Object>> result = new ArrayList<>();

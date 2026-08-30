@@ -81,4 +81,22 @@ public interface BookingroomdetailRepository
                         +
                         "AND brd.checkoutdate >= :fromDate")
         Integer countActiveFutureBookedRooms(@Param("roomtypeid") String roomtypeid, @Param("fromDate") Date fromDate);
+
+        /**
+         * ดึงรายละเอียดการจอง (checkindate, checkoutdate, numofrooms)
+         * ที่ทับซ้อนกับช่วงวันที่ที่กำหนด สำหรับคำนวณ Occupancy Rate รายเดือน
+         * (นับเฉพาะ CONFIRMED และ COMPLETED เหมือนกับที่ใช้คำนวณรายได้)
+         */
+        @Query("SELECT brd.checkindate, brd.checkoutdate, brd.numofrooms " +
+                        "FROM Bookingroomdetail brd " +
+                        "JOIN brd.roomtype rt " +
+                        "JOIN brd.booking b " +
+                        "WHERE rt.homestay.homestayid = :homestayId " +
+                        "AND b.bookingStatus IN (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
+                        "                         com.example.miniproject.entity.enums.BookingStatus.COMPLETED) " +
+                        "AND brd.checkindate <= :endDate " +
+                        "AND brd.checkoutdate >= :startDate")
+        List<Object[]> findBookedNightsForOccupancy(@Param("homestayId") Integer homestayId,
+                        @Param("startDate") Date startDate,
+                        @Param("endDate") Date endDate);
 }

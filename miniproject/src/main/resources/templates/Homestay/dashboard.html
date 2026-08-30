@@ -117,7 +117,7 @@
         <div class="stats-grid">
             <div class="stat-card green-dark">
                 <div class="stat-info">
-                    <span class="stat-label">ประเภทห้องพักทั้งหมด</span>
+                    <span class="stat-label">ประเภทห้องพัก</span>
                     <span class="stat-value" th:text="${totalRoomTypes}">0</span>
                 </div>
                 <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
@@ -151,15 +151,16 @@
 
             <div class="revenue-trend-card">
                 <div
-                    style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                    style="display:flex; flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                     <div class="trend-tab-group">
                         <button type="button" class="trend-tab trend-tab-active" data-target="revenue"
                             onclick="switchTrendTab('revenue')">
                             <i class="fas fa-chart-column"></i> รายได้ต่อเดือน
                         </button>
-                        <button type="button" class="trend-tab" data-target="bookingcount"
-                            onclick="switchTrendTab('bookingcount')">
-                            <i class="fas fa-bed"></i> จำนวนการจองต่อเดือน
+                        <button type="button" class="trend-tab" data-target="occupancy"
+                            onclick="switchTrendTab('occupancy')"
+                            title="เปอร์เซ็นต์ห้องพักที่ถูกใช้งานเทียบกับจำนวนห้องทั้งหมดในแต่ละเดือน">
+                            <i class="fas fa-bed"></i> อัตราการเข้าพัก
                         </button>
                     </div>
 
@@ -213,15 +214,17 @@
                     </div>
                 </div>
 
-                <!-- กราฟยอดจอง (ซ่อนไว้ก่อน) -->
-                <div class="revenue-bars" id="trendPanel-bookingcount" style="display:none;">
-                    <div class="revenue-bar-col" th:each="p, iter : ${bookingCountTrend}"
+                <!-- กราฟอัตราการเข้าพัก (ซ่อนไว้ก่อน) -->
+                <div class="revenue-bars" id="trendPanel-occupancy" style="display:none;">
+                    <div class="revenue-bar-col" th:each="p, iter : ${occupancyTrend}"
                         th:classappend="${iter.last} ? ' is-current' : ''">
-                        <span class="revenue-bar-amount booking-count-amount" th:text="${p.count} + ' รายการ'">0</span>
+                        <span class="revenue-bar-amount booking-count-amount"
+                            th:text="${#numbers.formatDecimal(p.occupancyPct, 1, 'COMMA', 1, 'POINT')} + '%'">0.0%</span>
                         <div class="revenue-bar-track">
                             <div class="revenue-bar-fill booking-count-fill"
                                 th:classappend="${iter.last} ? ' bar-current' : ''"
-                                th:style="'height:' + ${p.heightPct} + '%'"></div>
+                                th:style="'height:' + ${p.heightPct} + '%'"
+                                th:title="${#numbers.formatDecimal(p.occupancyPct, 1, 'COMMA', 1, 'POINT')} + '%'"></div>
                         </div>
                         <span class="revenue-bar-label" th:text="${p.label}">ม.ค. 68</span>
                     </div>
@@ -229,7 +232,7 @@
             </div>
 
             <div class="donut-card">
-                <h3><i class="fas fa-ranking-star"></i> ห้องพักยอดนิยม</h3>
+                <h3><i class="fas fa-ranking-star"></i> ห้องพักที่ถูกจองมากที่สุด</h3>
 
                 <div class="room-rank-list">
                     <div class="room-rank-item" th:each="seg, iter : ${bookingRoomTypeDonut}">
@@ -275,20 +278,7 @@
             </span>
         </div>
     </footer>
-    <script>
-        function toggleCustomRange() {
-            const form = document.getElementById('customRangeForm');
-            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
-        }
-        function switchTrendTab(target) {
-            document.getElementById('trendPanel-revenue').style.display = target === 'revenue' ? 'flex' : 'none';
-            document.getElementById('trendPanel-bookingcount').style.display = target === 'bookingcount' ? 'flex' : 'none';
-
-            document.querySelectorAll('.trend-tab').forEach(btn => {
-                btn.classList.toggle('trend-tab-active', btn.dataset.target === target);
-            });
-        }
-    </script>
+   <script th:src="@{/js/Homestay/dashboard.js}"></script>
 
 </body>
 

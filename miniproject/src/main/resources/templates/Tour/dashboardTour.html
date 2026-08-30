@@ -1168,9 +1168,9 @@
         </div>
     </div>
 
-    <!-- ═══ SIGNATURE BANNER (แสดงเฉพาะตอนธนาคารกรอกครบแล้ว) ═══ -->
-    <div class="bank-warning-banner signature-warning-banner" id="signatureWarningBanner"
-        th:if="${!bankInfoMissing and signatureMissing}" style="display:block;">
+    <!-- ═══ SIGNATURE BANNER ═══ -->
+    <div class="bank-warning-banner signature-warning-banner" id="signatureWarningBanner" th:if="${signatureMissing}"
+        style="display:block;">
         <div class="bank-warning-inner">
             <i class="fas fa-signature warn-icon"></i>
             <div class="warn-text">
@@ -1183,7 +1183,6 @@
                     class="fas fa-xmark"></i></button>
         </div>
     </div>
-
     <!-- ═══ PAGE ═══ -->
     <div class="page">
         <div class="page-title">
@@ -1207,134 +1206,140 @@
                 </div>
                 <div class="stat-icon-wrap"><i class="fas fa-bus"></i></div>
             </div>
-
-            <div class="stat-card teal">
+            <div class="stat-card green-dark">
                 <div class="stat-body">
-                    <div class="stat-label">รายได้รวม (เฉพาะที่ยืนยันแล้ว)</div>
-                    <div class="stat-value"
-                        th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 0, 'POINT')}+ ' ฿'"></div>
-                 
+                    <div class="stat-label">จำนวนโพสต์กิจกรรม</div>
+                    <div class="stat-value" th:text="${totalPosts}">0</div>
+
                 </div>
-                <div class="stat-icon-wrap"><i class="fas fa-dollar-sign"></i></div>
+                <div class="stat-icon-wrap"><i class="fas fa-bullhorn"></i></div>
             </div>
+
+
 
             <div class="stat-card orange">
                 <div class="stat-body">
                     <div class="stat-label">รอตรวจสอบการจอง</div>
                     <div class="stat-value" th:text="${stats.pendingBookings}">0</div>
-                    <div class="stat-sub">รายการที่ยังไม่ได้ดำเนินการ</div>
                 </div>
                 <div class="stat-icon-wrap"><i class="fas fa-clock"></i></div>
             </div>
-
-            <div class="stat-card green-dark">
+            <div class="stat-card teal">
                 <div class="stat-body">
-                    <div class="stat-label">จำนวนโพสต์กิจกรรม</div>
-                    <div class="stat-value" th:text="${totalPosts}">0</div>
-                   
+                    <div class="stat-label">รายได้รวม (ยืนยันแล้ว)</div>
+                    <div class="stat-value"
+                        th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 0, 'POINT')}+ ' ฿'"></div>
+
                 </div>
-                <div class="stat-icon-wrap"><i class="fas fa-bullhorn"></i></div>
+                <div class="stat-icon-wrap"><i class="fas fa-dollar-sign"></i></div>
             </div>
+
 
         </div>
 
         <!-- ─── โซนกลาง: กราฟรายได้ (65%) + ทัวร์ยอดจองสูงสุด (35%) ─── -->
         <div class="mid-zone">
 
-        <!-- ─── กราฟรายได้ / ยอดจองทัวร์รายเดือน ─── -->
-        <div class="chart-card">
-            <div class="card-head" style="flex-wrap:wrap; gap:10px;">
-                <div class="trend-tab-group">
-                    <button type="button" class="trend-tab trend-tab-active" data-target="revenue"
-                        onclick="switchTrendTab('revenue')">
-                        <i class="fas fa-chart-column"></i> รายได้ต่อเดือน
-                    </button>
-                    <button type="button" class="trend-tab" data-target="bookingcount"
-                        onclick="switchTrendTab('bookingcount')">
-                        <i class="fas fa-bus"></i> ยอดจองต่อเดือน
-                    </button>
+            <!-- ─── กราฟรายได้ / ยอดจองทัวร์รายเดือน ─── -->
+            <div class="chart-card">
+                <div class="card-head" style="flex-wrap:wrap; gap:10px;">
+                    <div class="trend-tab-group">
+                        <button type="button" class="trend-tab trend-tab-active" data-target="revenue"
+                            onclick="switchTrendTab('revenue')">
+                            <i class="fas fa-chart-column"></i> รายได้ต่อเดือน
+                        </button>
+                        <button type="button" class="trend-tab" data-target="fillrate"
+                            onclick="switchTrendTab('fillrate')"
+                            title="เปอร์เซ็นต์ที่นั่งที่ถูกจองเทียบกับที่นั่งทั้งหมดของรอบทัวร์ในเดือนนั้น">
+                            <i class="fas fa-chair"></i> อัตราการจองเต็มที่นั่ง
+                        </button>
+                    </div>
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                        <a th:href="@{/manager/dashboard(range=3)}"
+                            th:classappend="${selectedRange == '3'} ? ' range-btn-active'" class="range-btn">3 เดือน</a>
+                        <a th:href="@{/manager/dashboard(range=6)}"
+                            th:classappend="${selectedRange == '6'} ? ' range-btn-active'" class="range-btn">6 เดือน</a>
+                        <a th:href="@{/manager/dashboard(range=12)}"
+                            th:classappend="${selectedRange == '12'} ? ' range-btn-active'" class="range-btn">12
+                            เดือน</a>
+                        <button type="button" class="range-btn" onclick="toggleCustomRange()">
+                            <i class="fas fa-calendar-days"></i> กำหนดเอง
+                        </button>
+                    </div>
                 </div>
-                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                    <a th:href="@{/manager/dashboard(range=3)}"
-                        th:classappend="${selectedRange == '3'} ? ' range-btn-active'" class="range-btn">3 เดือน</a>
-                    <a th:href="@{/manager/dashboard(range=6)}"
-                        th:classappend="${selectedRange == '6'} ? ' range-btn-active'" class="range-btn">6 เดือน</a>
-                    <a th:href="@{/manager/dashboard(range=12)}"
-                        th:classappend="${selectedRange == '12'} ? ' range-btn-active'" class="range-btn">12 เดือน</a>
-                    <button type="button" class="range-btn" onclick="toggleCustomRange()">
-                        <i class="fas fa-calendar-days"></i> กำหนดเอง
-                    </button>
-                </div>
-            </div>
 
-            <div class="chart-body">
-                <form method="get" th:action="@{/manager/dashboard}" id="customRangeForm" class="custom-range-box"
-                    th:style="${selectedRange == 'custom'} ? 'display:flex;' : 'display:none;'"
-                    style="gap:12px; align-items:center; margin-bottom:18px; flex-wrap:wrap;">
-                    <input type="hidden" name="range" value="custom" />
-                    <label>
-                        ตั้งแต่
-                        <input type="month" name="startMonth" th:value="${selectedStartMonth}" required>
-                    </label>
-                    <label>
-                        ถึง
-                        <input type="month" name="endMonth" th:value="${selectedEndMonth}" required>
-                    </label>
-                    <button type="submit" class="range-search-btn">
-                        <i class="fas fa-magnifying-glass"></i> ค้นหา
-                    </button>
-                </form>
+                <div class="chart-body">
+                    <form method="get" th:action="@{/manager/dashboard}" id="customRangeForm" class="custom-range-box"
+                        th:style="${selectedRange == 'custom'} ? 'display:flex;' : 'display:none;'"
+                        style="gap:12px; align-items:center; margin-bottom:18px; flex-wrap:wrap;">
+                        <input type="hidden" name="range" value="custom" />
+                        <label>
+                            ตั้งแต่
+                            <input type="month" name="startMonth" th:value="${selectedStartMonth}" required>
+                        </label>
+                        <label>
+                            ถึง
+                            <input type="month" name="endMonth" th:value="${selectedEndMonth}" required>
+                        </label>
+                        <button type="submit" class="range-search-btn">
+                            <i class="fas fa-magnifying-glass"></i> ค้นหา
+                        </button>
+                    </form>
 
-                <!-- กราฟรายได้ -->
-                <div class="trend-bars" id="trendPanel-revenue">
-                    <div class="trend-bar-col" th:each="p, iter : ${revenueTrend}"
-                        th:classappend="${iter.last} ? ' is-current' : ''">
-                        <span class="trend-bar-amount"
-                            th:text="${#numbers.formatDecimal(p.amount, 1, 'COMMA', 0, 'POINT')} + ' ฿'">0 ฿</span>
-                        <div class="trend-bar-track">
-                            <div class="trend-bar-fill" th:classappend="${iter.last} ? ' bar-current' : ''"
-                                th:style="'height:' + ${p.heightPct} + '%'"></div>
+                    <!-- กราฟรายได้ -->
+                    <div class="trend-bars" id="trendPanel-revenue">
+                        <div class="trend-bar-col" th:each="p, iter : ${revenueTrend}"
+                            th:classappend="${iter.last} ? ' is-current' : ''">
+                            <span class="trend-bar-amount"
+                                th:text="${#numbers.formatDecimal(p.amount, 1, 'COMMA', 0, 'POINT')} + ' ฿'">0 ฿</span>
+                            <div class="trend-bar-track">
+                                <div class="trend-bar-fill" th:classappend="${iter.last} ? ' bar-current' : ''"
+                                    th:style="'height:' + ${p.heightPct} + '%'"></div>
+                            </div>
+                            <span class="trend-bar-label" th:text="${p.label}">ม.ค. 68</span>
                         </div>
-                        <span class="trend-bar-label" th:text="${p.label}">ม.ค. 68</span>
                     </div>
-                </div>
 
-                <!-- กราฟยอดจอง -->
-                <div class="trend-bars" id="trendPanel-bookingcount" style="display:none;">
-                    <div class="trend-bar-col" th:each="p, iter : ${bookingCountTrend}"
-                        th:classappend="${iter.last} ? ' is-current' : ''">
-                        <span class="trend-bar-amount" th:text="${p.count} + ' รายการ'">0</span>
-                        <div class="trend-bar-track">
-                            <div class="trend-bar-fill count-fill" th:classappend="${iter.last} ? ' bar-current' : ''"
-                                th:style="'height:' + ${p.heightPct} + '%'"></div>
+                    <!-- กราฟอัตราการจองเต็มที่นั่ง -->
+                    <div class="trend-bars" id="trendPanel-fillrate" style="display:none;">
+                        <div class="trend-bar-col" th:each="p, iter : ${fillRateTrend}"
+                            th:classappend="${iter.last} ? ' is-current' : ''">
+                            <span class="trend-bar-amount"
+                                th:text="${#numbers.formatDecimal(p.fillRatePct, 1, 'COMMA', 1, 'POINT')} + '%'">0.0%</span>
+                            <div class="trend-bar-track">
+                                <div class="trend-bar-fill count-fill"
+                                    th:classappend="${iter.last} ? ' bar-current' : ''"
+                                    th:style="'height:' + ${p.heightPct} + '%'"></div>
+                            </div>
+                            <span class="trend-bar-label" th:text="${p.label}">ม.ค. 68</span>
                         </div>
-                        <span class="trend-bar-label" th:text="${p.label}">ม.ค. 68</span>
                     </div>
                 </div>
             </div>
-        </div>
+            <!-- ─── ปิด .chart-card ─── -->
 
-        <!-- ─── ทัวร์ยอดจองสูงสุด ─── -->
-        <div class="card">
-            <div class="card-head">
-                <h3><i class="fas fa-ranking-star" style="color:var(--blue-dark);"></i> ทัวร์ยอดจองสูงสุด</h3>
-            </div>
-            <div class="tour-rank-list" th:if="${topTours != null and !topTours.isEmpty()}">
-                <div class="tour-rank-item" th:each="t, iter : ${topTours}">
-                    <span class="tour-rank-medal"
-                        th:text="${iter.index == 0} ? '🥇' : (${iter.index == 1} ? '🥈' : (${iter.index == 2} ? '🥉' : (${iter.index + 1} + '.')))"></span>
-                    <span class="tour-rank-name" th:text="${t.name}">ชื่อทัวร์</span>
-                    <div class="tour-rank-bar-track">
-                        <div class="tour-rank-bar-fill"
-                            th:style="'width:' + ${t.percent} + '%; background:' + ${t.color}"></div>
+            <!-- ─── ทัวร์ยอดจองสูงสุด ─── -->
+            <div class="card">
+                <div class="card-head">
+                    <h3><i class="fas fa-ranking-star" style="color:var(--blue-dark);"></i> ทัวร์ยอดจองสูงสุด</h3>
+                </div>
+                <div class="tour-rank-list" th:if="${topTours != null and !topTours.isEmpty()}">
+                    <div class="tour-rank-item" th:each="t, iter : ${topTours}">
+                        <span class="tour-rank-medal"
+                            th:text="${iter.index == 0} ? '🥇' : (${iter.index == 1} ? '🥈' : (${iter.index == 2} ? '🥉' : (${iter.index + 1} + '.')))"></span>
+                        <span class="tour-rank-name" th:text="${t.name}">ชื่อทัวร์</span>
+                        <div class="tour-rank-bar-track">
+                            <div class="tour-rank-bar-fill"
+                                th:style="'width:' + ${t.percent} + '%; background:' + ${t.color}"></div>
+                        </div>
+                        <span class="tour-rank-count" th:text="${t.count} + ' ครั้ง'">0 ครั้ง</span>
                     </div>
-                    <span class="tour-rank-count" th:text="${t.count} + ' ครั้ง'">0 ครั้ง</span>
+                </div>
+                <div class="empty" th:if="${topTours == null or topTours.isEmpty()}">
+                    <i class="fas fa-bus"></i> ยังไม่มีข้อมูลการจองทัวร์
                 </div>
             </div>
-            <div class="empty" th:if="${topTours == null or topTours.isEmpty()}">
-                <i class="fas fa-bus"></i> ยังไม่มีข้อมูลการจองทัวร์
-            </div>
-        </div>
+            <!-- ─── ปิด .card (ทัวร์ยอดจองสูงสุด) ─── -->
 
         </div>
         <!-- ─── ปิดโซนกลาง (.mid-zone) ─── -->
@@ -1342,46 +1347,46 @@
     </div>
     <!-- ─── ปิด .page ─── -->
 
-    <!-- ─── FOOTER ( ─── -->
+    <!-- ─── FOOTER ─── -->
     <footer class="footer">
-            <div class="footer-content">
-                <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-                <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a> | <a href="#"><i
-                            class="fas fa-headset"></i> ติดต่อแอดมิน</a></span>
-            </div>
-        </footer>
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a> | <a href="#"><i
+                        class="fas fa-headset"></i> ติดต่อแอดมิน</a></span>
+        </div>
+    </footer>
 
-        <script>
-            function dismissBankWarning() {
-                const b = document.getElementById('bankWarningBanner');
-                if (!b) return;
-                b.style.transition = 'opacity .3s, max-height .4s';
-                b.style.opacity = '0'; b.style.overflow = 'hidden';
-                b.style.maxHeight = b.offsetHeight + 'px';
-                setTimeout(() => { b.style.maxHeight = '0'; b.style.padding = '0'; }, 10);
-                setTimeout(() => { b.style.display = 'none'; }, 420);
-            }
-            function dismissSignatureWarning() {
-                const b = document.getElementById('signatureWarningBanner');
-                if (!b) return;
-                b.style.transition = 'opacity .3s, max-height .4s';
-                b.style.opacity = '0'; b.style.overflow = 'hidden';
-                b.style.maxHeight = b.offsetHeight + 'px';
-                setTimeout(() => { b.style.maxHeight = '0'; b.style.padding = '0'; }, 10);
-                setTimeout(() => { b.style.display = 'none'; }, 420);
-            }
-            function toggleCustomRange() {
-                const form = document.getElementById('customRangeForm');
-                form.style.display = form.style.display === 'none' ? 'flex' : 'none';
-            }
-            function switchTrendTab(target) {
-                document.getElementById('trendPanel-revenue').style.display = target === 'revenue' ? 'flex' : 'none';
-                document.getElementById('trendPanel-bookingcount').style.display = target === 'bookingcount' ? 'flex' : 'none';
-                document.querySelectorAll('.trend-tab').forEach(btn => {
-                    btn.classList.toggle('trend-tab-active', btn.dataset.target === target);
-                });
-            }
-        </script>
+    <script>
+        function dismissBankWarning() {
+            const b = document.getElementById('bankWarningBanner');
+            if (!b) return;
+            b.style.transition = 'opacity .3s, max-height .4s';
+            b.style.opacity = '0'; b.style.overflow = 'hidden';
+            b.style.maxHeight = b.offsetHeight + 'px';
+            setTimeout(() => { b.style.maxHeight = '0'; b.style.padding = '0'; }, 10);
+            setTimeout(() => { b.style.display = 'none'; }, 420);
+        }
+        function dismissSignatureWarning() {
+            const b = document.getElementById('signatureWarningBanner');
+            if (!b) return;
+            b.style.transition = 'opacity .3s, max-height .4s';
+            b.style.opacity = '0'; b.style.overflow = 'hidden';
+            b.style.maxHeight = b.offsetHeight + 'px';
+            setTimeout(() => { b.style.maxHeight = '0'; b.style.padding = '0'; }, 10);
+            setTimeout(() => { b.style.display = 'none'; }, 420);
+        }
+        function toggleCustomRange() {
+            const form = document.getElementById('customRangeForm');
+            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+        }
+        function switchTrendTab(target) {
+            document.getElementById('trendPanel-revenue').style.display = target === 'revenue' ? 'flex' : 'none';
+            document.getElementById('trendPanel-fillrate').style.display = target === 'fillrate' ? 'flex' : 'none';
+            document.querySelectorAll('.trend-tab').forEach(btn => {
+                btn.classList.toggle('trend-tab-active', btn.dataset.target === target);
+            });
+        }
+    </script>
 </body>
 
 </html>

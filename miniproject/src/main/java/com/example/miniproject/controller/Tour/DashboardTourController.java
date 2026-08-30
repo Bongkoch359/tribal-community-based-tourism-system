@@ -52,7 +52,7 @@ public class DashboardTourController {
         // ─── Stats + จำนวนโพสต์ทั้งหมด ───
         DashboardStatsDTO stats = dashboardService.getDashboardStats(manager.getManagerid());
         model.addAttribute("stats", stats);
-        model.addAttribute("totalPosts", dashboardService.getTotalPostCount());
+        model.addAttribute("totalPosts", dashboardService.getTotalPostCount(manager.getManagerid()));
 
         // ─── คำนวณช่วงเดือนที่จะแสดงกราฟ (preset 3/6/12 หรือ custom) ───
         YearMonth currentYM = YearMonth.now();
@@ -95,13 +95,15 @@ public class DashboardTourController {
         model.addAttribute("selectedEndMonth", endYM.toString());
 
         // ─── กราฟรายได้ / ยอดจองทัวร์รายเดือน ───
-        List<Map<String, Object>> revenueTrend = dashboardService.getTourRevenueTrend(startYM, endYM);
-        List<Map<String, Object>> bookingCountTrend = dashboardService.getTourBookingCountTrend(startYM, endYM);
-        model.addAttribute("revenueTrend", revenueTrend);
-        model.addAttribute("bookingCountTrend", bookingCountTrend);
+        List<Map<String, Object>> revenueTrend = dashboardService.getTourRevenueTrend(manager.getManagerid(), startYM,
+                endYM);
+        List<Map<String, Object>> fillRateTrend = dashboardService.getTourFillRateTrend(manager.getManagerid(), startYM,
+                endYM);
 
         // ─── ทัวร์ยอดจองสูงสุด ───
-        List<Map<String, Object>> topTours = dashboardService.getTopToursByBookingCount();
+        List<Map<String, Object>> topTours = dashboardService.getTopToursByBookingCount(manager.getManagerid());
+        model.addAttribute("fillRateTrend", fillRateTrend);
+        model.addAttribute("revenueTrend", revenueTrend);
         model.addAttribute("topTours", topTours);
 
         return "Tour/dashboardTour";

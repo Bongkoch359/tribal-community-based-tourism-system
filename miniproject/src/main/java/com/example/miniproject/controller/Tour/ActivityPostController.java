@@ -35,8 +35,8 @@ public class ActivityPostController {
     private List<Tour> getActiveOpenTours(Communitymanager manager) {
         Date today = Date.valueOf(LocalDate.now());
         return tourService.getToursByManager(manager).stream().filter(tour -> {
-            List<Tourschedule> bookableSchedules = 
-                    tourScheduleRepository.findBookableSchedules(tour.getTourid(), today);
+            List<Tourschedule> bookableSchedules = tourScheduleRepository.findBookableSchedules(tour.getTourid(),
+                    today);
             return bookableSchedules != null && !bookableSchedules.isEmpty();
         }).collect(Collectors.toList());
     }
@@ -51,29 +51,29 @@ public class ActivityPostController {
         }
 
         model.addAttribute("loggedInManager", manager);
-        model.addAttribute("posts", activityPostService.getAllPosts());
+        model.addAttribute("posts", activityPostService.getPostsByManager(manager.getManagerid()));
 
         return "Tour/listPost";
     }
 
     // ─── แสดงรายละเอียดโพสต์ ───
-    @GetMapping("/{id}")
-    public String viewPost(@PathVariable("id") String activityId,
-            Model model,
-            HttpSession session) {
-        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (session.getAttribute("loggedInManager") == null)
-            return "redirect:/manager/login";
+    // @GetMapping("/{id}")
+    // public String viewPost(@PathVariable("id") String activityId,
+    //         Model model,
+    //         HttpSession session) {
+    //     Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+    //     if (session.getAttribute("loggedInManager") == null)
+    //         return "redirect:/manager/login";
 
-        Activitypost post = activityPostService.getPostById(activityId);
-        if (post == null) {
-            return "redirect:/manager/posts";
-        }
+    //     Activitypost post = activityPostService.getPostById(activityId);
+    //     if (post == null) {
+    //         return "redirect:/manager/posts";
+    //     }
 
-        model.addAttribute("post", post);
-        model.addAttribute("loggedInManager", manager);
-        return "Tour/activityPostDetails";
-    }
+    //     model.addAttribute("post", post);
+    //     model.addAttribute("loggedInManager", manager);
+    //     return "Tour/activityPostDetails";
+    // }
 
     // ─── แสดงฟอร์มสร้างโพสต์ ───
     @GetMapping("/create")

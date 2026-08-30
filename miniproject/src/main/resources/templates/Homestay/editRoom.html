@@ -1045,6 +1045,23 @@
     </div>
     <!-- Toast (error) -->
     <div id="toast"></div>
+    <!-- Alert Modal -->
+    <div class="modal-backdrop" id="alertOverlay">
+        <div class="modal-box">
+            <div class="checkmark-wrap"
+                style="background: linear-gradient(135deg, #e07b00, #f5a623); box-shadow: 0 8px 24px rgba(224, 123, 0, 0.35);">
+                <i class="fas fa-triangle-exclamation checkmark-icon"></i>
+            </div>
+            <div class="modal-title" style="color: var(--green-main);">แจ้งเตือน</div>
+            <div class="modal-desc" id="alertModalDesc"></div>
+            <div style="display:flex; justify-content:center; margin-top:4px;">
+                <button type="button" class="btn-save" style="padding:9px 26px; font-size:13.5px;"
+                    onclick="closeAlertModal()">
+                    <i class="fas fa-check"></i> ตกลง
+                </button>
+            </div>
+        </div>
+    </div>
     <!-- Success Modal -->
     <div class="modal-backdrop" id="successOverlay">
         <div class="modal-box">
@@ -1366,9 +1383,10 @@
 
         const fileInput = document.getElementById('fileInput');
         fileInput.addEventListener('change', function () {
+            let exceeded = false;
             Array.from(this.files).forEach(file => {
                 if (images.length >= MAX_IMAGES) {
-                    showToast(`อัปโหลดรูปได้สูงสุด ${MAX_IMAGES} รูป`, true);
+                    exceeded = true;
                     return;
                 }
                 if (file.size > 5 * 1024 * 1024) {
@@ -1394,9 +1412,24 @@
                 wrap.appendChild(img); wrap.appendChild(removeBtn);
                 thumbStrip.appendChild(wrap);
             });
+            if (exceeded) {
+                showAlertModal('เลือกรูปได้สูงสุด ' + MAX_IMAGES + ' รูป มีบางไฟล์ถูกข้ามไปเนื่องจากเกินจำนวนที่กำหนด');
+            }
             this.value = '';
             refreshUI();
         });
+
+        // ── Alert Modal (แจ้งเตือนเกินจำนวนรูปที่กำหนด) ────────────────────────
+        function showAlertModal(msg) {
+            const modal = document.getElementById('alertOverlay');
+            const desc = document.getElementById('alertModalDesc');
+            if (desc) desc.textContent = msg;
+            if (modal) modal.classList.add('show');
+        }
+        function closeAlertModal() {
+            const modal = document.getElementById('alertOverlay');
+            if (modal) modal.classList.remove('show');
+        }
 
         function removeNewThumb(btn, fileIdx, objectUrl) {
             newFileList[fileIdx] = null;
