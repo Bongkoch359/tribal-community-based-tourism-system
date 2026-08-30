@@ -316,6 +316,13 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
 .btn-submit:disabled { background:var(--gray-400); box-shadow:none; cursor:not-allowed; }
 .secure-row { display:flex; align-items:center; justify-content:center; gap:.4rem; font-size:.72rem; color:var(--gray-400); padding:10px 0 0; }
 
+/* Green variant — used for the "confirm" button inside the confirm modal */
+.btn-submit-green {
+    background: linear-gradient(135deg, var(--green-500), var(--green-700));
+    box-shadow: 0 4px 16px rgba(41,87,54,.35);
+}
+.btn-submit-green:hover { filter: brightness(1.05); box-shadow: 0 6px 22px rgba(41,87,54,.45); }
+
 /* ════ SIDEBAR ════ */
 .summary-card { background:var(--paper); border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:sticky; top:calc(var(--navbar-h) + 16px); border:1px solid var(--neutral-200); }
 .summary-img { width:100%; height:148px; object-fit:cover; display:block; }
@@ -676,7 +683,9 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
                         ℹ️ ยังไม่ได้ระบุบัญชีธนาคาร กรุณาติดต่อเจ้าของโฮมสเตย์โดยตรง
                     </div>
                 </div>
-            </div><!-- ② อัปโหลดสลิป -->
+            </div>
+
+<!-- ② อัปโหลดสลิป -->
 <div class="card">
     <div class="section-header">
         <div class="section-num">2</div>
@@ -693,20 +702,11 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
         </div>
 
         <!-- ส่วนแสดงตัวอย่างรูปภาพ (ถ้ามีเลือกไฟล์รูป) -->
+        <!-- หมายเหตุ: ลบบล็อก previewArea ที่ซ้ำอยู่ 2 ก้อนออกแล้ว เหลือก้อนเดียว -->
         <div id="previewArea" style="display:none; text-align:center; margin-top: 12px;">
             <div class="preview-wrap">
                 <img id="previewImg" class="preview-img" src="" alt="สลิป">
                 <button class="btn-remove-img" onclick="removeFile()" type="button" title="ลบไฟล์">✕</button>
-            </div>
-            <div style="font-size:.78rem; color:var(--gray-600); margin-top:4px;" id="fileName"></div>
-        </div>
-
-
-        <!-- ส่วนแสดงตัวอย่างรูปภาพ (ถ้ามีเลือกไฟล์รูป) -->
-        <div id="previewArea" style="display:none; text-align:center; margin-top: 12px;">
-            <div class="preview-wrap" style="position: relative; display: inline-block;">
-                <img id="previewImg" class="preview-img" src="" alt="สลิป" style="max-height: 160px; border-radius: 8px; border: 1px solid var(--gray-200);">
-                <button class="btn-remove-img" onclick="removeFile()" type="button" style="position: absolute; top: 6px; right: 6px; background: var(--red); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: .75rem; cursor: pointer;">✕</button>
             </div>
             <div style="font-size:.78rem; color:var(--gray-600); margin-top:4px;" id="fileName"></div>
         </div>
@@ -822,20 +822,23 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
         <input type="hidden" name="payNote" id="hPayNote">
     </form>
 
-</div><div class="pay-modal-overlay" id="confirmModalOverlay">
+</div>
+
+<!-- ════ CONFIRM MODAL ════ -->
+<div class="pay-modal-overlay" id="confirmModalOverlay">
     <div class="pay-modal-card" style="padding:30px 26px 26px;">
-        <div class="pay-modal-icon-wrap">
+        <div class="pay-modal-icon-wrap" style="background:linear-gradient(135deg,var(--amber-400),var(--amber-600)); box-shadow:0 8px 22px rgba(182,121,12,.35), 0 0 0 6px rgba(214,143,20,.15);">
             <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 9v4m0 4h.01M10.29 3.86l-8.18 14.14A1.5 1.5 0 003.32 20h17.36a1.5 1.5 0 001.21-2L13.71 3.86a1.5 1.5 0 00-2.42 0z"/>
             </svg>
         </div>
-        <div class="pay-modal-title">ยืนยันการส่งหลักฐาน?</div>
+        <div class="pay-modal-title" style="color:var(--amber-700);">ยืนยันการส่งหลักฐาน?</div>
         <div class="pay-modal-sub" style="margin-bottom:22px;">
             กรุณาตรวจสอบสลิปการโอนเงินให้ถูกต้อง<br>ก่อนกดยืนยันการชำระเงิน
         </div>
         <div style="display:flex;gap:10px;padding-bottom:26px;">
             <button type="button" class="btn-back" style="margin-bottom:0;" onclick="closeConfirmModal()">ยกเลิก</button>
-            <button type="button" class="btn-submit" style="padding:12px;" onclick="confirmAndSubmit()">✅ ยืนยัน</button>
+            <button type="button" class="btn-submit btn-submit-green" style="padding:12px;" onclick="confirmAndSubmit()">✅ ยืนยัน</button>
         </div>
     </div>
 </div>
@@ -866,14 +869,13 @@ const checkOut = /*[[${payment.checkOut}]]*/ null;
 
 /* ── DEADLINE countdown ── */
 (function(){
-    const deadlineStr = /*[[${payment.paymentDeadlineIso}]]*/ null;   // ★ เปลี่ยนจาก paymentDeadline
+    const deadlineStr = /*[[${payment.paymentDeadlineIso}]]*/ null;
     if(!deadlineStr) return;
     const deadline = new Date(deadlineStr);
     if (isNaN(deadline.getTime())) {
         console.error('Invalid deadline date:', deadlineStr);
         return;
     }
-    // ★ ลบบรรทัด deadline.setHours(23,59,59,0); ทิ้ง
     const el = document.getElementById('remainText');
     function tick(){
         const diff = deadline - Date.now();
@@ -914,11 +916,18 @@ function copyAccount(btn){
         btn.textContent='✅ คัดลอกแล้ว'; btn.classList.add('copied');
         setTimeout(()=>{ btn.textContent='คัดลอก'; btn.classList.remove('copied'); },2000);
     });
-}function handleFileSelect(input) {
+}
+
+function handleFileSelect(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
         document.getElementById('fileName').textContent = file.name;
-        
+
+        // ล้าง error ทันทีที่เลือกไฟล์ใหม่
+        input.classList.remove('input-error');
+        const errEl = document.getElementById('slipFileError');
+        if (errEl) errEl.classList.remove('show');
+
         if (file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -962,7 +971,9 @@ function showPayModal(){
     });
     // เริ่ม progress bar หลัง modal เด้งขึ้น
     setTimeout(()=>{ bar.style.width='100%'; },150);
-}function submitPayment(){
+}
+
+function submitPayment(){
     const fileInput = document.getElementById('slipFile');
     const errorEl = document.getElementById('slipFileError');
 
@@ -992,9 +1003,15 @@ function closeConfirmModal(){
 function confirmAndSubmit(){
     closeConfirmModal();
 
-    const fileInput=document.getElementById('slipFile');
     const form=document.getElementById('paymentForm');
-    const cloned=fileInput.cloneNode(true); cloned.name='slipFile'; form.appendChild(cloned);
+
+    // แก้บั๊ก: เดิมใช้ fileInput.cloneNode(true) ซึ่งไม่คัดลอกไฟล์ที่เลือกไว้มาด้วย
+    // (FileList ของ input type="file" จะหายไปเมื่อ clone) ทำให้ backend ได้ไฟล์ว่างเปล่า
+    // แก้เป็นการย้าย element ตัวจริงเข้าไปในฟอร์มแทน เพื่อให้ .files ไม่หาย
+    const fileInput=document.getElementById('slipFile');
+    fileInput.name='slipFile';
+    form.appendChild(fileInput);
+
     document.getElementById('hPayNote').value=document.getElementById('payNoteInput').value;
 
     const btn=document.getElementById('submitBtn');

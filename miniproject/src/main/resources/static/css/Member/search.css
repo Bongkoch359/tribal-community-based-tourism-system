@@ -496,7 +496,6 @@ img { display: block; }
 .why-icon svg { width: 27px; height: 27px; color: var(--amber-400); }
 .why-item strong { font-size: 16.5px; font-weight: 700; color: var(--neutral-800); }
 .why-item span { font-size: 13.5px; color: var(--neutral-500); line-height: 1.5; max-width: 220px; }
-
 /* ============================================================
    SEARCH BOX
 ============================================================ */
@@ -509,7 +508,8 @@ img { display: block; }
 
 .search-box {
   max-width: 1200px; margin: 0 auto;
-  display: flex; align-items: stretch;
+  display: flex; flex-wrap: wrap;   /* ← เพิ่ม: อนุญาตให้ขึ้นแถวใหม่เมื่อแน่น */
+  align-items: stretch;
   gap: 0;
   border: 2px solid var(--neutral-300);
   border-radius: var(--r-xl);
@@ -524,9 +524,11 @@ img { display: block; }
 }
 
 .sf {
-  flex: 1 1 220px; padding: 14px 22px;
+  flex: 1 1 190px; min-width: 170px;   /* ← ลดจาก 220px เพื่อให้ 6 ช่องคำนวณ wrap ได้พอดี */
+  padding: 14px 20px;
   display: flex; flex-direction: column; justify-content: center;
   border-right: 1.5px solid var(--neutral-200);
+  border-bottom: 1.5px solid var(--neutral-200);   /* ← เพิ่ม: เผื่อขึ้นแถว 2 จะมีเส้นคั่นชัดเจน */
   cursor: pointer;
   transition: background .14s; min-width: 0;
   background: var(--paper);
@@ -555,10 +557,10 @@ img { display: block; }
 }
 .sf input::placeholder { color: var(--neutral-400); font-weight: 400; font-size: 15px; }
 
-.sf-date { flex: 0 1 210px; }
+.sf-date { flex: 1 1 145px; min-width: 135px; }   /* ← ลดจาก 160/150 */
 .sf input[type="date"] { font-size: 15px; }
-
-.sf-guest { flex: 0 1 160px; }
+.sf-date { flex: 1 1 145px; min-width: 135px; }   /* ← ลดจาก 160/150 */
+.sf-guest { flex: 0 1 140px; min-width: 130px; }
 
 .guest-counter { display: flex; align-items: center; gap: 10px; }
 .guest-btn {
@@ -581,8 +583,10 @@ img { display: block; }
   padding: 0 36px; font-size: 17px; font-weight: 700;
   cursor: pointer; white-space: nowrap;
   transition: all .18s;
-  display: flex; align-items: center; gap: 10px;
-  flex-shrink: 0; min-height: 72px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  flex: 0 1 190px;         /* ← เปลี่ยนจาก 1 1 170px: grow=0 ไม่ยืดเต็มแถวอีกต่อไป */
+  margin-left: auto;       /* ← เพิ่ม: ดันปุ่มไปชิดขวาเสมอ ไม่ว่าจะอยู่แถวไหน */
+  min-height: 64px;        /* ← ลดจาก 72px ให้ดูโปร่งขึ้นเล็กน้อย */
   letter-spacing: .3px;
 }
 .btn-search:hover { filter: brightness(1.06); }
@@ -823,11 +827,20 @@ img { display: block; }
 .card-tag {
   background: var(--neutral-100); color: var(--neutral-600);
   border-radius: 5px; padding: 3px 10px; font-size: 13px; font-weight: 500;
+  white-space: nowrap;
 }
 .card-footer {
   display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
   padding-top: 14px; margin-top: auto;
   border-top: 1px solid var(--neutral-100);
+}
+.card-footer-note {
+  font-size: 13.5px;
+  color: var(--neutral-500);
+  font-weight: 500;
+  line-height: 1.4;
+  max-width: 65%;
 }
 .card-price-label { font-size: 12.5px; color: var(--neutral-500); font-weight: 500; }
 .card-price {
@@ -841,6 +854,7 @@ img { display: block; }
   border-radius: var(--r-sm); padding: 11px 18px;
   font-size: 14.5px; font-weight: 700;
   display: flex; align-items: center; gap: 5px;
+  flex-shrink: 0; white-space: nowrap;
   transition: background .15s, transform .1s;
 }
 .btn-book:hover { background: var(--green-900); }
@@ -930,7 +944,8 @@ img { display: block; }
     border-radius: var(--r-lg);
   }
   .sf {
-    flex: 1 1 calc(50% - 1px);
+     flex: 1 1 170px; min-width: 150px;
+     padding: 14px 18px;   
     border-bottom: 1.5px solid var(--neutral-200);
   }
   .sf:last-of-type { border-bottom: none; }

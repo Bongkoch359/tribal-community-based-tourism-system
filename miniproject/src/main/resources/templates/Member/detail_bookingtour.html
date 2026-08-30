@@ -201,26 +201,6 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
 .alert-success { background:var(--green-light); border:1px solid #a5d6a7; color:var(--green-dark); }
 .alert-error   { background:var(--red-light);   border:1px solid #ef9a9a; color:#b71c1c; }
 .alert-info    { background:var(--blue-light);   border:1px solid #90caf9; color:#1e4f6b; }
-/* ── TOAST SUCCESS ── */
-.toast-success {
-    position: fixed;
-    top: 20px; left: 50%;
-    transform: translateX(-50%) translateY(-20px);
-    background: var(--green-dark);
-    color: #fff;
-    padding: 12px 22px;
-    border-radius: 10px;
-    font-size: .9rem;
-    font-weight: 600;
-    box-shadow: 0 8px 24px rgba(20,14,8,.25);
-    z-index: 3000;
-    opacity: 0;
-    transition: opacity .25s ease, transform .25s ease;
-}
-.toast-success.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
 
 /* ── STATUS HEADER ── */
 .booking-header {
@@ -701,9 +681,6 @@ textarea.form-control { resize:vertical; min-height:110px; }
     sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'}">
 
     <!-- Alerts -->
-<div class="toast-success" id="toastSuccess" th:if="${successMsg != null}">
-    ✅ <span th:text="${successMsg}"></span>
-</div>
 <div class="alert alert-error" th:if="${errorMsg != null}"><span>❌</span><span th:text="${errorMsg}"></span></div>
 
 <!-- ★ เพิ่มตรงนี้ -->
@@ -1453,16 +1430,6 @@ function confirmCancel() {
         document.getElementById('cancelForm').submit();
     }
 }
-document.addEventListener('DOMContentLoaded', function () {
-    const toast = document.getElementById('toastSuccess');
-    if (toast) {
-        requestAnimationFrame(() => toast.classList.add('show'));
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 250);
-        }, 2500);
-    }
-});
 
 /* ════ User Menu ════ */
 function toggleUserMenu() {

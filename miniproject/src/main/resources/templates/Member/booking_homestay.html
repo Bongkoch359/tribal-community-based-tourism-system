@@ -379,7 +379,7 @@ body {
     font-size:.88rem;
     font-family:inherit;
     color:var(--neutral-800);
-    transition:border-color .15s;
+    transition:border-color .15s, box-shadow .15s, background .15s;
 }
 .form-control:focus { outline:none; border-color:var(--green-400); }
 .form-control[readonly] { background:var(--neutral-50); color:var(--neutral-600); }
@@ -388,6 +388,7 @@ body {
     display:flex; align-items:center;
     border:1.5px solid var(--neutral-200);
     border-radius:8px; overflow:hidden;
+    transition:border-color .15s, box-shadow .15s;
 }
 .num-btn {
     width:36px; height:40px; border:none;
@@ -407,6 +408,47 @@ body {
 
 .radio-group { display:flex; gap:16px; }
 .radio-item { display:flex; align-items:center; gap:.4rem; font-size:.88rem; cursor:pointer; }
+
+/* ── VALIDATION STYLES (เพิ่มใหม่ ให้ตรงกับหน้าทัวร์) ── */
+.form-control.is-invalid {
+  border-color: #c65a3d !important;
+  background: #fdf3ef !important;
+  box-shadow: 0 0 0 3px rgba(198,90,61,0.12);
+}
+.form-control.is-valid {
+  border-color: var(--green-500);
+  background: var(--green-50);
+}
+.num-input-wrap.is-invalid {
+  border-color: #c65a3d !important;
+  box-shadow: 0 0 0 3px rgba(198,90,61,0.12);
+}
+.num-input-wrap.is-valid {
+  border-color: var(--green-500);
+}
+.field-error {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; color: #b3462e; font-weight: 600;
+  margin-top: 4px; line-height: 1.4;
+}
+.field-error svg { width: 13px; height: 13px; flex-shrink: 0; }
+.field-error:empty { display: none; }
+
+.validation-banner {
+  display: none;
+  background: #fdf3ef;
+  border: 1px solid #f2c3b4;
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  gap: 12px;
+  align-items: flex-start;
+}
+.validation-banner.show { display: flex; }
+.validation-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.validation-banner-title { font-size: 14px; font-weight: 700; color: #b3462e; margin-bottom: 4px; }
+.validation-banner-list { font-size: 13px; color: #b3462e; padding-left: 16px; margin: 0; }
+.validation-banner-list li { margin-bottom: 2px; }
 
 /* ============================================================
    RIGHT SUMMARY CARD
@@ -467,7 +509,7 @@ body {
 }
 
 /* ═══════════════════════════
-   SUCCESS MODAL
+   SUCCESS MODAL + CONFIRM MODAL (สไตล์เดียวกับหน้าทัวร์)
 ═══════════════════════════ */
 .modal-backdrop {
   position: fixed; inset: 0;
@@ -523,6 +565,20 @@ body {
   animation: progress-drain 2.5s linear forwards;
 }
 @keyframes progress-drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+.modal-btn-row { display: flex; gap: 10px; margin-top: 24px; }
+.modal-btn-cancel {
+  flex: 1; padding: 12px; border-radius: 8px; border: 1.5px solid var(--neutral-300);
+  background: #fff; font-weight: 700; cursor: pointer; font-family: inherit;
+  color: var(--neutral-700); transition: background .15s;
+}
+.modal-btn-cancel:hover { background: var(--neutral-50); }
+.modal-btn-confirm {
+  flex: 1; padding: 12px; border-radius: 8px; border: none;
+  background: var(--green-700); font-weight: 700; cursor: pointer; font-family: inherit;
+  color: #fff; box-shadow: 0 4px 12px rgba(33,92,53,0.35); transition: background .15s;
+}
+.modal-btn-confirm:hover { background: var(--green-800); }
 </style>
 </head>
 
@@ -570,12 +626,10 @@ body {
   </a>
 
     <div class="nav-links">
-        <a href="/member/home" class="nav-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-            หน้าแรก
-        </a>
+         <a href="/search" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      หน้าแรก
+    </a>
        <a th:href="@{/tribe-info}" class="nav-link">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
@@ -652,14 +706,7 @@ body {
     </div>
 </nav>
 
-<!-- BREADCRUMB -->
-<div class="breadcrumb">
-    <a href="/member/home">หน้าแรก</a>
-    <span> › </span>
-    <a th:href="@{/homestay/{id}(id=${room.homestay.homestayid})}">โฮมสเตย์</a>
-    <span> › </span>
-    <span>จองโฮมสเตย์</span>
-</div>
+
 
 <!-- STEPPER -->
 <div class="stepper-wrap">
@@ -689,6 +736,15 @@ body {
 
 <!-- LEFT -->
 <div>
+
+    <!-- VALIDATION BANNER รวม error ทั้งหมด -->
+    <div id="validationBanner" class="validation-banner" role="alert">
+      <div class="validation-banner-icon">⚠️</div>
+      <div>
+        <div class="validation-banner-title">กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน</div>
+        <ul class="validation-banner-list" id="validationList"></ul>
+      </div>
+    </div>
 
     <!-- ROOM BAR -->
     <div class="room-bar">
@@ -721,6 +777,7 @@ body {
 
         <input type="hidden" name="roomtypeid" th:value="${room.roomtypeid}">
         <input type="hidden" id="pricePerNight" th:value="${room.pricepernight}">
+        <input type="hidden" id="maxGuestPerRoom" th:value="${room.maxguest}">
 
         <div class="card">
 
@@ -781,14 +838,16 @@ body {
                     </div>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>ชื่อจริงผู้เข้าพัก</label>
+                            <label>ชื่อจริงผู้เข้าพัก <span style="color:#c65a3d;">*</span></label>
                             <input class="form-control" type="text"
                                    id="guestFirstname" name="guestFirstname" placeholder="ชื่อจริง">
+                            <div class="field-error" id="err-guestFirstname"></div>
                         </div>
                         <div class="form-group">
-                            <label>นามสกุลผู้เข้าพัก</label>
+                            <label>นามสกุลผู้เข้าพัก <span style="color:#c65a3d;">*</span></label>
                             <input class="form-control" type="text"
                                    id="guestLastname" name="guestLastname" placeholder="นามสกุล">
+                            <div class="field-error" id="err-guestLastname"></div>
                         </div>
                     </div>
                 </div>
@@ -802,50 +861,59 @@ body {
                 </div>
                 <div class="form-grid">
                  <div class="form-group">
-    <label>วันที่เช็คอิน</label>
+    <label>วันที่เช็คอิน <span style="color:#c65a3d;">*</span></label>
     <input class="form-control" type="date"
            id="checkin" name="checkin" required onchange="updateSummary()"
            th:value="${checkinParam}">
+    <div class="field-error" id="err-checkin"></div>
 </div>
 <div class="form-group">
-    <label>วันที่เช็คเอาท์</label>
+    <label>วันที่เช็คเอาท์ <span style="color:#c65a3d;">*</span></label>
     <input class="form-control" type="date"
            id="checkout" name="checkout" required onchange="updateSummary()"
            th:value="${checkoutParam}">
+    <div class="field-error" id="err-checkout"></div>
 </div>
                 </div>
                 <br>
                 <div class="form-grid cols3">
                     <div class="form-group">
                         <label>จำนวนห้อง</label>
-                        <div class="num-input-wrap">
+                        <div class="num-input-wrap" id="wrap-numofrooms">
                             <button type="button" class="num-btn" onclick="changeNum('numofrooms',-1)">−</button>
                             <input class="num-val" type="number" id="numofrooms" name="numofrooms"
-                                   value="1" min="1" th:max="${room.totalrooms}" oninput="updateSummary()">
+                                   value="1" min="1" th:max="${room.totalrooms}"
+                                   oninput="clampGuestCounts('numofrooms'); updateSummary()">
                             <span class="num-unit">ห้อง</span>
                             <button type="button" class="num-btn" onclick="changeNum('numofrooms',1)">+</button>
                         </div>
+                        <div class="field-error" id="err-numofrooms"></div>
                     </div>
                     <div class="form-group">
                         <label>จำนวนผู้ใหญ่</label>
-                        <div class="num-input-wrap">
+                        <div class="num-input-wrap" id="wrap-guest">
                             <button type="button" class="num-btn" onclick="changeNum('guest',-1)">−</button>
                            <input class="num-val" type="number" id="guest" name="guest"
-       th:value="${guestParam != null ? guestParam : 1}" min="1" th:max="${room.maxguest}" oninput="updateSummary()">
+       th:value="${guestParam != null ? guestParam : 1}" min="1"
+       oninput="clampGuestCounts('guest'); updateSummary()">
                             <button type="button" class="num-btn" onclick="changeNum('guest',1)">+</button>
                         </div>
+                        <div class="field-error" id="err-guest"></div>
                     </div>
                     <div class="form-group">
                         <label>จำนวนเด็ก</label>
-                        <div class="num-input-wrap">
+                        <div class="num-input-wrap" id="wrap-children">
                             <button type="button" class="num-btn" onclick="changeNum('children',-1)">−</button>
                             <input class="num-val" type="number" id="children" name="children"
-                                   value="0" min="0" oninput="updateSummary()">
+                                   value="0" min="0"
+                                   oninput="clampGuestCounts('children'); updateSummary()">
                             <span class="num-unit">ท่าน</span>
                             <button type="button" class="num-btn" onclick="changeNum('children',1)">+</button>
                         </div>
+                        <div class="field-error" id="err-children"></div>
                     </div>
                 </div>
+                <div class="idcard-hint" id="capacityHint" style="margin-top:8px; font-size:12px; color:var(--neutral-500);"></div>
             </div>
 
             <!-- SECTION 4: หมายเหตุ -->
@@ -867,7 +935,6 @@ body {
 
 </div><!-- /LEFT -->
 
-<!-- RIGHT -->
 <!-- RIGHT -->
 <div class="summary-card">
     <!-- แก้ไขตรงนี้: ตัดคำด้วยเครื่องหมายจุลภาค (,) เพื่อดึงเฉพาะรูปแรกสุดของโฮมสเตย์มาแสดง -->
@@ -913,10 +980,9 @@ body {
         </div>
         <div class="price-note">*ราคาเปลี่ยนตามจำนวนคืนและห้อง</div>
 
-<!-- ค้นหาปุ่มเดิม .btn-confirm แล้วเปลี่ยนเป็นแบบนี้ -->
-<button type="button" class="btn-confirm" onclick="openConfirmModal()">
-    ยืนยันการจองโฮมสเตย์
-</button>
+        <button type="button" class="btn-confirm" onclick="openConfirmModal()">
+            ยืนยันการจองโฮมสเตย์
+        </button>
         <div class="cancel-note">สามารถแก้ไขข้อมูลได้ภายหลัง</div>
     </div>
 </div>
@@ -924,8 +990,42 @@ body {
 </div><!-- /booking-layout -->
 </div><!-- /page-wrap -->
 
+<!-- ═══ CONFIRM MODAL (ยืนยันก่อนจอง — สไตล์เดียวกับหน้าทัวร์: ติ้กถูก ✓) ═══ -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal-box">
+    <div class="checkmark-wrap">
+      <div class="checkmark-ring"></div>
+      <div class="checkmark-icon" style="font-family: initial;">✓</div>
+    </div>
+    <div class="modal-title">ยืนยันการจองโฮมสเตย์</div>
+    <div class="modal-desc">คุณต้องการทำรายการจองนี้ใช่หรือไม่?</div>
+
+    <div class="modal-btn-row">
+      <button type="button" class="modal-btn-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
+      <button type="button" class="modal-btn-confirm" onclick="executeBooking()">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUCCESS MODAL ═══ -->
+<div class="modal-backdrop" id="successModal">
+  <div class="modal-box">
+    <div class="checkmark-wrap">
+      <div class="checkmark-ring"></div>
+      <div class="checkmark-icon" style="font-family: initial;">✓</div>
+    </div>
+    <div class="modal-title">จองโฮมสเตย์สำเร็จ!</div>
+    <div class="modal-desc">การจองของท่านถูกบันทึกเรียบร้อยแล้ว<br>ระบบกำลังพาไปหน้ารายละเอียดการจอง</div>
+    <div class="modal-progress-bar">
+      <div class="modal-progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+</div>
+
 <script>
-const pricePerNight = parseFloat(document.getElementById('pricePerNight').value) || 0;
+const pricePerNight   = parseFloat(document.getElementById('pricePerNight').value) || 0;
+const maxGuestPerRoom = parseInt(document.getElementById('maxGuestPerRoom').value) || 1;
+let pendingForm = null;
 
 function fmt(dateStr){
     if(!dateStr) return '—';
@@ -934,11 +1034,62 @@ function fmt(dateStr){
     return d.getDate()+' '+months[d.getMonth()]+' '+(d.getFullYear()+543);
 }
 
+/* ══════════════════════════════════════════
+   จำกัดจำนวนผู้ใหญ่ + เด็กรวมกัน ไม่ให้เกินความจุห้อง
+   ความจุ = maxGuestPerRoom × จำนวนห้องที่เลือก (ตรงกับ logic ฝั่ง backend)
+   sourceId = ช่องที่ผู้ใช้เพิ่งแก้ ('numofrooms' | 'guest' | 'children')
+   ใช้บอกว่าถ้าเกิน capacity ควรไปลดค่าของ "อีกช่อง" แทน ไม่ใช่ช่องที่เพิ่งแก้เอง
+══════════════════════════════════════════ */
+function clampGuestCounts(sourceId){
+    const roomsEl    = document.getElementById('numofrooms');
+    const guestEl    = document.getElementById('guest');
+    const childrenEl = document.getElementById('children');
+
+    // 1) จำนวนห้อง — ต้องอย่างน้อย 1 และไม่เกิน max ของห้องที่มี
+    let rooms = parseInt(roomsEl.value);
+    if (isNaN(rooms) || rooms < 1) rooms = 1;
+    const roomsMaxAttr = roomsEl.max ? parseInt(roomsEl.max) : 99;
+    rooms = Math.min(rooms, roomsMaxAttr);
+    roomsEl.value = rooms;
+
+    const capacity = maxGuestPerRoom * rooms;
+
+    // 2) ผู้ใหญ่ / เด็ก — ห้ามต่ำกว่า min
+    let adults   = parseInt(guestEl.value);
+    let children = parseInt(childrenEl.value);
+    if (isNaN(adults)   || adults   < 1) adults   = 1;
+    if (isNaN(children) || children < 0) children = 0;
+
+    // 3) ถ้ารวมกันเกินความจุ ให้ปรับ "อีกช่อง" ที่ไม่ใช่ช่องที่ผู้ใช้เพิ่งกด/พิมพ์ก่อน
+    if (adults + children > capacity) {
+        if (sourceId === 'guest') {
+            children = Math.max(0, capacity - adults);
+        } else if (sourceId === 'children') {
+            adults = Math.max(1, capacity - children);
+            // ถ้ายังเกิน (เช่น capacity < 1) ให้บีบ children ต่อ
+            if (adults + children > capacity) children = Math.max(0, capacity - adults);
+        } else {
+            // เปลี่ยนจำนวนห้องแล้ว capacity เล็กลงจนทั้งคู่เกิน → บีบเด็กก่อน แล้วค่อยผู้ใหญ่
+            if (adults > capacity) adults = Math.max(1, capacity);
+            children = Math.max(0, capacity - adults);
+        }
+    }
+
+    guestEl.value    = adults;
+    childrenEl.value = children;
+
+    const hint = document.getElementById('capacityHint');
+    if (hint) {
+        hint.textContent = `ℹ️ ห้องนี้รองรับสูงสุด ${maxGuestPerRoom} ท่าน/ห้อง × ${rooms} ห้อง = ${capacity} ท่าน (รวมผู้ใหญ่และเด็ก)`;
+    }
+}
+
 function changeNum(id, delta){
     const el = document.getElementById(id);
     const min = parseInt(el.min)||0;
     const max = el.max ? parseInt(el.max) : 99;
     el.value = Math.min(max, Math.max(min, parseInt(el.value||0)+delta));
+    clampGuestCounts(id);
     updateSummary();
 }
 
@@ -955,16 +1106,7 @@ function updateSummary(){
     let nights = 0;
     if(ci && co) nights = Math.max(0,(new Date(co)-new Date(ci))/86400000);
     document.getElementById('sum-nights').textContent = nights+' คืน';
-    document.getElementById('sum-price').textContent = (pricePerNight*nights*rooms).toLocaleString();
-}
-function confirmBooking(){
-    const checkin = document.getElementById('checkin').value;
-    const checkout = document.getElementById('checkout').value;
-    if(!checkin||!checkout){ alert('กรุณาเลือกวันเช็คอินและเช็คเอาท์'); return; }
-    if(new Date(checkout)<=new Date(checkin)){ alert('วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน'); return; }
-    if(confirm('ยืนยันการจองโฮมสเตย์นี้ใช่หรือไม่?')){
-        submitBooking();
-    }
+    document.getElementById('sum-price').textContent = (pricePerNight*Math.max(0,nights)*rooms).toLocaleString();
 }
 
 function toggleGuestForm(val){
@@ -973,6 +1115,9 @@ function toggleGuestForm(val){
     if(val==='true'){
         document.getElementById('guestFirstname').value='';
         document.getElementById('guestLastname').value='';
+        // เคลียร์ error ของช่องชื่อผู้เข้าพักถ้ามีอยู่ก่อนหน้า
+        clearFieldError('guestFirstname','err-guestFirstname');
+        clearFieldError('guestLastname','err-guestLastname');
     }
 }
 
@@ -989,8 +1134,194 @@ window.onload = function(){
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('checkin').min = today;
     document.getElementById('checkout').min = today;
+    clampGuestCounts('numofrooms'); // ตั้งค่าเริ่มต้น + แสดง hint ความจุ
     updateSummary();
 }
+
+/* ══════════════════════════════════════════
+   VALIDATION — เลียนแบบ pattern เดียวกับหน้าทัวร์
+   ช่องไหนพลาด: ขอบ/พื้นแดง + ข้อความใต้ช่อง + banner รวม
+══════════════════════════════════════════ */
+function clearErrors(){
+    document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid','is-valid'));
+    document.querySelectorAll('.num-input-wrap').forEach(el => el.classList.remove('is-invalid','is-valid'));
+    document.getElementById('validationBanner').classList.remove('show');
+    document.getElementById('validationList').innerHTML = '';
+}
+
+function clearFieldError(inputId, errId){
+    const input = document.getElementById(inputId);
+    const errEl = document.getElementById(errId);
+    if (input) input.classList.remove('is-invalid');
+    if (errEl) errEl.textContent = '';
+}
+
+function setFieldError(inputId, errId, message){
+    const input = document.getElementById(inputId);
+    const errEl = document.getElementById(errId);
+    if (input) { input.classList.add('is-invalid'); input.classList.remove('is-valid'); }
+    if (errEl) errEl.textContent = message;
+}
+
+function setFieldValid(inputId){
+    const input = document.getElementById(inputId);
+    if (input) { input.classList.remove('is-invalid'); input.classList.add('is-valid'); }
+}
+
+function setWrapError(wrapId, errId, message){
+    const wrap = document.getElementById(wrapId);
+    const errEl = document.getElementById(errId);
+    if (wrap) { wrap.classList.add('is-invalid'); wrap.classList.remove('is-valid'); }
+    if (errEl) errEl.textContent = message;
+}
+
+function setWrapValid(wrapId){
+    const wrap = document.getElementById(wrapId);
+    if (wrap) { wrap.classList.remove('is-invalid'); wrap.classList.add('is-valid'); }
+}
+
+function validateBookingForm(){
+    clearErrors();
+    const errors = [];
+
+    const isBookerGoing = document.querySelector('input[name="isBookerGoing"]:checked').value;
+
+    // 1. ชื่อ-นามสกุลผู้เข้าพัก (บังคับเฉพาะกรณีจองให้ผู้อื่น)
+    if (isBookerGoing === 'false') {
+        const fn = document.getElementById('guestFirstname').value.trim();
+        const ln = document.getElementById('guestLastname').value.trim();
+        if (!fn) {
+            setFieldError('guestFirstname','err-guestFirstname','กรุณากรอกชื่อจริงผู้เข้าพัก');
+            errors.push('กรุณากรอกชื่อจริงผู้เข้าพัก');
+        } else setFieldValid('guestFirstname');
+
+        if (!ln) {
+            setFieldError('guestLastname','err-guestLastname','กรุณากรอกนามสกุลผู้เข้าพัก');
+            errors.push('กรุณากรอกนามสกุลผู้เข้าพัก');
+        } else setFieldValid('guestLastname');
+    }
+
+    // 2. วันที่เช็คอิน / เช็คเอาท์
+    const ciVal = document.getElementById('checkin').value;
+    const coVal = document.getElementById('checkout').value;
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    if (!ciVal) {
+        setFieldError('checkin','err-checkin','กรุณาเลือกวันเช็คอิน');
+        errors.push('กรุณาเลือกวันเช็คอิน');
+    } else if (new Date(ciVal + 'T00:00:00') < today) {
+        setFieldError('checkin','err-checkin','ไม่สามารถเลือกวันย้อนหลังได้');
+        errors.push('วันเช็คอินไม่สามารถย้อนหลังได้');
+    } else {
+        setFieldValid('checkin');
+    }
+
+    if (!coVal) {
+        setFieldError('checkout','err-checkout','กรุณาเลือกวันเช็คเอาท์');
+        errors.push('กรุณาเลือกวันเช็คเอาท์');
+    } else if (ciVal && new Date(coVal + 'T00:00:00') <= new Date(ciVal + 'T00:00:00')) {
+        setFieldError('checkout','err-checkout','วันเช็คเอาท์ต้องมากกว่าวันเช็คอิน');
+        errors.push('วันเช็คเอาท์ต้องมากกว่าวันเช็คอิน');
+    } else {
+        setFieldValid('checkout');
+    }
+
+    // 3. จำนวนห้อง — ห้ามต่ำกว่า 1 / ห้ามเกิน max / ห้ามติดลบหรือไม่ใช่ตัวเลข
+    const roomsEl = document.getElementById('numofrooms');
+    const roomsVal = parseInt(roomsEl.value);
+    const roomsMin = parseInt(roomsEl.min || '1');
+    const roomsMax = roomsEl.max ? parseInt(roomsEl.max) : null;
+    if (isNaN(roomsVal) || roomsVal < roomsMin) {
+        setWrapError('wrap-numofrooms','err-numofrooms', `จำนวนห้องต้องอย่างน้อย ${roomsMin} ห้อง`);
+        errors.push('จำนวนห้องไม่ถูกต้อง');
+    } else if (roomsMax !== null && roomsVal > roomsMax) {
+        setWrapError('wrap-numofrooms','err-numofrooms', `จำนวนห้องมีสูงสุด ${roomsMax} ห้อง`);
+        errors.push('จำนวนห้องเกินจำนวนที่มี');
+    } else {
+        setWrapValid('wrap-numofrooms');
+    }
+
+    // 4. จำนวนผู้ใหญ่ — ห้ามต่ำกว่า 1 / ห้ามติดลบ / ไม่ใช่ตัวเลข
+    const guestEl = document.getElementById('guest');
+    const guestVal = parseInt(guestEl.value);
+    const guestMin = parseInt(guestEl.min || '1');
+    let guestOk = true;
+    if (isNaN(guestVal) || guestVal < guestMin) {
+        setWrapError('wrap-guest','err-guest', `จำนวนผู้ใหญ่ต้องอย่างน้อย ${guestMin} ท่าน`);
+        errors.push('จำนวนผู้ใหญ่ไม่ถูกต้อง');
+        guestOk = false;
+    } else {
+        setWrapValid('wrap-guest');
+    }
+
+    // 5. จำนวนเด็ก — ห้ามติดลบ / ไม่ใช่ตัวเลข
+    const childrenEl = document.getElementById('children');
+    const childrenVal = parseInt(childrenEl.value);
+    let childrenOk = true;
+    if (isNaN(childrenVal) || childrenVal < 0) {
+        setWrapError('wrap-children','err-children','จำนวนเด็กต้องไม่ติดลบ');
+        errors.push('จำนวนเด็กต้องไม่ติดลบ');
+        childrenOk = false;
+    } else {
+        setWrapValid('wrap-children');
+    }
+
+    // 6. ผู้ใหญ่ + เด็ก รวมกันต้องไม่เกินความจุห้อง (maxGuestPerRoom × จำนวนห้อง)
+    //    เช็คเฉพาะกรณีทั้งสองช่องเป็นตัวเลขที่ถูกต้องแล้วเท่านั้น (ไม่ซ้ำ error เดิม)
+    if (guestOk && childrenOk) {
+        const capacity = maxGuestPerRoom * (parseInt(roomsEl.value) || 1);
+        const totalGuest = guestVal + childrenVal;
+        if (totalGuest > capacity) {
+            const msg = `ผู้เข้าพักรวม ${totalGuest} ท่าน เกินความจุห้อง (สูงสุด ${capacity} ท่าน)`;
+            setWrapError('wrap-guest','err-guest', msg);
+            setWrapError('wrap-children','err-children', msg);
+            errors.push(msg);
+        }
+    }
+
+    // แสดง banner รวม error ทั้งหมด
+    if (errors.length > 0) {
+        const list = document.getElementById('validationList');
+        errors.forEach(e => {
+            const li = document.createElement('li');
+            li.textContent = e;
+            list.appendChild(li);
+        });
+        const banner = document.getElementById('validationBanner');
+        banner.classList.add('show');
+        banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    return errors.length === 0;
+}
+
+/* ══════════════════════════════════════════
+   MODAL FLOW — ตรวจก่อน แล้วค่อยเปิด modal ยืนยัน
+   (เหมือนหน้าทัวร์: validate -> confirm modal -> submit จริง -> success modal)
+══════════════════════════════════════════ */
+function openConfirmModal() {
+    const form = document.getElementById('bookingForm');
+
+    if (!validateBookingForm()) {
+        return; // มี error อยู่ ไม่เปิด modal ยืนยัน
+    }
+
+    pendingForm = form;
+    document.getElementById('confirmModal').classList.add('show');
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.remove('show');
+    pendingForm = null;
+}
+
+function executeBooking() {
+    if (!pendingForm) return;
+    document.getElementById('confirmModal').classList.remove('show');
+    submitBooking();
+}
+
 function submitBooking(){
     const form = document.getElementById('bookingForm');
     const formData = new FormData(form);
@@ -1034,70 +1365,6 @@ function showSuccessModal(redirectUrl){
         window.location.href = redirectUrl;
     }, 2500);
 }
-let pendingForm = null;
-
-function openConfirmModal() {
-    const form = document.getElementById('bookingForm');
-    
-    // ตรวจสอบความถูกต้องของฟอร์ม (เช่น เลือกวันที่หรือยัง) ก่อนแสดง Modal
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-
-    pendingForm = form;
-    document.getElementById('confirmModal').classList.add('show');
-}
-
-function closeConfirmModal() {
-    document.getElementById('confirmModal').classList.remove('show');
-    pendingForm = null;
-}
-
-function executeBooking() {
-    if (pendingForm) {
-        document.getElementById('confirmModal').classList.remove('show');
-        pendingForm.submit(); // ส่งข้อมูลไปยัง Controller
-    }
-
-}
 </script>
-
-<!-- ═══ SUCCESS MODAL ═══ -->
-<div class="modal-backdrop" id="successModal">
-  <div class="modal-box">
-    <div class="checkmark-wrap">
-      <div class="checkmark-ring"></div>
-      <i class="fas fa-check checkmark-icon" style="font-family: initial;">✓</i>
-    </div>
-    <div class="modal-title">จองโฮมสเตย์สำเร็จ!</div>
-    <div class="modal-desc">การจองของท่านถูกบันทึกเรียบร้อยแล้ว<br>ระบบกำลังพาไปหน้ารายละเอียดการจอง</div>
-    <div class="modal-progress-bar">
-      <div class="modal-progress-fill" id="progressFill"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════
-     CONFIRM MODAL (ยืนยันก่อนจอง)
-═══════════════════════════ -->
-<div class="modal-backdrop" id="confirmModal">
-    <div class="modal-box" style="text-align: center;">
-        <div class="checkmark-wrap" style="background: linear-gradient(135deg, var(--green-800), var(--green-600)); box-shadow: 0 8px 24px rgba(22,49,29,0.35);">
-            <div class="checkmark-icon" style="font-size: 32px;">❓</div>
-        </div>
-        <div class="modal-title" style="color: var(--green-850, #0a1f12);">ยืนยันการจองโฮมสเตย์</div>
-        <div class="modal-desc">คุณต้องการทำรายการจองนี้ใช่หรือไม่?</div>
-        
-        <div style="display: flex; gap: 10px; margin-top: 24px;">
-            <button type="button" onclick="closeConfirmModal()" style="flex: 1; padding: 12px; border-radius: 8px; border: 1.5px solid var(--neutral-300); background: #fff; font-weight: 700; cursor: pointer; font-family: inherit; color: var(--neutral-700); transition: background .15s;">
-                ยกเลิก
-            </button>
-            <button type="button" onclick="executeBooking()" style="flex: 1; padding: 12px; border-radius: 8px; border: none; background: var(--green-700); font-weight: 700; cursor: pointer; font-family: inherit; color: #fff; box-shadow: 0 4px 12px rgba(33,92,53,0.35); transition: background .15s;">
-                ยืนยัน
-            </button>
-        </div>
-    </div>
-</div>
 </body>
 </html>

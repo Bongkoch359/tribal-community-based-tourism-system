@@ -502,7 +502,7 @@ img { display: block; }
 }
 
 /* ═══════════════════════════
-   SUCCESS MODAL
+   SUCCESS MODAL (+ CONFIRM MODAL ใช้ style ร่วมกัน)
 ═══════════════════════════ */
 .modal-backdrop {
   position: fixed; inset: 0;
@@ -704,7 +704,7 @@ img { display: block; }
                 return errors;
             },
 
-                        showSuccessModal(redirectUrl) {
+            showSuccessModal(redirectUrl) {
                 const modal = document.getElementById('successModal');
                 const fill = document.getElementById('progressFill');
                 modal.classList.add('show');
@@ -716,6 +716,7 @@ img { display: block; }
                 }, 2500);
             },
 
+            // ── ขั้นที่ 1: ตรวจสอบความถูกต้อง แล้วเปิด "modal ยืนยันก่อนจอง" (ยังไม่ส่งข้อมูลจริง) ──
             handleSubmit() {
                 if (this.submitting || this.isSoldOut) return;
 
@@ -739,6 +740,13 @@ img { display: block; }
                     return;
                 }
 
+                // ข้อมูลครบถ้วน — เปิด modal ให้ผู้ใช้ยืนยันก่อนส่งจริง
+                document.getElementById('confirmModal').classList.add('show');
+            },
+
+            // ── ขั้นที่ 2: ผู้ใช้กดยืนยันใน modal แล้วค่อยส่งข้อมูลจริง ──
+            confirmAndSubmit() {
+                document.getElementById('confirmModal').classList.remove('show');
                 this.submitting = true;
 
                 const form = document.getElementById('bookingForm');
@@ -771,6 +779,10 @@ img { display: block; }
                     this.submitting = false;
                     alert('เกิดข้อผิดพลาด: ' + err.message);
                 });
+            },
+
+            closeConfirmModal() {
+                document.getElementById('confirmModal').classList.remove('show');
             }
         }));
     });
@@ -789,6 +801,29 @@ img { display: block; }
     <div class="modal-desc">การจองของท่านถูกบันทึกเรียบร้อยแล้ว<br>ระบบกำลังพาไปหน้ารายละเอียดการจอง</div>
     <div class="modal-progress-bar">
       <div class="modal-progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONFIRM MODAL (ยืนยันก่อนจอง) — ไอคอนติ้กถูก (✓) เหมือนหน้าโฮมสเตย์ ═══ -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal-box">
+    <div class="checkmark-wrap">
+      <div class="checkmark-ring"></div>
+      <div class="checkmark-icon" style="font-family: initial;">✓</div>
+    </div>
+    <div class="modal-title">ยืนยันการจองทัวร์</div>
+    <div class="modal-desc">คุณต้องการทำรายการจองนี้ใช่หรือไม่?</div>
+
+    <div style="display: flex; gap: 10px; margin-top: 24px;">
+      <button type="button" @click="closeConfirmModal()"
+              style="flex: 1; padding: 12px; border-radius: 8px; border: 1.5px solid var(--neutral-300); background: #fff; font-weight: 700; cursor: pointer; font-family: inherit; color: var(--neutral-700); transition: background .15s;">
+        ยกเลิก
+      </button>
+      <button type="button" @click="confirmAndSubmit()"
+              style="flex: 1; padding: 12px; border-radius: 8px; border: none; background: var(--green-700); font-weight: 700; cursor: pointer; font-family: inherit; color: #fff; box-shadow: 0 4px 12px rgba(41,87,54,0.35); transition: background .15s;">
+        ยืนยัน
+      </button>
     </div>
   </div>
 </div>

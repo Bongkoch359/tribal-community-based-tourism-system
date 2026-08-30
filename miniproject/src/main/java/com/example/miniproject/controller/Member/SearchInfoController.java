@@ -8,9 +8,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import com.example.miniproject.model.TribeCode;
 
 import com.example.miniproject.entity.Activitypost;
 import com.example.miniproject.entity.Homestay;
@@ -34,6 +37,8 @@ public class SearchInfoController {
 
     @Autowired
     private TourService tourService;
+
+       
 
     @GetMapping
     public String searchPage(
@@ -123,6 +128,7 @@ public class SearchInfoController {
         model.addAttribute("tourTypeId",    tourTypeId);
         model.addAttribute("tribeId",       tribeId); 
         model.addAttribute("tribeName", tribeName);
+        model.addAttribute("tribeOptions", TribeCode.values());
         model.addAttribute("tourTypes",     tourService.getAllTourTypes());
 
         // นับจำนวนนับตามกลุ่มข้อมูลที่ดึงได้จริงของแท็บนั้นๆ

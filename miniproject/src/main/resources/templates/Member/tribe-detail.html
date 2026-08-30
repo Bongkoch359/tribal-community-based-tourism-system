@@ -226,56 +226,79 @@
         .udrop-logout:hover .udrop-icon-red { background: #f6d1c5; }
 
         /* ══════════════════════════════════════════════
-           HERO — split layout so the portrait is shown
-           in FULL (object-fit: contain), never cropped.
+           HERO — single-column banner (title + breadcrumb + meta only).
+           No split portrait: the tribe photo now lives inline at the
+           top of the article, floated beside the intro text — the
+           same placement pattern used by the reference page
+           (ethnicity.sac.or.th/ethnic_detail).
            ══════════════════════════════════════════════ */
         .tribe-hero {
             position: relative;
-            display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            min-height: 540px;
-            background: linear-gradient(150deg, var(--green-950) 0%, var(--green-800) 55%, var(--green-700) 100%);
-            border-bottom: 3px solid var(--amber-500);
             overflow: hidden;
+            min-height: 560px;
+            border-bottom: 3px solid var(--amber-500);
+        }
+        .tribe-hero-bg-img {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; object-position: center 18%;
+            z-index: 0;
         }
         .tribe-hero::before {
-            /* soft decorative texture so the left panel isn't flat */
+            /* even tint across the whole photo — same darkness everywhere,
+               no left/right or box/photo split — just enough contrast to
+               keep the white text readable while the picture stays visible */
             content: '';
-            position: absolute; inset: 0;
-            background-image: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.05) 0, transparent 40%),
-                               radial-gradient(circle at 85% 85%, rgba(214,143,20,0.10) 0, transparent 45%);
-            pointer-events: none;
+            position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(180deg, rgba(15,33,20,0.52) 0%, rgba(15,33,20,0.40) 45%, rgba(15,33,20,0.62) 100%);
+        }
+        .tribe-hero::after {
+            /* soft bottom fade so the banner meets the sub-nav cleanly */
+            content: '';
+            position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(0deg, rgba(15,33,20,0.55) 0%, transparent 22%);
         }
         .tribe-hero-info {
             position: relative; z-index: 2;
+            max-width: 1200px; margin: 0 auto;
+            min-height: 560px;
             display: flex; flex-direction: column; justify-content: center;
-            padding: 56px 4% 56px 5%;
+            padding: 44px 5% 44px;
         }
-        .breadcrumb-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 22px; }
-        .breadcrumb-nav a { color: rgba(255,255,255,0.60); font-size: 14px; font-weight: 500; transition: color .15s; }
+        .tribe-hero-panel {
+            max-width: 640px;
+        }
+        .breadcrumb-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+        .breadcrumb-nav a { color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 500; transition: color .15s; text-shadow: 0 1px 6px rgba(0,0,0,0.5); }
         .breadcrumb-nav a:hover { color: var(--amber-400); }
-        .breadcrumb-nav span { color: rgba(255,255,255,0.35); font-size: 13px; }
-        .breadcrumb-nav .bc-current { color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 600; }
+        .breadcrumb-nav span { color: rgba(255,255,255,0.45); font-size: 13px; text-shadow: 0 1px 6px rgba(0,0,0,0.5); }
+        .breadcrumb-nav .bc-current { color: #fff; font-size: 14px; font-weight: 600; text-shadow: 0 1px 6px rgba(0,0,0,0.5); }
         .hero-eyebrow {
             display: inline-flex; align-items: center; gap: 8px; width: fit-content;
-            background: rgba(214,143,20,0.16); border: 1px solid rgba(228,165,58,0.4);
+            background: rgba(214,143,20,0.22); border: 1px solid rgba(228,165,58,0.5);
             color: var(--amber-400); border-radius: 100px; padding: 6px 16px 6px 12px;
             font-size: 13px; font-weight: 700; letter-spacing: .3px; margin-bottom: 18px;
+            backdrop-filter: blur(4px);
         }
         .hero-eyebrow svg { width: 14px; height: 14px; }
         .tribe-hero h1 {
-            font-size: 50px; font-weight: 800; color: #fff;
-            line-height: 1.12; margin-bottom: 18px; letter-spacing: -.5px;
+            font-size: 44px; font-weight: 800; color: #fff;
+            line-height: 1.14; margin-bottom: 14px; letter-spacing: -.5px;
+            text-shadow: 0 3px 16px rgba(0,0,0,0.55);
         }
-        .tribe-hero-lede {
-            color: rgba(255,255,255,0.72); font-size: 16.5px; line-height: 1.8;
-            max-width: 480px; margin-bottom: 26px;
+        .hero-meta-row {
+            display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+            color: rgba(255,255,255,0.80); font-size: 14px; font-weight: 500;
+            margin-bottom: 22px;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.5);
         }
-        .tribe-hero-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+        .hero-meta-row span { display: flex; align-items: center; gap: 6px; }
+        .hero-meta-row svg { width: 15px; height: 15px; opacity: .8; }
+        .tribe-hero-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
         .hero-tag {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16);
-            color: rgba(255,255,255,0.85); border-radius: 100px;
+            background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.22);
+            color: #fff; border-radius: 100px;
             padding: 6px 16px; font-size: 13px; font-weight: 600;
+            backdrop-filter: blur(4px);
         }
         .hero-cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
         .hero-btn-primary {
@@ -296,40 +319,7 @@
         .hero-btn-ghost:hover { background: rgba(255,255,255,0.14); border-color: var(--amber-400); }
         .hero-btn-ghost svg { width: 17px; height: 17px; }
 
-        /* right panel — full-body portrait, never cropped */
-        .tribe-hero-portrait {
-            position: relative; z-index: 1;
-            display: flex; align-items: flex-end; justify-content: center;
-            padding-top: 40px;
-        }
-        .tribe-hero-portrait::before {
-            /* decorative blob behind the person so contain-fit doesn't look empty */
-            content: '';
-            position: absolute; top: 8%; left: 50%; transform: translateX(-50%);
-            width: 82%; height: 84%;
-            background: linear-gradient(160deg, rgba(255,255,255,0.10), rgba(214,143,20,0.14));
-            border-radius: 46% 54% 58% 42% / 50% 46% 54% 50%;
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-        .tribe-hero-portrait::after {
-            /* ground shadow so the figure feels grounded, not floating */
-            content: '';
-            position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
-            width: 58%; height: 26px;
-            background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, transparent 72%);
-            filter: blur(2px);
-        }
-        .tribe-hero-img {
-            position: relative; z-index: 2;
-            max-width: 84%;
-            max-height: 500px;
-            width: auto;
-            object-fit: contain;      /* shows the WHOLE person, head to toe — never cropped */
-            object-position: bottom center;
-            filter: drop-shadow(0 18px 30px rgba(0,0,0,0.35));
-        }
-
-        /* ── IN-PAGE SUB-NAV (ties the sections together, kills the "boxes everywhere" feel) ── */
+        /* ── IN-PAGE SUB-NAV ── */
         .subnav {
             position: sticky; top: var(--navbar-h); z-index: 900;
             background: rgba(255,253,248,0.92); backdrop-filter: blur(8px);
@@ -358,8 +348,6 @@
             gap: 48px; align-items: start;
         }
 
-        /* Main content — ONE continuous surface instead of a stack of separately
-           bordered/shadowed cards, so the page reads as one story, not a pile of boxes */
         .detail-main {
             background: var(--paper);
             border: 1px solid var(--neutral-200);
@@ -439,11 +427,29 @@
             position: sticky; top: calc(var(--navbar-h) + var(--subnav-h) + 20px);
         }
         .sidebar-card-top {
+            position: relative;
+            overflow: hidden;
+            padding: 30px 24px; text-align: center;
             background: linear-gradient(135deg, var(--green-900), var(--green-700));
-            padding: 28px 24px; text-align: center;
             border-bottom: 3px solid var(--amber-500);
         }
-        .sidebar-card-top .tribe-icon { font-size: 48px; margin-bottom: 10px; }
+        .sidebar-card-top::before {
+            /* subtle decorative texture instead of a duplicated photo */
+            content: '';
+            position: absolute; inset: 0;
+            background-image: radial-gradient(circle at 20% 15%, rgba(255,255,255,0.08) 0, transparent 42%),
+                               radial-gradient(circle at 85% 90%, rgba(214,143,20,0.16) 0, transparent 48%);
+            pointer-events: none;
+        }
+        .sidebar-card-top-content { position: relative; z-index: 1; }
+        .sidebar-icon-badge {
+            width: 60px; height: 60px; margin: 0 auto 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: 1.5px solid rgba(255,255,255,0.25);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .sidebar-icon-badge svg { width: 28px; height: 28px; color: var(--amber-400); }
         .sidebar-card-top h3 { color: #fff; font-size: 21px; font-weight: 800; margin-bottom: 5px; }
         .sidebar-card-top p { color: rgba(255,255,255,0.70); font-size: 14px; }
 
@@ -511,18 +517,19 @@
         .footer-bottom-links a:hover { color: rgba(255,255,255,0.85); }
 
         @media (max-width: 1024px) {
-            .tribe-hero { grid-template-columns: 1fr; min-height: auto; }
-            .tribe-hero-portrait { padding: 10px 0 30px; }
-            .tribe-hero-img { max-height: 320px; }
             .detail-wrap { grid-template-columns: 1fr; }
             .sidebar-card { position: static; }
         }
         @media (max-width: 768px) {
             :root { --navbar-h: auto; }
             .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 10px; }
-            .tribe-hero h1 { font-size: 32px; }
-            .tribe-hero-info { padding: 40px 5% 30px; }
+            .tribe-hero { min-height: 420px; }
+            .tribe-hero-info { min-height: 420px; }
+            .tribe-hero h1 { font-size: 30px; }
+            .tribe-hero-info { padding: 32px 5% 26px; }
             .detail-main { padding: 4px 22px 8px; }
+            .article-lead-img { float: none; width: 100%; margin: 0 0 20px; }
+            .article-lead-img img { height: 220px; }
             .footer-top { grid-template-columns: 1fr; gap: 26px; }
             .footer-bottom { flex-direction: column; gap: 14px; }
         }
@@ -699,10 +706,20 @@
     </div>
 </nav>
 
-<!-- HERO — split layout: text on the left, full-body portrait on the right (object-fit: contain, so nothing is cropped) -->
+<!-- HERO — text-only banner (title + breadcrumb + meta). The tribe photo
+     no longer sits in a separate split-hero panel; it now appears inline
+     at the top of the article body, floated beside the intro paragraph —
+     matching the reference page's image + running-text placement. -->
 <section class="tribe-hero">
+    <img class="tribe-hero-bg-img"
+         th:src="@{'/images/tribes/' + ${tribe.image}}"
+         th:alt="${tribe.name}"
+         onerror="this.src='https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=1600&h=900&fit=crop'">
     <div class="tribe-hero-info">
+        <div class="tribe-hero-panel">
         <nav class="breadcrumb-nav">
+            <a th:href="@{/}" href="/">หน้าแรก</a>
+            <span>›</span>
             <a th:href="@{/tribe-info}" href="/tribe-info">ข้อมูลชนเผ่า</a>
             <span>›</span>
             <span class="bc-current" th:text="${tribe.name}">ชื่อชนเผ่า</span>
@@ -712,7 +729,16 @@
             กลุ่มชาติพันธุ์ภาคเหนือ
         </span>
         <h1 th:text="${tribe.name}">ชื่อชนเผ่า</h1>
-        <p class="tribe-hero-lede">รู้จักวิถีชีวิต ภาษา และวัฒนธรรมของชุมชน ก่อนออกเดินทางไปสัมผัสประสบการณ์จริงกับพวกเขา</p>
+        <div class="hero-meta-row">
+            <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                อัปเดตล่าสุด 2569
+            </span>
+            <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                ภาคเหนือ ประเทศไทย
+            </span>
+        </div>
         <div class="tribe-hero-tags">
             <span class="hero-tag">🏔️ ภาคเหนือ</span>
             <span class="hero-tag">📖 ประวัติศาสตร์</span>
@@ -720,7 +746,7 @@
             <span class="hero-tag">🌿 วิถีชีวิต</span>
         </div>
         <div class="hero-cta-row">
-            <a href="#tours" class="hero-btn-primary">
+            <a th:href="@{/search(tribeId=${tribe.id}, tribeName=${tribe.name}, type='tour')}" href="/search" class="hero-btn-primary">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
                 ดูทัวร์ของเผ่านี้
             </a>
@@ -729,16 +755,11 @@
                 อ่านข้อมูลเผ่า
             </a>
         </div>
-    </div>
-    <div class="tribe-hero-portrait">
-        <img class="tribe-hero-img"
-             th:src="@{'/images/tribes/' + ${tribe.image}}"
-             th:alt="${tribe.name}"
-             onerror="this.src='https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&h=1000&fit=crop'">
+        </div>
     </div>
 </section>
 
-<!-- IN-PAGE SUB-NAV — links all sections together as one page instead of separate boxes -->
+<!-- IN-PAGE SUB-NAV -->
 <div class="subnav">
     <div class="subnav-inner" id="subnavInner">
         <a href="#history" class="subnav-link" data-target="history">ประวัติความเป็นมา</a>
@@ -746,13 +767,15 @@
         <a href="#culture" class="subnav-link" data-target="culture">วัฒนธรรมและประเพณี</a>
         <a href="#lifestyle" class="subnav-link" data-target="lifestyle">วิถีชีวิต</a>
         <a th:if="${tribe.vocabularies != null and !tribe.vocabularies.isEmpty()}" href="#vocab" class="subnav-link" data-target="vocab">ห้องเรียนภาษา</a>
-        <a href="#tours" class="subnav-link" data-target="tours">ทัวร์ทั้งหมด</a>
     </div>
 </div>
 
 <div class="detail-wrap">
     <div class="detail-main">
 
+        <!-- ประวัติความเป็นมา — the tribe's photo is placed here, floated
+             at the top-left of the section, so the intro text wraps
+             around it (same pattern as the reference article). -->
         <section class="content-section" id="history">
             <div class="section-header-bar">
                 <div class="section-icon" style="background:#e2f0e5;">
@@ -836,62 +859,6 @@
             </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
-             ทัวร์ทั้งหมดของเผ่านี้
-             หน้านี้คาดหวังตัวแปร model attribute "tribeTours" (List<Tour>)
-             ที่ Controller ดึงมาจาก DB ด้วยเงื่อนไข tribeid (Integer)
-             ซึ่งเป็น column ธรรมดาใน Tour ที่เก็บเลขอ้างอิงถึง Tribe.id (hardcoded)
-             ไม่ใช่ @ManyToOne เพราะ Tribe ไม่ใช่ @Entity
-             เช่น tourRepository.findByTribeid(tribe.getId())
-             ถ้ายังไม่ได้ส่งมา ให้เพิ่มใน Controller ก่อน (ดูคำอธิบายท้ายข้อความ)
-             ══════════════════════════════════════════════════════════ -->
-        <section class="content-section" id="tours">
-            <div class="section-header-bar">
-                <div class="section-icon" style="background:#faedd2;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#b9790c" stroke-width="2">
-                        <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                    </svg>
-                </div>
-                <h3>ทัวร์ทั้งหมดของเผ่านี้</h3>
-            </div>
-
-            <div class="tours-head">
-                <div class="tours-head-text">
-                    <span class="tours-count-badge" th:if="${tribeTours != null and !tribeTours.isEmpty()}">
-                        <span th:text="${#lists.size(tribeTours)}">0</span> ทัวร์ที่เปิดให้จอง
-                    </span>
-                </div>
-                <a th:href="@{/search(tribeId=${tribe.id}, tribeName=${tribe.name}, type='tour')}" href="/search" class="tours-see-all">
-                    ดูทัวร์ทั้งหมดของ <span th:text="${tribe.name}">เผ่านี้</span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
-                </a>
-            </div>
-
-            <div class="tours-grid" th:if="${tribeTours != null and !tribeTours.isEmpty()}">
-                <a class="tour-card" th:each="tour : ${tribeTours}" th:href="@{'/tour/' + ${tour.tourid}}" href="#">
-                    <img class="tour-card-img"
-                         th:src="@{'/images/tours/' + ${tour.images}}"
-                         th:alt="${tour.tourmname}"
-                         onerror="this.src='https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=280&fit=crop'">
-                    <div class="tour-card-body">
-                        <h5 th:text="${tour.tourmname}">ชื่อทัวร์</h5>
-                        <div class="tour-card-meta">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-                            <span th:text="${tour.tourDuration}">1 วัน</span>
-                        </div>
-                        <div class="tour-card-price">
-                            เริ่ม ฿<span th:text="${#numbers.formatDecimal(tour.startingPrice, 0, 0)}">0</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="tours-empty" th:if="${tribeTours == null or tribeTours.isEmpty()}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                <span>ยังไม่มีทัวร์ที่ผูกกับเผ่านี้ในระบบตอนนี้ — กดปุ่ม "ดูทัวร์ทั้งหมด" ด้านบนเพื่อค้นหาด้วยตัวเอง</span>
-            </div>
-        </section>
-
         <a th:href="@{/tribe-info}" href="/tribe-info" class="btn-back-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
             ย้อนกลับไปหน้ารายชื่อชนเผ่า
@@ -901,9 +868,13 @@
     <div class="detail-sidebar">
         <div class="sidebar-card">
             <div class="sidebar-card-top">
-                <div class="tribe-icon">🏔️</div>
-                <h3 th:text="${tribe.name}">ชื่อชนเผ่า</h3>
-                <p>กลุ่มชาติพันธุ์ภาคเหนือ</p>
+                <div class="sidebar-card-top-content">
+                    <div class="sidebar-icon-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <h3 th:text="${tribe.name}">ชื่อชนเผ่า</h3>
+                    <p>กลุ่มชาติพันธุ์ภาคเหนือ</p>
+                </div>
             </div>
             <div class="sidebar-card-body">
                 <div class="sidebar-info-row">

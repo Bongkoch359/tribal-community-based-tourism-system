@@ -60,6 +60,9 @@ function resetSearchFields() {
 
   const tourTypeSelect = document.getElementById('tourtype-select');
   if (tourTypeSelect) tourTypeSelect.value = '';
+
+  const tribeSelect = document.getElementById('tribe-select'); // ← เพิ่ม
+  if (tribeSelect) tribeSelect.value = '';                      // ← เพิ่ม
 }
 
 /**
@@ -109,6 +112,7 @@ function switchTab(type, isUserClick = true) {
   const checkoutBox   = document.getElementById('checkout-wrapper');
   const guestWrapper  = document.getElementById('guest-wrapper');
   const tourTypeBox   = document.getElementById('tourtype-wrapper');
+  const tribeBox      = document.getElementById('tribe-wrapper'); // ← เพิ่ม
 
   function setBoxState(box, show) {
     if (!box) return;
@@ -125,12 +129,14 @@ function switchTab(type, isUserClick = true) {
   setBoxState(checkoutBox, false);
   setBoxState(guestWrapper, false);
   setBoxState(tourTypeBox, false);
+  setBoxState(tribeBox, false); // ← เพิ่ม
 
   if (type === 'tour') {
     setBoxState(dateTourStart, true);
     setBoxState(dateTourEnd, true);
     setBoxState(guestWrapper, true);
     setBoxState(tourTypeBox, true);
+    setBoxState(tribeBox, true); // ← เพิ่ม
   } else if (type === 'homestay') {
     setBoxState(checkinBox, true);
     setBoxState(checkoutBox, true);

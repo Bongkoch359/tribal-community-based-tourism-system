@@ -95,6 +95,49 @@ private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
     }
 
     // ════════════════════════════════════════════════════════
+    //  VALIDATION HELPERS (ใช้ร่วมกันทั้ง create / edit)
+    // ════════════════════════════════════════════════════════
+
+    /**
+     * ตรวจสอบจำนวนห้อง / ผู้ใหญ่ / เด็ก ให้เป็นค่าที่ถูกต้อง
+     * แทนที่จะ silently default ค่าผิดๆ ให้กลายเป็น 1 เหมือนเดิม
+     * ที่นี่จะ throw IllegalArgumentException ทันทีถ้าค่าไม่สมเหตุสมผล
+     */
+    private void validateGuestCounts(Integer numofrooms, Integer numofAdults, Integer numofChildren) {
+
+        if (numofrooms == null || numofrooms < 1) {
+            throw new IllegalArgumentException("จำนวนห้องต้องมีอย่างน้อย 1 ห้อง");
+        }
+
+        if (numofAdults == null || numofAdults < 1) {
+            throw new IllegalArgumentException("จำนวนผู้ใหญ่ต้องมีอย่างน้อย 1 ท่าน");
+        }
+
+        if (numofChildren != null && numofChildren < 0) {
+            throw new IllegalArgumentException("จำนวนเด็กต้องไม่ติดลบ");
+        }
+    }
+
+    /**
+     * ตรวจสอบว่าจำนวนผู้เข้าพัก (ผู้ใหญ่ + เด็ก) ไม่เกินความจุของห้อง
+     * สมมติฐาน: roomtype.getMaxguest() คือความจุ "ต่อห้อง" ดังนั้นถ้าจองหลายห้อง
+     * ความจุรวมจะคูณตามจำนวนห้อง (maxguest * rooms)
+     * — ถ้าระบบจริงหมายถึงความจุรวมทั้งหมดไม่คูณตามห้อง ให้เอา " * rooms" ออก
+     */
+    private void validateCapacity(Roomtype roomtype, int rooms, int adults, int children) {
+        if (roomtype.getMaxguest() == null) return; // ไม่ได้กำหนดความจุไว้ ข้ามการเช็ค
+
+        int totalGuests = adults + children;
+        int capacity = roomtype.getMaxguest() * rooms;
+
+        if (totalGuests > capacity) {
+            throw new IllegalArgumentException(
+                    "จำนวนผู้เข้าพัก (" + totalGuests + " ท่าน) เกินความจุที่ห้องรองรับ (สูงสุด "
+                            + capacity + " ท่าน สำหรับ " + rooms + " ห้อง)");
+        }
+    }
+
+    // ════════════════════════════════════════════════════════
     //  CREATE HOMESTAY BOOKING
     // ════════════════════════════════════════════════════════
 
@@ -120,28 +163,34 @@ private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
             throw new IllegalArgumentException("วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน");
         }
 
+        // ── 1.5 Validate จำนวนห้อง / ผู้ใหญ่ / เด็ก (ปฏิเสธค่าที่ไม่ถูกต้องแทนการ default เงียบๆ) ──
+        validateGuestCounts(numofrooms, numofAdults, numofChildren);
+
         // ── 2. ดึง Roomtype ────────────────────────────────────
         Roomtype roomtype = roomtypeRepository.findById(roomtypeId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบประเภทห้องพัก: " + roomtypeId));
- int rooms = (numofrooms != null && numofrooms > 0) ? numofrooms : 1;
 
-    
-    if (roomtype.getTotalrooms() != null) {
-        Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
-                roomtypeId, Date.valueOf(dateIn), Date.valueOf(dateOut));
-        int availableRooms = roomtype.getTotalrooms() - (bookedRooms != null ? bookedRooms : 0);
+        int rooms    = numofrooms;
+        int adults   = numofAdults;
+        int children = (numofChildren != null) ? numofChildren : 0;
 
-        if (rooms > availableRooms) {
-            throw new IllegalArgumentException(
-                    "ห้องว่างไม่เพียงพอในช่วงวันที่เลือก (เหลือ " + Math.max(0, availableRooms) + " ห้อง)");
+        // ── 2.5 เช็คความจุห้อง (ผู้ใหญ่ + เด็ก ต้องไม่เกิน maxguest * จำนวนห้อง) ──
+        validateCapacity(roomtype, rooms, adults, children);
+
+        if (roomtype.getTotalrooms() != null) {
+            Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
+                    roomtypeId, Date.valueOf(dateIn), Date.valueOf(dateOut));
+            int availableRooms = roomtype.getTotalrooms() - (bookedRooms != null ? bookedRooms : 0);
+
+            if (rooms > availableRooms) {
+                throw new IllegalArgumentException(
+                        "ห้องว่างไม่เพียงพอในช่วงวันที่เลือก (เหลือ " + Math.max(0, availableRooms) + " ห้อง)");
+            }
         }
-    }
 
-    long   nights   = ChronoUnit.DAYS.between(dateIn, dateOut);
-    int    adults   = (numofAdults != null && numofAdults > 0) ? numofAdults : 1;
-    int    children = (numofChildren != null)                  ? numofChildren : 0;
-    double subtotal = roomtype.getPricepernight() * nights * rooms;
-       
+        long   nights   = ChronoUnit.DAYS.between(dateIn, dateOut);
+        double subtotal = roomtype.getPricepernight() * nights * rooms;
+
 
         // ── 4. สร้าง Booking หลัก ──────────────────────────────
         Booking booking = new Booking();
@@ -226,6 +275,9 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         if (!dateOut.isAfter(dateIn))
             throw new IllegalArgumentException("วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน");
 
+        // ── 4.5 Validate จำนวนห้อง / ผู้ใหญ่ / เด็ก ─────────────
+        validateGuestCounts(numofrooms, numofAdults, numofChildren);
+
         // ── 5. ดึง Bookingroomdetail ────────────────────────────
         if (booking.getRoomDetails() == null || booking.getRoomDetails().isEmpty())
             throw new RuntimeException("ไม่พบรายละเอียดห้องพักของการจองนี้");
@@ -233,37 +285,40 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         Bookingroomdetail detail   = booking.getRoomDetails().get(0);
         Roomtype          roomtype = detail.getRoomtype();
 
-    int rooms = (numofrooms != null && numofrooms > 0) ? numofrooms : 1;
+        int rooms    = numofrooms;
+        int adults   = numofAdults;
+        int children = (numofChildren != null) ? numofChildren : 0;
 
-    // ⛔ เช็คห้องว่าง — นับรวมของ booking นี้เองด้วย (เพราะยังไม่ได้ save ค่าใหม่)
-    //    ต้องหักจำนวนห้องเดิมของ booking นี้ออกก่อน ถ้าช่วงวันใหม่ยังทับกับช่วงวันเดิม
-    if (roomtype.getTotalrooms() != null) {
-        Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
-                roomtype.getRoomtypeid(), Date.valueOf(dateIn), Date.valueOf(dateOut));
-        int totalBooked = (bookedRooms != null ? bookedRooms : 0);
+        // ── 5.5 เช็คความจุห้อง (ผู้ใหญ่ + เด็ก ต้องไม่เกิน maxguest * จำนวนห้อง) ──
+        validateCapacity(roomtype, rooms, adults, children);
 
-        // ถ้าช่วงวันเดิมของ booking นี้ทับกับช่วงวันใหม่ที่กำลังจะเช็ค ต้องหักตัวเองออก
-        // (เพราะ query countBookedRoomsInRange น่าจะนับรวม detail เดิมของ booking นี้ไปแล้ว
-        //  ถ้าช่วงวันเดิม-ใหม่คาบเกี่ยวกัน)
-        boolean oldOverlapsNewRange = detail.getCheckindate().toLocalDate().isBefore(dateOut)
-                && detail.getCheckoutdate().toLocalDate().isAfter(dateIn);
-        if (oldOverlapsNewRange) {
-            totalBooked -= detail.getNumofrooms();
+        // ⛔ เช็คห้องว่าง — นับรวมของ booking นี้เองด้วย (เพราะยังไม่ได้ save ค่าใหม่)
+        //    ต้องหักจำนวนห้องเดิมของ booking นี้ออกก่อน ถ้าช่วงวันใหม่ยังทับกับช่วงวันเดิม
+        if (roomtype.getTotalrooms() != null) {
+            Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
+                    roomtype.getRoomtypeid(), Date.valueOf(dateIn), Date.valueOf(dateOut));
+            int totalBooked = (bookedRooms != null ? bookedRooms : 0);
+
+            // ถ้าช่วงวันเดิมของ booking นี้ทับกับช่วงวันใหม่ที่กำลังจะเช็ค ต้องหักตัวเองออก
+            // (เพราะ query countBookedRoomsInRange น่าจะนับรวม detail เดิมของ booking นี้ไปแล้ว
+            //  ถ้าช่วงวันเดิม-ใหม่คาบเกี่ยวกัน)
+            boolean oldOverlapsNewRange = detail.getCheckindate().toLocalDate().isBefore(dateOut)
+                    && detail.getCheckoutdate().toLocalDate().isAfter(dateIn);
+            if (oldOverlapsNewRange) {
+                totalBooked -= detail.getNumofrooms();
+            }
+
+            int availableRooms = roomtype.getTotalrooms() - totalBooked;
+
+            if (rooms > availableRooms) {
+                throw new IllegalArgumentException(
+                        "ห้องว่างไม่เพียงพอในช่วงวันที่เลือก (เหลือ " + Math.max(0, availableRooms) + " ห้อง)");
+            }
         }
 
-        int availableRooms = roomtype.getTotalrooms() - totalBooked;
+        long   nights   = ChronoUnit.DAYS.between(dateIn, dateOut);
+        double subtotal = roomtype.getPricepernight() * nights * rooms;
 
-        if (rooms > availableRooms) {
-            throw new IllegalArgumentException(
-                    "ห้องว่างไม่เพียงพอในช่วงวันที่เลือก (เหลือ " + Math.max(0, availableRooms) + " ห้อง)");
-        }
-    }
-
-    int    adults   = (numofAdults != null && numofAdults > 0) ? numofAdults : 1;
-    int    children = (numofChildren != null)                  ? numofChildren : 0;
-    long   nights   = ChronoUnit.DAYS.between(dateIn, dateOut);
-    double subtotal = roomtype.getPricepernight() * nights * rooms;
-       
 
         // ── 7. อัปเดต Bookingroomdetail ────────────────────────
         detail.setCheckindate(Date.valueOf(dateIn));

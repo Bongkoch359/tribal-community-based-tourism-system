@@ -436,6 +436,22 @@
   </select>
 </div>
 
+<div class="sf" id="tribe-wrapper" style="display:none;">
+  <div class="sf-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+    </svg>
+    ชนเผ่า
+  </div>
+  <select name="tribeId" id="tribe-select">
+    <option value="">ทุกชนเผ่า</option>
+    <option th:each="tc : ${tribeOptions}"
+            th:value="${tc.id}"
+            th:text="${tc.label}"
+            th:selected="${tc.id == tribeId}"></option>
+  </select>
+</div>
+
 
     <!-- ── วันที่เช็คอิน (Homestay) ── -->
     <div class="sf sf-date" id="checkin-wrapper" style="display:none;">
@@ -719,10 +735,8 @@
               : 'ไม่มีรายละเอียด'}">
 </p>
 
-            <div class="card-tags">
-              <span class="card-tag">กิจกรรมชุมชน</span>
-            </div>
             <div class="card-footer">
+              <span class="card-tag">กิจกรรมชุมชน</span>
               <a th:href="@{/member/activity/{id}(id=${a.activityid})}" class="btn-book">
                 ดูรายละเอียด
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg>
@@ -852,7 +866,7 @@
     <div class="grid">
       <th:block th:each="h : ${homestays}">
         <div class="card">
-          <div class="fcard-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
+          <div class="card-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
            <img th:if="${imgs != null and imgs.length > 0}"
      th:src="@{${imgs[0]}}"
      alt="ภาพโฮมสเตย์" loading="lazy"/>
@@ -883,10 +897,7 @@
 </p>
 
             <div class="card-footer">
-              <div>
-                <div class="card-price-label">ราคา</div>
-                <div class="card-price" style="color:#0369a1;font-size:18px;">ดูรายละเอียดราคา</div>
-              </div>
+              <span class="card-footer-note">ดูรายละเอียดราคาและห้องว่าง</span>
               <a th:href="@{/homestay/{id}(id=${h.homestayid}, checkin=${startDate}, checkout=${endDate}, guest=${numGuest})}" class="btn-book" style="background:#0369a1;">ดูห้อง</a>
             </div>
           </div>
