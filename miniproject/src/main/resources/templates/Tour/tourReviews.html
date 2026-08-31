@@ -736,7 +736,7 @@
                     <i class="fas fa-comments"></i>
                 </div>
                 <div>
-                    <div class="name">รีวิวจากทุกทัวร์ในความดูแลของคุณ</div>
+                    <div class="name">รีวิวทั้งหมดจากทัวร์ของคุณ</div>
                     <div class="meta" th:if="${reviewedTourCount != null and reviewedTourCount > 0}">
                         <i class="fas fa-route"></i>
                         <span th:text="'จาก ' + ${reviewedTourCount} + ' ทัวร์'">จาก 0 ทัวร์</span>
@@ -765,7 +765,7 @@
                     <div style="margin-bottom: 16px;">
                         <label for="tourTypeSelect" class="panel-title"
                             style="margin-bottom: 8px; border-left: 3px solid var(--amber); padding-left: 8px; display: inline-block;">
-                            กรองรีวิวตามประเภททัวร์
+                            ประเภททัวร์
                         </label>
                         <div class="select-wrapper">
                             <select id="tourTypeSelect" class="filter-select" onchange="filterByType(this.value)">
@@ -780,7 +780,7 @@
                     </div>
 
                     <!-- กรองดาว -->
-                    <div class="panel-title">กรองรีวิวตามดาว</div>
+                    <div class="panel-title">คะแนนรีวิว</div>
                     <div class="filter-row" id="starFilterList">
                         <span class="filter-chip active" data-star="0" onclick="filterByStar(0, this)">
                             <i class="fas fa-list"></i>
