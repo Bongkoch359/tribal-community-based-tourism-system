@@ -42,8 +42,10 @@ body {
     height: 90px;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
     box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+    border-bottom: 4px solid transparent;
+    border-image: linear-gradient(to right, #f7b733, #e8850a) 1;
 }
 
 .nav-brand {
@@ -467,7 +469,15 @@ body {
 
 textarea.form-control {
     resize: vertical;
-    min-height: 100px;
+    min-height: 180px;
+}
+
+#tourdetail {
+    min-height: 240px;
+}
+
+#conditiontour {
+    min-height: 140px;
 }
 
 select.form-control {
@@ -582,13 +592,14 @@ select.form-control {
 
 /* ─── MULTI-IMAGE UPLOAD ─── */
 .img-upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: 10px;
-    background: #faf7ef;
-    padding: 28px 20px;
+    border: 1.5px dashed #006e2f;
+    border-radius: 12px;
+    background: #fbfdf9;
+    padding: 5px 5px;
+  
     text-align: center;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: all 0.2s ease;
     margin-bottom: 14px;
 }
 
@@ -1076,11 +1087,23 @@ input[type="file"] {
 
 .map-box {
     width: 100%;
-    height: 220px;
+    height: 370px;
     border-radius: 10px;
     border: 1px solid var(--border, #ddd);
     margin-top: 8px;
+    overflow: hidden;
     background: #f2f2f2;
+}
+
+.map-box.leaflet-container {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.map-box .leaflet-control-container,
+.map-box .leaflet-top,
+.map-box .leaflet-bottom {
+    position: absolute !important;
 }
 
 .search-input-wrap {
@@ -1126,9 +1149,9 @@ input[type="file"] {
 
 /* ไอคอนคลาวด์สีเขียวแบบในรูป */
 .img-upload-zone .cloud-icon {
-    font-size: 46px;
+    font-size: 30px;      /* เดิม 46px */
     color: #006e2f;
-    margin-bottom: 12px;
+    margin-bottom: 8px;   /* เดิม 12px */
     display: block;
 }
 

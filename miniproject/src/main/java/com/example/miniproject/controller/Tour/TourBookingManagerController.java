@@ -56,7 +56,7 @@ public class TourBookingManagerController {
             tabKey = filterStatus.name();
         }
 
-        List<Booking> bookings = tourBookingService.getTourBookingsByManager(manager.getManagerid(), filterStatus);
+        List<Booking> bookings = tourBookingService.getTourBookingsByManager(manager.getManagerid(), null);
 
         // ── นับจำนวนแต่ละสถานะ (ไม่ผูกกับ tab ที่กำลังดูอยู่ ใช้ทั้งหมดของ manager) ──
         List<Booking> allBookings = tourBookingService.getTourBookingsByManager(manager.getManagerid(), null);

@@ -38,6 +38,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         System.out.println("📁 Review resource path: " + reviewPath);
         registry.addResourceHandler("/uploads/reviews/**")
                 .addResourceLocations("file:" + reviewPath);
-    
+
+        // ── Activity post images ───────────────────────────────────────────
+        String postPath = System.getProperty("user.dir") + "/uploads/posts/";
+        System.out.println("📁 Posts resource path: " + postPath);
+        registry.addResourceHandler("/uploads/posts/**")
+                .addResourceLocations("file:" + postPath);
+
     }
 }

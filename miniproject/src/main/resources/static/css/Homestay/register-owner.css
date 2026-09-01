@@ -14,7 +14,10 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
-   height: 90px;
+    height: 90px;
+    border-bottom: 4px solid transparent;
+    /* เพิ่ม */
+    border-image: linear-gradient(to right, #f7b733, #e8850a) 1;
 }
 
 .top-navbar .brand {
@@ -291,7 +294,8 @@ body {
 }
 
 .link-green:visited {
-    color: #2d6a2d; /* กันไม่ให้เปลี่ยนเป็นสีม่วงเวลาเคยกดแล้ว เพราะเป็นปุ่มเปิด modal ไม่ใช่ลิงก์ไปหน้าอื่นจริงๆ */
+    color: #2d6a2d;
+    /* กันไม่ให้เปลี่ยนเป็นสีม่วงเวลาเคยกดแล้ว เพราะเป็นปุ่มเปิด modal ไม่ใช่ลิงก์ไปหน้าอื่นจริงๆ */
 }
 
 /* ── Buttons ── */
@@ -395,11 +399,13 @@ body {
     border-color: #2d6a2d;
     color: #fff;
 }
+
 .btn-accept-green:hover:not(:disabled) {
     background-color: #1e4620;
     border-color: #1e4620;
     color: #fff;
 }
+
 .btn-accept-green:disabled {
     background-color: #c4c4c4;
     border-color: #c4c4c4;
@@ -407,6 +413,7 @@ body {
     opacity: 1;
     cursor: not-allowed;
 }
+
 /* Upload area */
 .upload-area {
     border: 2px dashed #ccc;
@@ -521,30 +528,31 @@ body {
     padding: 1px 5px;
     border-radius: 3px;
 }
-  /* ─── FOOTER ─── */
-        .footer {
-            margin-top: auto;
-            padding: 1rem 2rem;
-            background: #0d3d30;
-            color: #c8f0e4;
-            font-size: .9rem;
-        }
 
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* ─── FOOTER ─── */
+.footer {
+    margin-top: auto;
+    padding: 1rem 2rem;
+    background: #0d3d30;
+    color: #c8f0e4;
+    font-size: .9rem;
+}
 
-        .footer a {
-            color: #5ecfb0;
-            text-decoration: none;
-            margin-left: 8px;
-        }
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .footer a:hover {
-            text-decoration: underline;
-        }
+.footer a {
+    color: #5ecfb0;
+    text-decoration: none;
+    margin-left: 8px;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
 
 /* ══════════════════════════════════════════════════════════
    Homestay location map (แบบเดียวกับหน้าเพิ่มทัวร์)
@@ -613,8 +621,10 @@ body {
     border: 1px solid #ddd;
     overflow: hidden;
     position: relative;
-    isolation: isolate; /* กัน z-index ภายในแผนที่หลุดออกไปนอกกล่อง */
-    z-index: 1;          /* ต้องน้อยกว่า .top-navbar (z-index: 100) */
+    isolation: isolate;
+    /* กัน z-index ภายในแผนที่หลุดออกไปนอกกล่อง */
+    z-index: 1;
+    /* ต้องน้อยกว่า .top-navbar (z-index: 100) */
 }
 
 .hs-map-box .leaflet-container {

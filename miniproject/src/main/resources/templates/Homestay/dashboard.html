@@ -14,7 +14,29 @@
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
 
     <style>
+        /* ─── Chart title (เพิ่มใหม่) ─── */
+        .revenue-trend-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
 
+        .revenue-trend-title-row h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a3d1f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .revenue-trend-subtitle {
+            font-size: 12px;
+            color: #9a9a96;
+            margin: 2px 0 14px 26px;
+        }
     </style>
 </head>
 
@@ -150,6 +172,14 @@
         <div class="dashboard-mid-grid">
 
             <div class="revenue-trend-card">
+
+                <!-- หัวข้อกราฟ -->
+                <div class="revenue-trend-title-row">
+                    <h3><i class="fas fa-chart-line"></i> แนวโน้มรายได้และการจอง</h3>
+                </div>
+                <p class="revenue-trend-subtitle">ภาพรวมรายได้และจำนวนการจองย้อนหลัง
+                    เลือกดูช่วงเวลาที่ต้องการได้จากปุ่ม "เลือกช่วงเวลา"</p>
+
                 <div
                     style="display:flex; flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                     <div class="trend-tab-group">
@@ -157,26 +187,15 @@
                             onclick="switchTrendTab('revenue')">
                             <i class="fas fa-chart-column"></i> รายได้ต่อเดือน
                         </button>
-                        <button type="button" class="trend-tab" data-target="occupancy"
-                            onclick="switchTrendTab('occupancy')"
-                            title="เปอร์เซ็นต์ห้องพักที่ถูกใช้งานเทียบกับจำนวนห้องทั้งหมดในแต่ละเดือน">
-                            <i class="fas fa-bed"></i> อัตราการเข้าพัก
+                        <button type="button" class="trend-tab" data-target="bookingCount"
+                            onclick="switchTrendTab('bookingCount')" title="จำนวนการจองทั้งหมดในแต่ละเดือน">
+                            <i class="fas fa-calendar-check"></i> จำนวนการจองต่อเดือน
                         </button>
                     </div>
 
                     <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                        <a th:href="@{/owner/dashboard(homestayid=${homestayid}, range=3)}"
-                            th:classappend="${selectedRange == '3'} ? ' range-btn-active'" class="range-btn">3
-                            เดือน</a>
-                        <a th:href="@{/owner/dashboard(homestayid=${homestayid}, range=6)}"
-                            th:classappend="${selectedRange == '6'} ? ' range-btn-active'" class="range-btn">6
-                            เดือน</a>
-                        <a th:href="@{/owner/dashboard(homestayid=${homestayid}, range=12)}"
-                            th:classappend="${selectedRange == '12'} ? ' range-btn-active'" class="range-btn">12
-                            เดือน</a>
-
                         <button type="button" class="range-btn" onclick="toggleCustomRange()">
-                            <i class="fas fa-calendar-days"></i> เลือกช่วงเวลา
+                            <i class="fas fa-calendar-days"></i> กำหนดเอง
                         </button>
                     </div>
                 </div>
@@ -214,17 +233,17 @@
                     </div>
                 </div>
 
-                <!-- กราฟอัตราการเข้าพัก (ซ่อนไว้ก่อน) -->
-                <div class="revenue-bars" id="trendPanel-occupancy" style="display:none;">
-                    <div class="revenue-bar-col" th:each="p, iter : ${occupancyTrend}"
+                <!-- กราฟจำนวนการจอง (ซ่อนไว้ก่อน) -->
+                <div class="revenue-bars" id="trendPanel-bookingCount" style="display:none;">
+                    <div class="revenue-bar-col" th:each="p, iter : ${bookingCountTrend}"
                         th:classappend="${iter.last} ? ' is-current' : ''">
-                        <span class="revenue-bar-amount booking-count-amount"
-                            th:text="${#numbers.formatDecimal(p.occupancyPct, 1, 'COMMA', 1, 'POINT')} + '%'">0.0%</span>
+                        <span class="revenue-bar-amount booking-count-amount" th:text="${p.count} + ' ครั้ง'">0
+                            ครั้ง</span>
                         <div class="revenue-bar-track">
                             <div class="revenue-bar-fill booking-count-fill"
                                 th:classappend="${iter.last} ? ' bar-current' : ''"
-                                th:style="'height:' + ${p.heightPct} + '%'"
-                                th:title="${#numbers.formatDecimal(p.occupancyPct, 1, 'COMMA', 1, 'POINT')} + '%'"></div>
+                                th:style="'height:' + ${p.heightPct} + '%'" th:title="${p.count} + ' ครั้ง'">
+                            </div>
                         </div>
                         <span class="revenue-bar-label" th:text="${p.label}">ม.ค. 68</span>
                     </div>
@@ -278,7 +297,7 @@
             </span>
         </div>
     </footer>
-   <script th:src="@{/js/Homestay/dashboard.js}"></script>
+    <script th:src="@{/js/Homestay/dashboard.js}"></script>
 
 </body>
 

@@ -26,7 +26,7 @@ public class DashboardTourController {
 
     @GetMapping("/dashboard")
     public String dashboard(
-            @RequestParam(value = "range", required = false, defaultValue = "6") String range,
+            @RequestParam(value = "range", required = false, defaultValue = "12") String range,
             @RequestParam(value = "startMonth", required = false) String startMonthParam,
             @RequestParam(value = "endMonth", required = false) String endMonthParam,
             Model model, HttpSession session) {
@@ -54,7 +54,7 @@ public class DashboardTourController {
         model.addAttribute("stats", stats);
         model.addAttribute("totalPosts", dashboardService.getTotalPostCount(manager.getManagerid()));
 
-        // ─── คำนวณช่วงเดือนที่จะแสดงกราฟ (preset 3/6/12 หรือ custom) ───
+        // ─── คำนวณช่วงเดือนที่จะแสดงกราฟ ───
         YearMonth currentYM = YearMonth.now();
         YearMonth startYM;
         YearMonth endYM;
@@ -65,17 +65,17 @@ public class DashboardTourController {
                 startYM = YearMonth.parse(startMonthParam);
                 endYM = YearMonth.parse(endMonthParam);
             } catch (Exception e) {
-                startYM = currentYM.minusMonths(5);
+                startYM = currentYM.minusMonths(11);
                 endYM = currentYM;
-                range = "6";
+                range = "12";
             }
         } else {
             int months;
             try {
                 months = Integer.parseInt(range);
             } catch (NumberFormatException e) {
-                months = 6;
-                range = "6";
+                months = 12;
+                range = "12";
             }
             endYM = currentYM;
             startYM = currentYM.minusMonths(months - 1);
@@ -97,12 +97,12 @@ public class DashboardTourController {
         // ─── กราฟรายได้ / ยอดจองทัวร์รายเดือน ───
         List<Map<String, Object>> revenueTrend = dashboardService.getTourRevenueTrend(manager.getManagerid(), startYM,
                 endYM);
-        List<Map<String, Object>> fillRateTrend = dashboardService.getTourFillRateTrend(manager.getManagerid(), startYM,
-                endYM);
+        List<Map<String, Object>> bookingCountTrend = dashboardService.getTourBookingCountTrend(manager.getManagerid(),
+                startYM, endYM);
 
         // ─── ทัวร์ยอดจองสูงสุด ───
         List<Map<String, Object>> topTours = dashboardService.getTopToursByBookingCount(manager.getManagerid());
-        model.addAttribute("fillRateTrend", fillRateTrend);
+        model.addAttribute("bookingCountTrend", bookingCountTrend);
         model.addAttribute("revenueTrend", revenueTrend);
         model.addAttribute("topTours", topTours);
 

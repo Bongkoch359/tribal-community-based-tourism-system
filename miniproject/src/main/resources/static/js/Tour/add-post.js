@@ -1,69 +1,80 @@
-// ── รูปภาพ base64 ──
+// ── รูปภาพ: อัปโหลดเป็นไฟล์จริง (ไม่ใช้ base64) + drag & drop เหมือนหน้าแก้ไขทัวร์ ──
 const fileInput = document.getElementById('fileInput');
 const previewGrid = document.getElementById('previewGrid');
-const imagesInput = document.getElementById('imagesInput');
-const dropZone = document.getElementById('dropZone');
+const uploadZone = document.getElementById('uploadZone');
 
-let base64List = []; // เก็บ base64 ทุกรูป
+let fileList = []; // เก็บ File object จริง ๆ
 
 fileInput.addEventListener('change', function () {
-    const files = Array.from(this.files);
-    files.forEach(file => readAndAdd(file));
+    addFiles(Array.from(this.files));
     this.value = ''; // reset เพื่อให้เลือกซ้ำได้
 });
 
-function readAndAdd(file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const b64 = e.target.result; // data:image/...;base64,...
-        base64List.push(b64);
-        renderPreviews();
-        updateHiddenInput();
-    };
-    reader.readAsDataURL(file);
+function addFiles(files) {
+    files.forEach(file => {
+        if (file && file.type.startsWith('image/')) {
+            fileList.push(file);
+        }
+    });
+    syncFileInput();
+    renderPreviews();
+}
+
+// อัปเดต input.files ให้ตรงกับ fileList (จำเป็นเวลาลบรูปออกจาก preview)
+function syncFileInput() {
+    const dt = new DataTransfer();
+    fileList.forEach(file => dt.items.add(file));
+    fileInput.files = dt.files;
 }
 
 function renderPreviews() {
     previewGrid.innerHTML = '';
-    // ถ้ามีรูปให้ซ่อน dropZone placeholder text
-    dropZone.querySelector('svg').style.opacity = base64List.length ? '0' : '0.4';
-    dropZone.querySelector('span').style.display = base64List.length ? 'none' : '';
 
-    base64List.forEach((b64, idx) => {
-        const wrap = document.createElement('div');
-        wrap.className = 'preview-thumb';
+    fileList.forEach((file, idx) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'img-thumb';
 
         const img = document.createElement('img');
-        img.src = b64;
+        img.src = URL.createObjectURL(file);
+        img.onload = () => URL.revokeObjectURL(img.src);
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'remove-btn';
-        btn.innerHTML = '✕';
-        btn.onclick = () => {
-            base64List.splice(idx, 1);
+        const overlay = document.createElement('div');
+        overlay.className = 'thumb-overlay';
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'thumb-btn del-btn';
+        delBtn.innerHTML = '<i class="fas fa-xmark"></i>';
+        delBtn.onclick = () => {
+            fileList.splice(idx, 1);
+            syncFileInput();
             renderPreviews();
-            updateHiddenInput();
         };
 
-        wrap.appendChild(img);
-        wrap.appendChild(btn);
-        previewGrid.appendChild(wrap);
+        overlay.appendChild(delBtn);
+        thumb.appendChild(img);
+        thumb.appendChild(overlay);
+        previewGrid.appendChild(thumb);
     });
 }
 
-function updateHiddenInput() {
-    // เก็บหลายรูปโดยคั่นด้วย || 
-    imagesInput.value = base64List.join('||');
+// ── Drag & drop ──
+function handleDragOver(e) {
+    e.preventDefault();
+    uploadZone.classList.add('drag-over');
 }
 
-// Validate ก่อน submit
-document.getElementById('postForm').addEventListener('submit', function (e) {
-    if (base64List.length === 0) {
-        // อนุญาตให้บันทึกได้แม้ไม่มีรูป (optional)
-        imagesInput.value = '';
-    }
-});
+function handleDragLeave(e) {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const files = Array.from(e.dataTransfer.files || []);
+    addFiles(files);
+}
 
 // ── แสดง/ซ่อนฟิลด์สถานที่ ตามการเลือกทัวร์ ──
 // เลือกทัวร์ -> แสดงฟิลด์สถานที่ (บังคับกรอก)

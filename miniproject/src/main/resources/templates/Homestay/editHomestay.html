@@ -25,6 +25,8 @@
             z-index: 100;
             box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
             gap: .5rem;
+            border-bottom: 4px solid transparent;
+            border-image: linear-gradient(to right, #f7b733, #e8850a) 1;
         }
 
         .hs-navbar-brand {
@@ -719,9 +721,19 @@
         }
 
         @keyframes ring-pulse {
-            0% { transform: scale(0.9); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: scale(1.3); opacity: 0; }
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
         }
 
         .checkmark-icon {
@@ -731,8 +743,15 @@
         }
 
         @keyframes pop-in {
-            from { transform: scale(0); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-title {
@@ -767,8 +786,13 @@
         }
 
         @keyframes progress-drain {
-            from { transform: scaleX(1); }
-            to { transform: scaleX(0); }
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
         }
 
         #loadingOverlay {
@@ -795,7 +819,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .footer-actions {
@@ -924,7 +950,8 @@
 
         <div class="page-header">
             <div class="page-title-row">
-                <a th:href="@{/owner/homestays/{id}(id=${detail.homestay.homestayid})}" class="btn-back" title="ย้อนกลับ">
+                <a th:href="@{/owner/homestays/{id}(id=${detail.homestay.homestayid})}" class="btn-back"
+                    title="ย้อนกลับ">
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 <div class="page-title">
@@ -953,7 +980,8 @@
                             th:style="${detail.allImages == null or #lists.size(detail.allImages) <= 1} ? 'display:none' : ''">&#8250;</button>
                         <div class="gallery-counter" id="imgCounter"
                             th:style="${detail.allImages == null or #lists.size(detail.allImages) <= 1} ? 'display:none' : ''">
-                            1 / <span id="imgTotal" th:text="${detail.allImages != null ? #lists.size(detail.allImages) : 0}"></span>
+                            1 / <span id="imgTotal"
+                                th:text="${detail.allImages != null ? #lists.size(detail.allImages) : 0}"></span>
                         </div>
                     </div>
 
@@ -973,7 +1001,8 @@
                         </label>
                         <div style="text-align:right;">
                             <span class="upload-hint">JPG, PNG, WEBP (ไม่เกิน 5 MB)</span>
-                            <span class="upload-hint" id="imgCountHint" style="display:block; margin-top:2px; font-weight:600;"></span>
+                            <span class="upload-hint" id="imgCountHint"
+                                style="display:block; margin-top:2px; font-weight:600;"></span>
                         </div>
                         <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple />
                     </div>
@@ -1141,7 +1170,7 @@
                 removeBtn.className = 'thumb-remove';
                 removeBtn.textContent = '✕';
                 removeBtn.onclick = () => removeNewThumb(removeBtn, fileIdx, objectUrl);
-                wrap.appendChild(img); 
+                wrap.appendChild(img);
                 wrap.appendChild(removeBtn);
                 thumbStrip.appendChild(wrap);
             });

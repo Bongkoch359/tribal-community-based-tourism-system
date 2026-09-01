@@ -42,7 +42,7 @@ public class DashboardController {
         @GetMapping("/owner/dashboard")
         public String dashboard(
                         @RequestParam(value = "homestayid", required = false) Integer homestayid,
-                        @RequestParam(value = "range", required = false, defaultValue = "6") String range,
+                        @RequestParam(value = "range", required = false, defaultValue = "12") String range,
                         @RequestParam(value = "startMonth", required = false) String startMonthParam,
                         @RequestParam(value = "endMonth", required = false) String endMonthParam,
                         HttpSession session,
@@ -119,17 +119,17 @@ public class DashboardController {
                                 startYM = java.time.YearMonth.parse(startMonthParam);
                                 endYM = java.time.YearMonth.parse(endMonthParam);
                         } catch (Exception e) {
-                                startYM = currentYM.minusMonths(5);
+                                startYM = currentYM.minusMonths(11);
                                 endYM = currentYM;
-                                range = "6";
+                                range = "12";
                         }
                 } else {
                         int months;
                         try {
                                 months = Integer.parseInt(range);
                         } catch (NumberFormatException e) {
-                                months = 6;
-                                range = "6";
+                                months = 12;
+                                range = "12";
                         }
                         endYM = currentYM;
                         startYM = currentYM.minusMonths(months - 1);
@@ -224,62 +224,41 @@ public class DashboardController {
                                 gradient.append(", ");
                         cursor = end;
                 }
-                // ─── อัตราการเข้าพักรายเดือน (Occupancy Rate) ───
-                // จำนวนห้องที่เปิดขายได้จริงตอนนี้ (สถานะ "เปิดจอง")
-                long activeRoomCapacity = rooms.stream()
-                                .filter(r -> "เปิดจอง".equals(r.getStatus()))
-                                .mapToLong(r -> r.getTotalrooms() != null ? r.getTotalrooms() : 0)
-                                .sum();
 
-                Map<java.time.YearMonth, Long> bookedNightsByMonth = new LinkedHashMap<>();
+                // ─── จำนวนการจองรายเดือน ───
+                Map<java.time.YearMonth, Long> bookingCountByMonth = new LinkedHashMap<>();
                 java.time.YearMonth cursorYM3 = startYM;
                 while (!cursorYM3.isAfter(endYM)) {
-                        bookedNightsByMonth.put(cursorYM3, 0L);
+                        bookingCountByMonth.put(cursorYM3, 0L);
                         cursorYM3 = cursorYM3.plusMonths(1);
                 }
 
                 if (homestayid != null) {
-                        List<Object[]> nightRows = bookingRoomDetailRepository.findBookedNightsForOccupancy(
+                        List<Object[]> countRows = bookingRepository.countBookingsByMonthRangeByHomestayId(
                                         homestayid, startOfRange, endOfRange);
-                        for (Object[] row : nightRows) {
-                                java.sql.Date checkin = (java.sql.Date) row[0];
-                                java.sql.Date checkout = (java.sql.Date) row[1];
-                                int numRooms = ((Number) row[2]).intValue();
-
-                                java.time.LocalDate stayStart = checkin.toLocalDate().isBefore(startYM.atDay(1))
-                                                ? startYM.atDay(1)
-                                                : checkin.toLocalDate();
-                                java.time.LocalDate stayEnd = checkout.toLocalDate()
-                                                .isAfter(endYM.atEndOfMonth().plusDays(1))
-                                                                ? endYM.atEndOfMonth().plusDays(1)
-                                                                : checkout.toLocalDate();
-
-                                // เดินนับทีละคืน (วันเช็คเอาท์ไม่นับ เพราะแขกไม่ได้พักคืนนั้น)
-                                for (java.time.LocalDate d = stayStart; d.isBefore(stayEnd); d = d.plusDays(1)) {
-                                        java.time.YearMonth ym = java.time.YearMonth.from(d);
-                                        bookedNightsByMonth.merge(ym, (long) numRooms, Long::sum);
-                                }
+                        for (Object[] row : countRows) {
+                                int yr = ((Number) row[0]).intValue();
+                                int mo = ((Number) row[1]).intValue();
+                                long cnt = ((Number) row[2]).longValue();
+                                bookingCountByMonth.put(java.time.YearMonth.of(yr, mo), cnt);
                         }
                 }
 
-                List<Map<String, Object>> occupancyTrend = new ArrayList<>();
-                for (Map.Entry<java.time.YearMonth, Long> e : bookedNightsByMonth.entrySet()) {
+                List<Map<String, Object>> bookingCountTrend = new ArrayList<>();
+                long maxMonthlyBookingCount = bookingCountByMonth.values().stream()
+                                .max(Long::compareTo).orElse(0L);
+                for (Map.Entry<java.time.YearMonth, Long> e : bookingCountByMonth.entrySet()) {
                         java.time.YearMonth ym = e.getKey();
-                        long bookedNights = e.getValue();
-                        long capacityNights = activeRoomCapacity * ym.lengthOfMonth();
-
-                        double occupancyPct = capacityNights > 0
-                                        ? Math.round((bookedNights * 1000.0) / capacityNights) / 10.0
-                                        : 0.0;
-                        occupancyPct = Math.min(occupancyPct, 100.0); // กันเกิน 100% เผื่อข้อมูลผิดปกติ
-
+                        long count = e.getValue();
                         Map<String, Object> point = new LinkedHashMap<>();
                         int beYearShort = (ym.getYear() + 543) % 100;
                         point.put("label", thaiMonths[ym.getMonthValue() - 1] + " " + beYearShort);
-                        point.put("occupancyPct", occupancyPct);
-                        int heightPct = (int) Math.round(occupancyPct);
-                        point.put("heightPct", Math.max(heightPct, occupancyPct > 0 ? 6 : 2));
-                        occupancyTrend.add(point);
+                        point.put("count", count);
+                        int heightPct = maxMonthlyBookingCount > 0
+                                        ? (int) Math.round((count * 100.0) / maxMonthlyBookingCount)
+                                        : 0;
+                        point.put("heightPct", Math.max(heightPct, count > 0 ? 6 : 2));
+                        bookingCountTrend.add(point);
                 }
 
                 gradient.append(")");
@@ -305,7 +284,7 @@ public class DashboardController {
                 model.addAttribute("selectedRange", range);
                 model.addAttribute("selectedStartMonth", startYM.toString()); // เช่น 2026-03
                 model.addAttribute("selectedEndMonth", endYM.toString());
-                model.addAttribute("occupancyTrend", occupancyTrend);
+                model.addAttribute("bookingCountTrend", bookingCountTrend);
 
                 // ── ตรวจสอบข้อมูลธนาคาร + ลายเซ็น ──
                 try {

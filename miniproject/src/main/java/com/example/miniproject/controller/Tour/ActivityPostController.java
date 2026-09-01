@@ -12,10 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
@@ -30,6 +35,46 @@ public class ActivityPostController {
 
     @Autowired
     private TourScheduleRepository tourScheduleRepository;
+
+    // ─── โฟลเดอร์เก็บรูปภาพโพสต์กิจกรรม ───
+    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/posts/";
+
+    // ─── ฟังก์ชันช่วยบันทึกไฟล์รูปภาพลงดิสก์ แล้วคืน path คั่นด้วย "||" ───
+    private String saveImages(List<MultipartFile> images) throws IOException {
+        if (images == null || images.isEmpty()) {
+            return null; // ไม่มีไฟล์ใหม่ -> ไม่แตะรูปเดิม
+        }
+
+        File dir = new File(UPLOAD_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        List<String> savedPaths = new ArrayList<>();
+        for (MultipartFile file : images) {
+            if (file == null || file.isEmpty()) {
+                continue;
+            }
+
+            String original = file.getOriginalFilename();
+            String ext = "";
+            if (original != null && original.contains(".")) {
+                ext = original.substring(original.lastIndexOf("."));
+            }
+
+            String fileName = UUID.randomUUID().toString() + ext;
+            File dest = new File(dir, fileName);
+            file.transferTo(dest);
+
+            savedPaths.add("/uploads/posts/" + fileName);
+        }
+
+        if (savedPaths.isEmpty()) {
+            return null;
+        }
+
+        return String.join("||", savedPaths);
+    }
 
     // ─── ฟังก์ชันช่วยกรองเฉพาะทัวร์ที่มีรอบเปิดรับจองและยังไม่หมดอายุ ───
     private List<Tour> getActiveOpenTours(Communitymanager manager) {
@@ -95,7 +140,7 @@ public class ActivityPostController {
             @RequestParam("title") String title,
             @RequestParam("location") String location,
             @RequestParam("description") String description,
-            @RequestParam(value = "images", required = false) String images,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
             @RequestParam(value = "tourId", required = false) String tourId,
             HttpSession session,
             Model model) {
@@ -105,7 +150,8 @@ public class ActivityPostController {
             return "redirect:/manager/login";
 
         try {
-            activityPostService.createPost(title, location, description, images, tourId, manager);
+            String imagePaths = saveImages(images);
+            activityPostService.createPost(title, location, description, imagePaths, tourId, manager);
             model.addAttribute("loggedInManager", manager);
             model.addAttribute("tours", getActiveOpenTours(manager));
             model.addAttribute("successMessage", "บันทึกโพสต์สำเร็จ!");
@@ -143,7 +189,7 @@ public class ActivityPostController {
             @RequestParam("title") String title,
             @RequestParam("location") String location,
             @RequestParam("description") String description,
-            @RequestParam(value = "images", required = false) String images,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
             @RequestParam(value = "tourId", required = false) String tourId,
             HttpSession session,
             Model model) {
@@ -153,8 +199,9 @@ public class ActivityPostController {
             return "redirect:/manager/login";
 
         try {
+            String imagePaths = saveImages(images); // null = ไม่มีการอัปโหลดรูปใหม่ ให้ service คงรูปเดิมไว้
             Activitypost updated = activityPostService.updatePost(
-                    activityId, title, location, description, images, tourId);
+                    activityId, title, location, description, imagePaths, tourId);
             if (updated == null)
                 return "redirect:/manager/posts";
 

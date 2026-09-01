@@ -46,6 +46,8 @@ body {
        เพื่อไม่ให้แผนที่ทับ navbar ตอนสกรอลผ่าน */
     z-index: 1001;
     box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+    border-bottom: 4px solid transparent;
+    border-image: linear-gradient(to right, #f7b733, #e8850a) 1;
 }
 
 .nav-brand {
@@ -69,6 +71,7 @@ body {
     display: flex;
     align-items: center;
     margin-left: 1rem;
+
 }
 
 .profile-dropdown {
@@ -983,19 +986,18 @@ select.form-control {
     position: relative;
 
     overflow: hidden;
-
     width: 100%;
-    height: 400px;
+    height: 370px;
     border-radius: 10px;
     border: 1px solid var(--border, #ddd);
     margin-top: 8px;
     background: #f2f2f2;
-
-    /* ✅ สำคัญ: บังคับให้ .map-box สร้าง stacking context ของตัวเอง
-       เพื่อกัน z-index ภายในของ Leaflet (.leaflet-pane = 400,
-       .leaflet-top/.leaflet-control = 1000) ไม่ให้ "หลุด" ออกไปแข่งกับ
-       z-index ของ navbar ที่อยู่นอกกรอบนี้ ทำให้แผนที่ไปทับ navbar ตอนสกรอล */
     isolation: isolate;
+}
+
+.map-box .leaflet-container {
+    width: 100%;
+    height: 100%;
 }
 
 .search-input-wrap {

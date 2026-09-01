@@ -41,7 +41,7 @@
         <div class="nav-right">
             <div class="profile-dropdown">
                 <div class="profile-trigger">
-                   <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
+                    <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
    ? ${#strings.substring(loggedInManager.firstname,0,1)}
    : 'C'"></div>
                     <div>
@@ -93,21 +93,49 @@
             </div>
         </div>
 
-        <!-- Filter Tabs by Status (คำนวณจากสถานะรอบทัวร์) -->
-        <div class="filter-tabs" id="filterTabs">
-            <button class="tab-btn active" data-status="เปิดรับจอง" onclick="filterTours('เปิดรับจอง', this)"
-                id="tab-open">
-                <i class="fas fa-circle-check"></i> เปิดรับจอง
-                <span class="tab-count" id="count-open">0</span>
-            </button>
-            <button class="tab-btn tab-full" data-status="เต็ม" onclick="filterTours('เต็ม', this)" id="tab-full">
-                <i class="fas fa-users"></i> เต็ม
-                <span class="tab-count" id="count-full">0</span>
-            </button>
-            <button class="tab-btn tab-closed" data-status="ปิด" onclick="filterTours('ปิด', this)" id="tab-closed">
-                <i class="fas fa-ban"></i> ปิด
-                <span class="tab-count" id="count-closed">0</span>
-            </button>
+        <!-- ── Filter Toolbar ── -->
+        <div class="control-toolbar">
+            <div class="filter-item-group">
+                <label class="filter-item-label"><i class="fas fa-filter"></i> สถานะทัวร์ :</label>
+                <div class="custom-filter-dropdown" id="statusFilterDropdown">
+                    <button type="button" class="filter-dropdown-trigger status-available" id="dropdownTriggerBtn"
+                        onclick="toggleStatusDropdown()">
+                        <span class="selected-text">
+                            <i class="fas fa-circle-check"></i>
+                            <span>เปิดรับจอง</span>
+                            <span class="count-badge" id="count-open">0</span>
+                        </span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </button>
+
+                    <div class="filter-dropdown-menu" id="dropdownMenu">
+                        <!-- 1. เปิดรับจอง -->
+                        <div class="dropdown-item status-opt-available active" data-status="เปิดรับจอง"
+                            onclick="selectStatusFilter('เปิดรับจอง', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-circle-check"></i>
+                            <span class="label-text">เปิดรับจอง</span>
+                            <span class="count-badge" id="count-open-menu">0</span>
+                        </div>
+                        <!-- 2. เต็ม -->
+                        <div class="dropdown-item status-opt-full" data-status="เต็ม"
+                            onclick="selectStatusFilter('เต็ม', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-users"></i>
+                            <span class="label-text">เต็ม</span>
+                            <span class="count-badge" id="count-full-menu">0</span>
+                        </div>
+                        <!-- 3. ปิด -->
+                        <div class="dropdown-item status-opt-closed" data-status="ปิด"
+                            onclick="selectStatusFilter('ปิด', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-ban"></i>
+                            <span class="label-text">ปิด</span>
+                            <span class="count-badge" id="count-closed-menu">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Table -->

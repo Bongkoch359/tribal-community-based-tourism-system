@@ -94,7 +94,8 @@ public class DashboardService {
         return result;
     }
 
-    // ─── ใหม่: แนวโน้มรายได้ทัวร์รายเดือน แบบเลือกช่วงได้ (เฉพาะของ manager คนนั้น) ───
+    // ─── ใหม่: แนวโน้มรายได้ทัวร์รายเดือน แบบเลือกช่วงได้ (เฉพาะของ manager
+    // คนนั้น) ───
     public List<Map<String, Object>> getTourRevenueTrend(String managerId, YearMonth startYM, YearMonth endYM) {
         java.sql.Date startDate = java.sql.Date.valueOf(startYM.atDay(1));
         java.sql.Date endDate = java.sql.Date.valueOf(endYM.atEndOfMonth());
@@ -129,56 +130,45 @@ public class DashboardService {
         return result;
     }
 
-    // ─── ใหม่: อัตราการจองเต็มที่นั่งรายเดือน (Fill Rate) ของ manager คนนั้น ───
-    public List<Map<String, Object>> getTourFillRateTrend(String managerId, YearMonth startYM, YearMonth endYM) {
+    // ─── ใหม่: จำนวนการจองทัวร์รายเดือน (เพื่อดูว่าเดือนไหนจองเยอะสุด) ของ manager
+    // คนนั้น ───
+    public List<Map<String, Object>> getTourBookingCountTrend(String managerId, YearMonth startYM, YearMonth endYM) {
         java.sql.Date startDate = java.sql.Date.valueOf(startYM.atDay(1));
         java.sql.Date endDate = java.sql.Date.valueOf(endYM.atEndOfMonth());
 
-        Map<YearMonth, Long> bookedSeatsByMonth = new LinkedHashMap<>();
-        Map<YearMonth, Long> capacityByMonth = new LinkedHashMap<>();
+        Map<YearMonth, Long> byMonth = new LinkedHashMap<>();
         YearMonth cursor = startYM;
         while (!cursor.isAfter(endYM)) {
-            bookedSeatsByMonth.put(cursor, 0L);
-            capacityByMonth.put(cursor, 0L);
+            byMonth.put(cursor, 0L);
             cursor = cursor.plusMonths(1);
         }
 
-        List<Object[]> rows = tourScheduleRepository.findScheduleFillDataForManager(managerId, startDate, endDate);
+        List<Object[]> rows = bookingRepository.countTourBookingsByMonthRangeAndManager(managerId, startDate, endDate);
         for (Object[] row : rows) {
-            java.sql.Date opendate = (java.sql.Date) row[0];
-            int maxSeats = row[1] != null ? ((Number) row[1]).intValue() : 0;
-            long bookedSeats = ((Number) row[2]).longValue();
-
-            YearMonth ym = YearMonth.from(opendate.toLocalDate());
-            if (!bookedSeatsByMonth.containsKey(ym))
-                continue; // กันเหนียวเผื่อ opendate หลุดช่วง
-
-            bookedSeatsByMonth.merge(ym, bookedSeats, Long::sum);
-            capacityByMonth.merge(ym, (long) maxSeats, Long::sum);
+            int yr = ((Number) row[0]).intValue();
+            int mo = ((Number) row[1]).intValue();
+            long cnt = ((Number) row[2]).longValue();
+            byMonth.put(YearMonth.of(yr, mo), cnt);
         }
 
+        long maxVal = byMonth.values().stream().max(Long::compareTo).orElse(0L);
         List<Map<String, Object>> result = new ArrayList<>();
-        for (YearMonth ym : bookedSeatsByMonth.keySet()) {
-            long booked = bookedSeatsByMonth.get(ym);
-            long capacity = capacityByMonth.get(ym);
-
-            double fillRatePct = capacity > 0
-                    ? Math.round((booked * 1000.0) / capacity) / 10.0
-                    : 0.0;
-            fillRatePct = Math.min(fillRatePct, 100.0);
-
+        for (Map.Entry<YearMonth, Long> e : byMonth.entrySet()) {
+            YearMonth ym = e.getKey();
+            long count = e.getValue();
             Map<String, Object> point = new LinkedHashMap<>();
             int beYearShort = (ym.getYear() + 543) % 100;
             point.put("label", THAI_MONTHS[ym.getMonthValue() - 1] + " " + beYearShort);
-            point.put("fillRatePct", fillRatePct);
-            int heightPct = (int) Math.round(fillRatePct);
-            point.put("heightPct", Math.max(heightPct, fillRatePct > 0 ? 6 : 2));
+            point.put("count", count);
+            int heightPct = maxVal > 0 ? (int) Math.round((count * 100.0) / maxVal) : 0;
+            point.put("heightPct", Math.max(heightPct, count > 0 ? 6 : 2));
             result.add(point);
         }
         return result;
     }
 
-    // ─── ใหม่: ทัวร์ยอดจองสูงสุด (สำหรับ ranking list) — เฉพาะของ manager คนนั้น ───
+    // ─── ใหม่: ทัวร์ยอดจองสูงสุด (สำหรับ ranking list) — เฉพาะของ manager คนนั้น
+    // ───
     public List<Map<String, Object>> getTopToursByBookingCount(String managerId) {
         String[] colorPalette = { "#006e2f", "#22c55e", "#ff8e4d", "#735c00",
                 "#6d28d9", "#0ea5e9", "#84cc16", "#ec4899" };

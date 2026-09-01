@@ -19,16 +19,24 @@
     }
 
     :root {
-      --green-dark: #006e2f;       /* primary (เดิม navbar/avatar/footer #3a7d1e) */
-      --green-mid: #22c55e;        /* primary-container (เดิม focus/link #65a30d, #95d5b2) */
-      --green-light: #6bff8f;      /* primary-fixed (เดิม footer text #d8f3dc) */
-      --orange: #ff8e4d;           /* tertiary-container (เดิมปุ่ม submit #f0a500) */
-      --bg: #faf7ef;               /* พื้นหลังหน้า (เดิม #f3fae8) */
+      --green-dark: #006e2f;
+      /* primary (เดิม navbar/avatar/footer #3a7d1e) */
+      --green-mid: #22c55e;
+      /* primary-container (เดิม focus/link #65a30d, #95d5b2) */
+      --green-light: #6bff8f;
+      /* primary-fixed (เดิม footer text #d8f3dc) */
+      --orange: #ff8e4d;
+      /* tertiary-container (เดิมปุ่ม submit #f0a500) */
+      --bg: #faf7ef;
+      /* พื้นหลังหน้า (เดิม #f3fae8) */
       --text-muted: #3d4a3d;
       --white: #ffffff;
-      --border: #e4e0d4;           /* เส้นขอบ input (เดิม #d6d1c8) */
-      --text-main: #0b1c30;        /* สีหัวข้อ (เดิม #1e2d1a) */
-      --text-hint: #6d7b6c;        /* สี subtitle (เดิม #7a7060) */
+      --border: #e4e0d4;
+      /* เส้นขอบ input (เดิม #d6d1c8) */
+      --text-main: #0b1c30;
+      /* สีหัวข้อ (เดิม #1e2d1a) */
+      --text-hint: #6d7b6c;
+      /* สี subtitle (เดิม #7a7060) */
     }
 
     body {
@@ -48,6 +56,8 @@
       align-items: center;
       padding: 0 28px;
       justify-content: space-between;
+      border-bottom: 4px solid transparent;
+      border-image: linear-gradient(to right, #f7b733, #e8850a) 1;
     }
 
     .nav-brand {
@@ -278,41 +288,40 @@
       }
     }
 
-      /* ─── ALERT ─── */
-        .alert-success {
-            background: var(--green-light);
-            border: 1px solid #a3e635;
-            color: var(--green-dark);
-            border-radius: 8px;
-            padding: 11px 14px;
-            font-size: 13px;
-            margin-bottom: 16px;
-        }
+    /* ─── ALERT ─── */
+    .alert-success {
+      background: var(--green-light);
+      border: 1px solid #a3e635;
+      color: var(--green-dark);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
 
-        .footer {
-            padding: 1rem 2rem;
-            background: var(--green-dark);
-            color: var(--green-light);
-            font-size: 0.9rem;
-            margin-top: auto;
-        }
+    .footer {
+      padding: 1rem 2rem;
+      background: var(--green-dark);
+      color: var(--green-light);
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
 
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .footer a {
-            color: var(--green-mid);
-            text-decoration: none;
-            margin-left: 8px;
-        }
+    .footer a {
+      color: var(--green-mid);
+      text-decoration: none;
+      margin-left: 8px;
+    }
 
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
+    .footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 
@@ -359,8 +368,10 @@
         <div class="form-group">
           <label class="form-label">รหัสผ่าน</label>
           <div class="password-wrapper">
-            <input class="form-control" type="password" id="managerPassword" name="password" placeholder="กรอกรหัสผ่าน" required />
-            <button type="button" class="password-toggle" onclick="toggleManagerPassword()" aria-label="แสดง/ซ่อนรหัสผ่าน">
+            <input class="form-control" type="password" id="managerPassword" name="password" placeholder="กรอกรหัสผ่าน"
+              required />
+            <button type="button" class="password-toggle" onclick="toggleManagerPassword()"
+              aria-label="แสดง/ซ่อนรหัสผ่าน">
               <i class="fas fa-eye" id="managerPasswordIcon"></i>
             </button>
           </div>

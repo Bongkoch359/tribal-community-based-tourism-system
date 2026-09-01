@@ -24,35 +24,30 @@
         <div style="flex:1;"></div>
 
         <a th:href="@{/manager/dashboard}" class="nav-link">
-            <i class="fas fa-globe"></i>
-            ภาพรวม
+            <i class="fas fa-globe"></i> ภาพรวม
         </a>
         <a th:href="@{/manager/posts}" class="nav-link">
-            <i class="fas fa-bullhorn"></i>
-            โพสต์กิจกรรม
+            <i class="fas fa-bullhorn"></i> โพสต์กิจกรรม
         </a>
         <a th:href="@{/manager/tours}" class="nav-link">
-            <i class="fas fa-bus"></i>
-            ทัวร์
+            <i class="fas fa-bus"></i> ทัวร์
         </a>
         <a th:href="@{/manager/bookings}" class="nav-link active">
-            <i class="fas fa-calendar-days"></i>
-            ตรวจสอบการจอง
+            <i class="fas fa-calendar-days"></i> ตรวจสอบการจอง
         </a>
 
         <div class="nav-right">
             <div class="profile-dropdown">
                 <div class="profile-trigger">
-                   <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
-   ? ${#strings.substring(loggedInManager.firstname,0,1)}
-   : 'C'"></div>
+                    <div class="nav-avatar" th:text="${loggedInManager != null and loggedInManager.firstname != null and #strings.length(loggedInManager.firstname) > 0}
+                        ? ${#strings.substring(loggedInManager.firstname,0,1)} : 'C'"></div>
                     <div>
                         <span class="owner-name" th:text="${loggedInManager != null}
-                           ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
-                           : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-                       <span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
-    ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
-    : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                            ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
+                            : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
+                        <span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
+                            ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
+                            : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
                     </div>
                     <i class="fas fa-chevron-down profile-chevron"></i>
                 </div>
@@ -85,28 +80,57 @@
             </div>
         </div>
 
-        <!-- ─── Filter Tabs (สถานะการจอง) ─── -->
-        <div class="filter-tabs">
-            <a th:href="@{/manager/bookings(status='WAITING_APPROVAL')}" class="tab-btn tab-waiting"
-                th:classappend="${currentStatus == 'WAITING_APPROVAL'} ? ' active'">
-                <i class="fas fa-clock" style="color:#e07b00;"></i>
-                รอตรวจสอบ <span class="tab-count" th:text="${countWaiting}">0</span>
-            </a>
-            <a th:href="@{/manager/bookings(status='CONFIRMED')}" class="tab-btn"
-                th:classappend="${currentStatus == 'CONFIRMED'} ? ' active'">
-                <i class="fas fa-circle-check" style="color:#2a9068;"></i>
-                ยืนยันแล้ว <span class="tab-count" th:text="${countConfirmed}">0</span>
-            </a>
-            <a th:href="@{/manager/bookings(status='COMPLETED')}" class="tab-btn tab-completed"
-                th:classappend="${currentStatus == 'COMPLETED'} ? ' active'">
-                <i class="fas fa-flag-checkered" style="color:#3d7dbf;"></i>
-                เสร็จสิ้นแล้ว <span class="tab-count" th:text="${countCompleted}">0</span>
-            </a>
-            <a th:href="@{/manager/bookings(status='CANCEL')}" class="tab-btn tab-cancel"
-                th:classappend="${currentStatus == 'CANCEL'} ? ' active'">
-                <i class="fas fa-circle-xmark" style="color:#e53935;"></i>
-                ยกเลิก <span class="tab-count" th:text="${countCancel}">0</span>
-            </a>
+        <!-- ── Control Toolbar ── -->
+        <div class="control-toolbar">
+            <div class="filter-item-group">
+                <label class="filter-item-label"><i class="fas fa-filter"></i> สถานะการจอง :</label>
+                <div class="custom-filter-dropdown" id="bookingStatusDropdown">
+                    <button type="button" class="filter-dropdown-trigger status-waiting" id="bookingDropdownTriggerBtn"
+                        onclick="toggleBookingDropdown(event)">
+                        <span class="selected-text">
+                            <i class="fas fa-clock"></i>
+                            <span>รอตรวจสอบ</span>
+                            <span class="count-badge" id="count-waiting-trigger" th:text="${countWaiting != null ? countWaiting : 0}">0</span>
+                        </span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </button>
+
+                    <div class="filter-dropdown-menu" id="bookingDropdownMenu">
+                        <!-- 1. รอตรวจสอบ -->
+                        <div class="dropdown-item status-opt-waiting active" data-status="WAITING_APPROVAL"
+                            onclick="selectBookingFilter('WAITING_APPROVAL', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-clock"></i>
+                            <span class="label-text">รอตรวจสอบ</span>
+                            <span class="count-badge" th:text="${countWaiting != null ? countWaiting : 0}">0</span>
+                        </div>
+                        <!-- 2. ยืนยันแล้ว -->
+                        <div class="dropdown-item status-opt-confirmed" data-status="CONFIRMED"
+                            onclick="selectBookingFilter('CONFIRMED', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-circle-check"></i>
+                            <span class="label-text">ยืนยันแล้ว</span>
+                            <span class="count-badge" th:text="${countConfirmed != null ? countConfirmed : 0}">0</span>
+                        </div>
+                        <!-- 3. เสร็จสิ้นแล้ว -->
+                        <div class="dropdown-item status-opt-completed" data-status="COMPLETED"
+                            onclick="selectBookingFilter('COMPLETED', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-flag-checkered"></i>
+                            <span class="label-text">เสร็จสิ้นแล้ว</span>
+                            <span class="count-badge" th:text="${countCompleted != null ? countCompleted : 0}">0</span>
+                        </div>
+                        <!-- 4. ยกเลิก -->
+                        <div class="dropdown-item status-opt-cancel" data-status="CANCEL"
+                            onclick="selectBookingFilter('CANCEL', this)">
+                            <span class="status-dot"></span>
+                            <i class="fas fa-circle-xmark"></i>
+                            <span class="label-text">ยกเลิก</span>
+                            <span class="count-badge" th:text="${countCancel != null ? countCancel : 0}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ─── Table ─── -->
@@ -120,69 +144,46 @@
                         <th>วันที่เดินทาง</th>
                         <th>ยอดเงิน</th>
                         <th>สถานะ</th>
-                        <th style="width:160px;">จัดการ</th>
+                        <th style="width:160px; text-align: center;">จัดการ</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tourBookingsTbody">
+                    <!-- ไม่มีข้อมูลจาก Server -->
                     <tr th:if="${#lists.isEmpty(bookings)}" class="empty-row">
-                        <td colspan="7">ไม่พบรายการจองทัวร์ในหมวดนี้</td>
+                        <td colspan="7">ไม่พบรายการจองทัวร์ในระบบ</td>
                     </tr>
 
-                    <tr th:each="b : ${bookings}">
-                        <!-- Booking ID -->
+                    <!-- รายการข้อมูล -->
+                    <tr th:each="b : ${bookings}" th:attr="data-status=${b.bookingStatus != null ? b.bookingStatus.name() : ''}">
                         <td class="booking-id" th:text="${b.bookingid}">BK-2024-001</td>
-
-                        <!-- ผู้จอง -->
                         <td>
-                            <div th:text="${b.member.firstname} + ' ' + ${b.member.lastname}">นายสมชาย ใจดี</div>
-                            <div class="sub-text" th:text="${b.member.phone}">081-234-5678</div>
+                            <div th:text="${b.member != null ? (b.member.firstname + ' ' + b.member.lastname) : '-'}">นายสมชาย ใจดี</div>
+                            <div class="sub-text" th:text="${b.member != null ? b.member.phone : '-'}">081-234-5678</div>
                         </td>
-
-                        <!-- รายการทัวร์ -->
-                        <td
-                            th:with="detail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null">
-                            <div th:text="${detail != null} ? ${detail.tour.tourmname} : '-'">ประเพณีปีใหม่ม้ง</div>
-                            <div class="sub-text" th:if="${detail != null}"
+                        <td th:with="detail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null">
+                            <div th:text="${detail != null and detail.tour != null ? detail.tour.tourmname : '-'}">ประเพณีปีใหม่ม้ง</div>
+                            <div class="sub-text" th:if="${detail != null and detail.tour != null}"
                                 th:text="${(detail.tour.numberOfDays != null and detail.tour.numberOfDays == 1 ? 'ทัวร์รายวัน' : detail.tour.tourDuration)} + ' - ' + ${b.numofguest} + ' ท่าน'">
                                 ทัวร์รายวัน - 2 ท่าน
                             </div>
                         </td>
-
-                        <!-- วันที่เดินทาง -->
-                        <td
-                            th:with="detail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null">
+                        <td th:with="detail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null">
                             <div th:if="${detail != null and detail.tourschedule != null}"
-                                th:text="${#dates.format(detail.tourschedule.opendate, 'd MMM yyyy')}">15 ก.พ. 2567
-                            </div>
+                                th:text="${#dates.format(detail.tourschedule.opendate, 'd MMM yyyy')}">15 ก.พ. 2567</div>
                             <div th:unless="${detail != null and detail.tourschedule != null}">-</div>
-                            <div class="sub-text" th:if="${detail != null}"
-                                th:text="${detail.tour.numberOfDays} + ' วัน'">1 วัน</div>
+                            <div class="sub-text" th:if="${detail != null and detail.tour != null}" th:text="${detail.tour.numberOfDays} + ' วัน'">1 วัน</div>
                         </td>
-
-                        <!-- ยอดเงิน -->
-                        <td class="amount"
-                            th:text="${#numbers.formatDecimal(b.totalamount,0,'COMMA',0,'POINT')} + ' ฿'"></td>
-
-                        <!-- สถานะ -->
+                        <td class="amount" th:text="${b.totalamount != null ? #numbers.formatDecimal(b.totalamount,0,'COMMA',0,'POINT') + ' ฿' : '0 ฿'}"></td>
                         <td>
-                            <span th:switch="${b.bookingStatus.name()}">
-                                <span th:case="'WAITING_APPROVAL'" class="badge badge-waiting"><span
-                                        class="badge-dot"></span>รอตรวจสอบ</span>
-                                <span th:case="'PENDING'" class="badge badge-pending"><span
-                                        class="badge-dot"></span>รอชำระเงิน</span>
-                                <span th:case="'CONFIRMED'" class="badge badge-confirmed"><span
-                                        class="badge-dot"></span>ยืนยันแล้ว</span>
-                                <span th:case="'COMPLETED'" class="badge badge-completed"><span
-                                        class="badge-dot"></span>เสร็จสิ้นแล้ว</span>
-                                <span th:case="'CANCEL'" class="badge badge-cancel"><span
-                                        class="badge-dot"></span>ยกเลิก</span>
-                                <span th:case="*" class="badge badge-pending"><span class="badge-dot"></span><span
-                                        th:text="${b.bookingStatus}">-</span></span>
+                            <span th:if="${b.bookingStatus != null}" th:switch="${b.bookingStatus.name()}">
+                                <span th:case="'WAITING_APPROVAL'" class="badge badge-waiting"><span class="badge-dot"></span>รอตรวจสอบ</span>
+                                <span th:case="'CONFIRMED'" class="badge badge-confirmed"><span class="badge-dot"></span>ยืนยันแล้ว</span>
+                                <span th:case="'COMPLETED'" class="badge badge-completed"><span class="badge-dot"></span>เสร็จสิ้นแล้ว</span>
+                                <span th:case="'CANCEL'" class="badge badge-cancel"><span class="badge-dot"></span>ยกเลิก</span>
+                                <span th:case="*" class="badge badge-pending"><span class="badge-dot"></span><span th:text="${b.bookingStatus}">-</span></span>
                             </span>
                         </td>
-
-                        <!-- จัดการ -->
-                        <td>
+                        <td style="text-align: center;">
                             <a class="btn-view" th:href="@{/manager/bookings/{id}(id=${b.bookingid})}">
                                 <i class="fas fa-eye"></i> ดูรายละเอียด
                             </a>
@@ -190,6 +191,12 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- แสดงเมื่อกรองสถานะแล้วไม่พบข้อมูล -->
+            <div class="no-filter-results" id="noFilterResults">
+                <i class="fas fa-calendar-xmark"></i>
+                <p>ไม่พบรายการที่ตรงกับสถานะที่เลือก</p>
+            </div>
         </div>
     </div>
 
@@ -205,6 +212,83 @@
         </div>
     </footer>
 
+    <!-- ═══ JAVASCRIPT ควบคุม Dropdown ═══ -->
+    <script>
+        const bookingStatusClassMap = {
+            'WAITING_APPROVAL': 'status-waiting',
+            'CONFIRMED': 'status-confirmed',
+            'COMPLETED': 'status-completed',
+            'CANCEL': 'status-cancel'
+        };
+
+        // สลับเปิด/ปิด Dropdown (ใส่ stopPropagation เพื่อไม่ให้ window click ปิดทันที)
+        function toggleBookingDropdown(e) {
+            if (e) e.stopPropagation();
+            const dropdown = document.getElementById('bookingStatusDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        // ปิดเมื่อคลิกนอกพื้นที่
+        window.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('bookingStatusDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        // ฟังก์ชันเลือกตัวกรอง
+        function selectBookingFilter(statusKey, itemEl) {
+            const triggerBtn = document.getElementById('bookingDropdownTriggerBtn');
+            const selectedTextContainer = triggerBtn.querySelector('.selected-text');
+
+            const iconClass = itemEl.querySelector('i').className;
+            const label = itemEl.querySelector('.label-text').textContent;
+            const badgeCount = itemEl.querySelector('.count-badge').textContent;
+
+            selectedTextContainer.innerHTML = `
+                <i class="${iconClass}"></i>
+                <span>${label}</span>
+                <span class="count-badge">${badgeCount}</span>
+            `;
+
+            triggerBtn.className = 'filter-dropdown-trigger ' + (bookingStatusClassMap[statusKey] || 'status-waiting');
+
+            document.querySelectorAll('#bookingDropdownMenu .dropdown-item').forEach(el => el.classList.remove('active'));
+            itemEl.classList.add('active');
+
+            document.getElementById('bookingStatusDropdown').classList.remove('open');
+
+            filterBookings(statusKey);
+        }
+
+        // ฟังก์ชันซ่อน/แสดงแถวตาราง
+        function filterBookings(statusKey) {
+            const rows = document.querySelectorAll('#tourBookingsTbody tr[data-status]');
+            const noResults = document.getElementById('noFilterResults');
+            let visibleCount = 0;
+
+            rows.forEach(r => {
+                const match = (r.getAttribute('data-status') === statusKey);
+                r.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            if (noResults) {
+                // ซ่อนข้อความถ้ามีแถวแสดงอยู่ หรือถ้าไม่มีข้อมูลในระบบตั้งแต่แรก (ให้ tr.empty-row ทำงานแทน)
+                noResults.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
+            }
+        }
+
+        // กำหนดสถานะเริ่มต้นเมื่อโหลดหน้า
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultItem = document.querySelector('#bookingDropdownMenu .dropdown-item[data-status="WAITING_APPROVAL"]');
+            if (defaultItem) {
+                selectBookingFilter('WAITING_APPROVAL', defaultItem);
+            } else {
+                filterBookings('WAITING_APPROVAL');
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -95,10 +95,8 @@
         <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
         <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
 
-        <form th:action="@{/manager/posts/create}" method="post" id="postForm">
-
-            <!-- hidden: images base64 -->
-            <input type="hidden" name="images" id="imagesInput" />
+        <!-- enctype="multipart/form-data" จำเป็นเมื่อส่งไฟล์รูปภาพจริงแทน base64 -->
+        <form th:action="@{/manager/posts/create}" method="post" id="postForm" enctype="multipart/form-data">
 
             <div class="form-grid">
 
@@ -122,8 +120,8 @@
                         <!-- Thumbnails -->
                         <div class="preview-grid" id="previewGrid"></div>
 
-                        <!-- File input -->
-                        <input type="file" id="fileInput" accept="image/*" multiple />
+                        <!-- File input: ส่งไฟล์จริงตรง ๆ ผ่าน name="images" (multipart/form-data) -->
+                        <input type="file" id="fileInput" name="images" accept="image/*" multiple />
                         <label for="fileInput" class="file-input-label">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">

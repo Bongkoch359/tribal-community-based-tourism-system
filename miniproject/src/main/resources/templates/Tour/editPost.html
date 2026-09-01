@@ -55,6 +55,8 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+            border-bottom: 4px solid transparent;
+            border-image: linear-gradient(to right, #f7b733, #e8850a) 1;
         }
 
         .nav-brand {
@@ -362,57 +364,53 @@
             border-bottom: 1px solid var(--border);
         }
 
-        /* ─── IMAGE UPLOAD ─── */
-        .img-preview-area {
-            width: 100%;
-            aspect-ratio: 4/3;
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            background: #faf7ef;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            color: var(--text-hint);
-            font-size: 12px;
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 12px;
+        /* ─── IMAGE UPLOAD (แบบเดียวกับหน้าแก้ไขทัวร์) ─── */
+        .img-upload-zone {
+            border: 2px dashed #a7e8bb;
+            border-radius: 12px;
+            background: #f2fbf5;
+            padding: 24px 16px;
+            text-align: center;
             cursor: pointer;
-            transition: border-color 0.15s;
+            transition: border-color 0.15s, background 0.15s, transform 0.1s;
+            margin-bottom: 12px;
         }
 
-        .img-preview-area:hover {
-            border-color: var(--green-dark);
+        .img-upload-zone:hover {
+            border-color: var(--green-mid);
+            background: #eafaf0;
         }
 
-        .img-preview-area svg {
-            width: 32px;
-            height: 32px;
-            opacity: 0.4;
+        .img-upload-zone.drag-over {
+            border-color: var(--green-mid);
+            background: #dcfce7;
+            transform: scale(1.01);
         }
 
-        .existing-img-wrap {
-            width: 100%;
-            aspect-ratio: 4/3;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
+        .img-upload-zone i {
+            font-size: 26px;
+            color: var(--green-mid);
             margin-bottom: 8px;
-            border: 1px solid var(--border);
+            display: block;
+            opacity: .8;
         }
 
-        .existing-img-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .img-upload-zone .upload-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 3px;
+        }
+
+        .img-upload-zone .upload-hint {
+            font-size: 11px;
+            color: var(--text-hint);
         }
 
         .existing-img-label {
             font-size: 11px;
             color: var(--text-hint);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 4px;
@@ -422,43 +420,92 @@
             font-size: 10px;
         }
 
-        .preview-grid {
+        /* ─── Image grid (รูปเดิม + รูปใหม่) ─── */
+        .img-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
             margin-bottom: 12px;
         }
 
-        .preview-thumb {
+        .img-thumb {
             position: relative;
-            aspect-ratio: 1;
-            border-radius: 6px;
+            aspect-ratio: 4/3;
+            border-radius: 9px;
             overflow: hidden;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
+            background: #faf7ef;
+            transition: border-color 0.15s, transform 0.12s;
         }
 
-        .preview-thumb img {
+        .img-thumb:hover {
+            border-color: var(--green-mid);
+            transform: translateY(-1px);
+        }
+
+        .img-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
-        .preview-thumb .remove-btn {
+        .thumb-overlay {
             position: absolute;
-            top: 3px;
-            right: 3px;
-            width: 18px;
-            height: 18px;
-            background: rgba(0, 0, 0, 0.55);
-            border: none;
+            inset: 0;
+            background: rgba(0, 0, 0, 0);
+            transition: background 0.15s;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding: 5px;
+            gap: 4px;
+        }
+
+        .img-thumb:hover .thumb-overlay {
+            background: rgba(0, 0, 0, .3);
+        }
+
+        .thumb-btn {
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            color: #fff;
-            font-size: 10px;
+            border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            line-height: 1;
+            font-size: 10px;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .img-thumb:hover .thumb-btn {
+            opacity: 1;
+        }
+
+        .thumb-btn.del-btn {
+            background: #ba1a1a;
+            color: #fff;
+        }
+
+        .existing-badge {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: var(--green-dark);
+            color: #fff;
+            font-size: 9.5px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 20px;
+        }
+
+        .img-count-note {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: -4px;
+            margin-bottom: 10px;
         }
 
         .file-input-label {
@@ -632,35 +679,6 @@
             padding: 11px 14px;
             font-size: 13px;
             margin-bottom: 20px;
-        }
-
-        /* ─── CHANGE IMAGE TOGGLE ─── */
-        .change-img-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-            color: var(--green-mid);
-            background: none;
-            border: 1px solid var(--green-mid);
-            border-radius: var(--radius-sm);
-            padding: 4px 10px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: background 0.15s;
-            font-family: 'Sarabun', sans-serif;
-        }
-
-        .change-img-btn:hover {
-            background: var(--green-light);
-        }
-
-        .new-img-section {
-            display: none;
-        }
-
-        .new-img-section.visible {
-            display: block;
         }
 
         @media (max-width: 760px) {
@@ -960,10 +978,9 @@
         <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
         <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
 
-        <form th:action="@{/manager/posts/__${post.activityid}__/edit}" method="post" id="postForm">
-
-            <!-- hidden: images base64 (ใหม่) -->
-            <input type="hidden" name="images" id="imagesInput" />
+        <!-- enctype="multipart/form-data" เพื่อส่งไฟล์รูปภาพจริง (ไม่ใช้ base64) -->
+        <form th:action="@{/manager/posts/__${post.activityid}__/edit}" method="post" id="postForm"
+            enctype="multipart/form-data">
 
             <div class="form-grid">
 
@@ -976,62 +993,36 @@
 
                         <!-- รูปเดิม (แสดงเมื่อมีรูป) -->
                         <div th:if="${post.images != null and !#strings.isEmpty(post.images)}">
-                            <div class="existing-img-wrap">
-                                <img th:src="${#strings.arraySplit(post.images,'\\|\\|')[0]}" alt="รูปโพสต์ปัจจุบัน" />
-                            </div>
                             <div class="existing-img-label">
                                 <i class="fas fa-image"></i>
-                                รูปภาพปัจจุบัน (จะคงไว้หากไม่เปลี่ยน)
+                                รูปภาพปัจจุบัน
                             </div>
-
-                            <button type="button" class="change-img-btn" id="toggleChangeImg"
-                                onclick="toggleNewImgSection()">
-                                <i class="fas fa-arrows-rotate"></i>
-                                เปลี่ยนรูปภาพ
-                            </button>
-                        </div>
-
-                        <!-- ถ้าไม่มีรูปเดิม ให้แสดง upload ตรงๆ -->
-                        <div th:if="${post.images == null or #strings.isEmpty(post.images)}" id="alwaysShowUpload">
-                            <div class="img-preview-area" id="dropZoneNoImg"
-                                onclick="document.getElementById('fileInput').click()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                                    <circle cx="8.5" cy="8.5" r="1.5" />
-                                    <polyline points="21 15 16 10 5 21" />
-                                </svg>
-                                <span>คลิกเพื่อเลือกรูปภาพ</span>
+                            <div class="img-grid">
+                                <div class="img-thumb" th:each="img : ${#strings.arraySplit(post.images,'\\|\\|')}">
+                                    <img th:src="${img}" alt="รูปโพสต์ปัจจุบัน" />
+                                    <span class="existing-badge">ปัจจุบัน</span>
+                                </div>
+                            </div>
+                            <div class="img-count-note">
+                                <i class="fas fa-circle-info"></i>
+                                หากอัปโหลดรูปใหม่ด้านล่าง ระบบจะแทนที่รูปภาพชุดเดิมทั้งหมด
                             </div>
                         </div>
 
-                        <!-- ส่วน upload รูปใหม่ (toggle) -->
-                        <div class="new-img-section" id="newImgSection">
-                            <div class="img-preview-area" id="dropZone"
-                                onclick="document.getElementById('fileInput').click()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                                    <circle cx="8.5" cy="8.5" r="1.5" />
-                                    <polyline points="21 15 16 10 5 21" />
-                                </svg>
-                                <span>คลิกเพื่อเลือกรูปภาพใหม่</span>
-                            </div>
+                        <!-- zone drag & drop สำหรับอัปโหลดรูปใหม่ -->
+                        <div class="img-upload-zone" id="uploadZone" ondragover="handleDragOver(event)"
+                            ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
+                            onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                            <div class="upload-title">ลากรูปมาวางหรือคลิกเพื่อเลือก</div>
+                            <div class="upload-hint">jpg · png · webp — เลือกได้หลายรูป</div>
                         </div>
 
                         <!-- Thumbnails preview รูปที่เลือกใหม่ -->
-                        <div class="preview-grid" id="previewGrid"></div>
+                        <div class="img-grid" id="previewGrid"></div>
 
-                        <!-- File input -->
-                        <input type="file" id="fileInput" accept="image/*" multiple />
-                        <label for="fileInput" class="file-input-label">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="17 8 12 3 7 8" />
-                                <line x1="12" y1="3" x2="12" y2="15" />
-                            </svg>
-                            อัปโหลดรูปภาพ
-                        </label>
-                        <div class="file-hint">เลือกได้หลายรูป (jpg, png, webp)</div>
+                        <!-- File input: ส่งไฟล์จริงตรง ๆ ผ่าน name="images" -->
+                        <input type="file" id="fileInput" name="images" accept="image/*" multiple />
                     </div>
 
                 </div>
@@ -1110,118 +1101,107 @@
     </div>
 
     <script>
-        // ── Toggle ส่วน upload รูปใหม่ ──
-        function toggleNewImgSection() {
-            const section = document.getElementById('newImgSection');
-            const btn = document.getElementById('toggleChangeImg');
-            if (!section) return;
-            const isVisible = section.classList.contains('visible');
-            section.classList.toggle('visible', !isVisible);
-            if (btn) {
-                btn.innerHTML = isVisible
-                    ? '<i class="fas fa-arrows-rotate"></i> เปลี่ยนรูปภาพ'
-                    : '<i class="fas fa-xmark"></i> ยกเลิกเปลี่ยนรูป';
-            }
-            if (isVisible) {
-                base64List = [];
-                renderPreviews();
-                updateHiddenInput();
-            }
-        }
-
-        // ── รูปภาพ base64 ──
+        // ── รูปภาพ: อัปโหลดเป็นไฟล์จริง (ไม่ใช้ base64) + drag & drop เหมือนหน้าแก้ไขทัวร์ ──
         const fileInput = document.getElementById('fileInput');
         const previewGrid = document.getElementById('previewGrid');
-        const imagesInput = document.getElementById('imagesInput');
+        const uploadZone = document.getElementById('uploadZone');
 
-        let base64List = [];
+        let fileList = []; // เก็บ File object จริง ๆ ของรูปที่เลือกใหม่
 
         fileInput.addEventListener('change', function () {
-            const files = Array.from(this.files);
-            files.forEach(file => readAndAdd(file));
+            addFiles(Array.from(this.files));
             this.value = '';
         });
 
-        function readAndAdd(file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const b64 = e.target.result;
-                base64List.push(b64);
-                renderPreviews();
-                updateHiddenInput();
-            };
-            reader.readAsDataURL(file);
+        function addFiles(files) {
+            files.forEach(file => {
+                if (file && file.type.startsWith('image/')) {
+                    fileList.push(file);
+                }
+            });
+            syncFileInput();
+            renderPreviews();
+        }
+
+        // อัปเดต input.files ให้ตรงกับ fileList (จำเป็นเวลาลบรูปออกจาก preview)
+        function syncFileInput() {
+            const dt = new DataTransfer();
+            fileList.forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
         }
 
         function renderPreviews() {
             previewGrid.innerHTML = '';
 
-            const dropZone = document.getElementById('dropZone');
-            if (dropZone) {
-                const svg = dropZone.querySelector('svg');
-                const span = dropZone.querySelector('span');
-                if (svg) svg.style.opacity = base64List.length ? '0' : '0.4';
-                if (span) span.style.display = base64List.length ? 'none' : '';
-            }
-            const dropZoneNoImg = document.getElementById('dropZoneNoImg');
-            if (dropZoneNoImg) {
-                const svg = dropZoneNoImg.querySelector('svg');
-                const span = dropZoneNoImg.querySelector('span');
-                if (svg) svg.style.opacity = base64List.length ? '0' : '0.4';
-                if (span) span.style.display = base64List.length ? 'none' : '';
-            }
-
-            base64List.forEach((b64, idx) => {
-                const wrap = document.createElement('div');
-                wrap.className = 'preview-thumb';
+            fileList.forEach((file, idx) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'img-thumb';
 
                 const img = document.createElement('img');
-                img.src = b64;
+                img.src = URL.createObjectURL(file);
+                img.onload = () => URL.revokeObjectURL(img.src);
 
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'remove-btn';
-                btn.innerHTML = '✕';
-                btn.onclick = () => {
-                    base64List.splice(idx, 1);
+                const overlay = document.createElement('div');
+                overlay.className = 'thumb-overlay';
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'thumb-btn del-btn';
+                delBtn.innerHTML = '<i class="fas fa-xmark"></i>';
+                delBtn.onclick = () => {
+                    fileList.splice(idx, 1);
+                    syncFileInput();
                     renderPreviews();
-                    updateHiddenInput();
                 };
 
-                wrap.appendChild(img);
-                wrap.appendChild(btn);
-                previewGrid.appendChild(wrap);
+                overlay.appendChild(delBtn);
+                thumb.appendChild(img);
+                thumb.appendChild(overlay);
+                previewGrid.appendChild(thumb);
             });
         }
 
-        function updateHiddenInput() {
-            imagesInput.value = base64List.join('||');
+        // ── Drag & drop ──
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
         }
 
-        // Validate ก่อน submit
-        document.getElementById('postForm').addEventListener('submit', function () {
-            if (base64List.length === 0) {
-                imagesInput.value = '';
-            }
-        });
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files || []);
+            addFiles(files);
+        }
 
         // ── แสดง/ซ่อนฟิลด์สถานที่ ตามการเลือกทัวร์ ──
         const tourSelect = document.getElementById('tourSelect');
         const locationGroup = document.getElementById('locationGroup');
         const locationInput = document.getElementById('locationInput');
+
+        // ✅ FIX #1: เหลือฟังก์ชันนี้เพียงตัวเดียว (เดิมมีประกาศซ้ำด้านล่างและไปทับตัวนี้
+        // ทำให้ initLocationMap() ไม่เคยถูกเรียก แผนที่เลยไม่ขึ้น)
         function toggleLocationField() {
             if (tourSelect.value) {
                 locationGroup.style.display = '';
                 locationInput.setAttribute('required', 'required');
-                initLocationMap(); // ← เพิ่มบรรทัดนี้
+                initLocationMap();
             } else {
                 locationGroup.style.display = 'none';
                 locationInput.removeAttribute('required');
                 locationInput.value = '';
             }
         }
-        tourSelect.addEventListener('change', toggleLocationField);
-        toggleLocationField(); // ถ้าตอนโหลดหน้ามีทัวร์ถูกเลือกอยู่แล้ว จะสร้างแผนที่ทันที
+        // ✅ FIX #2: ย้ายการเรียก tourSelect.addEventListener(...) และ toggleLocationField()
+        // ไปไว้ท้ายสุดของสคริปต์แทน (ดูด้านล่างสุด) เพราะเดิมเรียกตรงนี้ทันที
+        // ซึ่งไปเรียก initLocationMap() ที่อ้างถึงตัวแปร `let locationMap` ที่ยังไม่ถูกประกาศ
+        // (อยู่หลังจุดนี้ในไฟล์) ทำให้เกิด ReferenceError: Cannot access 'locationMap'
+        // before initialization เพราะ let/const ไม่ถูก hoist แบบมีค่าเหมือน function
 
         // ═══ LEAFLET + NOMINATIM สำหรับฟิลด์ "สถานที่" ═══
         const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // เชียงใหม่
@@ -1357,18 +1337,15 @@
             );
         }
 
-        function toggleLocationField() {
-            if (tourSelect.value) {
-                locationGroup.style.display = '';
-                locationInput.setAttribute('required', 'required');
-            } else {
-                locationGroup.style.display = 'none';
-                locationInput.removeAttribute('required');
-                locationInput.value = '';
-            }
-        }
+        // ⚠️ ลบฟังก์ชัน toggleLocationField() ตัวที่สองซึ่งเคยอยู่ตรงนี้ออกไปแล้ว
+        // (ของเดิมไม่มีการเรียก initLocationMap() และมันทับฟังก์ชันตัวแรกด้านบน
+        // เพราะ function declaration ซ้ำชื่อกันจะถูก hoist แล้วตัวหลังชนะเสมอ)
+
+        // ✅ FIX #2 (ต่อ): เรียก addEventListener + toggleLocationField() ตรงนี้แทน
+        // ซึ่งอยู่หลังจากที่ `let locationMap, locationMarker;` และ initLocationMap()
+        // ถูกประกาศไปแล้วทั้งหมด จึงไม่มีปัญหา TDZ อีกต่อไป
         tourSelect.addEventListener('change', toggleLocationField);
-        toggleLocationField();
+        toggleLocationField(); // ถ้าตอนโหลดหน้ามีทัวร์ถูกเลือกอยู่แล้ว จะสร้างแผนที่ทันที
 
         // ─── Auto-show modal ถ้ามี successMessage แล้ว redirect ไปหน้า list ───
         (function () {

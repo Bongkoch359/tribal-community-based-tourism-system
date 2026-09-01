@@ -76,6 +76,8 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+            border-bottom: 4px solid transparent;
+            border-image: linear-gradient(to right, #f7b733, #e8850a) 1;
         }
 
         .nav-brand {
@@ -434,11 +436,6 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
         }
 
-        /* ─── ชุดสีการ์ด: สไตล์เดียวกับแดชบอร์ดภาพรวม (โฮมสเตย์) ───
-             เทา (green-dark)  = ข้อมูลทั่วไป/สถานะเปิดใช้งาน
-             เขียว (green-mid) = พร้อม/บวก
-             ส้ม (orange)      = ต้องดำเนินการ/รอตรวจสอบ
-             น้ำเงิน (teal)     = เงิน/รายได้ */
         .stat-card.green-dark {
             background: linear-gradient(135deg, #64748b 0%, #475569 100%);
         }
@@ -1045,6 +1042,30 @@
             font-weight: 700;
         }
 
+        /* ─── Chart title (เพิ่มใหม่) ─── */
+        .chart-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 20px 0;
+        }
+
+        .chart-title-row h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .chart-title-row p {
+            font-size: 12px;
+            color: var(--text-hint);
+            margin: 2px 0 0 28px;
+        }
+
         /* ─── Top Tours Ranking ─── */
         .tour-rank-list {
             display: flex;
@@ -1056,6 +1077,7 @@
         .tour-rank-item {
             display: flex;
             align-items: center;
+            /* หรือจะใช้ flex-start ถ้าอยากให้ชื่อ 2 บรรทัดชิดขอบบน */
             gap: 10px;
         }
 
@@ -1071,11 +1093,18 @@
         .tour-rank-name {
             font-size: 13px;
             color: #333;
-            width: 110px;
+            width: 145px;
+            /* เดิม 130px */
             flex-shrink: 0;
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.3;
+            white-space: normal;
+            word-break: break-word;
+            /* เพิ่มใหม่ ช่วยตัดคำที่จุดที่เหมาะสมกว่า */
         }
 
         .tour-rank-bar-track {
@@ -1095,7 +1124,8 @@
             font-size: 13px;
             font-weight: 700;
             color: var(--green-dark);
-            width: 60px;
+            width: 55px;
+            /* เดิม 60px */
             flex-shrink: 0;
             text-align: right;
             white-space: nowrap;
@@ -1242,26 +1272,27 @@
 
             <!-- ─── กราฟรายได้ / ยอดจองทัวร์รายเดือน ─── -->
             <div class="chart-card">
-                <div class="card-head" style="flex-wrap:wrap; gap:10px;">
+
+                <!-- หัวข้อกราฟ -->
+                <div class="chart-title-row">
+                    <h3><i class="fas fa-chart-line" style="color:var(--blue-dark);"></i> แนวโน้มรายได้และการจองทัวร์
+                    </h3>
+                </div>
+                <p style="font-size:12px; color:var(--text-hint); margin:2px 20px 0;">ภาพรวมรายได้และจำนวนการจองย้อนหลัง
+                    เลือกดูช่วงเวลาที่ต้องการได้จากปุ่ม "กำหนดเอง"</p>
+
+                <div class="card-head" style="flex-wrap:wrap; gap:10px; border-bottom:none; padding-bottom:0;">
                     <div class="trend-tab-group">
                         <button type="button" class="trend-tab trend-tab-active" data-target="revenue"
                             onclick="switchTrendTab('revenue')">
                             <i class="fas fa-chart-column"></i> รายได้ต่อเดือน
                         </button>
-                        <button type="button" class="trend-tab" data-target="fillrate"
-                            onclick="switchTrendTab('fillrate')"
-                            title="เปอร์เซ็นต์ที่นั่งที่ถูกจองเทียบกับที่นั่งทั้งหมดของรอบทัวร์ในเดือนนั้น">
-                            <i class="fas fa-chair"></i> อัตราการจองเต็มที่นั่ง
+                        <button type="button" class="trend-tab" data-target="bookingCount"
+                            onclick="switchTrendTab('bookingCount')" title="จำนวนการจองทัวร์ทั้งหมดในแต่ละเดือน">
+                            <i class="fas fa-calendar-check"></i> จำนวนการจองต่อเดือน
                         </button>
                     </div>
                     <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                        <a th:href="@{/manager/dashboard(range=3)}"
-                            th:classappend="${selectedRange == '3'} ? ' range-btn-active'" class="range-btn">3 เดือน</a>
-                        <a th:href="@{/manager/dashboard(range=6)}"
-                            th:classappend="${selectedRange == '6'} ? ' range-btn-active'" class="range-btn">6 เดือน</a>
-                        <a th:href="@{/manager/dashboard(range=12)}"
-                            th:classappend="${selectedRange == '12'} ? ' range-btn-active'" class="range-btn">12
-                            เดือน</a>
                         <button type="button" class="range-btn" onclick="toggleCustomRange()">
                             <i class="fas fa-calendar-days"></i> กำหนดเอง
                         </button>
@@ -1300,12 +1331,11 @@
                         </div>
                     </div>
 
-                    <!-- กราฟอัตราการจองเต็มที่นั่ง -->
-                    <div class="trend-bars" id="trendPanel-fillrate" style="display:none;">
-                        <div class="trend-bar-col" th:each="p, iter : ${fillRateTrend}"
+                    <!-- กราฟจำนวนการจองต่อเดือน -->
+                    <div class="trend-bars" id="trendPanel-bookingCount" style="display:none;">
+                        <div class="trend-bar-col" th:each="p, iter : ${bookingCountTrend}"
                             th:classappend="${iter.last} ? ' is-current' : ''">
-                            <span class="trend-bar-amount"
-                                th:text="${#numbers.formatDecimal(p.fillRatePct, 1, 'COMMA', 1, 'POINT')} + '%'">0.0%</span>
+                            <span class="trend-bar-amount" th:text="${p.count} + ' ครั้ง'">0 ครั้ง</span>
                             <div class="trend-bar-track">
                                 <div class="trend-bar-fill count-fill"
                                     th:classappend="${iter.last} ? ' bar-current' : ''"
@@ -1327,7 +1357,7 @@
                     <div class="tour-rank-item" th:each="t, iter : ${topTours}">
                         <span class="tour-rank-medal"
                             th:text="${iter.index == 0} ? '🥇' : (${iter.index == 1} ? '🥈' : (${iter.index == 2} ? '🥉' : (${iter.index + 1} + '.')))"></span>
-                        <span class="tour-rank-name" th:text="${t.name}">ชื่อทัวร์</span>
+                        <span class="tour-rank-name" th:text="${t.name}" th:title="${t.name}">ชื่อทัวร์</span>
                         <div class="tour-rank-bar-track">
                             <div class="tour-rank-bar-fill"
                                 th:style="'width:' + ${t.percent} + '%; background:' + ${t.color}"></div>
@@ -1381,11 +1411,97 @@
         }
         function switchTrendTab(target) {
             document.getElementById('trendPanel-revenue').style.display = target === 'revenue' ? 'flex' : 'none';
-            document.getElementById('trendPanel-fillrate').style.display = target === 'fillrate' ? 'flex' : 'none';
+            document.getElementById('trendPanel-bookingCount').style.display = target === 'bookingCount' ? 'flex' : 'none';
             document.querySelectorAll('.trend-tab').forEach(btn => {
                 btn.classList.toggle('trend-tab-active', btn.dataset.target === target);
             });
         }
+    </script>
+    <script>
+        const bookingStatusClassMap = {
+            'WAITING_APPROVAL': 'status-waiting',
+            'CONFIRMED': 'status-confirmed',
+            'COMPLETED': 'status-completed',
+            'CANCEL': 'status-cancel'
+        };
+
+        function toggleBookingDropdown() {
+            document.getElementById('bookingStatusDropdown').classList.toggle('open');
+        }
+
+        // ปิด Dropdown เมื่อคลิกนอกพื้นที่
+        window.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('bookingStatusDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        // ฟังก์ชันเลือกฟิลเตอร์
+        function selectBookingFilter(statusKey, itemEl) {
+            const triggerBtn = document.getElementById('bookingDropdownTriggerBtn');
+            const selectedTextContainer = triggerBtn.querySelector('.selected-text');
+
+            const iconClass = itemEl.querySelector('i').className;
+            const label = itemEl.querySelector('.label-text').textContent;
+            const badgeCount = itemEl.querySelector('.count-badge').textContent;
+
+            selectedTextContainer.innerHTML = `
+            <i class="${iconClass}"></i>
+            <span>${label}</span>
+            <span class="count-badge">${badgeCount}</span>
+        `;
+
+            triggerBtn.className = 'filter-dropdown-trigger ' + bookingStatusClassMap[statusKey];
+
+            document.querySelectorAll('#bookingDropdownMenu .dropdown-item').forEach(el => el.classList.remove('active'));
+            itemEl.classList.add('active');
+
+            document.getElementById('bookingStatusDropdown').classList.remove('open');
+
+            filterBookings(statusKey);
+        }
+
+        // กรองแถวในตาราง
+        function filterBookings(statusKey) {
+            const rows = document.querySelectorAll('#tourBookingsTbody tr[data-status]');
+            const noResults = document.getElementById('noFilterResults');
+            let visibleCount = 0;
+
+            rows.forEach(r => {
+                const match = (r.getAttribute('data-status') === statusKey);
+                r.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            if (noResults) {
+                noResults.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
+            }
+        }
+
+        // กำหนดสถานะเริ่มต้นเมื่อโหลดหน้า
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('#tourBookingsTbody tr[data-status]');
+            if (rows.length === 0) return;
+
+            const priorityOrder = ['WAITING_APPROVAL', 'CONFIRMED', 'COMPLETED', 'CANCEL'];
+            let selectedStatus = 'WAITING_APPROVAL';
+
+            for (const status of priorityOrder) {
+                const hasAny = Array.from(rows).some(r => r.getAttribute('data-status') === status);
+                if (hasAny) {
+                    selectedStatus = status;
+                    break;
+                }
+            }
+
+            const targetItem = document.querySelector(`#bookingDropdownMenu .dropdown-item[data-status="${selectedStatus}"]`);
+            if (targetItem) {
+                selectBookingFilter(selectedStatus, targetItem);
+            } else {
+                filterBookings(selectedStatus);
+            }
+        });
     </script>
 </body>
 

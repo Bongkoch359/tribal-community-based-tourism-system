@@ -1,9 +1,13 @@
-/* ═══════════════════════════════════════════
-   CUSTOM ALERT / CONFIRM MODAL
-   แทนที่ alert()/confirm() ของเบราว์เซอร์ ให้หน้าตาตรงกับ success modal
-   (ใช้คลาส .modal-backdrop / .modal-box / .checkmark-wrap / .modal-title /
-    .modal-desc / .modal-btn-row / .modal-btn-primary ที่มีอยู่แล้วใน CSS)
-   ═══════════════════════════════════════════ */
+
+document.querySelectorAll('textarea.form-control').forEach(function (ta) {
+    const autoResize = () => {
+        ta.style.height = 'auto';
+        ta.style.height = (ta.scrollHeight + 2) + 'px';
+    };
+    ta.addEventListener('input', autoResize);
+    // เรียกครั้งแรกกรณีมีข้อความเดิมอยู่แล้ว (เช่นตอนแก้ไขทัวร์)
+    autoResize();
+});
 (function () {
     if (window.showAlertModal) return; // กันประกาศซ้ำถ้าโหลดไฟล์นี้มากกว่า 1 ครั้ง
 
@@ -779,11 +783,22 @@ function createLeafletMap(divId) {
 
 function reverseGeocode(lat, lng, callback) {
     fetch(`${NOMINATIM_BASE}/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=th`)
-        .then(res => res.json())
-        .then(data => {
-            if (data && data.display_name) callback(data.display_name);
+        .then(res => {
+            if (!res.ok) throw new Error('Nominatim status ' + res.status);
+            return res.json();
         })
-        .catch(() => {});
+        .then(data => {
+            if (data && data.display_name) {
+                callback(data.display_name);
+            } else {
+                console.warn('ไม่พบชื่อสถานที่สำหรับพิกัดนี้', data);
+                callback(`พิกัด: ${lat.toFixed(5)}, ${lng.toFixed(5)} (ไม่พบชื่อสถานที่ กรุณาพิมพ์เอง)`);
+            }
+        })
+        .catch(err => {
+            console.error('reverseGeocode ล้มเหลว:', err);
+            callback(`พิกัด: ${lat.toFixed(5)}, ${lng.toFixed(5)} (โหลดชื่อสถานที่ไม่สำเร็จ กรุณาพิมพ์เอง)`);
+        });
 }
 
 function searchPlaces(query, callback) {
