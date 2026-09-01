@@ -35,11 +35,9 @@ public class BookingTourController {
     // ════════════════════════════════════════════════════════
     // GET : หน้าจองทัวร์
     // ════════════════════════════════════════════════════════
-    @GetMapping("/booking/tour/{id}")
+   @GetMapping("/booking/tour/{id}")
 public String bookingPage(
         @PathVariable("id") String id,
-        // ✅ เพิ่ม: รับค่าที่ผู้ใช้เลือกไว้จากหน้า tour detail (ปฏิทิน)
-        //    ทั้งสองตัว optional เผื่อคนเข้าหน้านี้ตรงๆ โดยไม่ได้เลือกวันมาก่อน
         @RequestParam(value = "tourdate", required = false) String tourDateParam,
         @RequestParam(value = "scheduleid", required = false) String scheduleIdParam,
         Model model,
@@ -47,7 +45,6 @@ public String bookingPage(
 
     Optional<Tour> optionalTour = tourService.getTourByIdWithBookings(id);
 
-    // 3.1.1 — ไม่พบทัวร์ → แสดง error ที่หน้า booking ไม่ใช่ redirect ไป /search
     if (optionalTour.isEmpty()) {
         redirectAttributes.addFlashAttribute("errorMsg", "ไม่พบข้อมูลรายการทัวร์");
         return "redirect:/search";
@@ -55,15 +52,9 @@ public String bookingPage(
 
     Tour tour = optionalTour.get();
 
-    int availableSeats = tourService.getAvailableSeats(tour);
-    String seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
-
-
     List<Tourschedule> schedules = tourScheduleRepository
             .findBookableSchedules(id, java.sql.Date.valueOf(LocalDate.now()));
 
-    // ✅ หา schedule ที่ตรงกับที่ผู้ใช้เลือกมาจากหน้าก่อนหน้า
-    //    ลำดับความสำคัญ: scheduleid ก่อน (แม่นยำสุด) ถ้าไม่มีค่อย fallback ไปเทียบ tourdate ตรงๆ
     Tourschedule selectedSchedule = null;
 
     if (scheduleIdParam != null && !scheduleIdParam.isBlank()) {
@@ -75,7 +66,7 @@ public String bookingPage(
 
     if (selectedSchedule == null && tourDateParam != null && !tourDateParam.isBlank()) {
         try {
-            LocalDate wanted = LocalDate.parse(tourDateParam); // yyyy-MM-dd
+            LocalDate wanted = LocalDate.parse(tourDateParam);
             selectedSchedule = schedules.stream()
                     .filter(s -> {
                         LocalDate start = s.getOpendate().toLocalDate();
@@ -85,25 +76,46 @@ public String bookingPage(
                     .findFirst()
                     .orElse(null);
         } catch (Exception ignored) {
-            // tourdate format ไม่ถูกต้อง -> ไม่ preselect อะไร ปล่อยให้ผู้ใช้เลือกเองในหน้า booking
         }
     }
+
+    // ✅ ใหม่: คำนวณที่นั่งจากรอบที่ match ได้จริง ไม่ใช่ยอดรวมทั้งทัวร์
+    String initialScheduleId = selectedSchedule != null
+            ? selectedSchedule.getScheduleid()
+            : null;
+    int availableSeats = tourService.getAvailableSeatsForSchedule(tour, initialScheduleId);
+    String seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
 
     model.addAttribute("tour", tour);
     model.addAttribute("availableSeats", availableSeats);
     model.addAttribute("seatLevel", seatLevel);
     model.addAttribute("insurancePrice", BookingTourService.INSURANCE_PRICE_PER_PERSON);
-     model.addAttribute("schedules", schedules);
-    // ✅ ส่งรอบที่ pre-select ไปให้ template ใช้ (checked/selected ในฟอร์ม, หรือ auto-fill hidden input)
+    model.addAttribute("schedules", schedules);
     model.addAttribute("selectedSchedule", selectedSchedule);
-    model.addAttribute("selectedScheduleId", selectedSchedule != null ? selectedSchedule.getScheduleid() : null);
-  // ใน BookingTourController.java
-// ✅ แก้ไขตรงนี้ใน BookingTourController.java
-model.addAttribute("selectedTourDate", 
-    selectedSchedule != null ? selectedSchedule.getOpendate().toLocalDate().toString() : tourDateParam);
+    model.addAttribute("selectedScheduleId", initialScheduleId);
+    model.addAttribute("selectedTourDate",
+            selectedSchedule != null ? selectedSchedule.getOpendate().toLocalDate().toString() : tourDateParam);
+
     return "Member/booking_tour";
 }
 
+@GetMapping("/booking/tour/{id}/seats")
+@org.springframework.web.bind.annotation.ResponseBody
+public java.util.Map<String, Object> getSeatsForSchedule(
+        @PathVariable("id") String tourId,
+        @RequestParam("scheduleid") String scheduleId) {
+
+    Tour tour = tourService.getTourByIdAny(tourId)
+            .orElseThrow(() -> new RuntimeException("ไม่พบทัวร์"));
+
+    int availableSeats = tourService.getAvailableSeatsForSchedule(tour, scheduleId);
+    String seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
+
+    java.util.Map<String, Object> result = new java.util.HashMap<>();
+    result.put("availableSeats", availableSeats);
+    result.put("seatLevel", seatLevel);
+    return result;
+}
     // ════════════════════════════════════════════════════════
     // POST : สร้างการจองทัวร์
     // ════════════════════════════════════════════════════════

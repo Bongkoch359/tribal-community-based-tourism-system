@@ -387,6 +387,34 @@ img { display: block; max-width: 100%; }
 .review-empty p { font-size: 15px; }
 .review-empty small { color: var(--neutral-400); }
 
+/* Review pagination */
+.review-pagination {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--neutral-100);
+}
+.review-page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 100px;
+  border: 1.5px solid var(--neutral-300);
+  background: var(--paper);
+  color: var(--neutral-700);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.review-page-btn:hover { border-color: var(--green-600); color: var(--green-800); background: var(--green-50); }
+.review-page-btn.disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+.review-page-info { font-size: 13px; color: var(--neutral-500); font-weight: 600; }
+
 /* ============================================================
    BOOKING SIDEBAR
 ============================================================ */
@@ -1096,7 +1124,8 @@ img { display: block; max-width: 100%; }
           </div>
         </div>
 
-        <div class="review-list">
+        <!-- id="reviewList" ใช้เป็น target ของ JS pagination ด้านล่าง -->
+        <div class="review-list" id="reviewList">
           <th:block th:each="review, iterStat : ${reviews}">
             <div class="review-item">
               <div class="review-head">
@@ -1125,6 +1154,17 @@ img { display: block; max-width: 100%; }
                    onerror="this.style.display='none'" />
             </div>
           </th:block>
+        </div>
+
+        <!-- Pagination รีวิว: โชว์ทีละ 6 รีวิว -->
+        <div class="review-pagination" id="reviewPagination">
+          <button type="button" id="reviewPrevBtn" class="review-page-btn" onclick="goToReviewPage(-1)">
+            ‹ ก่อนหน้า
+          </button>
+          <span id="reviewPageInfo" class="review-page-info">หน้า 1 / 1</span>
+          <button type="button" id="reviewNextBtn" class="review-page-btn" onclick="goToReviewPage(1)">
+            ถัดไป ›
+          </button>
         </div>
       </th:block>
 
@@ -1659,6 +1699,45 @@ img { display: block; max-width: 100%; }
     const params = new URLSearchParams({ tourdate: date });
     window.location.href = `/booking/tour/${tourId}?${params}`;
   }
+
+  // ═══════════════════════════════════════════
+  // รีวิว — Pagination แสดงทีละ 6 รีวิว
+  // ═══════════════════════════════════════════
+  let reviewCurrentPage = 1;
+  const REVIEW_PAGE_SIZE = 6;
+
+  function renderReviewPage() {
+    const list = document.getElementById('reviewList');
+    if (!list) return; // ไม่มีรีวิวเลย -> ไม่มี list ให้ทำงาน
+
+    const cards = Array.from(list.querySelectorAll('.review-item'));
+    const totalPages = Math.max(1, Math.ceil(cards.length / REVIEW_PAGE_SIZE));
+    if (reviewCurrentPage > totalPages) reviewCurrentPage = totalPages;
+    if (reviewCurrentPage < 1) reviewCurrentPage = 1;
+
+    cards.forEach(card => card.style.display = 'none');
+
+    const start = (reviewCurrentPage - 1) * REVIEW_PAGE_SIZE;
+    const end = start + REVIEW_PAGE_SIZE;
+    cards.slice(start, end).forEach(card => card.style.display = '');
+
+    const pagination = document.getElementById('reviewPagination');
+    if (pagination) {
+      pagination.style.display = totalPages > 1 ? 'flex' : 'none';
+      document.getElementById('reviewPageInfo').textContent = 'หน้า ' + reviewCurrentPage + ' / ' + totalPages;
+      document.getElementById('reviewPrevBtn').classList.toggle('disabled', reviewCurrentPage <= 1);
+      document.getElementById('reviewNextBtn').classList.toggle('disabled', reviewCurrentPage >= totalPages);
+    }
+  }
+
+  function goToReviewPage(delta) {
+    reviewCurrentPage += delta;
+    renderReviewPage();
+    document.getElementById('reviewList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.addEventListener('DOMContentLoaded', renderReviewPage);
+
 // ═══════════════════════════════════════════
 // REPORT MODAL — ตอนนี้มี 3 ขั้นตอน: กรอกฟอร์ม -> ยืนยัน -> สำเร็จ
 // ═══════════════════════════════════════════

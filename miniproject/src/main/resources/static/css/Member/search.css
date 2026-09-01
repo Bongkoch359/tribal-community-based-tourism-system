@@ -119,6 +119,7 @@ img { display: block; }
 }
 .navbar-brand {
   color: #fff; margin-right: auto;
+  margin-left: 20px;
   display: flex; align-items: center; gap: 0px; flex-shrink: 0;
 }
 .brand-icon {
@@ -128,9 +129,6 @@ img { display: block; }
   flex-shrink: 0; box-shadow: 0 4px 12px rgba(82,183,136,0.35);
 }
 .brand-icon svg { width: 26px; height: 26px; }
-.brand-name { display: flex; flex-direction: column;margin-left: -25px; }
-.brand-name-line1 { font-size: 20px; font-weight: 800; line-height: 1.15; }
-.brand-name-line2 { font-size: 13px; font-weight: 400; color: var(--green-200); opacity: .85; }
 
 .nav-links { display: flex; align-items: center; gap: 2px; }
 .nav-link {
@@ -447,6 +445,7 @@ img { display: block; }
 .stat-icon svg { width: 18px; height: 18px; color: var(--amber-400); }
 .stat-text strong { color: #fff; font-size: 17px; font-weight: 700; display: block; line-height: 1.15; }
 .stat-text span   { color: rgba(255,255,255,0.62); font-size: 14px; }
+
 
 /* ============================================================
    WHY US STRIP
@@ -1024,23 +1023,12 @@ img { display: block; }
     object-fit:contain;
 }
 
-.navbar-brand{
-    display:flex;
-    align-items:center;
-    text-decoration:none;
-}
-
-.brand-name-line1{
-    display:block;
-    font-size:22px;
-    font-weight:700;
-    color:#fff;
-    line-height:1;
-}
-
-.brand-name-line2{
-    display:block;
-    font-size:12px;
-    color:var(--green-200);
-    margin-top:4px;
+  .brand-text {
+  font-family: 'Sriracha', cursive;
+  color: var(--white);
+  font-size: 1.55rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  line-height: 1;
+  margin-left: -10px; /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
 }

@@ -378,3 +378,11 @@
       font-size: 12px;
       margin-top: 4px;
     }
+
+    .navbar-accent {
+  height: 4px;
+  background: linear-gradient(90deg, var(--action-orange) 0%, #f5c453 50%, var(--action-orange) 100%);
+  position: sticky;
+  top: var(--navbar-h);   /* ต้องเท่ากับความสูงของ navbar หน้านั้นๆ */
+  z-index: 999;
+}

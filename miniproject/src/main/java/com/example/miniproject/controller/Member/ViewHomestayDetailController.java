@@ -44,7 +44,6 @@ public class ViewHomestayDetailController {
     @GetMapping("/{id}")
     public String homestayDetail(
             @PathVariable Integer id,
-            // ✅ เปลี่ยนชื่อ param ให้ตรงกับ query string ที่หน้า search ส่งมา (checkin/checkout/guest)
             @RequestParam(required = false) String checkin,
             @RequestParam(required = false) String checkout,
             @RequestParam(required = false) Integer guest,
@@ -66,6 +65,11 @@ public class ViewHomestayDetailController {
         Double        avgRating   = homestayService.getAvgRating(id);
         Long          reviewCount = homestayService.getReviewCount(id);
 
+        // ✅ นับจำนวนรีวิวแยกตามดาว (1-5) เพื่อคำนวณ % แถบคะแนนฝั่ง view
+       Map<Integer, Long> ratingCounts = reviews.stream()
+        .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
+System.out.println("DEBUG ratingCounts = " + ratingCounts);
+
         // ✅ แปลงเป็น LocalDate ก่อน เพื่อคำนวณ nights ได้ตรงๆ แล้วค่อยแปลงเป็น java.sql.Date สำหรับ query
         LocalDate checkinDate, checkoutDate;
         try {
@@ -76,7 +80,6 @@ public class ViewHomestayDetailController {
                     ? LocalDate.parse(checkout)
                     : checkinDate.plusDays(1);
 
-            // กันกรณี checkout <= checkin ให้ fallback เป็น checkin + 1 คืน
             if (!checkoutDate.isAfter(checkinDate)) {
                 checkoutDate = checkinDate.plusDays(1);
             }
@@ -103,15 +106,14 @@ public class ViewHomestayDetailController {
         model.addAttribute("reviews",        reviews);
         model.addAttribute("avgRating",      avgRating);
         model.addAttribute("reviewCount",    reviewCount);
+        model.addAttribute("ratingCounts",   ratingCounts);
         model.addAttribute("availableRooms", availableRooms);
 
-        // ✅ ส่ง attribute ที่หน้า view ต้องใช้จริง (ตรงชื่อกับ .html)
         model.addAttribute("checkinParam",  sd);
         model.addAttribute("checkoutParam", ed);
         model.addAttribute("guestParam",    guest != null ? guest : 1);
         model.addAttribute("nights",        nights);
 
-        // ส่วนที่เพิ่ม: การจองที่เข้าพักเสร็จแล้วแต่ยังไม่ได้รีวิว
         Member member = (Member) session.getAttribute("loggedInMember");
         if (member != null) {
             List<Booking> pendingReviews = bookingRepository

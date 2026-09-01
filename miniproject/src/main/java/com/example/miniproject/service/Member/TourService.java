@@ -14,6 +14,7 @@ import com.example.miniproject.entity.Tour;
 import com.example.miniproject.entity.TourType;
 import com.example.miniproject.repository.Member.TourRepository;
 import com.example.miniproject.repository.Tour.TourTypeRepository;
+import com.example.miniproject.repository.Tour.TourScheduleRepository;
 
 
 @Service
@@ -21,6 +22,10 @@ public class TourService {
 
     @Autowired
     private TourRepository tourRepository;
+
+     @Autowired
+    private TourScheduleRepository tourScheduleRepository;
+
 
     @Autowired
     private TourTypeRepository tourTypeRepository;
@@ -208,4 +213,17 @@ public class TourService {
         double ratio = (double) availableSeats / tour.getMaxSeatstour();
         return (ratio <= 0.2) ? "low" : "open";
     }
+
+
+public int getAvailableSeatsForSchedule(Tour tour, String scheduleId) {
+    if (tour.getMaxSeatstour() == null) {
+        return Integer.MAX_VALUE;
+    }
+    if (scheduleId == null || scheduleId.isBlank()) {
+        // ยังไม่ได้เลือกรอบ — โชว์ max ของทัวร์ไปก่อน (ค่าที่ดีที่สุดที่มีตอนนี้)
+        return tour.getMaxSeatstour();
+    }
+    int booked = tourScheduleRepository.countBookedSeatsBySchedule(scheduleId);
+    return Math.max(0, tour.getMaxSeatstour() - booked);
+}
 }

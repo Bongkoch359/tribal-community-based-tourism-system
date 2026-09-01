@@ -425,29 +425,57 @@
       display: flex; justify-content: center; align-items: center; gap: 6px;
     }
 
-    /* REVIEW */
-    .review-summary { display: flex; gap: 28px; margin-bottom: 24px; }
-    .score-box { width: 110px; text-align: center; flex-shrink: 0; }
-    .score-num { font-size: 52px; font-weight: 800; color: var(--wood-700); line-height: 1; }
-    .stars { color: var(--amber-500); font-size: 18px; margin: 6px 0; }
-    .score-label { font-size: 13px; color: var(--neutral-500); }
-    .bar-rows { flex: 1; }
-    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
-    .bar-label { font-size: 13px; color: var(--neutral-500); width: 16px; text-align: right; }
-    .bar-track { flex: 1; height: 7px; background: var(--neutral-200); border-radius: 999px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--amber-500), var(--amber-600)); }
-    .review-item { border-top: 1px solid var(--neutral-100); padding-top: 18px; margin-top: 18px; }
+    /* REVIEW SUMMARY — เหมือนหน้าทัวร์ */
+    .rating-summary { display: flex; gap: 36px; align-items: center; padding-bottom: 22px; margin-bottom: 20px; border-bottom: 1px solid var(--neutral-100); flex-wrap: wrap; }
+    .rating-big { text-align: center; flex-shrink: 0; }
+    .rating-big-num { font-size: 44px; font-weight: 800; color: var(--wood-700); line-height: 1; }
+    .rating-big-stars { display: flex; justify-content: center; gap: 3px; margin: 8px 0; }
+    .rating-big-stars svg { width: 18px; height: 18px; }
+    .rating-big-count { font-size: 13px; color: var(--neutral-500); font-weight: 600; }
+    .star-filled { fill: var(--amber-500); }
+    .star-empty { fill: var(--neutral-200); }
+
+    .rating-bars { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 7px; }
+    .rbar { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--neutral-600); }
+    .rbar-label { width: 12px; font-weight: 700; }
+    .rbar-track { flex: 1; height: 7px; background: var(--neutral-100); border-radius: 100px; overflow: hidden; }
+    .rbar-fill { height: 100%; background: linear-gradient(90deg, var(--amber-500), var(--amber-400)); border-radius: 100px; }
+    .rbar-pct { width: 34px; text-align: right; color: var(--neutral-500); }
+
+    .review-list { display: flex; flex-direction: column; gap: 20px; }
+    .review-item { padding-bottom: 20px; border-bottom: 1px solid var(--neutral-100); margin-top: 0; }
+    .review-item:last-child { border-bottom: none; padding-bottom: 0; }
     .review-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .avatar {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--green-700); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 16px; flex-shrink: 0;
+    .review-avatar {
+      width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--green-500), var(--green-700));
+      color: #fff; font-weight: 800; font-size: 17px; display: flex; align-items: center; justify-content: center;
     }
-    .rev-name { font-size: 15px; font-weight: 700; color: var(--neutral-800); }
-    .rev-date { font-size: 12px; color: var(--neutral-500); }
-    .rev-stars { color: var(--amber-500); font-size: 14px; margin-top: 2px; }
-    .rev-text { color: var(--neutral-600); font-size: 14px; line-height: 1.8; }
+    .review-avatar.alt { background: linear-gradient(135deg, var(--amber-400), var(--amber-600)); }
+    .review-name { font-size: 15px; font-weight: 700; color: var(--neutral-800); }
+    .review-date { font-size: 12.5px; color: var(--neutral-500); }
+    .review-stars { margin-left: auto; display: flex; gap: 2px; }
+    .review-stars svg { width: 14px; height: 14px; }
+    .review-text { font-size: 14.5px; color: var(--neutral-700); line-height: 1.75; margin-bottom: 10px; }
+    .review-empty { text-align: center; padding: 40px 10px; color: var(--neutral-500); }
+    .review-empty svg { width: 34px; height: 34px; margin: 0 auto 14px; color: var(--neutral-300); }
+    .review-empty p { font-size: 15px; }
+    .review-empty small { color: var(--neutral-400); }
+
+    /* Review pagination */
+    .review-pagination {
+      display: none; justify-content: center; align-items: center; gap: 16px;
+      margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--neutral-100);
+    }
+    .review-page-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 100px;
+      border: 1.5px solid var(--neutral-300); background: var(--paper); color: var(--neutral-700);
+      font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 600;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .review-page-btn:hover { border-color: var(--green-600); color: var(--green-800); background: var(--green-50); }
+    .review-page-btn.disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+    .review-page-info { font-size: 13px; color: var(--neutral-500); font-weight: 600; }
 
     /* SIDEBAR CARDS (contact + map) */
     .side-card { padding: 18px; }
@@ -1105,42 +1133,81 @@
           </button>
         </div>
 
-        <div class="review-summary">
-          <div class="score-box">
-            <div class="score-num"
-                 th:text="${reviewCount != null and reviewCount > 0} ? ${#numbers.formatDecimal(avgRating, 1, 1)} : '0.0'">0.0</div>
-            <div class="stars">★★★★★</div>
-            <div class="score-label" th:text="'จาก ' + ${reviewCount} + ' รีวิว'">จาก 0 รีวิว</div>
-          </div>
-          <div class="bar-rows">
-            <div class="bar-row" th:each="star : ${#numbers.sequence(5, 1, -1)}">
-              <span class="bar-label" th:text="${star}">5</span>
-              <div class="bar-track">
-                <div class="bar-fill"
-                     th:style="${reviewCount != null and reviewCount > 0
-                                 ? ('width:' + (reviews.?[rating == #star].size() * 100 / reviewCount) + '%')
-                                 : 'width:0%'}"></div>
+        <th:block th:if="${reviews != null and !reviews.isEmpty()}">
+          <div class="rating-summary">
+            <div class="rating-big">
+              <div class="rating-big-num"
+                   th:text="${#numbers.formatDecimal(avgRating, 1, 'POINT', 1, 'POINT')}">4.8</div>
+              <div class="rating-big-stars">
+                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                  <svg viewBox="0 0 24 24" th:class="${i <= avgRating} ? 'star-filled' : 'star-empty'">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                </th:block>
               </div>
+              <div class="rating-big-count" th:text="${reviewCount} + ' รีวิว'">0 รีวิว</div>
+            </div>
+          <div class="rating-bars">
+  <th:block th:each="star : ${#numbers.sequence(5, 1, -1)}"
+            th:with="cnt=${ratingCounts != null ? ratingCounts.getOrDefault(star, 0) : 0},
+                     pct=${(reviewCount != null and reviewCount > 0)
+                            ? #numbers.formatDecimal(cnt * 100.0 / reviewCount, 1, 'POINT', 0, 'POINT')
+                            : '0'}">
+    <div class="rbar">
+      <span class="rbar-label" th:text="${star}">5</span>
+      <div class="rbar-track">
+        <div class="rbar-fill" th:style="'width:' + ${pct} + '%'"></div>
+      </div>
+      <span class="rbar-pct" th:text="${pct} + '%'">0%</span>
+    </div>
+              </th:block>
             </div>
           </div>
-        </div>
 
-        <div th:if="${reviews == null or reviews.isEmpty()}">
-          <p style="color:var(--neutral-500);text-align:center;padding:20px 0;">ยังไม่มีรีวิว</p>
-        </div>
-        <div class="review-item" th:each="review : ${reviews}">
-          <div class="review-head">
-            <div class="avatar"
-                 th:text="${review.anonymous == true} ? '🙈' : ${#strings.substring(review.booking.member.firstname, 0, 1)}">ก</div>
-            <div>
-              <div class="rev-name"
-                   th:text="${review.anonymous == true} ? 'ผู้เข้าพักไม่ระบุชื่อ' : (${review.booking.member.firstname + ' ' + #strings.substring(review.booking.member.lastname, 0, 1) + '.'})">ชื่อ น.</div>
-              <div class="rev-date" th:text="'เข้าพักเมื่อ ' + ${#dates.format(review.reviewdate, 'MMMM yyyy')}">วันที่</div>
-              <div class="rev-stars" th:text="${'★'.repeat(review.rating)}">★★★★★</div>
-            </div>
+          <div class="review-list" id="reviewList">
+            <th:block th:each="review, iterStat : ${reviews}">
+              <div class="review-item">
+                <div class="review-head">
+                  <div class="review-avatar"
+                       th:classappend="${iterStat.index % 2 == 1} ? ' alt' : ''"
+                       th:text="${review.anonymous == true} ? '🙈' : ${#strings.substring(review.booking.member.firstname, 0, 1)}">ก</div>
+                  <div>
+                    <div class="review-name"
+                         th:text="${review.anonymous == true} ? 'ผู้เข้าพักไม่ระบุชื่อ' : (${review.booking.member.firstname + ' ' + #strings.substring(review.booking.member.lastname, 0, 1) + '.'})">ชื่อ น.</div>
+                    <div class="review-date" th:text="${#dates.format(review.reviewdate, 'dd/MM/yyyy')}">วันที่</div>
+                  </div>
+                  <div class="review-stars">
+                    <th:block th:each="s : ${#numbers.sequence(1, 5)}">
+                      <svg viewBox="0 0 24 24" th:class="${s <= review.rating} ? 'star-filled' : 'star-empty'">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </th:block>
+                  </div>
+                </div>
+                <p class="review-text" th:text="${review.comment}">ความคิดเห็น</p>
+              </div>
+            </th:block>
           </div>
-          <p class="rev-text" th:text="${review.comment}">ความคิดเห็น</p>
-        </div>
+
+          <div class="review-pagination" id="reviewPagination">
+            <button type="button" id="reviewPrevBtn" class="review-page-btn" onclick="goToReviewPage(-1)">
+              ‹ ก่อนหน้า
+            </button>
+            <span id="reviewPageInfo" class="review-page-info">หน้า 1 / 1</span>
+            <button type="button" id="reviewNextBtn" class="review-page-btn" onclick="goToReviewPage(1)">
+              ถัดไป ›
+            </button>
+          </div>
+        </th:block>
+
+        <th:block th:if="${reviews == null or reviews.isEmpty()}">
+          <div class="review-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+            </svg>
+            <p>ยังไม่มีรีวิวสำหรับที่พักนี้<br><small>เป็นคนแรกที่รีวิวหลังจากเข้าพัก!</small></p>
+          </div>
+        </th:block>
       </div>
 
     </div>
@@ -1675,6 +1742,44 @@
   function closeSuccessReportModal() {
     document.getElementById('successReportOverlay').classList.remove('open');
   }
+
+  // ═══════════════════════════════════════════
+  // รีวิว — Pagination แสดงทีละ 6 รีวิว
+  // ═══════════════════════════════════════════
+  let reviewCurrentPage = 1;
+  const REVIEW_PAGE_SIZE = 6;
+
+  function renderReviewPage() {
+    const list = document.getElementById('reviewList');
+    if (!list) return; // ไม่มีรีวิวเลย -> ไม่มี list ให้ทำงาน
+
+    const cards = Array.from(list.querySelectorAll('.review-item'));
+    const totalPages = Math.max(1, Math.ceil(cards.length / REVIEW_PAGE_SIZE));
+    if (reviewCurrentPage > totalPages) reviewCurrentPage = totalPages;
+    if (reviewCurrentPage < 1) reviewCurrentPage = 1;
+
+    cards.forEach(card => card.style.display = 'none');
+
+    const start = (reviewCurrentPage - 1) * REVIEW_PAGE_SIZE;
+    const end = start + REVIEW_PAGE_SIZE;
+    cards.slice(start, end).forEach(card => card.style.display = '');
+
+    const pagination = document.getElementById('reviewPagination');
+    if (pagination) {
+      pagination.style.display = totalPages > 1 ? 'flex' : 'none';
+      document.getElementById('reviewPageInfo').textContent = 'หน้า ' + reviewCurrentPage + ' / ' + totalPages;
+      document.getElementById('reviewPrevBtn').classList.toggle('disabled', reviewCurrentPage <= 1);
+      document.getElementById('reviewNextBtn').classList.toggle('disabled', reviewCurrentPage >= totalPages);
+    }
+  }
+
+  function goToReviewPage(delta) {
+    reviewCurrentPage += delta;
+    renderReviewPage();
+    document.getElementById('reviewList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.addEventListener('DOMContentLoaded', renderReviewPage);
 </script>
 
 </body>

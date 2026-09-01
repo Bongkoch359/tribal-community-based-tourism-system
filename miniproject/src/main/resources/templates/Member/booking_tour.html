@@ -295,9 +295,14 @@ img { display: block; }
   background: var(--neutral-50); border: 1.5px solid var(--neutral-200);
   border-radius: var(--r-md); padding: 14px 16px;
   display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; transition: border-color .15s;
+  gap: 10px; transition: border-color .15s, background .15s;
 }
 .passenger-card:focus-within { border-color: var(--green-400); }
+/* ★ ใหม่: highlight การ์ดนับจำนวนเมื่อ error */
+.passenger-card.is-invalid {
+  border-color: var(--red-600);
+  background: var(--red-50);
+}
 .passenger-info { flex: 1; min-width: 0; }
 .passenger-type { font-size: 14px; font-weight: 700; color: var(--neutral-800); display: flex; align-items: center; gap: 6px; }
 .passenger-price { font-size: 12px; color: var(--amber-600); font-weight: 700; margin-top: 1px; }
@@ -561,10 +566,12 @@ img { display: block; }
     </style>
 
    <script th:inline="javascript">
-      const ADULT_PRICE     = /*[[${tour.adultprice}]]*/ 850;
-      const CHILD_PRICE     = /*[[${tour.childprice}]]*/ 500;
-      const AVAILABLE_SEATS = /*[[${availableSeats}]]*/ 0;
-      const INSURANCE_PRICE = /*[[${insurancePrice}]]*/ 100;
+      const ADULT_PRICE        = /*[[${tour.adultprice}]]*/ 850;
+      const CHILD_PRICE        = /*[[${tour.childprice}]]*/ 500;
+      const AVAILABLE_SEATS    = /*[[${availableSeats}]]*/ 0;
+      const SEAT_LEVEL_INITIAL = /*[[${seatLevel}]]*/ 'open';   /* ★ เพิ่ม — badge ตอนนี้ reactive ตามค่านี้ */
+      const TOUR_ID             = /*[[${tour.tourid}]]*/ '';     /* ★ เพิ่ม — ใช้ยิง endpoint เช็คที่นั่งรายรอบ */
+      const INSURANCE_PRICE    = /*[[${insurancePrice}]]*/ 100;
       const ALLOW_MEETING_POINT = /*[[${tour.allowMeetingPoint}]]*/ true;  
       const ALLOW_HOTEL_PICKUP  = /*[[${tour.allowHotelPickup}]]*/ false; 
       const HOTEL_PICKUP_AREA   = /*[[${tour.hotelPickupArea}]]*/ 'เชียงใหม่';
@@ -580,6 +587,7 @@ img { display: block; }
             childPrice: CHILD_PRICE,
             insurancePrice: INSURANCE_PRICE,
             availableSeats: AVAILABLE_SEATS,
+            seatLevel: SEAT_LEVEL_INITIAL, // ★ เพิ่ม — ตอนนี้ badge ที่นั่งอัปเดตได้ตาม onScheduleChange()
             numOfAdult: 1,
             numOfChild: 0,
             isBookingForOther: false,
@@ -619,6 +627,35 @@ img { display: block; }
                 if (this.canIncreaseGuest) this.numOfChild++;
             },
 
+            // ★ ใหม่: เรียกทุกครั้งที่ user เปลี่ยนรอบวันที่ในดรอปดาวน์
+            //   ดึงที่นั่งคงเหลือของ "รอบนั้นจริงๆ" (schedule) มา sync หน้าจอ
+            //   กันตัวเลขที่โชว์ไม่ตรงกับที่ backend จะเช็คตอน submit จริง
+            async onScheduleChange(event) {
+                const option = event.target.selectedOptions[0];
+                if (!option) return;
+                const scheduleId = option.dataset.scheduleid;
+                if (!scheduleId) return;
+
+                try {
+                    const res = await fetch(
+                        `/booking/tour/${TOUR_ID}/seats?scheduleid=${encodeURIComponent(scheduleId)}`
+                    );
+                    if (!res.ok) throw new Error('โหลดข้อมูลที่นั่งไม่สำเร็จ');
+                    const data = await res.json();
+
+                    this.availableSeats = data.availableSeats;
+                    this.seatLevel = data.seatLevel;
+
+                    // ถ้าจำนวนคนที่กรอกไว้เกินที่นั่งของรอบใหม่ — ปรับลดอัตโนมัติ กันสับสน
+                    if (this.numOfGuest > this.availableSeats) {
+                        this.numOfAdult = Math.min(this.numOfAdult, Math.max(1, this.availableSeats));
+                        this.numOfChild = Math.max(0, this.availableSeats - this.numOfAdult);
+                    }
+                } catch (err) {
+                    console.error('โหลดที่นั่งไม่สำเร็จ:', err);
+                }
+            },
+
             validate() {
                 const errors = {};
 
@@ -640,6 +677,11 @@ img { display: block; }
                     errors['numOfGuest'] = 'กรุณาระบุจำนวนผู้เดินทางอย่างน้อย 1 ท่าน';
                 } else if (this.numOfGuest > this.availableSeats) {
                     errors['numOfGuest'] = `ที่นั่งเหลือเพียง ${this.availableSeats} ที่ กรุณาลดจำนวนผู้เดินทาง`;
+                }
+
+                // 2.4 ประเภทจุดรับ — ต้องมีค่าเสมอ (กันเคสทัวร์ไม่เปิดทั้งสองแบบ แล้วไม่มี radio ให้เลือก)
+                if (!this.pickupType) {
+                    errors['pickuptype'] = 'ไม่พบช่องทางรับส่งสำหรับทัวร์นี้ กรุณาติดต่อเจ้าหน้าที่';
                 }
 
                 // 2.5 ที่อยู่โรงแรม (กรณีเลือกให้ไปรับ) — เช็คแค่ว่ากรอกมาหรือยัง ไม่บังคับคำพื้นที่
@@ -966,11 +1008,18 @@ img { display: block; }
 <div class="form-group full">
   <label class="form-label">วันที่ออกเดินทาง (เลือกรอบที่เปิดจอง) <span class="req">*</span></label>
 
+  <!-- ★ แก้: ผูก th:selected กับ selectedScheduleId ที่ controller match มาให้แล้ว
+       (แทนที่จะพึ่ง JS ตั้งค่า .value ตรงๆ ซึ่ง match ไม่ครบเคสทัวร์หลายวัน/มาจาก scheduleid)
+       ★ แก้: เพิ่ม data-scheduleid ใช้ยิง endpoint เช็คที่นั่งรายรอบตอนเปลี่ยนรอบ
+       ★ แก้: เพิ่ม @change="onScheduleChange($event)" -->
   <select name="tourdate" id="tourdate-input" required class="form-select"
-          th:disabled="${schedules == null or schedules.isEmpty()}">
-    <option value="" disabled selected>-- กรุณาเลือกรอบวันที่ --</option>
+          th:disabled="${schedules == null or schedules.isEmpty()}"
+          @change="onScheduleChange($event)">
+    <option value="" disabled th:selected="${selectedScheduleId == null}">-- กรุณาเลือกรอบวันที่ --</option>
     <option th:each="s : ${schedules}"
             th:value="${#dates.format(s.opendate, 'yyyy-MM-dd')}"
+            th:attr="data-scheduleid=${s.scheduleid}"
+            th:selected="${selectedScheduleId != null and s.scheduleid == selectedScheduleId}"
             th:text="${#dates.format(s.opendate, 'dd/MM/yyyy')} + ' - ' + ${#dates.format(s.enddate, 'dd/MM/yyyy')}">
     </option>
   </select>
@@ -996,8 +1045,10 @@ img { display: block; }
                th:if="${tour.allowMeetingPoint}"
                :class="{ 'radio-selected': pickupType === 'จุดรับส่วนกลาง' }">
 
+            <!-- ★ แก้: เอา name="pickuptype" ออกจาก radio ตัวนี้
+                 ค่าจริงที่ submit จะมาจาก hidden input ด้านล่างแทน (x-model เดียวกัน)
+                 กันเคสไม่มี radio ให้เลือกเลยแล้วฟอร์มไม่ส่งค่าอะไรมา -->
             <input type="radio"
-                   name="pickuptype"
                    value="จุดรับส่วนกลาง"
                    x-model="pickupType">
 
@@ -1046,8 +1097,8 @@ img { display: block; }
                th:if="${tour.allowHotelPickup}"
                :class="{ 'radio-selected': pickupType === 'โรงแรม/ที่พัก' }">
 
+            <!-- ★ แก้: เอา name="pickuptype" ออกเช่นกัน -->
             <input type="radio"
-                   name="pickuptype"
                    value="โรงแรม/ที่พัก"
                    x-model="pickupType">
 
@@ -1058,6 +1109,17 @@ img { display: block; }
 </span>
             </span>
         </label>
+
+        <!-- ★ ใหม่: hidden input ตัวจริงที่ถูก submit ไปหลังบ้าน
+             มีอยู่เสมอไม่ว่าจะมี radio ให้เลือกกี่ตัว กันเคส allowMeetingPoint/allowHotelPickup
+             เป็น false ทั้งคู่แล้วไม่มี field pickuptype ส่งไปเลย -->
+        <input type="hidden" name="pickuptype" x-model="pickupType">
+
+        <!-- ★ ใหม่: error แสดงเมื่อไม่มีประเภทจุดรับให้เลือกเลย (edge case) -->
+        <div class="field-error" x-show="submitted && fieldErrors['pickuptype']">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+            <span x-text="fieldErrors['pickuptype']"></span>
+        </div>
 
     </div>
 </div>
@@ -1127,7 +1189,8 @@ img { display: block; }
 </div>
             <!-- Counters -->
             <div class="passenger-row">
-              <div class="passenger-card">
+              <!-- ★ แก้: เพิ่ม :class is-invalid ผูกกับ fieldErrors['numOfGuest'] -->
+              <div class="passenger-card" :class="{ 'is-invalid': submitted && fieldErrors['numOfGuest'] }">
                 <div class="passenger-info">
                   <div class="passenger-type">👤 ผู้ใหญ่</div>
                   <div class="passenger-price" th:text="${#numbers.formatDecimal(tour.adultprice,1,'COMMA',0,'POINT')} + ' ฿/ท่าน'"></div>
@@ -1138,7 +1201,7 @@ img { display: block; }
                   <button type="button" class="counter-btn" :disabled="!canIncreaseGuest" @click="incrementAdult()">+</button>
                 </div>
               </div>
-              <div class="passenger-card">
+              <div class="passenger-card" :class="{ 'is-invalid': submitted && fieldErrors['numOfGuest'] }">
                 <div class="passenger-info">
                   <div class="passenger-type">🧒 เด็ก</div>
                   <div class="passenger-price" th:text="${#numbers.formatDecimal(tour.childprice,1,'COMMA',0,'POINT')} + ' ฿/ท่าน'"></div>
@@ -1189,14 +1252,17 @@ img { display: block; }
               <span x-text="fieldErrors['idcards']"></span>
             </div>
 
+            <!-- ★ แก้: seat badge ตอนนี้ reactive ตาม seatLevel/availableSeats (Alpine state)
+                 แทนที่จะ render ตายตัวจาก server ตั้งแต่โหลดหน้าเดียว
+                 ทำให้ badge อัปเดตทันทีเมื่อเปลี่ยนรอบวันที่ในดรอปดาวน์ -->
             <div class="seat-status">
-  <span class="seat-badge full" th:if="${seatLevel == 'full'}">
+  <span class="seat-badge full" x-show="seatLevel === 'full'">
     ❌ ทัวร์รอบนี้เต็มแล้ว ไม่สามารถจองได้
   </span>
-  <span class="seat-badge low" th:if="${seatLevel == 'low'}">
-    ⚠️ เหลือเพียง <strong th:text="${availableSeats}"></strong> ที่ — รีบจองด่วน!
+  <span class="seat-badge low" x-show="seatLevel === 'low'">
+    ⚠️ เหลือเพียง <strong x-text="availableSeats"></strong> ที่ — รีบจองด่วน!
   </span>
-  <span class="seat-badge open" th:if="${seatLevel == 'open'}">
+  <span class="seat-badge open" x-show="seatLevel === 'open'">
     ✓ ยังมีที่นั่งว่าง
   </span>
 </div>
@@ -1462,19 +1528,17 @@ document.addEventListener('click', function(e) {
   if (w && !w.contains(e.target)) w.classList.remove('open');
 });
 
+/* ★ แก้: ตัดส่วนที่เคยตั้งค่า input.value จาก query param 'tourdate' ตรงๆ ออก
+   เพราะตอนนี้ server (Thymeleaf th:selected) เป็นคนเลือก option ที่ถูกต้องให้แล้ว
+   ทั้งกรณีมาจาก tourdate และ scheduleid — เหลือแค่ sync ข้อความ sidebar-date
+   จากค่าที่ select ถูกเลือกไว้อยู่แล้วตอนโหลดหน้า */
 window.addEventListener('DOMContentLoaded', function() {
-  const params = new URLSearchParams(window.location.search);
-  const d = params.get('tourdate');
-  if (d) {
-    const input = document.getElementById('tourdate-input');
-    if (input) {
-      input.value = d;
-      const parts = d.split('-');
-      document.getElementById('sidebar-date').textContent =
-        parts[2] + '/' + parts[1] + '/' + (parseInt(parts[0]) + 543);
-    }
-  }
   const dateInput = document.getElementById('tourdate-input');
+  if (dateInput && dateInput.value) {
+    const parts = dateInput.value.split('-');
+    document.getElementById('sidebar-date').textContent =
+      parts[2] + '/' + parts[1] + '/' + (parseInt(parts[0]) + 543);
+  }
   if (dateInput) {
     dateInput.addEventListener('change', function() {
       const val = this.value;

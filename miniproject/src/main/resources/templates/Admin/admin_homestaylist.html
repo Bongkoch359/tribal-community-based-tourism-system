@@ -46,18 +46,27 @@
 
   <div class="nav-divider"></div>
 
-  <div class="admin-area">
-    <div class="admin-info">
-      <div class="admin-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
-      <div class="admin-role">Super Admin</div>
+  <div class="profile-dropdown">
+  <div class="profile-trigger">
+    <div class="nav-avatar" th:text="${session.loggedInAdmin?.username != null and #strings.length(session.loggedInAdmin.username) >= 2} ? ${#strings.substring(session.loggedInAdmin.username,0,2).toUpperCase()} : (${session.loggedInAdmin?.username} ?: 'AD')">AD</div>
+    <div>
+      <span class="owner-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</span>
+      <span class="owner-role">Super Admin</span>
     </div>
-    <div class="admin-avatar">A</div>
-    <a href="/admin/logout" class="logout-btn">
-      <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
-      ออกจากระบบ
+    <span class="material-symbols-outlined profile-chevron" style="font-size:16px;">expand_more</span>
+  </div>
+  <div class="dropdown-content">
+    <div class="dropdown-header">
+      <div class="d-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
+      <div class="d-email" th:text="'Super Admin'">Super Admin</div>
+    </div>
+    <a href="/admin/logout" class="logout-item">
+      <span class="material-symbols-outlined" style="font-size:16px;">logout</span> ออกจากระบบ
     </a>
   </div>
+</div>
 </header>
+<div class="navbar-accent"></div>
 
 <!-- MAIN CONTENT -->
 <main class="content">

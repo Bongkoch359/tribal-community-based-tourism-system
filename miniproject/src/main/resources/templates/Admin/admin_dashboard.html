@@ -47,6 +47,7 @@
   --blue-100: #eff6ff;
   --green-dark: #15803d;
   --green-100: #f0fdf4;
+  --purple: #7c3aed;
 
   /* 🌟 โทนสีส้ม Action สำหรับ Navbar Active & Hover */
   --action-orange: #d68f14;
@@ -122,7 +123,6 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   margin-top: 4px;
 }
 
-/* สไตล์สำหรับตัวเลขแจ้งเตือนบน Navbar */
 .nav-badge {
   background-color: var(--error);
   color: #fff;
@@ -137,7 +137,6 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
 
 .nav-group { display: flex; align-items: center; gap: 6px; }
 
-/* 🌟 ปรับแต่ง Navbar Link ให้ Hover และ Active เป็นสีส้ม */
 .nav-link {
   color: rgba(255, 255, 255, 0.85);
   font-size: 16px;
@@ -163,31 +162,176 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
 
 .nav-divider { width: 1px; height: 32px; background: rgba(255, 255, 255, 0.2); margin: 0 12px; }
 
-.admin-area { display: flex; align-items: center; gap: 12px; }
-.admin-info { text-align: right; }
-.admin-name { color: #fff; font-size: 15px; font-weight: 600; line-height: 1.2; }
-.admin-role { color: rgba(255, 255, 255, 0.7); font-size: 12px; }
-
-.admin-avatar {
-  width: 42px; height: 42px;
-  background: var(--action-orange);
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 18px; color: #fff; flex-shrink: 0;
+/* 🌟 ขีดส้มใต้ Navbar (ติดตามตอน scroll ไปพร้อม navbar) */
+.navbar-accent {
+  height: 4px;
+  background: linear-gradient(90deg, var(--action-orange) 0%, #f5c453 50%, var(--action-orange) 100%);
+  position: sticky;
+  top: var(--navbar-h);
+  z-index: 999;
 }
 
-.logout-btn {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: color 0.15s;
-  white-space: nowrap;
-  margin-left: 6px;
+.admin-area { display: flex; align-items: center; }
+
+/* ─── PROFILE AREA (คัดลอกจากหน้าแอดโพสต์ add-post.css) ─── */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
 }
-.logout-btn:hover { color: var(--action-orange-light); }
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: .45rem .75rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    transition: background .2s, border-color .2s;
+}
+
+.profile-trigger:hover {
+    background: rgba(255, 255, 255, .1);
+    border-color: rgba(255, 255, 255, .22);
+}
+
+.nav-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--action-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
+    flex-shrink: 0;
+}
+
+.owner-name {
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 600;
+    display: block;
+    line-height: 1.2;
+}
+
+.owner-role {
+    color: rgba(255, 255, 255, .6);
+    font-size: .72rem;
+    display: block;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.profile-chevron {
+    font-size: .7rem;
+    color: rgba(255, 255, 255, .6);
+    margin-left: 2px;
+    transition: transform .2s;
+}
+
+.profile-dropdown:hover .profile-chevron {
+    transform: rotate(180deg);
+}
+
+/* ─── DROPDOWN MENU ─── */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #ffffff;
+    min-width: 210px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+    z-index: 1000;
+    border-radius: 12px;
+    margin-top: 10px;
+    padding: 6px 0;
+    border: 1px solid #e8e8e8;
+}
+
+.dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    display: block;
+}
+
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-header {
+    padding: .75rem 1rem .55rem;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 4px;
+}
+
+.dropdown-header .d-name {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.dropdown-header .d-email {
+    font-size: .75rem;
+    color: #6b7c6e;
+    margin-top: 2px;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: .6rem 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    font-size: .88rem;
+    transition: background .15s;
+}
+
+.dropdown-content a i,
+.dropdown-content a .material-symbols-outlined {
+    width: 16px;
+    text-align: center;
+    color: #6b7c6e;
+    font-size: .85rem;
+}
+
+.dropdown-content a:hover {
+    background-color: #faf7ef;
+    color: var(--primary);
+}
+
+.dropdown-content a:hover i,
+.dropdown-content a:hover .material-symbols-outlined {
+    color: var(--primary);
+}
+
+.dropdown-content hr {
+    margin: 4px 0;
+    border: 0;
+    border-top: 1px solid #f0f0f0;
+}
+
+.dropdown-content a.logout-item {
+    color: #ba1a1a;
+}
+
+.dropdown-content a.logout-item i,
+.dropdown-content a.logout-item .material-symbols-outlined {
+    color: #ba1a1a;
+}
+
+.dropdown-content a.logout-item:hover {
+    background-color: #fff5f5;
+}
 
 /* ── CONTENT ── */
 .content {
@@ -227,22 +371,26 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
 
 .welcome-text { position: relative; z-index: 1; }
 .welcome-text h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
-.welcome-text p  { font-size: 15px; color: rgba(255,255,255,0.8); }
+.welcome-text p  { font-size: 15px; color: rgba(255,255,255,0.85); }
 
 .welcome-stats { display: flex; gap: 12px; flex-shrink: 0; position: relative; z-index: 1; }
 
+/* 🌟 การ์ดสถิติบน banner ให้คนละสีชัดเจน สวยงามและมีเงาให้มีมิติ */
 .welcome-stat {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.25);
   border-radius: var(--r-md);
-  padding: 14px 20px;
+  padding: 16px 24px;
   text-align: center;
-  min-width: 90px;
-  backdrop-filter: blur(4px);
+  min-width: 100px;
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
 }
 
-.ws-num   { font-size: 26px; font-weight: 700; color: #fff; line-height: 1; }
-.ws-label { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+.ws-purple { background: linear-gradient(150deg, #a78bfa 0%, #7c3aed 100%); }
+.ws-orange { background: linear-gradient(150deg, #fbbf24 0%, #d68f14 100%); }
+.ws-blue   { background: linear-gradient(150deg, #38bdf8 0%, #2563eb 100%); }
+
+.ws-num   { font-size: 27px; font-weight: 700; color: #fff; line-height: 1; text-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.ws-label { font-size: 12px; color: rgba(255,255,255,0.95); margin-top: 5px; font-weight: 600; }
 
 /* SECTION LABEL */
 .section-label {
@@ -290,29 +438,31 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   transform: translateY(-2px);
 }
 
-.stat-card.acc-purple { border-top-color: var(--primary); }
+.stat-card.acc-purple { border-top-color: var(--purple); }
 .stat-card.acc-blue   { border-top-color: var(--blue); }
 .stat-card.acc-green  { border-top-color: var(--green-dark); }
 .stat-card.acc-gray   { border-top-color: var(--outline); }
 .stat-card.acc-red    { border-top-color: var(--error); }
+.stat-card.acc-teal   { border-top-color: var(--primary); }
 
 .stat-label  { font-size: 13px; color: var(--outline); margin-bottom: 8px; font-weight: 600; }
 .stat-number { font-size: 32px; font-weight: 700; color: var(--on-surface); line-height: 1; }
-.stat-number.teal  { color: var(--primary); }
-.stat-number.gold  { color: var(--blue); }
-.stat-number.green { color: var(--green-dark); }
-.stat-number.gray  { color: var(--secondary); }
-.stat-number.red   { color: var(--error); }
+.stat-number.teal   { color: var(--primary); }
+.stat-number.gold   { color: var(--blue); }
+.stat-number.green  { color: var(--green-dark); }
+.stat-number.gray   { color: var(--secondary); }
+.stat-number.red    { color: var(--error); }
+.stat-number.purple { color: var(--purple); }
 
 .stat-delta { font-size: 13px; margin-top: 6px; font-weight: 600; }
 .delta-up   { color: var(--green-dark); }
 .delta-warn { color: var(--blue); }
 .delta-red  { color: var(--error); }
 
-/* PANELS: top tours / lowest rated */
+/* PANEL */
 .panel-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
   margin-bottom: 32px;
 }
@@ -344,15 +494,10 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
 .panel-badge {
   font-size: 12px;
   font-weight: 600;
-  color: var(--blue);
-  background: var(--blue-100);
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-.panel:nth-of-type(2) .panel-badge {
   color: var(--error);
   background: var(--error-container);
+  padding: 3px 10px;
+  border-radius: 20px;
 }
 
 .rank-list { list-style: none; }
@@ -401,7 +546,6 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   font-weight: 700;
   flex-shrink: 0;
 }
-.rank-value.teal { color: var(--primary); }
 .rank-value.warn { color: var(--error); }
 
 .empty-state {
@@ -435,7 +579,6 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   .stat-row { grid-template-columns: 1fr 1fr; }
   .stat-row.cols-4 { grid-template-columns: 1fr 1fr; }
   .stat-row .stat-card:last-child { grid-column: span 2; }
-  .panel-grid { grid-template-columns: 1fr; }
   .footer { flex-direction: column; gap: 6px; text-align: center; }
 }
 </style>
@@ -455,7 +598,6 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   </a>
 
   <div class="nav-group">
-    <!-- 🌟 ย้าย class="active" มาไว้ที่เมนู Dashboard แทน -->
     <a href="/admin/dashboard" class="nav-link active">
       <span class="material-symbols-outlined">dashboard</span>
       Dashboard
@@ -477,50 +619,61 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   <div class="nav-divider"></div>
 
   <div class="admin-area">
-    <div class="admin-info">
-      <div class="admin-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
-      <div class="admin-role">Super Admin</div>
+    <div class="profile-dropdown">
+      <div class="profile-trigger">
+        <div class="nav-avatar" th:text="${session.loggedInAdmin?.username != null and #strings.length(session.loggedInAdmin.username) >= 2} ? ${#strings.substring(session.loggedInAdmin.username,0,2).toUpperCase()} : (${session.loggedInAdmin?.username} ?: 'AD')">AD</div>
+        <div>
+          <span class="owner-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</span>
+          <span class="owner-role">Super Admin</span>
+        </div>
+        <span class="material-symbols-outlined profile-chevron" style="font-size:16px;">expand_more</span>
+      </div>
+      <div class="dropdown-content">
+        <div class="dropdown-header">
+          <div class="d-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
+          <div class="d-email" th:text="'Super Admin'">Super Admin</div>
+        </div>
+        <a href="/admin/logout" class="logout-item">
+          <span class="material-symbols-outlined" style="font-size:16px;">logout</span> ออกจากระบบ
+        </a>
+      </div>
     </div>
-    <div class="admin-avatar">A</div>
-    <a href="/admin/logout" class="logout-btn">
-      <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
-      ออกจากระบบ
-    </a>
   </div>
 </header>
+<div class="navbar-accent"></div>
 
 <!-- MAIN CONTENT -->
 <main class="content">
 
-  <!-- WELCOME BANNER -->
+  <!-- WELCOME BANNER: สรุปด้วยข้อมูลที่มีอยู่แล้ว (homestayTotal, managerTotal, homestayPending, managerActive, homestayApproved) -->
   <div class="welcome-banner">
     <div class="welcome-text">
       <h1>ยินดีต้อนรับ, <span th:text="${session.loggedInAdmin?.username ?: 'Admin'}">Admin</span> 👋</h1>
-      <p>ระบบบริหารจัดการข้อมูลการท่องเที่ยวชุมชน — ภาพรวมข้อมูลและสถิติสำคัญในระบบ</p>
+      <p>แผงควบคุมสำหรับดูแลบัญชีผู้ใช้งานและภาพรวมทั้งระบบ — ข้อมูลรายได้และการจองแยกไปอยู่ที่แดชบอร์ดของแต่ละโฮมสเตย์/ผู้จัดการแล้ว</p>
     </div>
     <div class="welcome-stats">
-      <div class="welcome-stat">
+      <div class="welcome-stat ws-purple">
+        <div class="ws-num" th:text="${homestayTotal + managerTotal}">0</div>
+        <div class="ws-label">บัญชีทั้งหมด</div>
+      </div>
+      <div class="welcome-stat ws-orange">
         <div class="ws-num" th:text="${homestayPending}">0</div>
-        <div class="ws-label">รอพิจารณา</div>
+        <div class="ws-label">รออนุมัติ</div>
       </div>
-      <div class="welcome-stat">
-        <div class="ws-num" th:text="${homestayApproved}">0</div>
-        <div class="ws-label">โฮมสเตย์</div>
-      </div>
-      <div class="welcome-stat">
-        <div class="ws-num" th:text="${managerTotal}">0</div>
-        <div class="ws-label">ผู้จัดการ</div>
+      <div class="welcome-stat ws-blue">
+        <div class="ws-num" th:text="${homestayApproved + managerActive}">0</div>
+        <div class="ws-label">ใช้งานอยู่</div>
       </div>
     </div>
   </div>
 
-  <!-- STAT ROW: HOMESTAY -->
-  <div class="section-label">สถิติโฮมสเตย์</div>
-  <div class="stat-row">
-    <div class="stat-card acc-purple">
-      <div class="stat-label">โฮมสเตย์ทั้งหมด</div>
+  <!-- STAT ROW: บัญชีโฮมสเตย์ -->
+  <div class="section-label">บัญชีโฮมสเตย์</div>
+  <div class="stat-row cols-4">
+    <div class="stat-card acc-teal">
+      <div class="stat-label">ทั้งหมด</div>
       <div class="stat-number teal" th:text="${homestayTotal}">0</div>
-      <div class="stat-delta delta-up">ทั้งหมดในระบบ</div>
+      <div class="stat-delta delta-up">บัญชีในระบบ</div>
     </div>
     <div class="stat-card acc-blue">
       <div class="stat-label">รออนุมัติ</div>
@@ -530,100 +683,33 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
         ต้องดำเนินการ
       </div>
     </div>
+    <div class="stat-card acc-green">
+      <div class="stat-label">อนุมัติแล้ว</div>
+      <div class="stat-number green" th:text="${homestayApproved}">0</div>
+      <div class="stat-delta delta-up">ใช้งานได้ปกติ</div>
+    </div>
     <div class="stat-card acc-red">
       <div class="stat-label">ปฏิเสธแล้ว</div>
       <div class="stat-number red" th:text="${homestayRejected}">0</div>
-      <div class="stat-delta delta-red">รายการที่ไม่ผ่าน</div>
+      <div class="stat-delta delta-red">ไม่ผ่านการตรวจสอบ</div>
     </div>
   </div>
 
-  <!-- STAT ROW: MANAGER -->
-  <div class="section-label">สถิติผู้จัดการชุมชน</div>
+  <!-- STAT ROW: บัญชีผู้จัดการชุมชน -->
+  <div class="section-label">บัญชีผู้จัดการชุมชน</div>
   <div class="stat-row cols-2">
     <div class="stat-card acc-gray">
       <div class="stat-label">ผู้จัดการทั้งหมด</div>
       <div class="stat-number gray" th:text="${managerTotal}">0</div>
       <div class="stat-delta delta-up">บัญชีในระบบ</div>
     </div>
-    <div class="stat-card acc-green">
+    <div class="stat-card acc-purple">
       <div class="stat-label">ใช้งานอยู่</div>
-      <div class="stat-number green" th:text="${managerActive}">0</div>
+      <div class="stat-number purple" th:text="${managerActive}">0</div>
       <div class="stat-delta delta-up">สถานะ Active</div>
     </div>
   </div>
 
-  <!-- STAT ROW: BOOKING / REVENUE -->
-  <div class="section-label">สถิติการจองและรายได้</div>
-  <div class="stat-row cols-4">
-    <div class="stat-card acc-purple">
-      <div class="stat-label">รายได้รวม (สำเร็จ)</div>
-      <div class="stat-number teal" th:text="${'฿' + #numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')}">฿0</div>
-      <div class="stat-delta delta-up">เฉพาะการจองที่ยืนยันแล้ว</div>
-    </div>
-    <div class="stat-card acc-blue">
-      <div class="stat-label">รอดำเนินการ</div>
-      <div class="stat-number gold" th:text="${bookingPending}">0</div>
-      <div class="stat-delta delta-warn">รอตรวจสอบ/ชำระเงิน</div>
-    </div>
-    <div class="stat-card acc-green">
-      <div class="stat-label">ยืนยันแล้ว</div>
-      <div class="stat-number green" th:text="${bookingConfirmed}">0</div>
-      <div class="stat-delta delta-up">การจองที่สำเร็จ</div>
-    </div>
-    <div class="stat-card acc-red">
-      <div class="stat-label">ยกเลิก</div>
-      <div class="stat-number red" th:text="${bookingCancel}">0</div>
-      <div class="stat-delta delta-red">การจองที่ถูกยกเลิก</div>
-    </div>
-  </div>
-
-  <!-- PANELS: TOP TOURS & LOWEST RATED HOMESTAYS -->
-  <div class="section-label">ภาพรวมเชิงลึก</div>
-  <div class="panel-grid">
-
-    <!-- TOP 5 TOUR ยอดจองสูงสุด -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="material-symbols-outlined">tour</span> ทัวร์ยอดนิยม Top 5
-        </div>
-        <span class="panel-badge">ยอดจองสูงสุด</span>
-      </div>
-      <ul class="rank-list" th:if="${topTours != null and !topTours.isEmpty()}">
-        <li class="rank-item" th:each="tour, iter : ${topTours}">
-          <div class="rank-num" th:text="${iter.count}">1</div>
-          <div class="rank-info">
-            <div class="rank-name" th:text="${tour.tourmname}">ชื่อทัวร์</div>
-            <div class="rank-sub" th:text="${tour.status}">สถานะ</div>
-          </div>
-          <div class="rank-value teal" th:text="${tour.bookingTourDetails != null ? tour.bookingTourDetails.size() + ' ครั้ง' : '0 ครั้ง'}">0 ครั้ง</div>
-        </li>
-      </ul>
-      <div class="empty-state" th:if="${topTours == null or topTours.isEmpty()}">ยังไม่มีข้อมูลการจองทัวร์</div>
-    </div>
-
-    <!-- TOP 5 โฮมสเตย์รีวิวต่ำสุด -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="material-symbols-outlined">star_rate</span> โฮมสเตย์ที่ควรดูแลเป็นพิเศษ
-        </div>
-        <span class="panel-badge">คะแนนรีวิวต่ำสุด</span>
-      </div>
-      <ul class="rank-list" th:if="${lowestRated != null and !lowestRated.isEmpty()}">
-        <li class="rank-item" th:each="row, iter : ${lowestRated}">
-          <div class="rank-num" th:text="${iter.count}">1</div>
-          <div class="rank-info">
-            <div class="rank-name" th:text="${row[1]}">ชื่อโฮมสเตย์</div>
-            <div class="rank-sub">คะแนนเฉลี่ยจากรีวิวลูกค้า</div>
-          </div>
-          <div class="rank-value warn" th:text="${#numbers.formatDecimal(row[2], 1, 1)} + ' ★'">0.0 ★</div>
-        </li>
-      </ul>
-      <div class="empty-state" th:if="${lowestRated == null or lowestRated.isEmpty()}">ยังไม่มีข้อมูลรีวิว</div>
-    </div>
-
-  </div>
 
 </main>
 
