@@ -24,20 +24,19 @@ public class EmailService {
         );
         mailSender.send(message);
     }
-
-    public void sendRejectionEmail(String toEmail, String ownerName) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("❌ คำขอสมัครของคุณไม่ผ่านการอนุมัติ - ระบบท่องเที่ยวชุมชนชนเผ่า");
-        message.setText(
-            "เรียน คุณ" + ownerName + ",\n\n" +
-            "ขออภัย คำขอสมัครบัญชีเจ้าของโฮมสเตย์ของคุณไม่ผ่านการอนุมัติ\n" +
-            "หากมีข้อสงสัยกรุณาติดต่อทีมงานของเรา\n\n" +
-            "ทีมงานระบบท่องเที่ยวชุมชนชนเผ่า"
-        );
-        mailSender.send(message);
-    }
-
+public void sendRejectionEmail(String toEmail, String ownerName, String reason) {
+    SimpleMailMessage message = new SimpleMailMessage();
+    message.setTo(toEmail);
+    message.setSubject("❌ คำขอสมัครของคุณไม่ผ่านการอนุมัติ - ระบบท่องเที่ยวชุมชนชนเผ่า");
+    message.setText(
+        "เรียน คุณ" + ownerName + ",\n\n" +
+        "ขออภัย คำขอสมัครบัญชีเจ้าของโฮมสเตย์ของคุณไม่ผ่านการอนุมัติ\n\n" +
+        "เหตุผล: " + reason + "\n\n" +
+        "หากมีข้อสงสัยกรุณาติดต่อทีมงานของเรา\n\n" +
+        "ทีมงานระบบท่องเที่ยวชุมชนชนเผ่า"
+    );
+    mailSender.send(message);
+}
     public void sendManagerCreatedEmail(String toEmail, String managerName, String password) {
     SimpleMailMessage message = new SimpleMailMessage();
     message.setTo(toEmail);

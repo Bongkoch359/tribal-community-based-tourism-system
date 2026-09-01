@@ -141,6 +141,9 @@ public class ListHomestayAccountController {
                 System.err.println("ส่งอีเมลไม่สำเร็จ: " + mailEx.getMessage());
             }
 
+             redirectAttrs.addFlashAttribute("successMessage",
+            "อนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์เรียบร้อยแล้ว");
+
         } catch (Exception e) {
             // Alternate Flow 5.1.1 — error update message → กลับไปแสดงที่ Page
             redirectAttrs.addFlashAttribute("errorMessage",
@@ -150,45 +153,45 @@ public class ListHomestayAccountController {
 
         return "redirect:/admin/homestay";
     }
+@PostMapping("/reject/{id}")
+public String rejectHomestay(@PathVariable String id,
+                             @RequestParam("reason") String reason,
+                             HttpSession session,
+                             RedirectAttributes redirectAttrs) {
 
-    // POST /admin/homestay/reject/{id}
-    // Basic Flow 5 / Alternate Flow 5.1.1 — error update message
-    @PostMapping("/reject/{id}")
-    public String rejectHomestay(@PathVariable String id,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttrs) {
+    if (session.getAttribute("loggedInAdmin") == null)
+        return "redirect:/admin/login";
 
-        if (session.getAttribute("loggedInAdmin") == null)
-            return "redirect:/admin/login";
+    try {
+        Homestayowner owner = ownerrepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
+
+        owner.setVerificationstatus(false);
+        owner.setAccountstatus("REJECTED");
+        owner.setRejectionReason(reason);
+        ownerrepository.save(owner);
 
         try {
-            Homestayowner owner = ownerrepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
-
-            // Basic Flow 5.1 — update status
-            owner.setVerificationstatus(false);
-            owner.setAccountstatus("REJECTED");
-            ownerrepository.save(owner);
-
-            // Basic Flow 5.2 — ส่งอีเมลแจ้งเตือน
-            try {
-                emailService.sendRejectionEmail(
-                    owner.getEmail(),
-                    owner.getFirstname() + " " + owner.getLastname()
-                );
-            } catch (Exception mailEx) {
-                System.err.println("ส่งอีเมลไม่สำเร็จ: " + mailEx.getMessage());
-            }
-
-        } catch (Exception e) {
-            // Alternate Flow 5.1.1 — error update message → กลับไปแสดงที่ Page
-            redirectAttrs.addFlashAttribute("errorMessage",
-                "ไม่สามารถปฏิเสธการสมัครสมาชิกเจ้าของโฮมสเตย์ได้ กรุณาลองใหม่อีกครั้ง");
-            return "redirect:/admin/homestay";
+            emailService.sendRejectionEmail(
+                owner.getEmail(),
+                owner.getFirstname() + " " + owner.getLastname(),
+                reason
+            );
+        } catch (Exception mailEx) {
+            System.err.println("ส่งอีเมลไม่สำเร็จ: " + mailEx.getMessage());
         }
 
+         redirectAttrs.addFlashAttribute("successMessage",
+            "ปฏิเสธคำขอสมัครสมาชิกเจ้าของโฮมสเตย์เรียบร้อยแล้ว");
+
+    } catch (Exception e) {
+        redirectAttrs.addFlashAttribute("errorMessage",
+            "ไม่สามารถปฏิเสธการสมัครสมาชิกเจ้าของโฮมสเตย์ได้ กรุณาลองใหม่อีกครั้ง");
         return "redirect:/admin/homestay";
     }
+
+    return "redirect:/admin/homestay";
+}
 @PostMapping("/suspend/{id}")
 public String suspendHomestay(@PathVariable String id,
                             @RequestParam("reason") String reason,

@@ -51,6 +51,9 @@ public class Homestayowner {
     @Column(name = "suspension_reason", columnDefinition = "TEXT")
     private String suspensionReason;
 
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
     @OneToMany(mappedBy="owner")
     private List<Homestay> homestays;
 
@@ -171,6 +174,12 @@ public int getPendingReportCount() {
 }
 public void setPendingReportCount(int pendingReportCount) {
     this.pendingReportCount = pendingReportCount;
+}
+public String getRejectionReason() {
+    return rejectionReason;
+}
+public void setRejectionReason(String rejectionReason) {
+    this.rejectionReason = rejectionReason;
 }
 
 }

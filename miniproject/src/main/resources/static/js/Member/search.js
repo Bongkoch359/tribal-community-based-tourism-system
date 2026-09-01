@@ -20,7 +20,7 @@ const tabCfg = {
   },
 };
 
-/* [NEW] ── คืนค่าวันนี้ในรูปแบบ yyyy-MM-dd (อิงเวลาเครื่องผู้ใช้) ── */
+/* คืนค่าวันนี้ในรูปแบบ yyyy-MM-dd (อิงเวลาเครื่องผู้ใช้) */
 function getTodayStr() {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
@@ -30,7 +30,7 @@ function getTodayStr() {
   return `${y}-${m}-${day}`;
 }
 
-/* [NEW] ── ตั้ง min ของช่องวันที่ทั้งหมดให้เป็นวันนี้เสมอ (dynamic ไม่พึ่ง th:min อย่างเดียว) ── */
+/* ตั้ง min ของช่องวันที่ทั้งหมดให้เป็นวันนี้เสมอ */
 function setAllDateMinToday() {
   const today = getTodayStr();
   ['tour-date-input', 'tour-date-end-input', 'checkin-input', 'checkout-input']
@@ -50,8 +50,6 @@ function resetSearchFields() {
   ['tour-date-input', 'tour-date-end-input', 'checkin-input', 'checkout-input']
     .forEach(id => {
       const el = document.getElementById(id);
-      // [CHANGED] เดิม el.min = '' ทำให้หลังเปลี่ยนแท็บแล้วกดวันที่ย้อนหลังได้อีก
-      // แก้เป็นตั้ง min กลับไปเป็นวันนี้แทนการล้างทิ้ง
       if (el) { el.value = ''; el.min = getTodayStr(); }
     });
 
@@ -61,14 +59,14 @@ function resetSearchFields() {
   const tourTypeSelect = document.getElementById('tourtype-select');
   if (tourTypeSelect) tourTypeSelect.value = '';
 
-  const tribeSelect = document.getElementById('tribe-select'); // ← เพิ่ม
-  if (tribeSelect) tribeSelect.value = '';                      // ← เพิ่ม
+  const tribeSelect = document.getElementById('tribe-select');
+  if (tribeSelect) tribeSelect.value = '';
 }
 
 /**
  * @param {string} type - 'activity' | 'tour' | 'homestay'
  * @param {boolean} isUserClick - true = ผู้ใช้กด tab เอง (จะซ่อน "รายการแนะนำ")
- *                                false = เรียกตอนโหลดหน้าแรก (จะไม่ยุ่งกับ "รายการแนะนำ")
+ *                                false = เรียกตอนโหลดหน้าแรก
  */
 function switchTab(type, isUserClick = true) {
   // 1. Tab button active
@@ -99,7 +97,6 @@ function switchTab(type, isUserClick = true) {
   });
 
   // 4.1 ซ่อน "รายการแนะนำ" ทันทีที่ผู้ใช้กด tab เอง
-  //     (ให้เห็นเฉพาะตอนเปิดหน้าแรกเท่านั้น)
   if (isUserClick) {
     const featuredAll = document.getElementById('featuredAll');
     if (featuredAll) featuredAll.style.display = 'none';
@@ -112,7 +109,8 @@ function switchTab(type, isUserClick = true) {
   const checkoutBox   = document.getElementById('checkout-wrapper');
   const guestWrapper  = document.getElementById('guest-wrapper');
   const tourTypeBox   = document.getElementById('tourtype-wrapper');
-  const tribeBox      = document.getElementById('tribe-wrapper'); // ← เพิ่ม
+  const tribeBox      = document.getElementById('tribe-wrapper');
+  const keywordBox    = document.getElementById('keyword-wrapper'); // [NEW]
 
   function setBoxState(box, show) {
     if (!box) return;
@@ -129,21 +127,25 @@ function switchTab(type, isUserClick = true) {
   setBoxState(checkoutBox, false);
   setBoxState(guestWrapper, false);
   setBoxState(tourTypeBox, false);
-  setBoxState(tribeBox, false); // ← เพิ่ม
+  setBoxState(tribeBox, false);
+
+  // [NEW] keyword โชว์เป็นค่า default เสมอ ยกเว้นแท็บ tour
+  setBoxState(keywordBox, true);
 
   if (type === 'tour') {
     setBoxState(dateTourStart, true);
     setBoxState(dateTourEnd, true);
     setBoxState(guestWrapper, true);
     setBoxState(tourTypeBox, true);
-    setBoxState(tribeBox, true); // ← เพิ่ม
+    setBoxState(tribeBox, true);
+    setBoxState(keywordBox, false); // [NEW] ซ่อน + disable keyword เฉพาะแท็บ tour
   } else if (type === 'homestay') {
     setBoxState(checkinBox, true);
     setBoxState(checkoutBox, true);
     setBoxState(guestWrapper, true);
   }
 
-  // [NEW] กันไว้อีกชั้น: ทุกครั้งที่สลับแท็บ ให้ min ของช่องวันที่เป็นวันนี้เสมอ
+  // กันไว้อีกชั้น: ทุกครั้งที่สลับแท็บ ให้ min ของช่องวันที่เป็นวันนี้เสมอ
   setAllDateMinToday();
 
   // 6. Update URL
@@ -161,13 +163,11 @@ function initTourDateValidation() {
   if (!tourStartInput || !tourEndInput) return;
 
   const today = getTodayStr();
-  // [NEW] ตั้ง min เริ่มต้นเป็นวันนี้ (เผื่อ th:min ฝั่ง server เพี้ยนเพราะ cache หน้า)
   tourStartInput.min = today;
   tourEndInput.min   = tourStartInput.value && tourStartInput.value > today
     ? tourStartInput.value
     : today;
 
-  // [NEW] ถ้ามีค่าที่ค้างมาจาก server (เช่นเปิดหน้าค้างข้ามวัน) แล้วดันเป็นอดีต ให้เคลียร์ทิ้ง
   if (tourStartInput.value && tourStartInput.value < today) {
     tourStartInput.value = '';
   }
@@ -176,7 +176,6 @@ function initTourDateValidation() {
   }
 
   tourStartInput.addEventListener('change', () => {
-    // [NEW] กันกรอก/เลือกวันที่ย้อนหลังผ่าน input โดยตรง
     const t = getTodayStr();
     if (tourStartInput.value && tourStartInput.value < t) {
       tourStartInput.value = '';
@@ -189,7 +188,6 @@ function initTourDateValidation() {
     tourEndInput.min = tourStartInput.value || t;
   });
 
-  // [NEW] เช็คตอน endDate เปลี่ยนด้วย เผื่อผู้ใช้พิมพ์เองในเบราว์เซอร์ที่รองรับ
   tourEndInput.addEventListener('change', () => {
     const t = getTodayStr();
     if (tourEndInput.value && tourEndInput.value < t) {
@@ -211,13 +209,11 @@ function initHomestayDateValidation() {
   if (!checkinInput || !checkoutInput) return;
 
   const today = getTodayStr();
-  // [NEW]
   checkinInput.min  = today;
   checkoutInput.min = checkinInput.value && checkinInput.value > today
     ? checkinInput.value
     : today;
 
-  // [NEW] เคลียร์ค่าเก่าที่เป็นอดีต (เช่นเปิดหน้าค้างไว้ข้ามวัน)
   if (checkinInput.value && checkinInput.value < today) {
     checkinInput.value = '';
   }
@@ -238,7 +234,6 @@ function initHomestayDateValidation() {
     checkoutInput.min = checkinInput.value || t;
   });
 
-  // [NEW]
   checkoutInput.addEventListener('change', () => {
     const t = getTodayStr();
     if (checkoutInput.value && checkoutInput.value < t) {
@@ -253,7 +248,7 @@ function initHomestayDateValidation() {
   });
 }
 
-/* [NEW] ── ป้องกันชั้นสุดท้ายตอน submit ฟอร์ม: ห้ามส่งวันที่ย้อนหลัง / ลำดับผิด ── */
+/* ── ป้องกันชั้นสุดท้ายตอน submit ฟอร์ม ── */
 function initSearchFormSubmitGuard() {
   const form = document.getElementById('searchForm');
   if (!form) return;
@@ -292,7 +287,7 @@ function initSearchFormSubmitGuard() {
   });
 }
 
-/* ── Bookmark toggle (แทน heart) ── */
+/* ── Bookmark toggle ── */
 function toggleFav(btn) {
   btn.classList.toggle('saved');
   const svg = btn.querySelector('svg');
@@ -331,7 +326,6 @@ function toggleUserMenu() {
   if (wrapper) wrapper.classList.toggle('open');
 }
 
-/* ── Click ข้างนอกปิด dropdown ทั้งหมด ── */
 document.addEventListener('click', function(e) {
   const wrapper = document.getElementById('userMenuWrapper');
   if (wrapper && !wrapper.contains(e.target)) wrapper.classList.remove('open');
@@ -375,7 +369,6 @@ function initHeroSlider() {
   const arrows   = document.querySelectorAll('.hero-arrow');
   if (!slides.length || !dotsWrap) return;
 
-  // ถ้ามีรูปเดียว ไม่ต้องแสดงลูกศร/จุด
   if (slides.length <= 1) {
     arrows.forEach(a => a.style.display = 'none');
     dotsWrap.style.display = 'none';
@@ -392,7 +385,6 @@ function initHeroSlider() {
     dotsWrap.appendChild(dot);
   });
 
-  // ปัดซ้าย-ขวาบนมือถือ
   const heroEl = document.querySelector('.hero');
   if (heroEl) {
     let touchStartX = 0;
@@ -414,21 +406,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!type || !tabCfg[type]) type = 'activity';
 
-  // isUserClick = false -> ไม่ยุ่งกับ "รายการแนะนำ" ตอนโหลดหน้าแรก
-  // (แสดงหรือไม่แสดงถูกกำหนดโดย server ผ่าน th:if อยู่แล้ว)
   switchTab(type, false);
 
-  // [NEW] ตั้ง min ของทุกช่องวันที่เป็นวันนี้ทันทีที่โหลดหน้า (กันกรณี th:min เพี้ยนเพราะ cache)
   setAllDateMinToday();
 
-  // ผูก event listener ของ date validation แค่ครั้งเดียวตอนโหลดหน้า
   initTourDateValidation();
   initHomestayDateValidation();
 
-  // [NEW] ผูก guard ตอน submit ฟอร์ม กันชั้นสุดท้ายฝั่ง client
   initSearchFormSubmitGuard();
 
-  // Login Dropdown
   const dropdown = document.querySelector('.login-dropdown');
   const btn      = document.querySelector('.btn-login');
   if (btn && dropdown) {

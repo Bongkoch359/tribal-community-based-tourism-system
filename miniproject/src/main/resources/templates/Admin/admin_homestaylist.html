@@ -67,74 +67,112 @@
     <p>ตรวจสอบและอนุมัติการลงทะเบียนโฮมสเตย์ใหม่ในระบบ</p>
   </div>
 
-  <div th:if="${errorMessage}" class="alert-error">
-    <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
-    <span th:text="${errorMessage}"></span>
+  <!-- ═══ RESULT MODAL (สำเร็จ / ผิดพลาด) ═══ -->
+  <div class="confirm-overlay" id="resultModal"
+       th:classappend="${successMessage != null or errorMessage != null} ? ' show'">
+    <div class="confirm-box">
+      <div class="confirm-icon" th:classappend="${errorMessage != null} ? 'reject' : 'approve'">
+        <span class="material-symbols-outlined"
+              th:text="${errorMessage != null} ? 'error' : 'check_circle'"></span>
+      </div>
+      <div class="confirm-title" th:text="${errorMessage != null} ? 'เกิดข้อผิดพลาด' : 'สำเร็จ'"></div>
+      <div class="confirm-desc" th:text="${successMessage ?: errorMessage}"></div>
+
+      <div class="confirm-actions">
+        <button type="button" class="btn-action btn-cancel"
+                style="flex: 1;"
+                onclick="document.getElementById('resultModal').classList.remove('show')">
+          ตกลง
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- ══════════════════════════════
-       แถว Dropdown: เปลี่ยนหน้า + กรองสถานะ
+       Toolbar รวม: เปลี่ยนหน้า + กรองสถานะ (สไตล์เดียวกับ list-room)
        ══════════════════════════════ -->
-  <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+  <div class="control-toolbar">
 
     <!-- Dropdown 1: เปลี่ยนหน้า (คำขอรออนุมัติ / บัญชีทั้งหมด) -->
-    <div class="status-filter-card">
-      <span class="material-symbols-outlined sf-icon">swap_horiz</span>
-      <span class="sf-label">มุมมอง :</span>
+    <div class="filter-item-group">
+      <span class="filter-item-label">
+        <span class="material-symbols-outlined" style="font-size: 18px;">swap_horiz</span>
+        มุมมอง :
+      </span>
 
-      <div class="sf-dropdown" id="pageNavDropdown">
-        <button type="button" class="sf-trigger" onclick="togglePageNavMenu(event)">
-          <span class="material-symbols-outlined sf-trigger-icon" id="pageNavTriggerIcon">inbox</span>
-          <span id="pageNavTriggerText">คำขอรออนุมัติ</span>
-          <span class="material-symbols-outlined sf-chevron">expand_more</span>
+      <div class="custom-filter-dropdown" id="pageNavDropdown">
+        <button type="button" class="filter-dropdown-trigger status-neutral" onclick="togglePageNavMenu(event)">
+          <span class="selected-text">
+            <span class="material-symbols-outlined" style="font-size: 17px;" id="pageNavTriggerIcon">inbox</span>
+            <span id="pageNavTriggerText">คำขอรออนุมัติ</span>
+          </span>
+          <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
         </button>
 
-        <div class="sf-menu">
+        <div class="filter-dropdown-menu">
           <a href="/admin/homestay"
-             class="sf-option page-nav-option"
+             class="dropdown-item page-nav-option"
              th:classappend="${currentView == 'pending'} ? ' active'"
              data-icon="inbox"
              data-label="คำขอรออนุมัติ">
-            📥 คำขอรออนุมัติ
+            <span class="material-symbols-outlined" style="font-size: 17px;">inbox</span>
+            คำขอรออนุมัติ
           </a>
 
           <a href="/admin/homestay/all"
-             class="sf-option page-nav-option"
+             class="dropdown-item page-nav-option"
              th:classappend="${currentView == 'all'} ? ' active'"
              data-icon="list_alt"
              data-label="บัญชีโฮมสเตย์ทั้งหมด">
-            📋 บัญชีโฮมสเตย์ทั้งหมด
+            <span class="material-symbols-outlined" style="font-size: 17px;">list_alt</span>
+            บัญชีโฮมสเตย์ทั้งหมด
           </a>
         </div>
       </div>
     </div>
 
     <!-- Dropdown 2: กรองตามสถานะบัญชี -->
-    <div class="status-filter-card">
-      <span class="material-symbols-outlined sf-icon">filter_alt</span>
-      <span class="sf-label">สถานะบัญชี :</span>
+    <div class="filter-item-group">
+      <span class="filter-item-label">
+        <span class="material-symbols-outlined" style="font-size: 18px;">filter_alt</span>
+        สถานะบัญชี :
+      </span>
 
-      <div class="sf-dropdown" id="statusFilterDropdown">
-        <button type="button" class="sf-trigger" onclick="toggleStatusFilterMenu(event)">
-          <span class="material-symbols-outlined sf-trigger-icon" id="sfTriggerIcon">check_circle</span>
-          <span id="sfTriggerText">ทั้งหมด</span>
-          <span class="sf-trigger-count" id="sfTriggerCount" th:text="${allCount}">0</span>
-          <span class="material-symbols-outlined sf-chevron">expand_more</span>
+      <div class="custom-filter-dropdown" id="statusFilterDropdown">
+        <button type="button" class="filter-dropdown-trigger status-all" id="sfTriggerBtn" onclick="toggleStatusFilterMenu(event)">
+          <span class="selected-text">
+            <span class="material-symbols-outlined" style="font-size: 17px;" id="sfTriggerIcon">check_circle</span>
+            <span id="sfTriggerText">ทั้งหมด</span>
+            <span class="count-badge" id="sfTriggerCount" th:text="${allCount}">0</span>
+          </span>
+          <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
         </button>
 
-        <div class="sf-menu">
-          <a href="#" class="sf-option active" data-filter="all" data-icon="check_circle">
-            ทั้งหมด (<span th:text="${allCount}">0</span>)
-          </a>
-          <a href="#" class="sf-option" data-filter="pending" data-icon="schedule">
-            รออนุมัติ (<span th:text="${pendingCount}">0</span>)
-          </a>
-          <a href="#" class="sf-option" data-filter="approved" data-icon="task_alt">
-            อนุมัติแล้ว (<span th:text="${approvedCount}">0</span>)
-          </a>
-          <a href="#" class="sf-option" data-filter="rejected" data-icon="block">
-            ปฏิเสธแล้ว (<span th:text="${rejectedCount}">0</span>)
-          </a>
+        <div class="filter-dropdown-menu">
+          <div class="dropdown-item status-opt-all active" data-filter="all" data-icon="check_circle">
+            <span class="status-dot"></span>
+            <span class="material-symbols-outlined" style="font-size: 17px;">check_circle</span>
+            <span class="label-text">ทั้งหมด</span>
+            <span class="count-badge" th:text="${allCount}">0</span>
+          </div>
+          <div class="dropdown-item status-opt-pending" data-filter="pending" data-icon="schedule">
+            <span class="status-dot"></span>
+            <span class="material-symbols-outlined" style="font-size: 17px;">schedule</span>
+            <span class="label-text">รออนุมัติ</span>
+            <span class="count-badge" th:text="${pendingCount}">0</span>
+          </div>
+          <div class="dropdown-item status-opt-approved" data-filter="approved" data-icon="task_alt">
+            <span class="status-dot"></span>
+            <span class="material-symbols-outlined" style="font-size: 17px;">task_alt</span>
+            <span class="label-text">อนุมัติแล้ว</span>
+            <span class="count-badge" th:text="${approvedCount}">0</span>
+          </div>
+          <div class="dropdown-item status-opt-rejected" data-filter="rejected" data-icon="block">
+            <span class="status-dot"></span>
+            <span class="material-symbols-outlined" style="font-size: 17px;">block</span>
+            <span class="label-text">ปฏิเสธแล้ว</span>
+            <span class="count-badge" th:text="${rejectedCount}">0</span>
+          </div>
         </div>
       </div>
     </div>

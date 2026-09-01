@@ -369,16 +369,31 @@
 
 <!-- ══════════════════════════════════════════
      SEARCH BOX
-══════════════════════════════════════════ -->
-<div class="search-wrapper">
+══════════════════════════════════════════ --><div class="search-wrapper">
   <form action="/search" method="get" class="search-box" id="searchForm">
     <input type="hidden" name="type" id="type-input"
            th:value="${currentType != null ? currentType : 'activity'}">
 
-    <!-- ── ช่องค้นหาชื่อ (ทุก tab) ── -->
-    <div class="sf">
+    <!-- ── ชนเผ่า (ย้ายมาไว้อันดับแรกสุด) ── -->
+    <div class="sf" id="tribe-wrapper" style="display:none;">
       <div class="sf-label">
-        <!-- แว่นขยาย -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+        </svg>
+        ชนเผ่า
+      </div>
+      <select name="tribeId" id="tribe-select">
+        <option value="">ทุกชนเผ่า</option>
+        <option th:each="tc : ${tribeOptions}"
+                th:value="${tc.id}"
+                th:text="${tc.label}"
+                th:selected="${tc.id == tribeId}"></option>
+      </select>
+    </div>
+
+    <!-- ── ช่องค้นหาชื่อ (ห่อ wrapper ใหม่ เพื่อให้ JS ซ่อน/โชว์ได้) ── -->
+    <div class="sf" id="keyword-wrapper">
+      <div class="sf-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
         </svg>
@@ -421,37 +436,22 @@
     </div>
 
     <div class="sf" id="tourtype-wrapper" style="display:none;">
-  <div class="sf-label">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7"/>
-    </svg>
-    ประเภททัวร์
-  </div>
-  <select name="tourTypeId" id="tourtype-select">
-    <option value="">ทุกประเภท</option>
-    <option th:each="tt : ${tourTypes}"
-            th:value="${tt.typeId}"
-            th:text="${tt.typename}"
-            th:selected="${tt.typeId == tourTypeId}"></option>
-  </select>
-</div>
+      <div class="sf-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7"/>
+        </svg>
+        ประเภททัวร์
+      </div>
+      <select name="tourTypeId" id="tourtype-select">
+        <option value="">ทุกประเภท</option>
+        <option th:each="tt : ${tourTypes}"
+                th:value="${tt.typeId}"
+                th:text="${tt.typename}"
+                th:selected="${tt.typeId == tourTypeId}"></option>
+      </select>
+    </div>
 
-<div class="sf" id="tribe-wrapper" style="display:none;">
-  <div class="sf-label">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
-    </svg>
-    ชนเผ่า
-  </div>
-  <select name="tribeId" id="tribe-select">
-    <option value="">ทุกชนเผ่า</option>
-    <option th:each="tc : ${tribeOptions}"
-            th:value="${tc.id}"
-            th:text="${tc.label}"
-            th:selected="${tc.id == tribeId}"></option>
-  </select>
-</div>
-
+    <!-- ⚠️ tribe-wrapper ตัวเดิมที่เคยอยู่ตรงนี้ถูกย้ายขึ้นไปด้านบนสุดแล้ว ไม่ต้องมีซ้ำ -->
 
     <!-- ── วันที่เช็คอิน (Homestay) ── -->
     <div class="sf sf-date" id="checkin-wrapper" style="display:none;">
@@ -463,7 +463,6 @@
           <line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
         วันที่เช็คอิน <span class="sf-label-en">(Check-in)</span>
-
       </div>
       <input type="date" name="startDate" id="checkin-input" th:value="${startDate}"
        th:min="${#dates.format(#dates.createNow(),'yyyy-MM-dd')}"/>
