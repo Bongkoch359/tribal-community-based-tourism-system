@@ -7,7 +7,9 @@
 <title th:text="${post.title} + ' — เรื่องราวชุมชน'">รายละเอียดกิจกรรม</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Mitr:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -84,22 +86,44 @@ img { display: block; }
 .top-bar a:hover { color: var(--turmeric-500); }
 .top-bar a svg { width: 14px; height: 14px; }
 .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,.14); }
-
-.navbar {
-    background: #16311d;
-    background-image: linear-gradient(180deg, #1c4026, #16311d);
-    height: var(--navbar-h);
-    display: flex; align-items: center; padding: 0 5%; gap: 8px;
-    position: sticky; top: 0; z-index: 1000;
-    box-shadow: 0 3px 18px rgba(15,33,20,.35);
-    border-bottom: 3px solid #d68f14;
+ .navbar {
+  background: var(--green-900);
+  background-image: linear-gradient(180deg, var(--green-800), var(--green-900));
+  height: var(--navbar-h);
+  display: flex; align-items: center;
+  padding: 0 5% 0 3%; 
+   gap: 8px;
+  position: sticky; top: 0; z-index: 1000;
+  box-shadow: 0 3px 18px rgba(15,33,20,0.35);
+  border-bottom: 3px solid var(--amber-500);
 }
-.navbar-brand { color: #fff; margin-right: auto; display: flex; align-items: center; gap: 14px; flex-shrink: 0; text-decoration: none; }
-.brand-logo{ width:160px; height:120px; flex-shrink:0; }
-.brand-logo img{ width:100%; height:100%; object-fit:contain; }
-.brand-name { display: flex; flex-direction: column; margin-left: -25px; }
-.brand-name-line1 { font-size: 22px; font-weight: 700; line-height: 1; }
-.brand-name-line2 { font-size: 12px; font-weight: 400; color: var(--moss-200); margin-top: 4px; }
+       .navbar-brand {
+  color: #fff; margin-right: auto;
+  margin-left: 20px;
+  display: flex; align-items: center; gap: 0px; flex-shrink: 0;
+}
+    
+.brand-logo{
+    width:160px;
+    height:120px;
+    flex-shrink:0;
+}
+
+.brand-logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+  .brand-text {
+  font-family: 'Sriracha', cursive;
+  color: var(--white);
+  font-size: 1.55rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  line-height: 1;
+  margin-left: -10px; /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
+}
 
 .nav-links { display: flex; align-items: center; gap: 2px; }
 .nav-link {
@@ -542,10 +566,7 @@ img { display: block; }
     <div class="brand-logo">
       <img th:src="@{/images/logo5.png}" alt="Logo">
     </div>
-    <div class="brand-name">
-      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-      <span class="brand-name-line2">Tribal Community Tourism</span>
-    </div>
+   <span class="brand-text">ชนเผ่าพาเที่ยว</span>
   </a>
 
   <div class="nav-links">

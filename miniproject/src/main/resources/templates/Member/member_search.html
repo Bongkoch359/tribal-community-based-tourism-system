@@ -50,9 +50,7 @@
         </div>
 
          <span class="brand-text">ชนเผ่าพาเที่ยว</span>
-
     </a>
-
 
   <div class="nav-links">
     <a href="/search" class="nav-link">
@@ -367,7 +365,8 @@
 
 <!-- ══════════════════════════════════════════
      SEARCH BOX
-══════════════════════════════════════════ --><div class="search-wrapper">
+══════════════════════════════════════════ -->
+<div class="search-wrapper">
   <form action="/search" method="get" class="search-box" id="searchForm">
     <input type="hidden" name="type" id="type-input"
            th:value="${currentType != null ? currentType : 'activity'}">
@@ -381,7 +380,7 @@
         ชนเผ่า
       </div>
       <select name="tribeId" id="tribe-select">
-        <option value="">ทุกชนเผ่า</option>
+        <option value="">ทุกชนเผ่า </option>
         <option th:each="tc : ${tribeOptions}"
                 th:value="${tc.id}"
                 th:text="${tc.label}"

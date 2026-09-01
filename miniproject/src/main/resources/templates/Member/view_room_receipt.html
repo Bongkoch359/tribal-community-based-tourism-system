@@ -25,7 +25,7 @@
     --navbar-h:100px;
 }
 
-body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); font-size:14.5px; }
+body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); font-size:14.5px; font-weight:400; }
 
 /* ── NAVBAR ── */
 .navbar {
@@ -41,7 +41,7 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
     box-shadow:0 4px 12px rgba(63,133,98,.35);
 }
 .brand-icon svg { width:26px; height:26px; }
-.brand-name { display: flex; flex-direction: column;margin-left: -25px; }
+.brand-name { display: flex; flex-direction: column; margin-left: -25px; }
 .brand-name-line1 { font-size:20px; font-weight:800; line-height:1.15; }
 .brand-name-line2 { font-size:13px; font-weight:400; color:#a7e3c3; opacity:.8; }
 
@@ -62,10 +62,10 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
 .print-bar { display:flex; justify-content:flex-end; gap:10px; margin-bottom:18px; }
 .btn-print, .btn-back {
     display:inline-flex; align-items:center; gap:.4rem;
-    border-radius:8px; padding:.6rem 1.2rem; font-size:.88rem; font-weight:700;
+    border-radius:8px; padding:.6rem 1.2rem; font-size:.88rem; font-weight:600;
     cursor:pointer; font-family:inherit; text-decoration:none; transition:.2s; border:none;
 }
-.btn-print { background:var(--forest); color:#fff; }
+.btn-print { background:var(--forest); color:#fff; font-weight:700; }
 .btn-print:hover { background:var(--forest-deep); }
 .btn-back { background:#fff; color:var(--gray-600); border:1.5px solid var(--band-strong); }
 .btn-back:hover { background:var(--gray-100); }
@@ -80,7 +80,7 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
     padding:36px 40px 34px;
 }
 
-/* stamp — now placed in normal flow (right-aligned row), not floating over text */
+/* stamp */
 .paid-stamp-row { display:flex; justify-content:flex-end; margin-top:18px; }
 .paid-stamp {
     width:104px; height:104px;
@@ -94,28 +94,28 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
 .paid-stamp::before { content:""; position:absolute; inset:6px; border:1px solid var(--stamp); border-radius:50%; }
 .paid-stamp span { padding:0 8px; }
 
-/* ── centered doc title (now the single, top-level heading) ── */
+/* ── centered doc title ── */
 .doc-title { text-align:center; }
 .doc-title .th { font-weight:800; font-size:1.7rem; color:var(--forest-deep); letter-spacing:.01em; }
-.doc-title .en { font-size:.74rem; color:var(--ink-soft); letter-spacing:.16em; text-transform:uppercase; margin-top:4px; }
+.doc-title .en { font-size:.74rem; color:var(--ink-soft); letter-spacing:.16em; text-transform:uppercase; margin-top:4px; font-weight:500; }
 
-/* ── info block below the title: issuer (left) / receipt meta (right) ── */
+/* ── info block below the title ── */
 .doc-header {
     display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap;
     margin-top:24px; padding-top:18px; border-top:1px solid var(--line);
 }
-.issuer-col .issuer-label { font-size:.78rem; font-weight:700; color:var(--ink-soft); margin-bottom:4px; }
-.issuer-col .issuer-name { font-weight:800; font-size:1rem; color:var(--forest-deep); }
-.issuer-col .issuer-address { font-size:.82rem; color:var(--ink-soft); margin-top:3px; line-height:1.55; max-width:280px; }
+.issuer-col .issuer-label { font-size:.78rem; font-weight:600; color:var(--ink-soft); margin-bottom:4px; }
+.issuer-col .issuer-name { font-weight:700; font-size:1rem; color:var(--forest-deep); }
+.issuer-col .issuer-address { font-size:.82rem; color:var(--ink-soft); margin-top:3px; line-height:1.55; max-width:280px; font-weight:400; }
 
-/* right column: all receipt metadata grouped together, aligned as label/value pairs */
+/* right column: all receipt metadata */
 .meta-col { text-align:right; font-size:.84rem; }
 .meta-col .meta-row { display:flex; justify-content:flex-end; gap:8px; margin-bottom:5px; }
-.meta-col .meta-row .meta-label { color:var(--ink-soft); }
+.meta-col .meta-row .meta-label { color:var(--ink-soft); font-weight:400; }
 .meta-col .meta-row .meta-value { color:var(--ink); font-weight:400; }
 .meta-col .meta-row:last-child { margin-bottom:0; }
 
-/* ── boxed section (header bar + table body, single outer border) ── */
+/* ── boxed section ── */
 .doc-box { margin-top:22px; border:1px solid var(--line-strong); }
 .doc-box-header {
     background:var(--band); padding:8px 16px; font-weight:700; font-size:.86rem;
@@ -124,47 +124,43 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
 
 /* label / value rows */
 .kv-table { width:100%; border-collapse:collapse; }
-.kv-table td { padding:12px 16px; font-size:.88rem; vertical-align:top; }
-.kv-table td.k { width:40%; color:var(--ink-soft); }
-.kv-table td.v { text-align:right; font-weight:700; color:var(--ink); }
-.kv-table tr.money td.v { color:var(--forest-deep); }
-.kv-table tr.discount td.v { color:var(--stamp); }
+.kv-table td { padding:12px 16px; font-size:.88rem; vertical-align:top; font-weight:400; }
+.kv-table td.k { width:40%; color:var(--ink-soft); font-weight:400; }
+.kv-table td.v { text-align:right; font-weight:400; color:var(--ink); }
 
-/* two-column table header, e.g. "รายละเอียด" | "ค่าใช้จ่าย" */
+/* สไตล์เฉพาะแถวเงิน/รวม (ให้ตัวเลขเด่นเฉพาะยอดรวมสำคัญ) */
+.kv-table tr.money td.v { color:var(--ink); font-weight:400; }
+.kv-table tr.grand-row td { font-weight:700; color:var(--ink); padding-top:14px; }
+.kv-table tr.grand-row td.v { font-weight:700; }
+.kv-table tr.paid-row-table td { font-weight:700; background:var(--band-strong); color:var(--forest-deep); }
+.kv-table tr.paid-row-table td.v { color:var(--forest-deep); font-weight:700; }
+
+/* table header */
 .kv-table thead th {
     background:var(--band); text-align:left; font-weight:700; font-size:.86rem;
     color:var(--forest-deep); padding:10px 16px;
 }
 .kv-table thead th:last-child { text-align:right; }
 
-/* total / paid rows folded into the same table, like the reference */
-.kv-table tr.grand-row td { font-weight:800; color:var(--ink); padding-top:14px; }
-.kv-table tr.paid-row-table td { font-weight:800; background:var(--band-strong); color:var(--forest-deep); }
-.kv-table tr.paid-row-table td.v { color:var(--forest-deep); }
-
 .amount-words {
     padding:10px 16px; font-size:.82rem;
     display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;
+    border-top: 1px solid var(--line);
 }
-.amount-words .aw-label { color:var(--ink-soft); }
-.amount-words .aw-value { font-weight:700; color:var(--forest-deep); }
+.amount-words .aw-label { color:var(--ink-soft); font-weight:400; }
+.amount-words .aw-value { font-weight:600; color:var(--forest-deep); }
 
-.payment-method { font-size:.82rem; color:var(--ink-soft); padding:10px 16px; }
-.payment-method b { color:var(--ink); }
+.payment-method { font-size:.82rem; color:var(--ink-soft); padding:10px 16px; border-top: 1px solid var(--line); }
+.payment-method b { color:var(--ink); font-weight:600; }
 
-/* ── footer note, centered ── */
-.receipt-footer-note {
-    margin-top:26px; font-size:.76rem; color:var(--gray-600); text-align:center; line-height:1.7;
-}
-
-/* ── signature block, bottom-right like the reference ── */
+/* ── signature block ── */
 .sign-block { display:flex; justify-content:flex-end; margin-top:34px; }
 .sign-col { text-align:center; width:220px; }
 .sign-scribble { height:52px; display:flex; align-items:flex-end; justify-content:center; }
 .sign-scribble svg { width:150px; height:46px; stroke:var(--forest-deep); }
 .sign-rule { border-top:1px solid var(--ink); margin-top:2px; }
 .sign-caption { font-size:.78rem; font-weight:700; color:var(--ink); margin-top:6px; }
-.sign-sub { font-size:.72rem; color:var(--ink-soft); margin-top:1px; }
+.sign-sub { font-size:.72rem; color:var(--ink-soft); margin-top:1px; font-weight:400; }
 
 /* ── PRINT MODE ── */
 @media print {
@@ -175,10 +171,10 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
     .page-wrap { padding:0; max-width:100%; margin:0; }
     .receipt-sheet { padding:0; }
 
-    .issuer-name, .issuer-label, .doc-title .th, .meta-col .meta-value, .doc-box-header, .kv-table thead th,
-    .kv-table td.v, .kv-table tr.grand-row td, .amount-words .aw-value, .sign-caption { color:#000 !important; }
+    .issuer-name, .doc-title .th, .doc-box-header, .kv-table thead th,
+    .kv-table tr.grand-row td, .kv-table tr.paid-row-table td, .amount-words .aw-value, .sign-caption { color:#000 !important; }
     .issuer-address, .doc-title .en, .meta-col .meta-label, .kv-table td.k,
-    .amount-words .aw-label, .payment-method, .receipt-footer-note, .sign-sub { color:#333 !important; }
+    .amount-words .aw-label, .payment-method, .sign-sub { color:#333 !important; }
 
     .doc-box { border-color:#000 !important; }
     .doc-box-header, .kv-table thead th, .kv-table tr.grand-row td { background:#f0f0f0 !important; }
@@ -239,13 +235,13 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
     <!-- ══ RECEIPT SHEET ══ -->
     <div class="receipt-sheet">
 
-        <!-- ── single big centered title, now the first thing on the sheet ── -->
+        <!-- ── Title ── -->
         <div class="doc-title">
             <div class="th">ใบเสร็จรับเงิน</div>
             <div class="en">Receipt / Payment Confirmation</div>
         </div>
 
-        <!-- ── issuer (left) / all receipt metadata grouped together (right) — below the title ── -->
+        <!-- ── Issuer & Meta ── -->
         <div class="doc-header">
             <div class="issuer-col">
                 <div class="issuer-label">ผู้ออกใบเสร็จ:</div>
@@ -272,7 +268,7 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
             </div>
         </div>
 
-        <!-- ── customer info box ── -->
+        <!-- ── Customer Info Box ── -->
         <div class="doc-box">
             <div class="doc-box-header">ข้อมูลลูกค้า</div>
             <table class="kv-table">
@@ -281,8 +277,8 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
                         <td class="k">ชื่อ</td>
                         <td class="v"
                             th:text="${(receipt.memberFirstname != null ? receipt.memberFirstname : '')
-                                      + ' '
-                                      + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></td>
+                                    + ' '
+                                    + (receipt.memberLastname != null ? receipt.memberLastname : '')}"></td>
                     </tr>
                     <tr>
                         <td class="k">โทรศัพท์</td>
@@ -292,7 +288,7 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
             </table>
         </div>
 
-        <!-- ── stay details + totals box: real 2-column table, header = "รายละเอียด" / "ค่าใช้จ่าย" ── -->
+        <!-- ── Stay Details & Totals Box ── -->
         <div class="doc-box">
             <table class="kv-table">
                 <thead>
@@ -300,15 +296,15 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="k">ชื่อโรงแรม</td>
+                        <td class="k">ชื่อโฮมสเตย์</td>
                         <td class="v" th:text="${receipt.homestayName != null ? receipt.homestayName : '-'}"></td>
                     </tr>
                     <tr>
                         <td class="k">ช่วงเวลา</td>
                         <td class="v"
                             th:text="${(receipt.checkIn != null ? #dates.format(receipt.checkIn,'dd MMM yyyy') : '-')
-                                      + ' - '
-                                      + (receipt.checkOut != null ? #dates.format(receipt.checkOut,'dd MMM yyyy') : '-')}"></td>
+                                    + ' - '
+                                    + (receipt.checkOut != null ? #dates.format(receipt.checkOut,'dd MMM yyyy') : '-')}"></td>
                     </tr>
                     <tr>
                         <td class="k">ประเภทห้อง</td>
@@ -322,8 +318,8 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
                         <td class="k">จำนวนผู้เข้าพัก</td>
                         <td class="v"
                             th:text="${(receipt.numOfAdults != null ? receipt.numOfAdults : 0) + ' ผู้ใหญ่'
-                                      + (receipt.numOfChildren != null and receipt.numOfChildren > 0
-                                         ? ', ' + receipt.numOfChildren + ' เด็ก' : '')}"></td>
+                                    + (receipt.numOfChildren != null and receipt.numOfChildren > 0
+                                       ? ', ' + receipt.numOfChildren + ' เด็ก' : '')}"></td>
                     </tr>
                     <tr class="money">
                         <td class="k">ค่าห้องพักทั้งหมด</td>
@@ -357,41 +353,32 @@ body { font-family:'Sarabun',sans-serif; background:#f2f2f0; color:var(--ink); f
             </div>
         </div>
 
-<<<<<<< HEAD
-        <!-- ── footer note ── -->
-        <div class="receipt-footer-note">
-         <br>
-            
-=======
-        <!-- ── PAID stamp, in normal flow, right-aligned so it never overlaps text ── -->
+        <!-- ── PAID Stamp ── -->
         <div class="paid-stamp-row" th:if="${receipt.paymentStatus == 'PAID'}">
             <div class="paid-stamp">
                 <span>ชำระเงินแล้ว<br>PAID</span>
             </div>
->>>>>>> 87d8e011486a7b24e1b59b08b3456a15de1a896c
         </div>
 
-<!-- ── signature bottom-right, like "Authorized Stamp & Signature" ── -->
-<div class="sign-block">
-    <div class="sign-col">
-        <div class="sign-scribble">
-            <!-- ถ้ามีรูปลายเซ็นจริง ให้แสดงรูป -->
-            <img th:if="${receipt.signatureImageUrl != null and !receipt.signatureImageUrl.isEmpty()}"
-                 th:src="${receipt.signatureImageUrl}"
-                 alt="ลายเซ็น"
-                 style="max-height:50px; max-width:170px; object-fit:contain;" />
+        <!-- ── Signature Block ── -->
+        <div class="sign-block">
+            <div class="sign-col">
+                <div class="sign-scribble">
+                    <img th:if="${receipt.signatureImageUrl != null and !receipt.signatureImageUrl.isEmpty()}"
+                         th:src="${receipt.signatureImageUrl}"
+                         alt="ลายเซ็น"
+                         style="max-height:50px; max-width:170px; object-fit:contain;" />
 
-            <!-- ถ้าไม่มี ให้ fallback เป็น SVG scribble เดิม -->
-            <svg th:unless="${receipt.signatureImageUrl != null and !receipt.signatureImageUrl.isEmpty()}"
-                 viewBox="0 0 150 46" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 34 C 20 12, 30 40, 40 22 S 58 8, 66 26 S 82 40, 92 18 S 112 6, 120 24 S 136 38, 144 20" />
-            </svg>
+                    <svg th:unless="${receipt.signatureImageUrl != null and !receipt.signatureImageUrl.isEmpty()}"
+                         viewBox="0 0 150 46" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 34 C 20 12, 30 40, 40 22 S 58 8, 66 26 S 82 40, 92 18 S 112 6, 120 24 S 136 38, 144 20" />
+                    </svg>
+                </div>
+                <div class="sign-rule"></div>
+                <div class="sign-caption">ลายเซ็นผู้รับเงิน</div>
+                <div class="sign-sub" th:text="${receipt.homestayName != null ? receipt.homestayName : '-'}"></div>
+            </div>
         </div>
-        <div class="sign-rule"></div>
-        <div class="sign-caption">ลายเซ็นผู้รับเงิน</div>
-        <div class="sign-sub" th:text="${receipt.homestayName != null ? receipt.homestayName : '-'}"></div>
-    </div>
-</div>
 
     </div>
 
