@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขโปรไฟล์</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +20,7 @@
     <nav class="hs-navbar">
         <a class="hs-navbar-brand" th:href="@{/}">
             <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img">
-            ระบบท่องเที่ยวชุมชนชนเผ่า
+            ชนเผ่าพาเที่ยว
         </a>
         <div class="hs-nav-right">
             <div class="hs-profile-dropdown">
@@ -95,7 +98,7 @@
         <form th:action="@{/owner/profile/update}" method="post" id="personalForm">
             <section class="form-section">
                 <div class="section-header">
-                    <span class="section-icon"><i class="fas fa-user"></i></span>
+                    <span class="section-icon icon-personal"><i class="fas fa-user"></i></span>
                     <h2 class="section-title">ข้อมูลส่วนตัว</h2>
                 </div>
 
@@ -146,7 +149,7 @@
         <form th:action="@{/owner/profile/update-bank}" method="post" id="bankForm">
             <section class="form-section" id="bankSection">
                 <div class="section-header">
-                    <span class="section-icon"><i class="fas fa-building-columns"></i></span>
+                    <span class="section-icon icon-bank"><i class="fas fa-building-columns"></i></span>
                     <h2 class="section-title">ข้อมูลบัญชีธนาคาร</h2>
                 </div>
 
@@ -242,7 +245,7 @@
             id="signatureForm">
             <section class="form-section">
                 <div class="section-header">
-                    <span class="section-icon"><i class="fas fa-signature"></i></span>
+                   <span class="section-icon icon-signature"><i class="fas fa-signature"></i></span>
                     <h2 class="section-title">ลายเซ็นสำหรับออกใบเสร็จ</h2>
                 </div>
 
@@ -279,7 +282,7 @@
         <form th:action="@{/owner/change-password}" method="post" id="passwordForm">
             <section class="form-section">
                 <div class="section-header">
-                    <span class="section-icon"><i class="fas fa-key"></i></span>
+                    <span class="section-icon icon-password"><i class="fas fa-key"></i></span>
                     <h2 class="section-title">เปลี่ยนรหัสผ่าน</h2>
                 </div>
 

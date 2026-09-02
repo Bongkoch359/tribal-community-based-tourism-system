@@ -76,7 +76,7 @@ body {
     background: linear-gradient(135deg, #0f4c3a, #1b5e4a);
     color: white;
     border-radius: 10px;
-    padding: 16px 22px;
+    padding: 20px 26px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -93,9 +93,9 @@ body {
 }
 
 .summary-left img {
-    width: 56px;
-    height: 56px;
-    border-radius: 8px;
+    width: 96px;
+    height: 96px;
+    border-radius: 10px;
     object-fit: cover;
     background-color: rgba(255, 255, 255, 0.15);
 }

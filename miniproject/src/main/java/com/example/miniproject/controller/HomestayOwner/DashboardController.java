@@ -91,6 +91,11 @@ public class DashboardController {
                                         return Math.max(remain, 0); // กันติดลบ
                                 })
                                 .sum();
+                // ─── จำนวนห้องทั้งหมด (เฉพาะประเภทห้องที่เปิดจอง ) ───
+                long totalRoomsOpen = rooms.stream()
+                                .filter(r -> "เปิดจอง".equals(r.getStatus()))
+                                .mapToLong(r -> r.getTotalrooms() != null ? r.getTotalrooms() : 0)
+                                .sum();
 
                 // ─── การจองรอตรวจสอบ ───
                 long pendingBookings = (homestayid != null)
@@ -273,6 +278,7 @@ public class DashboardController {
                 model.addAttribute("rooms", rooms);
                 model.addAttribute("totalRoomTypes", totalRoomTypes);
                 model.addAttribute("availableRooms", availableRooms);
+                model.addAttribute("totalRoomsOpen", totalRoomsOpen);
                 model.addAttribute("pendingBookings", pendingBookings);
                 model.addAttribute("totalRevenue", totalRevenue);
                 model.addAttribute("recentPendingBookings", recentPendingBookings);

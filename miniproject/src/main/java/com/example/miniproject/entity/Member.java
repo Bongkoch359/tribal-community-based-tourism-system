@@ -1,4 +1,5 @@
-package  com.example.miniproject.entity;
+package com.example.miniproject.entity;
+
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -6,39 +7,38 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
-
 @Entity
-@Table(name="Member")
+@Table(name = "Member")
 public class Member {
 	@Id
-@Column(name = "memberid", length = 20)
-private String memberid; // ลบ @GeneratedValue ออก เพราะเราจะเซตเองใน Service
+	@Column(name = "memberid", length = 20)
+	private String memberid; // ลบ @GeneratedValue ออก เพราะเราจะเซตเองใน Service
 
-   @Column(name="password", length = 100)
+	@Column(name = "password", length = 100)
 	private String password;
 
-@Column(name="first_name", length = 100)
-private String firstname;
+	@Column(name = "first_name", length = 100)
+	private String firstname;
 
-@Column(name="last_name", length = 100)
-private String lastname;
+	@Column(name = "last_name", length = 100)
+	private String lastname;
 
-@Column(name="email", length = 150)
-private String email;
+	@Column(name = "email", length = 150)
+	private String email;
 
-@Column(name="phone", length = 10)
-private String phone;
+	@Column(name = "phone", length = 10)
+	private String phone;
 
-// 2. เพิ่ม Annotation ตรงนี้ครับ
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name="birthdate")
-    private Date birthdate;
+	// 2. เพิ่ม Annotation ตรงนี้ครับ
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "birthdate")
+	private Date birthdate;
 
-@Column(name="address", length = 255)
-private String address;
+	@Column(name = "address", length = 255)
+	private String address;
 
-    @OneToMany(mappedBy = "member")
-    private List<Booking> bookings;
+	@OneToMany(mappedBy = "member")
+	private List<Booking> bookings;
 
 	public Member() {
 		// TODO Auto-generated constructor stub
@@ -116,6 +116,4 @@ private String address;
 		this.bookings = bookings;
 	}
 
-	
-	
 }

@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายการจองทัวร์ | ระบบท่องเที่ยวชุมชนชนเผ่า</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link th:href="@{/css/Tour/list-tour-booking.css}" rel="stylesheet">
@@ -18,7 +21,7 @@
             <div class="brand-logo">
                 <img th:src="@{/images/logo5.png}" alt="Logo">
             </div>
-            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="brand-text">ชนเผ่าพาเที่ยว</span>
         </a>
 
         <div style="flex:1;"></div>
@@ -90,7 +93,8 @@
                         <span class="selected-text">
                             <i class="fas fa-clock"></i>
                             <span>รอตรวจสอบ</span>
-                            <span class="count-badge" id="count-waiting-trigger" th:text="${countWaiting != null ? countWaiting : 0}">0</span>
+                            <span class="count-badge" id="count-waiting-trigger"
+                                th:text="${countWaiting != null ? countWaiting : 0}">0</span>
                         </span>
                         <i class="fas fa-chevron-down dropdown-arrow"></i>
                     </button>
@@ -154,33 +158,48 @@
                     </tr>
 
                     <!-- รายการข้อมูล -->
-                    <tr th:each="b : ${bookings}" th:attr="data-status=${b.bookingStatus != null ? b.bookingStatus.name() : ''}">
+                    <tr th:each="b : ${bookings}"
+                        th:attr="data-status=${b.bookingStatus != null ? b.bookingStatus.name() : ''}">
                         <td class="booking-id" th:text="${b.bookingid}">BK-2024-001</td>
                         <td>
-                            <div th:text="${b.member != null ? (b.member.firstname + ' ' + b.member.lastname) : '-'}">นายสมชาย ใจดี</div>
-                            <div class="sub-text" th:text="${b.member != null ? b.member.phone : '-'}">081-234-5678</div>
+                            <div th:text="${b.member != null ? (b.member.firstname + ' ' + b.member.lastname) : '-'}">
+                                นายสมชาย ใจดี</div>
+                            <div class="sub-text" th:text="${b.member != null ? b.member.phone : '-'}">081-234-5678
+                            </div>
                         </td>
-                        <td th:with="detail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null">
-                            <div th:text="${detail != null and detail.tour != null ? detail.tour.tourmname : '-'}">ประเพณีปีใหม่ม้ง</div>
+                        <td
+                            th:with="detail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null">
+                            <div th:text="${detail != null and detail.tour != null ? detail.tour.tourmname : '-'}">
+                                ประเพณีปีใหม่ม้ง</div>
                             <div class="sub-text" th:if="${detail != null and detail.tour != null}"
                                 th:text="${(detail.tour.numberOfDays != null and detail.tour.numberOfDays == 1 ? 'ทัวร์รายวัน' : detail.tour.tourDuration)} + ' - ' + ${b.numofguest} + ' ท่าน'">
                                 ทัวร์รายวัน - 2 ท่าน
                             </div>
                         </td>
-                        <td th:with="detail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null">
+                        <td
+                            th:with="detail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null">
                             <div th:if="${detail != null and detail.tourschedule != null}"
-                                th:text="${#dates.format(detail.tourschedule.opendate, 'd MMM yyyy')}">15 ก.พ. 2567</div>
+                                th:text="${#dates.format(detail.tourschedule.opendate, 'd MMM yyyy')}">15 ก.พ. 2567
+                            </div>
                             <div th:unless="${detail != null and detail.tourschedule != null}">-</div>
-                            <div class="sub-text" th:if="${detail != null and detail.tour != null}" th:text="${detail.tour.numberOfDays} + ' วัน'">1 วัน</div>
+                            <div class="sub-text" th:if="${detail != null and detail.tour != null}"
+                                th:text="${detail.tour.numberOfDays} + ' วัน'">1 วัน</div>
                         </td>
-                        <td class="amount" th:text="${b.totalamount != null ? #numbers.formatDecimal(b.totalamount,0,'COMMA',0,'POINT') + ' ฿' : '0 ฿'}"></td>
+                        <td class="amount"
+                            th:text="${b.totalamount != null ? #numbers.formatDecimal(b.totalamount,0,'COMMA',0,'POINT') + ' ฿' : '0 ฿'}">
+                        </td>
                         <td>
                             <span th:if="${b.bookingStatus != null}" th:switch="${b.bookingStatus.name()}">
-                                <span th:case="'WAITING_APPROVAL'" class="badge badge-waiting"><span class="badge-dot"></span>รอตรวจสอบ</span>
-                                <span th:case="'CONFIRMED'" class="badge badge-confirmed"><span class="badge-dot"></span>ยืนยันแล้ว</span>
-                                <span th:case="'COMPLETED'" class="badge badge-completed"><span class="badge-dot"></span>เสร็จสิ้นแล้ว</span>
-                                <span th:case="'CANCEL'" class="badge badge-cancel"><span class="badge-dot"></span>ยกเลิก</span>
-                                <span th:case="*" class="badge badge-pending"><span class="badge-dot"></span><span th:text="${b.bookingStatus}">-</span></span>
+                                <span th:case="'WAITING_APPROVAL'" class="badge badge-waiting"><span
+                                        class="badge-dot"></span>รอตรวจสอบ</span>
+                                <span th:case="'CONFIRMED'" class="badge badge-confirmed"><span
+                                        class="badge-dot"></span>ยืนยันแล้ว</span>
+                                <span th:case="'COMPLETED'" class="badge badge-completed"><span
+                                        class="badge-dot"></span>เสร็จสิ้นแล้ว</span>
+                                <span th:case="'CANCEL'" class="badge badge-cancel"><span
+                                        class="badge-dot"></span>ยกเลิก</span>
+                                <span th:case="*" class="badge badge-pending"><span class="badge-dot"></span><span
+                                        th:text="${b.bookingStatus}">-</span></span>
                             </span>
                         </td>
                         <td style="text-align: center;">
@@ -213,82 +232,7 @@
     </footer>
 
     <!-- ═══ JAVASCRIPT ควบคุม Dropdown ═══ -->
-    <script>
-        const bookingStatusClassMap = {
-            'WAITING_APPROVAL': 'status-waiting',
-            'CONFIRMED': 'status-confirmed',
-            'COMPLETED': 'status-completed',
-            'CANCEL': 'status-cancel'
-        };
-
-        // สลับเปิด/ปิด Dropdown (ใส่ stopPropagation เพื่อไม่ให้ window click ปิดทันที)
-        function toggleBookingDropdown(e) {
-            if (e) e.stopPropagation();
-            const dropdown = document.getElementById('bookingStatusDropdown');
-            dropdown.classList.toggle('open');
-        }
-
-        // ปิดเมื่อคลิกนอกพื้นที่
-        window.addEventListener('click', function (e) {
-            const dropdown = document.getElementById('bookingStatusDropdown');
-            if (dropdown && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('open');
-            }
-        });
-
-        // ฟังก์ชันเลือกตัวกรอง
-        function selectBookingFilter(statusKey, itemEl) {
-            const triggerBtn = document.getElementById('bookingDropdownTriggerBtn');
-            const selectedTextContainer = triggerBtn.querySelector('.selected-text');
-
-            const iconClass = itemEl.querySelector('i').className;
-            const label = itemEl.querySelector('.label-text').textContent;
-            const badgeCount = itemEl.querySelector('.count-badge').textContent;
-
-            selectedTextContainer.innerHTML = `
-                <i class="${iconClass}"></i>
-                <span>${label}</span>
-                <span class="count-badge">${badgeCount}</span>
-            `;
-
-            triggerBtn.className = 'filter-dropdown-trigger ' + (bookingStatusClassMap[statusKey] || 'status-waiting');
-
-            document.querySelectorAll('#bookingDropdownMenu .dropdown-item').forEach(el => el.classList.remove('active'));
-            itemEl.classList.add('active');
-
-            document.getElementById('bookingStatusDropdown').classList.remove('open');
-
-            filterBookings(statusKey);
-        }
-
-        // ฟังก์ชันซ่อน/แสดงแถวตาราง
-        function filterBookings(statusKey) {
-            const rows = document.querySelectorAll('#tourBookingsTbody tr[data-status]');
-            const noResults = document.getElementById('noFilterResults');
-            let visibleCount = 0;
-
-            rows.forEach(r => {
-                const match = (r.getAttribute('data-status') === statusKey);
-                r.style.display = match ? '' : 'none';
-                if (match) visibleCount++;
-            });
-
-            if (noResults) {
-                // ซ่อนข้อความถ้ามีแถวแสดงอยู่ หรือถ้าไม่มีข้อมูลในระบบตั้งแต่แรก (ให้ tr.empty-row ทำงานแทน)
-                noResults.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
-            }
-        }
-
-        // กำหนดสถานะเริ่มต้นเมื่อโหลดหน้า
-        document.addEventListener('DOMContentLoaded', () => {
-            const defaultItem = document.querySelector('#bookingDropdownMenu .dropdown-item[data-status="WAITING_APPROVAL"]');
-            if (defaultItem) {
-                selectBookingFilter('WAITING_APPROVAL', defaultItem);
-            } else {
-                filterBookings('WAITING_APPROVAL');
-            }
-        });
-    </script>
+   <script th:src="@{/js/Tour/list-booking.js}"></script>>
 </body>
 
 </html>

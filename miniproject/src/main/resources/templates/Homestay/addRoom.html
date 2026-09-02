@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เพิ่มที่พักใหม่</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -379,22 +382,26 @@
             <div class="brand-logo">
                 <img th:src="@{/images/logo5.png}" alt="Logo">
             </div>
-            <span class="brand-text">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="brand-text">ชนเผ่าพาเที่ยว</span>
         </a>
 
-        <div class="nav-right">
-            <div class="profile-dropdown">
-                <div class="profile-trigger">
-                    <div class="avatar" th:text="${#strings.substring(ownername,0,2)}">สม</div>
-                    <span class="owner-name" th:text="${ownername}">สมชาย ใจดี</span>
-                    <i class="fas fa-chevron-down" style="font-size:.8rem; margin-left:5px; color:#fff;"></i>
+        <div class="hs-nav-right">
+            <div class="hs-profile-dropdown">
+                <div class="hs-profile-trigger">
+                    <div class="hs-avatar"
+                        th:text="${ownername != null and #strings.length(ownername) >= 2} ? ${#strings.substring(ownername,0,2)} : 'HS'">
+                        HS</div>
+                    <div>
+                        <span class="hs-owner-name" th:text="${ownername}">เจ้าของ</span>
+                        <span class="hs-owner-role">เจ้าของโฮมสเตย์</span>
+                    </div>
+                    <i class="fas fa-chevron-down hs-chevron"></i>
                 </div>
-                <div class="dropdown-content">
+                <div class="hs-dropdown-content">
                     <a th:href="@{/owner/profile-edit}"><i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์</a>
                     <hr>
-                    <a th:href="@{/owner/logout}" class="logout-item">
-                        <i class="fas fa-right-from-bracket"></i> ออกจากระบบ
-                    </a>
+                    <a th:href="@{/owner/logout}" class="hs-logout"><i class="fas fa-right-from-bracket"></i>
+                        ออกจากระบบ</a>
                 </div>
             </div>
         </div>

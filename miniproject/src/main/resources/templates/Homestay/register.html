@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ลงทะเบียน - ระบบท่องเที่ยวชุมชนชนเผ่า</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,8 +23,15 @@
             padding: 14px 4px;
             border-bottom: 1px solid #eee;
         }
-        #termsBody .term-item:last-child { border-bottom: none; }
-        #termsBody .term-item.term-disabled { opacity: 0.45; }
+
+        #termsBody .term-item:last-child {
+            border-bottom: none;
+        }
+
+        #termsBody .term-item.term-disabled {
+            opacity: 0.45;
+        }
+
         #termsBody .term-check-circle {
             appearance: none;
             -webkit-appearance: none;
@@ -35,15 +45,18 @@
             position: relative;
             transition: border-color .15s, background-color .15s;
         }
+
         #termsBody .term-check-circle:disabled {
             cursor: not-allowed;
             border-color: #ddd;
             background: #f5f5f5;
         }
+
         #termsBody .term-check-circle:checked {
             background-color: #2d6a2d;
             border-color: #2d6a2d;
         }
+
         #termsBody .term-check-circle:checked::after {
             content: "";
             position: absolute;
@@ -55,10 +68,12 @@
             border-width: 0 2px 2px 0;
             transform: translate(-50%, -60%) rotate(45deg);
         }
+
         #termsBody .term-check-circle:indeterminate {
             background-color: #fff;
             border-color: #2d6a2d;
         }
+
         #termsBody .term-check-circle:indeterminate::after {
             content: "";
             position: absolute;
@@ -69,7 +84,12 @@
             background: #2d6a2d;
             transform: translate(-50%, -50%);
         }
-        #termsBody .term-text { flex: 1 1 auto; line-height: 1.6; }
+
+        #termsBody .term-text {
+            flex: 1 1 auto;
+            line-height: 1.6;
+        }
+
         #termsBody .term-status {
             flex: 0 0 auto;
             font-size: 0.78rem;
@@ -78,11 +98,13 @@
             min-width: 60px;
             text-align: right;
         }
+
         #termsProgress {
             font-size: 0.85rem;
             color: #666;
             margin-bottom: 6px;
         }
+
         #termsBody .term-check-all-item {
             border-top: 2px solid #b5d5b7;
             border-bottom: none;
@@ -90,7 +112,10 @@
             padding-top: 14px;
             background: #f9fdf9;
         }
-        #termsBody .term-check-all-item .term-text { font-size: 0.95rem; }
+
+        #termsBody .term-check-all-item .term-text {
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 
@@ -99,7 +124,7 @@
     <!-- Navbar -->
     <nav class="top-navbar">
         <a class="brand" href="index.html">
-            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img"> ระบบท่องเที่ยวชุมชนชนเผ่า
+            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img"> ชนเผ่าพาเที่ยว
         </a>
         <div class="nav-right">
             <a href="index.html" class="top-nav-item">
@@ -322,7 +347,7 @@
                         <div class="term-item term-check-all-item" id="term-item-all">
                             <input type="checkbox" class="term-check-circle" id="termCheckAll">
                             <div class="term-text">
-                                <strong>ยอมรับเงื่อนไขทั้งหมด</strong> 
+                                <strong>ยอมรับเงื่อนไขทั้งหมด</strong>
                             </div>
                         </div>
                     </div>

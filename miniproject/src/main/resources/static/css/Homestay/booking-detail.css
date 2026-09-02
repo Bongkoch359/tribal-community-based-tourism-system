@@ -79,10 +79,12 @@
      }
 
      .brand-text {
+         font-family: 'Sriracha', cursive;
          color: var(--white);
-         font-weight: 700;
-         font-size: 1rem;
+         font-size: 1.55rem;
+         letter-spacing: 0.5px;
          white-space: nowrap;
+         line-height: 1;
      }
 
      .nav-dropdown {

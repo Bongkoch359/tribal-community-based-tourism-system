@@ -5,27 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขทัวร์</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <link th:href="@{/css/Tour/edit_tour.css}" rel="stylesheet">
-    <style>
-        .hs-navbar-brand {
-            color: #fff;
-            font-size: 1.05rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: .6rem;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-
-        .hs-navbar-brand .brand-logo-img {
-            height: 75px;
-            width: auto;
-        }
     </style>
 </head>
 
@@ -33,9 +20,11 @@
 
     <!-- ── Navbar ── -->
     <nav class="navbar">
-        <a class="hs-navbar-brand" th:href="@{/}">
-            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img" style="height: 75px;">
-            ระบบท่องเที่ยวชุมชนชนเผ่า
+        <a th:href="@{/}" class="brand-logo-link">
+            <div class="brand-logo">
+                <img th:src="@{/images/logo5.png}" alt="Logo">
+            </div>
+            <span class="brand-text">ชนเผ่าพาเที่ยว</span>
         </a>
         <div style="flex: 1;"></div>
         <div class="nav-right">
@@ -48,7 +37,7 @@
                         <span class="owner-name" th:text="${loggedInManager != null}
                            ? ${loggedInManager.firstname + ' ' + loggedInManager.lastname}
                            : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
-                        <<span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
+                        <span class="owner-role" th:text="${loggedInManager != null and loggedInManager.tribe != null} 
     ? |ผู้จัดการชุมชน ${loggedInManager.tribe}| 
     : 'ผู้จัดการชุมชน'">ผู้จัดการชุมชน</span>
                     </div>

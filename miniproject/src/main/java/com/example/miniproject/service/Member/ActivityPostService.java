@@ -92,10 +92,12 @@ public class ActivityPostService {
         post.setLocation(location);
         post.setDescription(description);
 
-        // อัปเดตรูปเฉพาะเมื่อมีรูปใหม่ส่งมา
-        // ถ้า images เป็น null หรือว่าง → คงรูปเดิมไว้ (ไม่ overwrite)
-        if (images != null && !images.isBlank()) {
-            post.setImages(images);
+        // อัปเดตรูป: แยกความหมายระหว่าง "ไม่ได้ส่ง images มาเลย (null)" กับ "ส่งมาเป็นค่าสุดท้ายที่ต้องการ (ไม่ null)"
+        // - images == null      → ผู้เรียกไม่ได้ระบุสถานะรูปมา (เช่น endpoint เก่าที่ไม่มีรูปใหม่) → คงรูปเดิมไว้ ไม่แตะ
+        // - images == ""        → ผู้ใช้ตั้งใจลบรูปออกจนหมด (เช่น กด X ลบรูปเดิมทุกรูปในหน้าแก้ไข) → เคลียร์เป็น null
+        // - images == "path||path" → ตั้งค่ารูปตามที่ส่งมา (รวมรูปเดิมที่เก็บไว้ + รูปใหม่ที่อัปโหลดแล้ว)
+        if (images != null) {
+            post.setImages(images.isBlank() ? null : images);
         }
 
         // อัปเดตทัวร์ที่เชื่อมโยง — ถ้าไม่ได้เลือกทัวร์ ให้ตัดการเชื่อมโยงออก (setTour(null))

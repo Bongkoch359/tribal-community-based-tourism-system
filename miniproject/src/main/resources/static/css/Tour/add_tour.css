@@ -119,10 +119,12 @@ body {
 }
 
 .brand-text {
-    color: var(--white);
-    font-weight: 700;
-    font-size: 1.05rem;
+    font-family: 'Sriracha', cursive;
+    color: #ffffff;
+    font-size: 1.55rem;
+    letter-spacing: 0.5px;
     white-space: nowrap;
+    line-height: 1;
 }
 
 
@@ -596,7 +598,7 @@ select.form-control {
     border-radius: 12px;
     background: #fbfdf9;
     padding: 5px 5px;
-  
+
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1149,9 +1151,11 @@ input[type="file"] {
 
 /* ไอคอนคลาวด์สีเขียวแบบในรูป */
 .img-upload-zone .cloud-icon {
-    font-size: 30px;      /* เดิม 46px */
+    font-size: 30px;
+    /* เดิม 46px */
     color: #006e2f;
-    margin-bottom: 8px;   /* เดิม 12px */
+    margin-bottom: 8px;
+    /* เดิม 12px */
     display: block;
 }
 

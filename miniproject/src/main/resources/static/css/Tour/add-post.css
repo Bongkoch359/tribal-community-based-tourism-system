@@ -253,10 +253,12 @@ body {
 }
 
 .brand-text {
-    color: var(--white);
-    font-weight: 700;
-    font-size: 1.05rem;
+    font-family: 'Sriracha', cursive;
+    color: #ffffff;
+    font-size: 1.55rem;
+    letter-spacing: 0.5px;
     white-space: nowrap;
+    line-height: 1;
 }
 
 /* ─── PROFILE AREA (รูปแบบเดียวกับโฮมสเตย์) ─── */
@@ -526,104 +528,128 @@ body {
     border-bottom: 1px solid var(--border);
 }
 
-/* ─── IMAGE UPLOAD ─── */
-.img-preview-area {
-    width: 100%;
-    aspect-ratio: 4/3;
-    border: 2px dashed var(--border);
-    border-radius: 8px;
-    background: #faf7ef;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    color: var(--text-hint);
-    font-size: 12px;
-    overflow: hidden;
-    position: relative;
-    margin-bottom: 12px;
+/* ─── IMAGE UPLOAD (รูปแบบเดียวกับหน้าแก้ไขทัวร์/แก้ไขโพสต์) ─── */
+.img-upload-zone {
+    border: 2px dashed #a7e8bb;
+    border-radius: 12px;
+    background: #f2fbf5;
+    padding: 24px 16px;
+    text-align: center;
     cursor: pointer;
-    transition: border-color 0.15s;
-}
-
-.img-preview-area:hover {
-    border-color: var(--green-dark);
-}
-
-.img-preview-area svg {
-    width: 32px;
-    height: 32px;
-    opacity: 0.4;
-}
-
-/* preview thumbnails */
-.preview-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    transition: border-color .15s, background .15s, transform .1s;
     margin-bottom: 12px;
 }
 
-.preview-thumb {
-    position: relative;
-    aspect-ratio: 1;
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid var(--border);
+.img-upload-zone:hover {
+    border-color: var(--green-mid);
+    background: #eafaf0;
 }
 
-.preview-thumb img {
+.img-upload-zone.drag-over {
+    border-color: var(--green-mid);
+    background: #dcfce7;
+    transform: scale(1.01);
+}
+
+.img-upload-zone i {
+    font-size: 26px;
+    color: var(--green-mid);
+    margin-bottom: 8px;
+    display: block;
+    opacity: .8;
+}
+
+.img-upload-zone .upload-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 3px;
+}
+
+.img-upload-zone .upload-hint {
+    font-size: 11px;
+    color: var(--text-hint);
+}
+
+/* ─── Image grid (พรีวิวรูปที่เลือก) ─── */
+.img-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 9px;
+    margin-top: 4px;
+}
+
+.img-thumb {
+    position: relative;
+    aspect-ratio: 4/3;
+    border-radius: 9px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    background: #faf7ef;
+    transition: border-color .15s, transform .12s;
+}
+
+.img-thumb:hover {
+    border-color: var(--green-mid);
+    transform: translateY(-1px);
+}
+
+.img-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
-.preview-thumb .remove-btn {
+.thumb-overlay {
     position: absolute;
-    top: 3px;
-    right: 3px;
-    width: 18px;
-    height: 18px;
-    background: rgba(0, 0, 0, 0.55);
-    border: none;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: background .15s;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 5px;
+    gap: 4px;
+}
+
+.img-thumb:hover .thumb-overlay {
+    background: rgba(0, 0, 0, .3);
+}
+
+.thumb-btn {
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    color: #fff;
-    font-size: 10px;
+    border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity .15s;
 }
 
-.file-input-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-main);
-    background: #faf7ef;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 6px 12px;
-    cursor: pointer;
-    transition: background 0.15s;
+.img-thumb:hover .thumb-btn {
+    opacity: 1;
 }
 
-.file-input-label:hover {
-    background: #ece7dc;
+.thumb-btn.del-btn {
+    background: #ba1a1a;
+    color: #fff;
+}
+
+.img-count-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
 }
 
 input[type="file"] {
     display: none;
 }
 
-.file-hint {
-    font-size: 11px;
-    color: var(--text-hint);
-    margin-top: 6px;
-}
 
 /* ─── LEFT COLUMN (ล็อคไม่ให้เลื่อนตามฝั่งขวา) ─── */
 .left-col {

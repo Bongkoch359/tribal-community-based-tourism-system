@@ -858,6 +858,13 @@ table.b-table tbody tr:hover {
     min-width: 0;
 }
 
+.stat-caption {
+    color: rgba(255, 255, 255, .75);
+    font-size: .78rem;
+    font-weight: 500;
+    margin-top: -2px;
+}
+
 .revenue-bar-amount {
     font-size: 12px;
     font-weight: 600;

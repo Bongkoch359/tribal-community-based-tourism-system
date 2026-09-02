@@ -66,8 +66,9 @@ body {
     align-items: center;
     gap: .6rem;
     color: #fff;
-    font-weight: 700;
-    font-size: 1.05rem;
+    font-family: 'Sriracha', cursive;
+    font-size: 1.55rem;
+    letter-spacing: 0.5px;
     text-decoration: none;
     white-space: nowrap;
     margin-right: auto;
@@ -478,10 +479,12 @@ body {
 .dropdown-item.status-opt-available {
     color: #0d5c3e;
 }
+
 .filter-dropdown-trigger.status-available {
     background: #e8f9f1;
     border-color: #1a9068;
 }
+
 .dropdown-item.status-opt-available .status-dot {
     background: #1a9068;
 }
@@ -490,10 +493,12 @@ body {
 .dropdown-item.status-opt-full {
     color: #c62828;
 }
+
 .filter-dropdown-trigger.status-full {
     background: #fdecea;
     border-color: #e53935;
 }
+
 .dropdown-item.status-opt-full .status-dot {
     background: #e53935;
 }
@@ -502,10 +507,12 @@ body {
 .dropdown-item.status-opt-maintenance {
     color: #e07b00;
 }
+
 .filter-dropdown-trigger.status-maintenance {
     background: #fff8f0;
     border-color: #e07b00;
 }
+
 .dropdown-item.status-opt-maintenance .status-dot {
     background: #e07b00;
 }
@@ -524,6 +531,7 @@ body {
     background: #d8f5ec;
     color: #0d5c3e;
 }
+
 .status-available .status-dot {
     background: #1a9068;
 }
@@ -532,6 +540,7 @@ body {
     background: #fdecea;
     color: #c62828;
 }
+
 .status-unavailable .status-dot {
     background: #e53935;
 }
@@ -735,6 +744,7 @@ td:last-child {
         flex: 1;
     }
 }
+
 /* ═══════════════════════════════════════════
    ALERT MODAL — แทน alert() ของเบราว์เซอร์
    (ดีไซน์ตรงกับ modal-backdrop/.modal-box ของหน้า addRoom/addTour/editTour)
@@ -809,8 +819,15 @@ td:last-child {
 }
 
 @keyframes pop-in {
-    from { transform: scale(0); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .modal-title {

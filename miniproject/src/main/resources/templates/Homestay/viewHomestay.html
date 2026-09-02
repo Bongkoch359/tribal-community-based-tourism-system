@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${detail.homestay.homestayname}">ดูโฮมสเตย์</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,8 +33,9 @@
             align-items: center;
             gap: .6rem;
             color: #fff;
-            font-weight: 700;
-            font-size: 1.05rem;
+            font-family: 'Sriracha', cursive;
+            font-size: 1.55rem;
+            letter-spacing: 0.5px;
             text-decoration: none;
             white-space: nowrap;
             margin-right: auto;
@@ -791,7 +795,7 @@
     <nav class="hs-navbar">
         <a class="hs-navbar-brand" th:href="@{/}">
             <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img">
-            ระบบท่องเที่ยวชุมชนชนเผ่า
+            ชนเผ่าพาเที่ยว
         </a>
 
         <div class="hs-nav-right">

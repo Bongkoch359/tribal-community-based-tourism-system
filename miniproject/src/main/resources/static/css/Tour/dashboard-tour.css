@@ -1,0 +1,1119 @@
+ *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --green-dark: #006e2f;
+            /* primary */
+            --green-mid: #22c55e;
+            /* primary-container */
+            --green-light: #6bff8f;
+            /* primary-fixed */
+            --blue-dark: #1d4ed8;
+            /* กราฟ - สีหลัก */
+            --blue-mid: #3b82f6;
+            /* กราฟ - สีรอง */
+            --blue-light: #bfdbfe;
+            /* กราฟ - สีอ่อน */
+            --orange: #ff8e4d;
+            /* tertiary-container */
+            --gold: #eab308;
+            /* สีเงิน/รายได้ - มีความหมายเฉพาะ แยกจากสีเตือน (orange) */
+            --gold-dark: #92650a;
+            --gold-bg: rgba(234, 179, 8, .18);
+            --bg: #faf7ef;
+            /* cream/off-white page background */
+            --text-muted: #3d4a3d;
+            /* on-surface-variant */
+            --white: #ffffff;
+            --bg-card: #ffffff;
+            /* surface-container-lowest */
+            --border: #e4e0d4;
+            /* soft border on cream bg */
+            --text-main: #0b1c30;
+            /* on-surface */
+            --text-hint: #6d7b6c;
+            /* outline */
+            --radius-card: 12px;
+            --radius-sm: 6px;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, .08);
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ─── NAVBAR ─── */
+        .navbar {
+            background: var(--green-dark);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            height: 90px;
+            gap: .25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+            border-bottom: 4px solid transparent;
+            border-image: linear-gradient(to right, #f7b733, #e8850a) 1;
+        }
+
+        .nav-brand {
+            color: var(--white);
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, .7);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: .45rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .nav-link.active {
+            color: var(--white);
+            border-bottom: 3px solid #22c55e;
+            border-radius: 0;
+            padding-bottom: calc(.45rem - 3px);
+        }
+
+        /* ─── PROFILE AREA (รูปแบบเดียวกับโฮมสเตย์) ─── */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: .45rem .75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            transition: background .2s, border-color .2s;
+        }
+
+        .profile-trigger:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .22);
+        }
+
+        .nav-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
+            flex-shrink: 0;
+        }
+
+        .owner-name {
+            color: var(--white);
+            font-size: .9rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .owner-role {
+            color: rgba(255, 255, 255, .6);
+            font-size: .72rem;
+            display: block;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .profile-chevron {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .6);
+            margin-left: 2px;
+            transition: transform .2s;
+        }
+
+        .profile-dropdown:hover .profile-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* ─── DROPDOWN MENU ─── */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #ffffff;
+            min-width: 210px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            z-index: 1000;
+            border-radius: 12px;
+            margin-top: 10px;
+            padding: 6px 0;
+            border: 1px solid #e8e8e8;
+        }
+
+        .dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            display: block;
+        }
+
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: .75rem 1rem .55rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 4px;
+        }
+
+        .dropdown-header .d-name {
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--green-dark);
+        }
+
+        .dropdown-header .d-email {
+            font-size: .75rem;
+            color: #6b7c6e;
+            margin-top: 2px;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: .6rem 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: .88rem;
+            transition: background .15s;
+        }
+
+        .dropdown-content a i {
+            width: 16px;
+            text-align: center;
+            color: #6b7c6e;
+            font-size: .85rem;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #faf7ef;
+            color: var(--green-dark);
+        }
+
+        .dropdown-content a:hover i {
+            color: var(--green-dark);
+        }
+
+        .dropdown-content hr {
+            margin: 4px 0;
+            border: 0;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .dropdown-content a.logout-item {
+            color: #ba1a1a;
+        }
+
+        .dropdown-content a.logout-item i {
+            color: #ba1a1a;
+        }
+
+        .dropdown-content a.logout-item:hover {
+            background-color: #fff5f5;
+        }
+
+        .brand-logo-link {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-right: auto;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .brand-logo img {
+            height: 110px;
+            /* ปรับขนาดโลโก้ให้พอดีกับ navbar */
+            width: auto;
+            max-width: 180px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand-text {
+            font-family: 'Sriracha', cursive;
+            color: var(--white);
+            font-size: 1.55rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        /* ─── BANK BANNER ─── */
+        .bank-warning-banner {
+            background: #fff8e1;
+            border-bottom: 2px solid #f9a825;
+            padding: 0 2rem;
+        }
+
+        .bank-warning-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 0;
+            font-size: 13px;
+            color: #5f3e00;
+        }
+
+        .warn-icon {
+            font-size: 1.25rem;
+            color: #f9a825;
+            flex-shrink: 0;
+        }
+
+        .warn-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .warn-title {
+            font-weight: 700;
+            font-size: 13.5px;
+            color: #4e2d00;
+        }
+
+        .warn-sub {
+            color: #7a5200;
+            font-size: 12.5px;
+        }
+
+        .bank-warning-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f9a825;
+            color: #fff;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+
+        .bank-warning-btn:hover {
+            background: #e65100;
+        }
+
+        .bank-warning-dismiss {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #b07000;
+            font-size: 14px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .bank-warning-dismiss:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        /* ─── PAGE ─── */
+        .page {
+            padding: 28px 28px 40px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .page-title svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ─── STAT CARDS (4 การ์ด) ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            border-radius: 16px;
+            padding: 1.6rem 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-card);
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+        }
+
+        .stat-card.green-dark {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        }
+
+        .stat-card.green-mid {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .stat-card.orange {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .stat-card.teal {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .stat-icon-wrap {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, .9);
+            flex-shrink: 0;
+        }
+
+        .stat-body {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+            min-width: 0;
+        }
+
+        .stat-label {
+            font-size: .9rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .8);
+            margin-bottom: 0;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .stat-sub {
+            font-size: 11px;
+            margin-top: 4px;
+            color: rgba(255, 255, 255, .7);
+        }
+
+        .stat-sub.up {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* ─── TWO-COL ROW ─── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* ─── โซนกลาง: กราฟรายได้ (65%) + ทัวร์ยอดจองสูงสุด (35%) ─── */
+        .mid-zone {
+            display: grid;
+            grid-template-columns: 65% 35%;
+            gap: 16px;
+            margin-bottom: 16px;
+            align-items: start;
+        }
+
+        .mid-zone .chart-card,
+        .mid-zone .card {
+            margin-bottom: 0;
+            height: 100%;
+        }
+
+        /* ─── CARD ─── */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-head h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 0 20px 16px;
+        }
+
+        /* ─── OUTLINE BUTTON ─── */
+        .btn-outline {
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            padding: 4px 12px;
+            background: transparent;
+            color: var(--green-dark);
+            border: 1px solid var(--green-dark);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .btn-outline:hover {
+            background: var(--green-light);
+        }
+
+        .btn-primary {
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            padding: 4px 12px;
+            background: var(--green-dark);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .btn-primary:hover {
+            background: var(--green-mid);
+        }
+
+        /* ─── BOOKING TABLE ─── */
+        .booking-table-wrap {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .booking-table-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .booking-table-head h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        table.b-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        table.b-table thead tr {
+            background: #f4f0e6;
+        }
+
+        table.b-table th {
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #6b6b68;
+            font-size: 12px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        table.b-table td {
+            padding: 12px 16px;
+            border-top: 1px solid #f0ece0;
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        table.b-table tbody tr:hover td {
+            background: #faf8f1;
+        }
+
+        .b-id {
+            font-family: monospace;
+            font-size: 12px;
+            color: #6b6b68;
+        }
+
+        .b-name {
+            font-weight: 500;
+        }
+
+        .b-amount {
+            font-weight: 600;
+            color: var(--green-dark);
+        }
+
+        /* ─── BADGES ─── */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-waiting {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-confirmed {
+            background: #d1e7dd;
+            color: #0a3622;
+        }
+
+        .badge-cancel {
+            background: #ffdad6;
+            color: #ba1a1a;
+        }
+
+        .badge-draft {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .badge-published {
+            background: rgba(34, 197, 94, .2);
+            color: #006e2f;
+        }
+
+        .badge-other {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        /* ─── POST ROWS ─── */
+        .post-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .post-row:last-child {
+            border-bottom: none;
+        }
+
+        .post-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #ede9fe;
+            color: #6d28d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .post-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .post-title {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .post-location {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 2px;
+        }
+
+        /* ─── CHART CARD ─── */
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 16px;
+        }
+
+        .chart-body {
+            padding: 8px 20px 20px;
+        }
+
+        canvas#revenueChart {
+            max-height: 220px;
+        }
+
+        /* ─── EMPTY ─── */
+        .empty {
+            text-align: center;
+            color: var(--text-hint);
+            padding: 28px 16px;
+            font-size: 13px;
+        }
+
+        .empty i {
+            display: block;
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+
+        /* ─── SIGNATURE BANNER (soft reminder, สีต่างจาก bank เพื่อลด priority visual) ─── */
+        .signature-warning-banner {
+            background: #eef7ff;
+            border-bottom: 2px solid #4a90d9;
+            padding: 0 2rem;
+        }
+
+        .signature-warning-banner .warn-icon {
+            color: #4a90d9;
+        }
+
+        .signature-warning-banner .warn-title {
+            color: #1d3f5e;
+        }
+
+        .signature-warning-banner .warn-sub {
+            color: #3a6a94;
+        }
+
+        .signature-warning-banner .bank-warning-btn {
+            background: #4a90d9;
+        }
+
+        .signature-warning-banner .bank-warning-btn:hover {
+            background: #2f6cad;
+        }
+
+        .signature-warning-banner .bank-warning-dismiss {
+            color: #4a76a0;
+        }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            margin-top: 3rem;
+            padding: 1rem 2rem;
+            background: #006e2f;
+            color: #6bff8f;
+            font-size: .9rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer a {
+            color: #22c55e;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 1000px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .mid-zone {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page {
+                padding: 16px;
+            }
+        }
+
+        /* ─── Trend Card (กราฟรายได้/ยอดจอง) ─── */
+        .trend-tab-group {
+            display: flex;
+            gap: 4px;
+            background: #f4f0e6;
+            padding: 4px;
+            border-radius: 10px;
+        }
+
+        .trend-tab {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .15s;
+        }
+
+        .trend-tab:hover {
+            color: var(--green-dark);
+        }
+
+        .trend-tab-active {
+            background: #fff;
+            color: var(--green-dark);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+        }
+
+        .range-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            transition: all .15s;
+        }
+
+        .range-btn:hover {
+            border-color: var(--green-dark);
+            color: var(--green-dark);
+        }
+
+        .range-btn-active {
+            background: var(--green-dark);
+            border-color: var(--green-dark);
+            color: #fff;
+        }
+
+        .custom-range-box {
+            background: #f4faf5;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .custom-range-box label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .custom-range-box input[type="month"] {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-family: 'Sarabun', sans-serif;
+            background: #fff;
+        }
+
+        .range-search-btn {
+            padding: 7px 18px;
+            border: none;
+            border-radius: 8px;
+            background: var(--green-dark);
+            color: #fff;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trend-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            height: 220px;
+            padding-top: 10px;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .trend-bar-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .trend-bar-amount {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--blue-dark);
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity .2s, transform .2s;
+            white-space: nowrap;
+        }
+
+        .trend-bar-col:hover .trend-bar-amount,
+        .trend-bar-col.is-current .trend-bar-amount {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .trend-bar-track {
+            width: 100%;
+            max-width: 34px;
+            height: 165px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .trend-bar-fill {
+            width: 100%;
+            background: linear-gradient(180deg, var(--blue-mid) 0%, var(--blue-light) 100%);
+            border-radius: 6px 6px 2px 2px;
+            min-height: 4px;
+            box-shadow: 0 2px 4px rgba(29, 78, 216, .15);
+            transition: filter .2s, transform .2s;
+        }
+
+        .trend-bar-col:hover .trend-bar-fill {
+            filter: brightness(0.95);
+        }
+
+        .trend-bar-fill.bar-current {
+            background: linear-gradient(180deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+            box-shadow: 0 3px 8px rgba(29, 78, 216, .3);
+        }
+
+        .trend-bar-fill.count-fill {
+            background: linear-gradient(180deg, #ffbb91 0%, #ffe0cc 100%);
+            box-shadow: 0 2px 4px rgba(109, 45, 0, .15);
+        }
+
+        .trend-bar-fill.count-fill.bar-current {
+            background: linear-gradient(180deg, var(--orange) 0%, #ffbb91 100%);
+            box-shadow: 0 3px 8px rgba(109, 45, 0, .3);
+        }
+
+        .trend-bar-label {
+            font-size: 11px;
+            color: var(--text-hint);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .trend-bar-col.is-current .trend-bar-label {
+            color: var(--green-dark);
+            font-weight: 700;
+        }
+
+        /* ─── Chart title (เพิ่มใหม่) ─── */
+        .chart-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 20px 0;
+        }
+
+        .chart-title-row h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .chart-title-row p {
+            font-size: 12px;
+            color: var(--text-hint);
+            margin: 2px 0 0 28px;
+        }
+
+        /* ─── Top Tours Ranking ─── */
+        .tour-rank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px 20px 20px;
+        }
+
+        .tour-rank-item {
+            display: flex;
+            align-items: center;
+            /* หรือจะใช้ flex-start ถ้าอยากให้ชื่อ 2 บรรทัดชิดขอบบน */
+            gap: 10px;
+        }
+
+        .tour-rank-medal {
+            font-size: 13px;
+            font-weight: 700;
+            width: 22px;
+            flex-shrink: 0;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .tour-rank-name {
+            font-size: 13px;
+            color: #333;
+            width: 145px;
+            /* เดิม 130px */
+            flex-shrink: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+            white-space: normal;
+            word-break: break-word;
+            /* เพิ่มใหม่ ช่วยตัดคำที่จุดที่เหมาะสมกว่า */
+        }
+
+        .tour-rank-bar-track {
+            flex: 1;
+            height: 10px;
+            background: #f0ece0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .tour-rank-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        .tour-rank-count {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--green-dark);
+            width: 55px;
+            /* เดิม 60px */
+            flex-shrink: 0;
+            text-align: right;
+            white-space: nowrap;
+        }

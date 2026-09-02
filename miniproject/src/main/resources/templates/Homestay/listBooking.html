@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายการจองโฮมสเตย์</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,7 +18,7 @@
     <!-- ─── NAVBAR ─── -->
     <nav class="hs-navbar">
         <a class="hs-navbar-brand" th:href="@{/}">
-            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img"> ระบบท่องเที่ยวชุมชนชนเผ่า
+            <img th:src="@{/images/logo5.png}" alt="Logo" class="brand-logo-img"> ชนเผ่าพาเที่ยว
         </a>
         <div class="hs-nav-links">
             <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
@@ -276,164 +279,164 @@
             <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a></span>
         </div>
     </footer>
-<script th:inline="javascript">
-    const HOMESTAY_ID = /*[[${homestayid}]]*/ 0;
+    <script th:inline="javascript">
+        const HOMESTAY_ID = /*[[${homestayid}]]*/ 0;
 
-    let pendingBookingId = null;
+        let pendingBookingId = null;
 
-    // ── Map สถานะ -> Class สไตล์สีของปุ่ม Dropdown ──────
-    const bookingStatusClassMap = {
-        'WAITING_APPROVAL': 'status-waiting',
-        'CONFIRMED': 'status-confirmed',
-        'COMPLETED': 'status-completed',
-        'CANCEL': 'status-cancel'
-    };
+        // ── Map สถานะ -> Class สไตล์สีของปุ่ม Dropdown ──────
+        const bookingStatusClassMap = {
+            'WAITING_APPROVAL': 'status-waiting',
+            'CONFIRMED': 'status-confirmed',
+            'COMPLETED': 'status-completed',
+            'CANCEL': 'status-cancel'
+        };
 
-    // ── Dropdown Controller ────────────────────────────────
-    function toggleBookingDropdown() {
-        document.getElementById('bookingStatusDropdown').classList.toggle('open');
-    }
-
-    // ปิด Dropdown เมื่อคลิกนอกพื้นที่
-    window.addEventListener('click', function (e) {
-        const dropdown = document.getElementById('bookingStatusDropdown');
-        if (dropdown && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('open');
+        // ── Dropdown Controller ────────────────────────────────
+        function toggleBookingDropdown() {
+            document.getElementById('bookingStatusDropdown').classList.toggle('open');
         }
-    });
 
-    // ฟังก์ชันเลือกฟิลเตอร์จาก Dropdown
-    function selectBookingFilter(statusKey, itemEl) {
-        const triggerBtn = document.getElementById('bookingDropdownTriggerBtn');
-        const selectedTextContainer = triggerBtn.querySelector('.selected-text');
+        // ปิด Dropdown เมื่อคลิกนอกพื้นที่
+        window.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('bookingStatusDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
 
-        const iconClass = itemEl.querySelector('i').className;
-        const label = itemEl.querySelector('.label-text').textContent;
-        const badgeCount = itemEl.querySelector('.count-badge').textContent;
+        // ฟังก์ชันเลือกฟิลเตอร์จาก Dropdown
+        function selectBookingFilter(statusKey, itemEl) {
+            const triggerBtn = document.getElementById('bookingDropdownTriggerBtn');
+            const selectedTextContainer = triggerBtn.querySelector('.selected-text');
 
-        // อัปเดตข้อความ ไอคอน และจำนวนบนปุ่ม
-        selectedTextContainer.innerHTML = `
+            const iconClass = itemEl.querySelector('i').className;
+            const label = itemEl.querySelector('.label-text').textContent;
+            const badgeCount = itemEl.querySelector('.count-badge').textContent;
+
+            // อัปเดตข้อความ ไอคอน และจำนวนบนปุ่ม
+            selectedTextContainer.innerHTML = `
             <i class="${iconClass}"></i>
             <span>${label}</span>
             <span class="count-badge">${badgeCount}</span>
         `;
 
-        // อัปเดตสีพื้นหลังและขอบปุ่มตามสถานะ
-        triggerBtn.className = 'filter-dropdown-trigger ' + bookingStatusClassMap[statusKey];
+            // อัปเดตสีพื้นหลังและขอบปุ่มตามสถานะ
+            triggerBtn.className = 'filter-dropdown-trigger ' + bookingStatusClassMap[statusKey];
 
-        // สลับสถานะ Active ในเมนู
-        document.querySelectorAll('#bookingDropdownMenu .dropdown-item').forEach(el => el.classList.remove('active'));
-        itemEl.classList.add('active');
+            // สลับสถานะ Active ในเมนู
+            document.querySelectorAll('#bookingDropdownMenu .dropdown-item').forEach(el => el.classList.remove('active'));
+            itemEl.classList.add('active');
 
-        // ปิดเมนู
-        document.getElementById('bookingStatusDropdown').classList.remove('open');
+            // ปิดเมนู
+            document.getElementById('bookingStatusDropdown').classList.remove('open');
 
-        // กรองข้อมูลในตาราง
-        filterBookings(statusKey);
-    }
+            // กรองข้อมูลในตาราง
+            filterBookings(statusKey);
+        }
 
-    // ── กรองแถวในตารางตามสถานะ (Client-side) ──────────────
-    function filterBookings(statusKey) {
-        const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
-        const noResults = document.getElementById('noFilterResults');
-        let visibleCount = 0;
+        // ── กรองแถวในตารางตามสถานะ (Client-side) ──────────────
+        function filterBookings(statusKey) {
+            const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
+            const noResults = document.getElementById('noFilterResults');
+            let visibleCount = 0;
 
-        rows.forEach(r => {
-            const match = (r.dataset.status === statusKey);
-            r.style.display = match ? '' : 'none';
-            if (match) visibleCount++;
+            rows.forEach(r => {
+                const match = (r.dataset.status === statusKey);
+                r.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            if (noResults) {
+                noResults.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
+            }
+        }
+
+        // ── Modal Helpers ──────────────────────────────────────
+        function openConfirmModal(bookingId) {
+            pendingBookingId = bookingId;
+            document.getElementById('confirmModal').classList.add('open');
+        }
+
+        function openCancelModal(bookingId) {
+            pendingBookingId = bookingId;
+            document.getElementById('cancelModal').classList.add('open');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+            pendingBookingId = null;
+        }
+
+        // ── Actions ────────────────────────────────────────────
+        async function doConfirm() {
+            closeModal('confirmModal');
+            await postAction('/owner/bookings/confirm', pendingBookingId, 'ยืนยันการจองสำเร็จ');
+        }
+
+        async function doCancel() {
+            closeModal('cancelModal');
+            await postAction('/owner/bookings/cancel', pendingBookingId, 'ยกเลิกการจองแล้ว');
+        }
+
+        async function postAction(url, bookingId, successMsg) {
+            const params = new URLSearchParams({ bookingid: bookingId, homestayid: HOMESTAY_ID });
+            try {
+                const res = await fetch(url, { method: 'POST', body: params });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(successMsg, false);
+                    setTimeout(() => location.reload(), 1200);
+                } else {
+                    showToast(data.message || 'เกิดข้อผิดพลาด', true);
+                }
+            } catch (e) {
+                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', true);
+            }
+        }
+
+        // ── Toast ──────────────────────────────────────────────
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.textContent = msg;
+            t.className = 'toast' + (isError ? ' error' : '');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ── Close modal on backdrop click ──────────────────────
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', e => {
+                if (e.target === el) el.classList.remove('open');
+            });
         });
 
-        if (noResults) {
-            noResults.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
-        }
-    }
+        // ── Default Filter on Load ─────────────────────────────
+        // ลำดับความสำคัญสถานะเริ่มต้น (รอตรวจสอบ > ยืนยันแล้ว > เสร็จสิ้นแล้ว > ยกเลิก)
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
+            if (rows.length === 0) return;
 
-    // ── Modal Helpers ──────────────────────────────────────
-    function openConfirmModal(bookingId) {
-        pendingBookingId = bookingId;
-        document.getElementById('confirmModal').classList.add('open');
-    }
+            const priorityOrder = ['WAITING_APPROVAL', 'CONFIRMED', 'COMPLETED', 'CANCEL'];
+            let selectedStatus = 'WAITING_APPROVAL';
 
-    function openCancelModal(bookingId) {
-        pendingBookingId = bookingId;
-        document.getElementById('cancelModal').classList.add('open');
-    }
+            for (const status of priorityOrder) {
+                const hasAny = Array.from(rows).some(r => r.dataset.status === status);
+                if (hasAny) {
+                    selectedStatus = status;
+                    break;
+                }
+            }
 
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('open');
-        pendingBookingId = null;
-    }
-
-    // ── Actions ────────────────────────────────────────────
-    async function doConfirm() {
-        closeModal('confirmModal');
-        await postAction('/owner/bookings/confirm', pendingBookingId, 'ยืนยันการจองสำเร็จ');
-    }
-
-    async function doCancel() {
-        closeModal('cancelModal');
-        await postAction('/owner/bookings/cancel', pendingBookingId, 'ยกเลิกการจองแล้ว');
-    }
-
-    async function postAction(url, bookingId, successMsg) {
-        const params = new URLSearchParams({ bookingid: bookingId, homestayid: HOMESTAY_ID });
-        try {
-            const res = await fetch(url, { method: 'POST', body: params });
-            const data = await res.json();
-            if (data.success) {
-                showToast(successMsg, false);
-                setTimeout(() => location.reload(), 1200);
+            const targetItem = document.querySelector(`#bookingDropdownMenu .dropdown-item[data-status="${selectedStatus}"]`);
+            if (targetItem) {
+                selectBookingFilter(selectedStatus, targetItem);
             } else {
-                showToast(data.message || 'เกิดข้อผิดพลาด', true);
+                filterBookings(selectedStatus);
             }
-        } catch (e) {
-            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', true);
-        }
-    }
-
-    // ── Toast ──────────────────────────────────────────────
-    function showToast(msg, isError = false) {
-        const t = document.getElementById('toast');
-        if (!t) return;
-        t.textContent = msg;
-        t.className = 'toast' + (isError ? ' error' : '');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    // ── Close modal on backdrop click ──────────────────────
-    document.querySelectorAll('.modal-overlay').forEach(el => {
-        el.addEventListener('click', e => {
-            if (e.target === el) el.classList.remove('open');
         });
-    });
-
-    // ── Default Filter on Load ─────────────────────────────
-    // ลำดับความสำคัญสถานะเริ่มต้น (รอตรวจสอบ > ยืนยันแล้ว > เสร็จสิ้นแล้ว > ยกเลิก)
-    document.addEventListener('DOMContentLoaded', () => {
-        const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
-        if (rows.length === 0) return;
-
-        const priorityOrder = ['WAITING_APPROVAL', 'CONFIRMED', 'COMPLETED', 'CANCEL'];
-        let selectedStatus = 'WAITING_APPROVAL';
-
-        for (const status of priorityOrder) {
-            const hasAny = Array.from(rows).some(r => r.dataset.status === status);
-            if (hasAny) {
-                selectedStatus = status;
-                break;
-            }
-        }
-
-        const targetItem = document.querySelector(`#bookingDropdownMenu .dropdown-item[data-status="${selectedStatus}"]`);
-        if (targetItem) {
-            selectBookingFilter(selectedStatus, targetItem);
-        } else {
-            filterBookings(selectedStatus);
-        }
-    });
-</script>
+    </script>
 
 </body>
 

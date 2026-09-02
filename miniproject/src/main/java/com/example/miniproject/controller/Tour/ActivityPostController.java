@@ -190,6 +190,7 @@ public class ActivityPostController {
             @RequestParam("location") String location,
             @RequestParam("description") String description,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @RequestParam(value = "keepImages", required = false) String keepImages,
             @RequestParam(value = "tourId", required = false) String tourId,
             HttpSession session,
             Model model) {
@@ -199,7 +200,29 @@ public class ActivityPostController {
             return "redirect:/manager/login";
 
         try {
-            String imagePaths = saveImages(images); // null = ไม่มีการอัปโหลดรูปใหม่ ให้ service คงรูปเดิมไว้
+            // imagePaths สุดท้าย = รูปเดิมที่ผู้ใช้ยังเก็บไว้ (keepImages) + รูปใหม่ที่เพิ่งอัปโหลด
+            // เพื่อรองรับการลบรูปเดิมทีละรูปจาก grid เดียวกันในหน้าแก้ไขโพสต์
+            String imagePaths;
+            if (keepImages != null) {
+                List<String> finalPaths = new ArrayList<>();
+                if (!keepImages.isBlank()) {
+                    for (String p : keepImages.split("\\|\\|")) {
+                        if (!p.isBlank()) {
+                            finalPaths.add(p);
+                        }
+                    }
+                }
+
+                String newImagePaths = saveImages(images); // null = ไม่มีไฟล์ใหม่
+                if (newImagePaths != null) {
+                    finalPaths.addAll(List.of(newImagePaths.split("\\|\\|")));
+                }
+                imagePaths = String.join("||", finalPaths);
+            } else {
+                // ไม่มี keepImages ส่งมา (เผื่อเรียกจากที่อื่น) -> ใช้พฤติกรรมเดิม
+                imagePaths = saveImages(images); // null = ไม่มีการอัปโหลดรูปใหม่ ให้ service คงรูปเดิมไว้
+            }
+
             Activitypost updated = activityPostService.updatePost(
                     activityId, title, location, description, imagePaths, tourId);
             if (updated == null)

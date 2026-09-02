@@ -293,10 +293,12 @@ body {
 }
 
 .brand-text {
-    color: var(--white);
-    font-weight: 700;
-    font-size: 1.05rem;
+    font-family: 'Sriracha', cursive;
+    color: #ffffff;
+    font-size: 1.55rem;
+    letter-spacing: 0.5px;
     white-space: nowrap;
+    line-height: 1;
 }
 
 
