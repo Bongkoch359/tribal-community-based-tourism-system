@@ -6,8 +6,13 @@ const uploadZone = document.getElementById('uploadZone');
 let fileList = []; // เก็บ File object จริง ๆ
 
 fileInput.addEventListener('change', function () {
-    addFiles(Array.from(this.files));
-    this.value = ''; // reset เพื่อให้เลือกซ้ำได้
+    // ต้อง reset value "ก่อน" เรียก addFiles() เสมอ
+    // เพราะ addFiles() -> syncFileInput() จะ set this.files ใหม่ตามรายการที่เลือกไว้
+    // ถ้า reset (this.value = '') ทีหลัง จะไปล้าง FileList ที่เพิ่ง set ไปทิ้งทั้งหมด
+    // ทำให้ preview ขึ้นแต่ตอน submit จริงไฟล์รูปกลับว่างเปล่า (รูปไม่บันทึกลง DB)
+    const files = Array.from(this.files);
+    this.value = '';
+    addFiles(files);
 });
 
 function addFiles(files) {

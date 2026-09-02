@@ -128,7 +128,7 @@
                         <td>
                             <th:block th:if="${post.images != null and !post.images.isEmpty()}">
                                 <!-- แสดงรูปแรก (base64 แยกด้วย ||) -->
-                                <img class="post-thumb" th:src="${#strings.arraySplit(post.images, '||')[0]}"
+                                <img class="post-thumb" th:src="${#strings.arraySplit(post.images, '\|\|')[0]}"
                                     alt="post image" />
                             </th:block>
                             <th:block th:unless="${post.images != null and !post.images.isEmpty()}">

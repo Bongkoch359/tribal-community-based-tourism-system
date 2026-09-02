@@ -1,4 +1,4 @@
- // ── รูปภาพ: รูปเดิม (จาก DB) + รูปใหม่ (ไฟล์จริง) รวมอยู่ใน grid เดียวกัน
+// ── รูปภาพ: รูปเดิม (จาก DB) + รูปใหม่ (ไฟล์จริง) รวมอยู่ใน grid เดียวกัน
         //    ลบได้ทีละรูป ไม่ว่าจะเป็นรูปเดิมหรือรูปใหม่ ── รูปแบบเดียวกับหน้าแก้ไขทัวร์ ──
         const fileInput = document.getElementById('fileInput');
         const imgGrid = document.getElementById('imgGrid');
@@ -17,8 +17,13 @@
         let fileList = []; // เก็บ File object จริง ๆ ของรูปที่เลือกใหม่
 
         fileInput.addEventListener('change', function () {
-            addFiles(Array.from(this.files));
+            // ต้อง reset value "ก่อน" เรียก addFiles() เสมอ
+            // เพราะ addFiles() -> syncFileInput() จะ set this.files ใหม่ตามรายการที่เลือกไว้
+            // ถ้า reset (this.value = '') ทีหลัง จะไปล้าง FileList ที่เพิ่ง set ไปทิ้งทั้งหมด
+            // ทำให้ preview ขึ้นแต่ตอน submit จริงไฟล์รูปกลับว่างเปล่า (รูปไม่บันทึกลง DB)
+            const files = Array.from(this.files);
             this.value = '';
+            addFiles(files);
         });
 
         function addFiles(files) {
