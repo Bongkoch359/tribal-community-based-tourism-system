@@ -666,12 +666,13 @@
             display: flex;
         }
 
-        .inline-input.input-error,
-        .inline-textarea.input-error {
-            border-color: var(--red) !important;
-            background: var(--red-light) !important;
-            box-shadow: 0 0 0 3px rgba(179, 70, 46, .10) !important;
-        }
+       .inline-input.input-error,
+.inline-textarea.input-error,
+.form-control.input-error {
+    border-color: var(--red) !important;
+    background: var(--red-light) !important;
+    box-shadow: 0 0 0 3px rgba(179, 70, 46, .10) !important;
+}
 
         /* ── EDIT BANNER ── */
         .edit-banner {
@@ -1476,6 +1477,99 @@
                 border-radius: 0;
             }
         }
+
+        /* ── CANCEL MODAL (icon-circle style) ── */
+.modal-box-cancel {
+    background: var(--paper);
+    border-radius: 18px;
+    box-shadow: var(--shadow-md);
+    width: 100%;
+    max-width: 440px;
+    padding: 26px 28px 24px;
+}
+
+.cancel-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.cancel-modal-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.cancel-modal-header h3 {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: var(--gray-800);
+}
+
+.cancel-modal-desc {
+    font-size: .88rem;
+    color: var(--gray-600);
+    line-height: 1.65;
+    margin-bottom: 18px;
+}
+
+.cancel-modal-label {
+    display: block;
+    font-size: .88rem;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 7px;
+}
+
+.cancel-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn-modal-cancel-gray {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: .2s;
+}
+
+.btn-modal-cancel-gray:hover {
+    background: var(--gray-200);
+}
+
+.btn-modal-confirm-red {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: .2s;
+}
+
+.btn-modal-confirm-red:hover {
+    filter: brightness(1.1);
+}
     </style>
 </head>
 
@@ -2075,13 +2169,39 @@
                     </div>
                 </div>
             </div>
-
-            <!-- CANCEL FORM -->
             <!-- CANCEL FORM -->
             <form id="cancelForm" th:action="@{/booking/homestay/cancel/{id}(id=${booking.bookingid})}" method="post"
                 style="display:none;">
                 <input type="hidden" name="cancelReason" id="cancelReasonInput">
             </form>
+
+           <!-- MODAL: ยกเลิกการจอง -->
+<div class="modal-overlay" id="cancelModal">
+    <div class="modal-box-cancel">
+        <div class="cancel-modal-header">
+            <div class="cancel-modal-icon">✕</div>
+            <h3>ยกเลิกการจอง</h3>
+        </div>
+        <p class="cancel-modal-desc">
+            คุณต้องการ <strong>ยกเลิก</strong> การจองนี้ใช่หรือไม่?<br>
+            การดำเนินการนี้ไม่สามารถย้อนกลับได้
+        </p>
+
+        <div class="form-group" style="margin-bottom:6px;">
+            <label class="cancel-modal-label">
+                กรุณาระบุเหตุผลในการยกเลิก <span style="color:var(--red);">*</span>
+            </label>
+            <textarea class="inline-textarea" id="cancelReasonTextarea" rows="3" maxlength="300"
+                placeholder="เช่น ยอดชำระเงินไม่ตรงกับยอดที่ต้องชำระ ฯลฯ"></textarea>
+            <div class="field-error" id="err-cancelReason"></div>
+        </div>
+
+        <div class="cancel-modal-actions">
+            <button type="button" class="btn-modal-cancel-gray" onclick="closeCancelModal()">ปิด</button>
+            <button type="button" class="btn-modal-confirm-red" onclick="submitCancel()">✕ ยืนยันการยกเลิก</button>
+        </div>
+    </div>
+</div>
 
         </div>
     </div><!-- /page-wrap -->
@@ -2336,18 +2456,46 @@
             document.getElementById('submitReviewBtn').disabled = !(hasRating && commentLen >= 5);
         }
 
-        /* ════ Cancel ════ */
-        function confirmCancel() {
-            const reason = prompt('กรุณาระบุเหตุผลในการยกเลิก (ถ้ามี):', '');
-            if (reason === null) return; // กดยกเลิกใน prompt = ไม่ทำอะไรต่อ
+      /* ════ Cancel (Modal) ════ */
+function confirmCancel() {
+    const textarea = document.getElementById('cancelReasonTextarea');
+    const errEl = document.getElementById('err-cancelReason');
+    textarea.value = '';
+    textarea.classList.remove('input-error');
+    errEl.classList.remove('show');
+    errEl.textContent = '';
+    document.getElementById('cancelModal').classList.add('open');
+}
 
-            document.getElementById('cancelReasonInput').value = reason;
+function closeCancelModal() {
+    document.getElementById('cancelModal').classList.remove('open');
+}
 
-            if (confirm('ต้องการยกเลิกการจองใช่หรือไม่?')) {
-                document.getElementById('cancelForm').submit();
-            }
-        }
+function submitCancel() {
+    const textarea = document.getElementById('cancelReasonTextarea');
+    const errEl = document.getElementById('err-cancelReason');
+    const reason = textarea.value.trim();
 
+    if (!reason) {
+        errEl.textContent = '⚠ กรุณากรอกเหตุผลก่อนยืนยันการยกเลิก';
+        errEl.classList.add('show');
+        textarea.classList.add('input-error');
+        textarea.focus();
+        return;
+    }
+
+    errEl.classList.remove('show');
+    textarea.classList.remove('input-error');
+    document.getElementById('cancelReasonInput').value = reason;
+    document.getElementById('cancelForm').submit();
+}
+
+/* ปิด modal เมื่อคลิกนอกกล่อง */
+document.querySelectorAll('.modal-overlay').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+        if (e.target === el) el.classList.remove('open');
+    });
+});
         /* ════ User Menu ════ */
         function toggleUserMenu() {
             document.getElementById('userMenuWrapper').classList.toggle('open');

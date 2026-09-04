@@ -334,29 +334,47 @@
         .item-info span { font-size: 13px; color: var(--neutral-500); }
         .item-arrow { width: 16px; height: 16px; color: var(--neutral-300); flex-shrink: 0; }
 
-        /* ── PAGE HEADER ── */
-        .page-header {
-            background: linear-gradient(135deg, var(--green-800) 0%, var(--green-600) 100%);
-            padding: 36px 5%;
-            border-bottom: 3px solid var(--amber-500);
-        }
-
-        .page-header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .page-header h1 {
-            color: #fff;
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .page-header-sub {
-            color: var(--green-200);
-            font-size: 15px;
-        }
+      /* ── PAGE HEADER ── */
+.page-header {
+    background: var(--paper);
+    padding: 28px 5% 24px;
+    border-bottom: 1px solid var(--neutral-200);
+}
+.page-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.page-header-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--green-100);
+    color: var(--green-700);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.page-header-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: currentColor;
+}
+.page-header h1 {
+    color: var(--neutral-800);
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 2px;
+}
+.page-header-sub {
+    color: var(--neutral-500);
+    font-size: 14.5px;
+}
+.page-header-sub strong {
+    color: var(--green-700);
+    font-weight: 800;
+}
 
         /* ── CONTAINER ── */
         .container {
@@ -909,12 +927,19 @@
 <!-- ── PAGE HEADER ── -->
 <div class="page-header">
     <div class="page-header-inner">
-        <h1>รายการการจองของฉัน</h1>
-        <p class="page-header-sub">
-            ทั้งหมด
-            <span th:text="${countAll}">0</span>
-            รายการ
-        </p>
+        <div class="page-header-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+    </svg>
+</div>
+        <div>
+            <h1>รายการการจองของฉัน</h1>
+            <p class="page-header-sub">
+                ทั้งหมด
+                <strong th:text="${(tourCount != null ? tourCount : 0) + (homestayCount != null ? homestayCount : 0)}">0</strong>
+                รายการ
+            </p>
+        </div>
     </div>
 </div>
 

@@ -1707,6 +1707,99 @@
                 border-radius: 0;
             }
         }
+        /* ── CANCEL MODAL (icon-circle style) ── */
+.modal-box-cancel {
+    background: var(--paper);
+    border-radius: 18px;
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 440px;
+    padding: 26px 28px 24px;
+}
+
+.cancel-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.cancel-modal-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.cancel-modal-header h3 {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 0;
+}
+
+.cancel-modal-desc {
+    font-size: .88rem;
+    color: var(--gray-600);
+    line-height: 1.65;
+    margin-bottom: 18px;
+}
+
+.cancel-modal-label {
+    display: block;
+    font-size: .88rem;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 7px;
+}
+
+.cancel-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn-modal-cancel-gray {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: .2s;
+}
+
+.btn-modal-cancel-gray:hover {
+    background: var(--gray-200);
+}
+
+.btn-modal-confirm-red {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: .2s;
+}
+
+.btn-modal-confirm-red:hover {
+    filter: brightness(1.1);
+}
     </style>
 </head>
 
@@ -2532,11 +2625,39 @@
                 </div>
             </div>
 
-            <!-- CANCEL FORM -->
-            <form id="cancelForm" th:action="@{/booking/tour/cancel/{id}(id=${booking.bookingid})}" method="post"
-                style="display:none;">
-                <input type="hidden" name="cancelReason" id="cancelReasonInput">
-            </form>
+           <!-- CANCEL FORM -->
+<form id="cancelForm" th:action="@{/booking/tour/cancel/{id}(id=${booking.bookingid})}" method="post"
+    style="display:none;">
+    <input type="hidden" name="cancelReason" id="cancelReasonInput">
+</form>
+
+<!-- MODAL: ยกเลิกการจอง -->
+<div class="modal-overlay" id="cancelModal">
+    <div class="modal-box-cancel">
+        <div class="cancel-modal-header">
+            <div class="cancel-modal-icon">✕</div>
+            <h3>ยกเลิกการจองทัวร์</h3>
+        </div>
+        <p class="cancel-modal-desc">
+            คุณต้องการ <strong>ยกเลิก</strong> การจองทัวร์นี้ใช่หรือไม่?<br>
+            การยกเลิกอาจมีเงื่อนไขตามนโยบายของทัวร์ และไม่สามารถย้อนกลับได้
+        </p>
+
+        <div class="form-group" style="margin-bottom:6px;">
+            <label class="cancel-modal-label">
+                กรุณาระบุเหตุผลในการยกเลิก <span style="color:var(--red);">*</span>
+            </label>
+            <textarea class="inline-textarea" id="cancelReasonTextarea" rows="3" maxlength="300"
+                placeholder="เช่น เปลี่ยนแผนการเดินทาง, จองผิดรอบ ฯลฯ"></textarea>
+            <div class="field-error-msg" id="cancelReasonError">กรุณากรอกเหตุผลก่อนยืนยันการยกเลิก</div>
+        </div>
+
+        <div class="cancel-modal-actions">
+            <button type="button" class="btn-modal-cancel-gray" onclick="closeCancelModal()">ปิด</button>
+            <button type="button" class="btn-modal-confirm-red" onclick="submitCancel()">✕ ยืนยันการยกเลิก</button>
+        </div>
+    </div>
+</div>
 
         </div><!-- /th:with -->
     </div><!-- /page-wrap -->
@@ -2848,16 +2969,40 @@
         }
 
         /* ════ Cancel ════ */
-        function confirmCancel() {
-            const reason = prompt('กรุณาระบุเหตุผลในการยกเลิก (ถ้ามี):', '');
-            if (reason === null) return; // กดยกเลิกใน prompt = ไม่ทำอะไรต่อ
+        /* ════ Cancel (Modal) ════ */
+function confirmCancel() {
+    const textarea = document.getElementById('cancelReasonTextarea');
+    const errEl = document.getElementById('cancelReasonError');
+    textarea.value = '';
+    clearFieldError(textarea, errEl);
+    document.getElementById('cancelModal').classList.add('open');
+}
 
-            document.getElementById('cancelReasonInput').value = reason;
+function closeCancelModal() {
+    document.getElementById('cancelModal').classList.remove('open');
+}
 
-            if (confirm('ต้องการยกเลิกการจองทัวร์นี้ใช่หรือไม่?\nการยกเลิกอาจมีเงื่อนไขตามนโยบายของทัวร์')) {
-                document.getElementById('cancelForm').submit();
-            }
-        }
+function submitCancel() {
+    const textarea = document.getElementById('cancelReasonTextarea');
+    const errEl = document.getElementById('cancelReasonError');
+    const reason = textarea.value.trim();
+
+    if (!reason) {
+        showFieldError(textarea, errEl);
+        textarea.focus();
+        return;
+    }
+
+    clearFieldError(textarea, errEl);
+    document.getElementById('cancelReasonInput').value = reason;
+    document.getElementById('cancelForm').submit();
+}
+
+document.querySelectorAll('.modal-overlay').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+        if (e.target === el) el.classList.remove('open');
+    });
+});
 
         /* ════ User Menu ════ */
         function toggleUserMenu() {

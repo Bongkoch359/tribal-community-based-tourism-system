@@ -1087,6 +1087,7 @@ img { display: block; max-width: 100%; }
       </p>
     </div>
 
+    
     <div class="detail-card">
       <div class="detail-card-title">
         <div class="accent-line"></div>
@@ -1221,10 +1222,13 @@ img { display: block; max-width: 100%; }
               <line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
           </button>
-          <input type="hidden" id="tourDate" value="">
-          <small style="color:var(--neutral-500);font-size:0.8rem;margin-top:4px;display:block;">
-            * ปฏิทินจะแสดงวันที่จองได้ / ไม่ได้ตามรอบทัวร์จริง
-          </small>
+         <input type="hidden" id="tourDate" value="">
+<small style="color:var(--neutral-500);font-size:0.8rem;margin-top:4px;display:block;">
+  * ปฏิทินจะแสดงวันที่จองได้ / ไม่ได้ตามรอบทัวร์จริง
+</small>
+<small id="tourDateError" style="color:#b3462e;font-weight:700;font-size:0.8rem;margin-top:6px;display:none;">
+  ⚠️ กรุณาเลือกวันที่เดินทางก่อน
+</small>
         </div>
 
         <div class="bk-divider"></div>
@@ -1662,6 +1666,7 @@ img { display: block; max-width: 100%; }
     // commit ทันที ไม่ต้องรอปุ่มยืนยัน
     selectedDate = iso;
     document.getElementById('tourDate').value = selectedDate;
+    document.getElementById('tourDateError').style.display = 'none';
 
     if (info.scheduleid != null && datesByScheduleId[info.scheduleid]) {
         selectedDateGroup = datesByScheduleId[info.scheduleid];
@@ -1688,18 +1693,25 @@ img { display: block; max-width: 100%; }
 }
 
   function goToBooking() {
-    const date = document.getElementById('tourDate').value;
-    if (!date) { alert('กรุณาเลือกวันที่เดินทางก่อน'); return; }
+  const date = document.getElementById('tourDate').value;
+  const errorEl = document.getElementById('tourDateError');
 
-    const tourIdEl = document.querySelector('[data-tour-id]');
-    if (!tourIdEl || !tourIdEl.dataset.tourId) {
-      alert('เกิดข้อผิดพลาด: ไม่พบรหัสทัวร์ กรุณารีเฟรชหน้าใหม่');
-      return;
-    }
-    const tourId = tourIdEl.dataset.tourId;
-    const params = new URLSearchParams({ tourdate: date });
-    window.location.href = `/booking/tour/${tourId}?${params}`;
+  if (!date) {
+    errorEl.style.display = 'block';
+    document.getElementById('openCalendarBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
   }
+  errorEl.style.display = 'none';
+
+  const tourIdEl = document.querySelector('[data-tour-id]');
+  if (!tourIdEl || !tourIdEl.dataset.tourId) {
+    alert('เกิดข้อผิดพลาด: ไม่พบรหัสทัวร์ กรุณารีเฟรชหน้าใหม่');
+    return;
+  }
+  const tourId = tourIdEl.dataset.tourId;
+  const params = new URLSearchParams({ tourdate: date });
+  window.location.href = `/booking/tour/${tourId}?${params}`;
+}
 
   // ═══════════════════════════════════════════
   // รีวิว — Pagination แสดงทีละ 6 รีวิว
