@@ -29,4 +29,12 @@ public enum TribeCode {
         }
         return null;
     }
+
+    public static String labelOf(Integer id) {
+    if (id == null) return null;
+    for (TribeCode t : values()) {
+        if (t.id == id) return t.label;
+    }
+    return null;
+}
 }

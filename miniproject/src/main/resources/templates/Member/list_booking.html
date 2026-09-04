@@ -420,31 +420,75 @@
             flex-wrap: wrap;
             border-bottom: 1px solid var(--neutral-200);
         }
+.status-bar { padding: 14px 20px; border-bottom: 1px solid var(--neutral-200); }
+.filter-item-group { display: flex; align-items: center; gap: 10px; }
+.filter-item-label { font-weight: 700; color: var(--neutral-700); font-size: 14px; white-space: nowrap; }
 
-        .status-btn {
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 100px;
-            border: 1.5px solid var(--neutral-300);
-            color: var(--neutral-600);
-            font-size: 14px;
-            font-weight: 600;
-            background: var(--paper);
-            transition: all .14s;
-        }
-        .completed { background: var(--green-50); color: var(--green-700); }
-        .status-btn.active-completed { background: var(--green-600); color: #fff; border-color: var(--green-600); }
-        .status-btn:hover {
-            border-color: var(--amber-400);
-            background: var(--amber-100);
-            color: var(--wood-700);
-        }
+.custom-filter-dropdown { position: relative; display: inline-block; min-width: 200px; }
 
-        .status-btn.active-all      { background: var(--green-900); color: #fff; border-color: var(--green-900); }
-        .status-btn.active-pending  { background: var(--amber-600); color: #fff; border-color: var(--amber-600); }
-        .status-btn.active-waiting  { background: var(--blue-700); color: #fff; border-color: var(--blue-700); }
-        .status-btn.active-confirmed{ background: var(--green-600); color: #fff; border-color: var(--green-600); }
-        .status-btn.active-cancel   { background: #b3462e; color: #fff; border-color: #b3462e; }
+.filter-dropdown-trigger {
+    width: 100%; height: 42px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px; border-radius: 100px;
+    border: 1.5px solid var(--neutral-300);
+    cursor: pointer; font-family: 'Sarabun', sans-serif;
+    font-size: 14px; font-weight: 600;
+    background: var(--paper); color: var(--neutral-700);
+    transition: all .15s;
+}
+.filter-dropdown-trigger:hover { border-color: var(--amber-400); }
+.filter-dropdown-trigger .selected-text { display: flex; align-items: center; gap: 8px; }
+
+.dropdown-arrow { width: 16px; height: 16px; transition: transform .2s; flex-shrink: 0; }
+.custom-filter-dropdown.open .dropdown-arrow { transform: rotate(180deg); }
+
+.filter-dropdown-menu {
+    display: none;
+    position: absolute; top: calc(100% + 8px); left: 0;
+    width: 100%; min-width: 230px;
+    background: var(--paper);
+    border-radius: var(--r-md);
+    border: 1px solid var(--neutral-200);
+    box-shadow: var(--shadow-lg);
+    z-index: 1050; padding: 6px; overflow: hidden;
+}
+.custom-filter-dropdown.open .filter-dropdown-menu { display: block; }
+
+.dropdown-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 12px; border-radius: var(--r-sm);
+    cursor: pointer; font-size: 14px; font-weight: 600;
+    color: var(--neutral-600); text-decoration: none;
+    transition: background .15s;
+}
+.dropdown-item:hover { background: var(--cream-50); }
+.dropdown-item.active { font-weight: 700; }
+
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.count-badge {
+    margin-left: auto; background: rgba(0,0,0,.06);
+    padding: 2px 9px; border-radius: 100px;
+    font-size: 12px; font-weight: 700;
+}
+
+.status-opt-all { color: var(--neutral-600); }
+.status-opt-all.active { background: var(--neutral-100); color: var(--green-900); }
+
+.status-opt-pending { color: var(--amber-700); }
+.status-opt-pending.active { background: var(--amber-100); }
+
+.status-opt-waiting { color: var(--blue-700); }
+.status-opt-waiting.active { background: var(--blue-100); }
+
+.status-opt-confirmed { color: var(--green-700); }
+.status-opt-confirmed.active { background: var(--green-100); }
+
+.status-opt-completed { color: var(--green-700); }
+.status-opt-completed.active { background: var(--green-50); }
+
+.status-opt-cancel { color: #b3462e; }
+.status-opt-cancel.active { background: #fbe4dd; }
 
         /* ── TABLE ── */
         .table-wrap { overflow-x: auto; }
@@ -890,35 +934,71 @@
                 🏠 ที่พัก
                 (<span th:text="${homestayCount}">0</span>)
             </a>
-        </div>
-<!-- STATUS BAR -->
+        </div><!-- STATUS DROPDOWN FILTER -->
 <div class="status-bar">
-    <a th:href="@{/member/bookings/list(type=${activeType})}"
-       th:class="${activeStatus == null} ? 'status-btn active-all' : 'status-btn'">
-        ทั้งหมด (<span th:text="${countAll}">0</span>)
-    </a>
-    <a th:href="@{/member/bookings/list(type=${activeType},status='PENDING')}"
-       th:class="${activeStatus == 'PENDING'} ? 'status-btn active-pending' : 'status-btn'">
-        รอชำระเงิน (<span th:text="${countPending}">0</span>)
-    </a>
-    <a th:href="@{/member/bookings/list(type=${activeType},status='WAITING_APPROVAL')}"
-       th:class="${activeStatus == 'WAITING_APPROVAL'} ? 'status-btn active-waiting' : 'status-btn'">
-        รออนุมัติ (<span th:text="${countWaiting}">0</span>)
-    </a>
-    <a th:href="@{/member/bookings/list(type=${activeType},status='CONFIRMED')}"
-       th:class="${activeStatus == 'CONFIRMED'} ? 'status-btn active-confirmed' : 'status-btn'">
-        อนุมัติแล้ว (<span th:text="${countConfirmed}">0</span>)
-    </a>
+    <div class="filter-item-group">
+        <span class="filter-item-label">สถานะ :</span>
 
-    <a th:href="@{/member/bookings/list(type=${activeType},status='COMPLETED')}"
-   th:class="${activeStatus == 'COMPLETED'} ? 'status-btn active-completed' : 'status-btn'">
-    เสร็จสิ้นแล้ว (<span th:text="${countCompleted}">0</span>)
-</a>
+        <div class="custom-filter-dropdown" id="statusFilterDropdown">
+            <button type="button" class="filter-dropdown-trigger" onclick="toggleStatusDropdown(event)">
+                <span class="selected-text">
+                    <span class="status-dot"
+                          th:classappend="${activeStatus == null} ? 'status-opt-all' :
+                                         (${activeStatus == 'PENDING'} ? 'status-opt-pending' :
+                                         (${activeStatus == 'WAITING_APPROVAL'} ? 'status-opt-waiting' :
+                                         (${activeStatus == 'CONFIRMED'} ? 'status-opt-confirmed' :
+                                         (${activeStatus == 'COMPLETED'} ? 'status-opt-completed' : 'status-opt-cancel'))))"></span>
+                    <span th:text="${activeStatus == null} ? 'ทั้งหมด' :
+                                   (${activeStatus == 'PENDING'} ? 'รอชำระเงิน' :
+                                   (${activeStatus == 'WAITING_APPROVAL'} ? 'รออนุมัติ' :
+                                   (${activeStatus == 'CONFIRMED'} ? 'อนุมัติแล้ว' :
+                                   (${activeStatus == 'COMPLETED'} ? 'เสร็จสิ้นแล้ว' : 'ยกเลิก'))))">ทั้งหมด</span>
+                    <span class="count-badge"
+                          th:text="${activeStatus == null} ? ${countAll} :
+                                   (${activeStatus == 'PENDING'} ? ${countPending} :
+                                   (${activeStatus == 'WAITING_APPROVAL'} ? ${countWaiting} :
+                                   (${activeStatus == 'CONFIRMED'} ? ${countConfirmed} :
+                                   (${activeStatus == 'COMPLETED'} ? ${countCompleted} : ${countCancel}))))">0</span>
+                </span>
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
 
-    <a th:href="@{/member/bookings/list(type=${activeType},status='CANCEL')}"
-       th:class="${activeStatus == 'CANCEL'} ? 'status-btn active-cancel' : 'status-btn'">
-        ยกเลิก (<span th:text="${countCancel}">0</span>)
-    </a>
+            <div class="filter-dropdown-menu">
+                <a th:href="@{/member/bookings/list(type=${activeType})}"
+                   th:class="${activeStatus == null} ? 'dropdown-item status-opt-all active' : 'dropdown-item status-opt-all'">
+                    <span class="status-dot"></span>ทั้งหมด
+                    <span class="count-badge" th:text="${countAll}">0</span>
+                </a>
+                <a th:href="@{/member/bookings/list(type=${activeType},status='PENDING')}"
+                   th:class="${activeStatus == 'PENDING'} ? 'dropdown-item status-opt-pending active' : 'dropdown-item status-opt-pending'">
+                    <span class="status-dot"></span>รอชำระเงิน
+                    <span class="count-badge" th:text="${countPending}">0</span>
+                </a>
+                <a th:href="@{/member/bookings/list(type=${activeType},status='WAITING_APPROVAL')}"
+                   th:class="${activeStatus == 'WAITING_APPROVAL'} ? 'dropdown-item status-opt-waiting active' : 'dropdown-item status-opt-waiting'">
+                    <span class="status-dot"></span>รออนุมัติ
+                    <span class="count-badge" th:text="${countWaiting}">0</span>
+                </a>
+                <a th:href="@{/member/bookings/list(type=${activeType},status='CONFIRMED')}"
+                   th:class="${activeStatus == 'CONFIRMED'} ? 'dropdown-item status-opt-confirmed active' : 'dropdown-item status-opt-confirmed'">
+                    <span class="status-dot"></span>อนุมัติแล้ว
+                    <span class="count-badge" th:text="${countConfirmed}">0</span>
+                </a>
+                <a th:href="@{/member/bookings/list(type=${activeType},status='COMPLETED')}"
+                   th:class="${activeStatus == 'COMPLETED'} ? 'dropdown-item status-opt-completed active' : 'dropdown-item status-opt-completed'">
+                    <span class="status-dot"></span>เสร็จสิ้นแล้ว
+                    <span class="count-badge" th:text="${countCompleted}">0</span>
+                </a>
+                <a th:href="@{/member/bookings/list(type=${activeType},status='CANCEL')}"
+                   th:class="${activeStatus == 'CANCEL'} ? 'dropdown-item status-opt-cancel active' : 'dropdown-item status-opt-cancel'">
+                    <span class="status-dot"></span>ยกเลิก
+                    <span class="count-badge" th:text="${countCancel}">0</span>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
         <!-- TABLE -->
@@ -1066,6 +1146,18 @@
             wrapper.classList.remove('open');
         }
     });
+
+    function toggleStatusDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('statusFilterDropdown').classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('statusFilterDropdown');
+    if (dropdown && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+    }
+});
 </script>
 
 </body>

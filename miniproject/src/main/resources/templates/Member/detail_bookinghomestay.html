@@ -81,6 +81,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
   color: #fff; margin-right: auto;
   margin-left: 20px;
   display: flex; align-items: center; gap: 0px; flex-shrink: 0;
+  text-decoration: none;
 }
     
 .brand-logo{
@@ -103,6 +104,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
   white-space: nowrap;
   line-height: 1;
   margin-left: -10px; /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
+  text-decoration: none;
 }
 
 .nav-links { display:flex; align-items:center; gap:2px; }
@@ -251,6 +253,24 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     border-color:var(--edit-focus); box-shadow:0 0 0 3px rgba(41,87,54,.12);
 }
 .inline-textarea { resize:vertical; min-height:72px; }
+
+/* ── FIELD ERROR ── */
+.field-error {
+    display: none;
+    color: var(--red);
+    font-size: .76rem;
+    font-weight: 700;
+    margin-top: 5px;
+    align-items: center;
+    gap: 4px;
+}
+.field-error.show { display: flex; }
+.inline-input.input-error,
+.inline-textarea.input-error {
+    border-color: var(--red) !important;
+    background: var(--red-light) !important;
+    box-shadow: 0 0 0 3px rgba(179,70,46,.10) !important;
+}
 
 /* ── EDIT BANNER ── */
 .edit-banner {
@@ -662,6 +682,8 @@ textarea.form-control { resize:vertical; min-height:110px; }
                     </div>
                 </div>
 
+                <!-- ⬇️ FIX: form นี้ตอนนี้ครอบตั้งแต่ section 1 ยาวไปจนถึง section 3 (guestCard)
+                     เพื่อให้ input ชื่อผู้เข้าพักถูกส่งไปพร้อมกับปุ่ม "บันทึกการเปลี่ยนแปลง" -->
                 <form th:action="@{/booking/homestay/edit/{id}(id=${booking.bookingid})}" method="post" id="editForm">
 
                     <div class="section-body">
@@ -690,7 +712,8 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                 <div class="inline-field">
                                     <input class="inline-input" type="date" name="checkin" id="edit-checkin"
                                            th:value="${detail.checkindate != null ? #dates.format(detail.checkindate,'yyyy-MM-dd') : ''}"
-                                           required>
+                                           required data-label="วันเช็คอิน">
+                                    <div class="field-error" id="err-checkin"></div>
                                 </div>
                             </div>
 
@@ -702,7 +725,8 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                 <div class="inline-field">
                                     <input class="inline-input" type="date" name="checkout" id="edit-checkout"
                                            th:value="${detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'yyyy-MM-dd') : ''}"
-                                           required>
+                                           required data-label="วันเช็คเอาท์">
+                                    <div class="field-error" id="err-checkout"></div>
                                 </div>
                             </div>
                         </div>
@@ -717,8 +741,10 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                     <span th:text="${detail.numofadults}"></span> คน
                                 </div>
                                 <div class="inline-field">
-                                    <input class="inline-input" type="number" name="guest" min="1" max="99"
-                                           th:value="${detail.numofadults != null ? detail.numofadults : 1}">
+                                    <input class="inline-input" type="number" name="guest" id="edit-guest" min="1" max="99"
+                                           th:value="${detail.numofadults != null ? detail.numofadults : 1}"
+                                           required data-label="จำนวนผู้ใหญ่">
+                                    <div class="field-error" id="err-guest"></div>
                                 </div>
                             </div>
                             <!-- เด็ก ✏️ -->
@@ -728,8 +754,10 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                     <span th:text="${detail.numofChcldren}"></span> คน
                                 </div>
                                 <div class="inline-field">
-                                    <input class="inline-input" type="number" name="children" min="0" max="99"
-                                           th:value="${detail.numofChcldren != null ? detail.numofChcldren : 0}">
+                                    <input class="inline-input" type="number" name="children" id="edit-children" min="0" max="99"
+                                           th:value="${detail.numofChcldren != null ? detail.numofChcldren : 0}"
+                                           data-label="จำนวนเด็ก">
+                                    <div class="field-error" id="err-children"></div>
                                 </div>
                             </div>
                             <!-- จำนวนคืน -->
@@ -739,8 +767,10 @@ textarea.form-control { resize:vertical; min-height:110px; }
                             </div>
                         </div>
 
-                        <span id="js-checkin"  th:attr="data-date=${detail.checkindate}"  style="display:none;"></span>
-                        <span id="js-checkout" th:attr="data-date=${detail.checkoutdate}" style="display:none;"></span>
+                        <!-- ⬇️ FIX: ใช้ #dates.format ให้ได้รูปแบบ yyyy-MM-dd ที่ new Date() ฝั่ง JS parse ได้เสถียรทุกเบราว์เซอร์
+                             (ของเดิมใส่ Date object ตรงๆ จะได้ string แบบ "Wed Sep 02 00:00:00 ICT 2026" ซึ่ง Safari parse พลาดได้) -->
+                        <span id="js-checkin"  th:attr="data-date=${detail.checkindate != null ? #dates.format(detail.checkindate,'yyyy-MM-dd') : ''}"  style="display:none;"></span>
+                        <span id="js-checkout" th:attr="data-date=${detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'yyyy-MM-dd') : ''}" style="display:none;"></span>
                     </div>
 
                     <!-- SECTION 4 : หมายเหตุ -->
@@ -754,17 +784,20 @@ textarea.form-control { resize:vertical; min-height:110px; }
                             <p class="note-empty" th:if="${booking.note == null or booking.note.isEmpty()}">ไม่มีหมายเหตุ</p>
                         </div>
                         <div class="inline-field" style="padding-bottom:6px;">
-                            <textarea class="inline-textarea" name="note" rows="3"
+                            <textarea class="inline-textarea" name="note" id="edit-note" rows="3" maxlength="500"
                                       placeholder="หมายเหตุเพิ่มเติม..."
                                       th:text="${booking.note != null ? booking.note : ''}"></textarea>
+                            <div class="field-error" id="err-note"></div>
                         </div>
                     </div>
 
+                    <!-- ⬇️ FIX: ปุ่ม "บันทึก"/"ยกเลิก" ยังอยู่ตรงนี้เหมือนเดิม (UI/UX ไม่เปลี่ยน)
+                         แต่ form ถูกขยายให้ครอบ guestCard ด้านล่างด้วยแล้ว (ปิด </form> หลัง guestCard) -->
                     <div class="inline-actions">
                         <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
                         <button type="submit"  class="btn-inline-save">💾 บันทึกการเปลี่ยนแปลง</button>
                     </div>
-                </form>
+
             </div>
 
             <!-- SECTION 2 : ข้อมูลผู้ติดต่อ -->
@@ -798,6 +831,8 @@ textarea.form-control { resize:vertical; min-height:110px; }
             </div>
 
             <!-- SECTION 3 : รายชื่อผู้เข้าพัก -->
+            <!-- ⬇️ FIX: การ์ดนี้ยังอยู่ "ใน" <form id="editForm"> เดียวกับ section 1 แล้ว
+                 (ก่อนหน้านี้อยู่นอกฟอร์ม ทำให้กดบันทึกแล้วชื่อผู้เข้าพักไม่ถูกส่งไป backend เลย) -->
             <div class="card" id="guestCard">
                 <div class="edit-banner">✏️ กำลังแก้ไข — แก้ชื่อผู้เข้าพักได้ที่นี่</div>
                 <div class="section-header">
@@ -823,6 +858,10 @@ textarea.form-control { resize:vertical; min-height:110px; }
                         </div>
                     </div>
 
+                    <!-- ⬇️ FIX: เพิ่ม hidden input name="guestId" (ผูก th:value="${g.guestid}" —
+                         ⚠️ ปรับชื่อ property ให้ตรงกับ entity Guest จริงของคุณ เช่น g.id / g.guestid)
+                         เพื่อให้ backend รู้ว่ากำลังแก้ guest record ไหน และรองรับหลายคนพร้อมกัน
+                         ด้วยการ bind เป็น List<String> ตามลำดับ index ที่ตรงกันทั้ง 3 ฟิลด์ -->
                     <div th:if="${!booking.isBookerGoing}">
                         <div th:if="${booking.guests != null}" th:each="g,iter : ${booking.guests}">
                             <div class="guest-row">
@@ -836,14 +875,19 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                         <div class="guest-role">ผู้เข้าพัก</div>
                                     </div>
                                     <div class="inline-field">
+                                        <input type="hidden" name="guestId" th:value="${g.guestid}">
                                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                                             <div>
                                                 <div class="detail-label">ชื่อ</div>
-                                                <input class="inline-input" type="text" name="guestFirstname" th:value="${g.firstname}" placeholder="ชื่อ">
+                                                <input class="inline-input guest-firstname" type="text" name="guestFirstname"
+                                                       th:value="${g.firstname}" placeholder="ชื่อ" required data-label="ชื่อผู้เข้าพัก">
+                                                <div class="field-error"></div>
                                             </div>
                                             <div>
                                                 <div class="detail-label">นามสกุล</div>
-                                                <input class="inline-input" type="text" name="guestLastname" th:value="${g.lastname}" placeholder="นามสกุล">
+                                                <input class="inline-input guest-lastname" type="text" name="guestLastname"
+                                                       th:value="${g.lastname}" placeholder="นามสกุล" required data-label="นามสกุลผู้เข้าพัก">
+                                                <div class="field-error"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -855,6 +899,8 @@ textarea.form-control { resize:vertical; min-height:110px; }
 
                 </div>
             </div>
+            <!-- ⬇️ FIX: ปิดฟอร์มตรงนี้ (หลัง guestCard) แทนที่จะปิดก่อนหน้า section 2 -->
+            </form>
 
           <!-- ══ ACTION BAR ══ -->
 <div class="action-bar" th:if="${sts != 'CANCEL'}">
@@ -1000,9 +1046,10 @@ textarea.form-control { resize:vertical; min-height:110px; }
                             <button type="button" class="review-tag" data-txt="ความสะอาดของห้องพัก ">🧹 ความสะอาด</button>
                             <button type="button" class="review-tag" data-txt="การต้อนรับและบริการ ">🙏 การบริการ</button>
                         </div>
+                        <!-- ⬇️ FIX: oninput ตอนนี้เรียก checkReviewReady() ด้วย ไม่ใช่แค่ update charCount -->
                         <textarea class="form-control" name="comment" id="reviewComment" rows="4" maxlength="300"
                                   placeholder="คุณรู้สึกอย่างไรเกี่ยวกับที่พักนี้"
-                                  oninput="document.getElementById('charCount').textContent=this.value.length"></textarea>
+                                  oninput="document.getElementById('charCount').textContent=this.value.length; checkReviewReady();"></textarea>
                         <div class="char-count"><span id="charCount">0</span>/300</div>
                     </div>
 
@@ -1106,6 +1153,137 @@ function exitEdit(btn) {
     calcNights();
 }
 
+/* ════ FIELD VALIDATION (แดงใต้ช่อง) ════ */
+function showFieldError(input, errEl, msg) {
+    if (!errEl) return;
+    if (msg) {
+        errEl.textContent = '⚠ ' + msg;
+        errEl.classList.add('show');
+        input.classList.add('input-error');
+    } else {
+        errEl.textContent = '';
+        errEl.classList.remove('show');
+        input.classList.remove('input-error');
+    }
+}
+
+function getErrEl(input) {
+    // เดินหา .field-error ที่อยู่ถัดไปใน DOM ใกล้ที่สุด (sibling หรือ sibling ของ parent)
+    let el = input.nextElementSibling;
+    if (el && el.classList.contains('field-error')) return el;
+    let parent = input.closest('div');
+    return parent ? parent.querySelector('.field-error') : null;
+}
+
+function validateNumberField(input) {
+    const errEl = getErrEl(input);
+    const label = input.dataset.label || 'ค่านี้';
+    const val = input.value.trim();
+    const min = input.min !== '' ? Number(input.min) : null;
+    const max = input.max !== '' ? Number(input.max) : null;
+
+    if (input.hasAttribute('required') && val === '') {
+        showFieldError(input, errEl, `กรุณากรอก${label}`);
+        return false;
+    }
+    if (val === '') { showFieldError(input, errEl, ''); return true; }
+
+    const num = Number(val);
+    if (isNaN(num) || !Number.isInteger(num)) {
+        showFieldError(input, errEl, `${label}ต้องเป็นตัวเลขจำนวนเต็ม`);
+        return false;
+    }
+    if (min !== null && num < min) {
+        showFieldError(input, errEl, `${label}ต้องไม่น้อยกว่า ${min}`);
+        return false;
+    }
+    if (max !== null && num > max) {
+        showFieldError(input, errEl, `${label}ต้องไม่เกิน ${max}`);
+        return false;
+    }
+    showFieldError(input, errEl, '');
+    return true;
+}
+
+function validateTextField(input) {
+    const errEl = getErrEl(input);
+    const label = input.dataset.label || 'ค่านี้';
+    const val = input.value.trim();
+    if (input.hasAttribute('required') && val === '') {
+        showFieldError(input, errEl, `กรุณากรอก${label}`);
+        return false;
+    }
+    showFieldError(input, errEl, '');
+    return true;
+}
+
+function validateDates() {
+    const ciInput = document.getElementById('edit-checkin');
+    const coInput = document.getElementById('edit-checkout');
+    if (!ciInput || !coInput) return true;
+
+    const ciErr = document.getElementById('err-checkin');
+    const coErr = document.getElementById('err-checkout');
+    let ok = true;
+
+    if (!ciInput.value) { showFieldError(ciInput, ciErr, 'กรุณาเลือกวันเช็คอิน'); ok = false; }
+    else showFieldError(ciInput, ciErr, '');
+
+    if (!coInput.value) { showFieldError(coInput, coErr, 'กรุณาเลือกวันเช็คเอาท์'); ok = false; }
+    else showFieldError(coInput, coErr, '');
+
+    if (ciInput.value && coInput.value) {
+        const ci = new Date(ciInput.value), co = new Date(coInput.value);
+        if (co <= ci) {
+            showFieldError(coInput, coErr, 'วันเช็คเอาท์ต้องอยู่หลังวันเช็คอิน');
+            ok = false;
+        }
+    }
+    return ok;
+}
+
+/* ผูก event แบบ real-time */
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('#editForm input[type="number"]').forEach(function (input) {
+        input.addEventListener('input', function () { validateNumberField(input); });
+        input.addEventListener('blur',  function () { validateNumberField(input); });
+    });
+
+    document.querySelectorAll('.guest-firstname, .guest-lastname').forEach(function (input) {
+        input.addEventListener('input', function () { validateTextField(input); });
+        input.addEventListener('blur',  function () { validateTextField(input); });
+    });
+
+    const ci = document.getElementById('edit-checkin');
+    const co = document.getElementById('edit-checkout');
+    if (ci) ci.addEventListener('change', validateDates);
+    if (co) co.addEventListener('change', validateDates);
+});
+
+/* กันไม่ให้ submit ถ้ายังมี error */
+const editFormEl = document.getElementById('editForm');
+if (editFormEl) {
+    editFormEl.addEventListener('submit', function (e) {
+        let allValid = true;
+
+        if (!validateDates()) allValid = false;
+
+        editFormEl.querySelectorAll('input[type="number"]').forEach(function (input) {
+            if (!validateNumberField(input)) allValid = false;
+        });
+
+        editFormEl.querySelectorAll('.guest-firstname, .guest-lastname').forEach(function (input) {
+            if (!validateTextField(input)) allValid = false;
+        });
+
+        if (!allValid) {
+            e.preventDefault();
+            const firstError = editFormEl.querySelector('.input-error');
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+}
+
 /* ════ Review Modal ════ */
 function openReviewModal()  { document.getElementById('reviewModal')?.classList.add('open'); }
 function closeReviewModal() { document.getElementById('reviewModal')?.classList.remove('open'); }
@@ -1161,9 +1339,13 @@ function renderImgPreview() {
     document.getElementById('reviewImgInput').files = dt.files;
     checkReviewReady();
 }
+/* ════ FIX: ตอนนี้เช็คทั้งดาว "และ" ความยาวคอมเมนต์ >= 30 ตัวอักษร
+   ให้ตรงกับข้อความ UI ที่บอกผู้ใช้ว่า "เขียน 30+ ตัวอักษร" ════ */
 function checkReviewReady() {
     const hasRating = !!document.getElementById('ratingInput').value;
-    document.getElementById('submitReviewBtn').disabled = !hasRating;
+    const commentEl = document.getElementById('reviewComment');
+    const commentLen = commentEl ? commentEl.value.trim().length : 0;
+    document.getElementById('submitReviewBtn').disabled = !(hasRating && commentLen >= 30);
 }
 
 /* ════ Cancel ════ */

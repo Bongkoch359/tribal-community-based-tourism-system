@@ -212,4 +212,8 @@ public interface TourRepository extends JpaRepository<Tour, String> {
 
     List<Tour> findByTribeid(Integer tribeid);
 
+
+    // นับจำนวนชนเผ่าที่มีทัวร์อยู่จริง (distinct) สำหรับ hero stats หน้า search
+    @Query("SELECT COUNT(DISTINCT t.tribeid) FROM Tour t WHERE t.tribeid IS NOT NULL")
+    long countDistinctTribeid();
 }

@@ -13,6 +13,8 @@ import com.example.miniproject.service.Member.BookingService;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List; // ⬅️ NEW: ต้อง import เพิ่ม เพื่อรองรับ List<String>
+
 @Controller
 public class BookingHomestayController {
 
@@ -85,6 +87,9 @@ public String bookingPage(
 
     // ════════════════════════════════════════════════════════
     //  POST : แก้ไขการจอง
+    //  ⬇️ NEW: guestFirstname / guestLastname เปลี่ยนจาก String เดี่ยว
+    //          เป็น List<String> เพื่อรองรับผู้เข้าพักหลายคน
+    //          และเพิ่ม guestId (List<String>) เพื่อ map กลับไปหา record เดิม
     // ════════════════════════════════════════════════════════
 
     @PostMapping("/booking/homestay/edit/{id}")
@@ -96,8 +101,9 @@ public String bookingPage(
             @RequestParam(value = "guest",         defaultValue = "1") Integer guest,
             @RequestParam(value = "children",      defaultValue = "0") Integer children,
             @RequestParam(value = "note",          required = false)   String  note,
-            @RequestParam(value = "guestFirstname", required = false)  String  guestFirstname,
-            @RequestParam(value = "guestLastname",  required = false)  String  guestLastname,
+            @RequestParam(value = "guestId",        required = false)  List<String> guestIds,
+            @RequestParam(value = "guestFirstname", required = false)  List<String> guestFirstnames,
+            @RequestParam(value = "guestLastname",  required = false)  List<String> guestLastnames,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -110,7 +116,7 @@ public String bookingPage(
                     checkin, checkout,
                     numofrooms, guest, children,
                     note,
-                    guestFirstname, guestLastname);
+                    guestIds, guestFirstnames, guestLastnames);
 
             redirectAttributes.addFlashAttribute("successMsg", "แก้ไขการจองเรียบร้อยแล้ว");
             return "redirect:/member/bookings/detail/" + bookingId;

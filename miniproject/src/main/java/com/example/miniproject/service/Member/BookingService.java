@@ -18,9 +18,9 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 @Service
 public class BookingService {
@@ -253,8 +253,9 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
             Integer numofAdults,
             Integer numofChildren,
             String note,
-            String guestFirstname,   // ← เพิ่ม
-            String guestLastname) {  // ← เพิ่ม
+            List<String> guestIds,          // ← เปลี่ยนจาก String เดี่ยว เป็น List (รองรับหลายคน)
+            List<String> guestFirstnames,   // ← เปลี่ยนจาก String เดี่ยว เป็น List
+            List<String> guestLastnames) {  // ← เปลี่ยนจาก String เดี่ยว เป็น List
 
         // ── 1. ดึง Booking ─────────────────────────────────────
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
@@ -335,25 +336,46 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         booking.setTotalamount(subtotal);
         bookingRepository.save(booking);
 
-        // ── 9. อัปเดตชื่อ Guest (กรณีจองให้ผู้อื่น) ───────────
-        if (Boolean.FALSE.equals(booking.getIsBookerGoing())
-                && guestFirstname != null && !guestFirstname.isBlank()) {
+        // ── 9. อัปเดตชื่อ Guest (กรณีจองให้ผู้อื่น) — รองรับหลายคน ───────────
+        // guestIds / guestFirstnames / guestLastnames ต้องมีความยาวเท่ากันและ "เรียงตามลำดับเดียวกัน"
+        // (ฝั่ง Thymeleaf loop ผ่าน guests ตัวเดียวกัน ดังนั้น index จะตรงกันโดยอัตโนมัติ)
+        if (Boolean.FALSE.equals(booking.getIsBookerGoing()) && guestFirstnames != null) {
 
-            Set<Guest> guests = booking.getGuests();
-            if (guests != null && !guests.isEmpty()) {
-                // แก้ guest รายแรก
-                Guest g = guests.iterator().next();
-                g.setFirstname(guestFirstname.trim());
-                g.setLastname(guestLastname != null ? guestLastname.trim() : "");
-                guestRepository.save(g);
-            } else {
-                // ไม่มี guest เลย → สร้างใหม่
-                Guest g = new Guest();
-                g.setGuestid(bookingIdGenerator.generateGuestId());
-                g.setFirstname(guestFirstname.trim());
-                g.setLastname(guestLastname != null ? guestLastname.trim() : "");
-                g.setBooking(booking);
-                guestRepository.save(g);
+            int count = guestFirstnames.size();
+
+            for (int i = 0; i < count; i++) {
+                String gid   = (guestIds != null && i < guestIds.size()) ? guestIds.get(i) : null;
+                String fname = guestFirstnames.get(i);
+                String lname = (guestLastnames != null && i < guestLastnames.size())
+                        ? guestLastnames.get(i) : "";
+
+                if (fname == null || fname.isBlank()) {
+                    continue; // ข้าม row ที่ไม่ได้กรอกชื่อ
+                }
+
+                if (gid != null && !gid.isBlank()) {
+                    // ── แก้ guest เดิมตาม id ──────────────────────────
+                    Guest g = guestRepository.findById(gid)
+                            .orElseThrow(() -> new IllegalArgumentException("ไม่พบผู้เข้าพัก: " + gid));
+
+                    // กันแก้ guest ของ booking คนอื่น (เผื่อ id ถูกปลอมแปลงมาจากฟอร์ม)
+                    if (g.getBooking() == null || !bookingId.equals(g.getBooking().getBookingid())) {
+                        throw new IllegalArgumentException("ข้อมูลผู้เข้าพักไม่ตรงกับการจองนี้");
+                    }
+
+                    g.setFirstname(fname.trim());
+                    g.setLastname(lname != null ? lname.trim() : "");
+                    guestRepository.save(g);
+
+                } else {
+                    // ── ไม่มี id → เป็นผู้เข้าพักคนใหม่ที่เพิ่งเพิ่ม ──
+                    Guest g = new Guest();
+                    g.setGuestid(bookingIdGenerator.generateGuestId());
+                    g.setFirstname(fname.trim());
+                    g.setLastname(lname != null ? lname.trim() : "");
+                    g.setBooking(booking);
+                    guestRepository.save(g);
+                }
             }
         }
     }
@@ -428,6 +450,47 @@ public void autoCompleteIfPastEndDate(Booking booking) {
         booking.setBookingStatus(BookingStatus.COMPLETED);
         bookingRepository.save(booking);
     }
+}
+
+// ════════════════════════════════════════════════════════
+//  CHECK AVAILABILITY (สำหรับหน้า search / รายละเอียด)
+// ════════════════════════════════════════════════════════
+
+/**
+ * เช็คว่า homestay ยังมีห้องว่างเหลืออย่างน้อย 1 ประเภทหรือไม่
+ * ในช่วงวันที่ระบุ (รวมทุก roomtype ของ homestay นั้น)
+ */
+public boolean isHomestayAvailable(Integer homestayId, LocalDate checkin, LocalDate checkout) {
+    List<Roomtype> roomtypes = roomtypeRepository.findByHomestayId(homestayId);
+    if (roomtypes.isEmpty()) return true; // ไม่มีข้อมูลห้อง ไม่ควรตัดสิทธิ์เข้าดู
+
+    for (Roomtype rt : roomtypes) {
+        if (rt.getTotalrooms() == null) return true; // ไม่ได้กำหนด totalrooms ถือว่าว่างเสมอ
+
+        Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
+                rt.getRoomtypeid(), Date.valueOf(checkin), Date.valueOf(checkout));
+        int booked = (bookedRooms != null) ? bookedRooms : 0;
+        int available = rt.getTotalrooms() - booked;
+
+        if (available > 0) {
+            return true; // เจอ roomtype ที่ยังว่าง → homestay นี้ยังจองได้
+        }
+    }
+    return false; // ทุก roomtype เต็มหมด
+}
+
+/**
+ * เช็คห้องว่างของหลาย homestay พร้อมกัน (สำหรับหน้า search)
+ * คืน Map<homestayId, Boolean> — true = ยังว่าง, false = เต็มทุกประเภท
+ */
+public Map<Integer, Boolean> checkAvailabilityForHomestays(
+        List<Integer> homestayIds, LocalDate checkin, LocalDate checkout) {
+
+    Map<Integer, Boolean> result = new java.util.HashMap<>();
+    for (Integer id : homestayIds) {
+        result.put(id, isHomestayAvailable(id, checkin, checkout));
+    }
+    return result;
 }
 
 

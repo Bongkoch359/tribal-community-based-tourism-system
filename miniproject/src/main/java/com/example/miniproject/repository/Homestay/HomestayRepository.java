@@ -59,6 +59,9 @@ List<Object[]> findLowestRatedHomestays(org.springframework.data.domain.Pageable
     String homestayname, String address);
 
    // ค้นหาโฮมสเตย์ที่มีห้องว่างในช่วงวันที่
+// ค้นหาโฮมสเตย์ตาม keyword/guests เท่านั้น 
+// (ไม่กรองเรื่องห้องว่าง/เต็ม เพราะต้องปล่อยให้ Controller เอา hsAvailability 
+//  ไปตัดสินใจแสดง badge "ห้องเต็ม" แทนการซ่อนการ์ดทิ้งไปเลย)
 @Query("""
     SELECT DISTINCT h FROM Homestay h
     JOIN h.roomtypes r
@@ -69,12 +72,6 @@ List<Object[]> findLowestRatedHomestays(org.springframework.data.domain.Pageable
            OR LOWER(h.address) LIKE LOWER(CONCAT('%', :keyword, '%')))
     AND r.status = 'เปิดจอง'
     AND (:guests IS NULL OR :guests <= 1 OR r.maxguest >= :guests)
-    AND (:startDate IS NULL OR :endDate IS NULL OR NOT EXISTS (
-        SELECT d FROM Bookingroomdetail d
-        WHERE d.roomtype = r
-        AND d.booking.bookingStatus <> com.example.miniproject.entity.enums.BookingStatus.CANCEL
-        AND NOT (d.checkoutdate <= :startDate OR d.checkindate >= :endDate)
-    ))
     ORDER BY h.homestayname ASC
 """)
 List<Homestay> searchWithDate(

@@ -96,6 +96,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
   display: flex;
   align-items: center;
   gap: 5px;
+  text-decoration: none;
 }
 .top-bar a:hover { color: var(--amber-400); }
 .top-bar a svg { width: 14px; height: 14px; }
@@ -116,6 +117,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
   color: #fff; margin-right: auto;
   margin-left: 20px;
   display: flex; align-items: center; gap: 0px; flex-shrink: 0;
+  text-decoration: none;
 }
     
 .brand-logo{
@@ -288,6 +290,29 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     border-color:var(--edit-focus); box-shadow:0 0 0 3px rgba(41,87,54,.12);
 }
 .inline-textarea { resize:vertical; min-height:72px; }
+
+/* ── FIELD VALIDATION (live, before submit) ── */
+.inline-input.field-error,
+.inline-textarea.field-error,
+.inline-select.field-error {
+    border-color: var(--red) !important;
+    background: var(--red-light) !important;
+    box-shadow: 0 0 0 3px rgba(179,70,46,.12) !important;
+}
+.field-error-msg {
+    display: none;
+    color: var(--red);
+    font-size: .76rem;
+    font-weight: 700;
+    margin-top: 5px;
+    align-items: center;
+    gap: 4px;
+}
+.field-error-msg.show { display: flex; }
+.field-error-msg::before { content: "⚠️"; font-size: .8rem; }
+.radio-group.field-error .radio-option {
+    border-color: var(--red);
+}
 
 /* ── EDIT BANNER ── */
 .edit-banner {
@@ -748,7 +773,7 @@ textarea.form-control { resize:vertical; min-height:110px; }
                 </div>
 
                 <!-- form ครอบทั้ง section 1 + 4 -->
-                <form th:action="@{/booking/tour/edit/{id}(id=${booking.bookingid})}" method="post" id="editForm">
+                <form th:action="@{/booking/tour/edit/{id}(id=${booking.bookingid})}" method="post" id="editForm" novalidate>
 
                     <div class="section-body">
                         <!-- ชื่อทัวร์ (ไม่แก้ได้) -->
@@ -771,8 +796,13 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                      th:text="${detail.tourschedule != null and detail.tourschedule.opendate != null ? #dates.format(detail.tourschedule.opendate,'dd MMMM yyyy') + (detail.tourschedule.enddate != null ? ' - ' + #dates.format(detail.tourschedule.enddate,'dd MMMM yyyy') : '') : '-'}">-</div>
 
                                 <div class="inline-field">
+                                    <!-- ⭐ FIX: เดิมใช้ th:disabled ตอนไม่มี schedule เปิดจอง แต่ input/select ที่ disabled
+                                         จะไม่ถูกส่งไปกับฟอร์มเลยตามสเปก HTML ทำให้ backend รับ "tourdate" ไม่ได้
+                                         (@RequestParam("tourdate") เป็น required ไม่มี defaultValue) แล้วโยน 400 ตอน submit
+                                         แก้โดยแยกเป็น 2 เคส: มี schedule ให้เลือกได้ปกติ / ไม่มี schedule ให้ select
+                                         เหลือ option เดียวคือรอบปัจจุบันแบบไม่ disable เพื่อให้ยังส่งค่าไปได้ -->
                                     <select class="inline-select" name="tourdate" id="tourdate-input" required
-                                            th:disabled="${schedules == null or schedules.isEmpty()}">
+                                            th:if="${schedules != null and !schedules.isEmpty()}">
 
                                         <!-- รอบที่เปิดจองอยู่ตอนนี้ -->
                                         <option th:each="s : ${schedules}"
@@ -783,12 +813,23 @@ textarea.form-control { resize:vertical; min-height:110px; }
 
                                         <!-- เผื่อรอบเดิมของการจองนี้ไม่ได้อยู่ในลิสต์ที่เปิดจองแล้ว (เช่นปิดรับจองไปแล้ว)
                                              ให้แสดงรอบเดิมไว้เป็นตัวเลือกเสมอ กันไม่ให้ select ว่างหรือเด้งไปรอบอื่นโดยไม่ตั้งใจ -->
-                                        <option th:if="${detail.tourschedule != null and (schedules == null or !#lists.contains(schedules.![scheduleid], detail.tourschedule.scheduleid))}"
+                                        <option th:if="${detail.tourschedule != null and !#lists.contains(schedules.![scheduleid], detail.tourschedule.scheduleid)}"
                                                 th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
                                                 th:text="${#dates.format(detail.tourschedule.opendate,'dd/MM/yyyy')} + ' - ' + ${#dates.format(detail.tourschedule.enddate,'dd/MM/yyyy')} + ' (รอบปัจจุบันของการจองนี้)'"
                                                 selected="selected">
                                         </option>
                                     </select>
+
+                                    <!-- ไม่มีรอบเปิดจองเลย: ให้ select เหลือตัวเลือกเดียวคือรอบเดิม (ไม่ disable เพื่อให้ยังส่งค่าได้) -->
+                                    <select class="inline-select" name="tourdate" id="tourdate-input" required
+                                            th:if="${schedules == null or schedules.isEmpty()}">
+                                        <option th:if="${detail.tourschedule != null}"
+                                                th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
+                                                th:text="${#dates.format(detail.tourschedule.opendate,'dd/MM/yyyy')} + ' - ' + ${#dates.format(detail.tourschedule.enddate,'dd/MM/yyyy')} + ' (รอบปัจจุบันของการจองนี้)'"
+                                                selected="selected">
+                                        </option>
+                                    </select>
+                                    <div class="field-error-msg">กรุณาเลือกวันออกเดินทาง</div>
 
                                     <div class="pickup-hint" th:if="${schedules == null or schedules.isEmpty()}">
                                         ⚠️ ขณะนี้ไม่มีรอบทัวร์อื่นที่เปิดรับจอง จะยังคงใช้รอบเดิมของการจองนี้
@@ -801,10 +842,26 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                 <div class="detail-label">ประเภทจุดรับ</div>
                                 <div class="detail-value view-val">
                                     <span class="pickup-badge" th:text="${booking.pickuptype != null ? booking.pickuptype : '-'}">-</span>
+
+                                    <!-- ⭐ FIX: เดิมกล่องจุดนัดพบ (ที่อยู่ + ลิงก์แผนที่) อยู่ใน .inline-field เท่านั้น
+                                         ซึ่งโชว์เฉพาะตอนกดแก้ไข ทำให้ผู้ใช้ไม่เห็นรายละเอียดจุดนัดพบเลยถ้าไม่กดแก้ไข
+                                         ย้ายมาโชว์ใน view mode ด้วย เมื่อ pickuptype เป็น "จุดรับส่วนกลาง" -->
+                                    <div class="meetingpoint-box" style="margin-top:10px;"
+                                         th:if="${booking.pickuptype == 'จุดรับส่วนกลาง' and detail.tour != null and detail.tour.allowMeetingPoint}">
+                                        📍 <strong>จุดนัดพบ:</strong>
+                                        <span th:if="${detail.tour.meetingPointDetail != null}" th:text="${detail.tour.meetingPointDetail}">
+                                            รายละเอียดจุดนัดพบ
+                                        </span>
+                                        <span th:if="${detail.tour.meetingPointDetail == null}">
+                                            ยังไม่ได้ระบุจุดนัดพบ
+                                        </span>
+                                        <br>
+                                        🗺️ <a href="#" target="_blank">ดูแผนที่ / Google Maps</a>
+                                    </div>
                                 </div>
 
                                <div class="inline-field">
-    <div class="radio-group">
+    <div class="radio-group" id="pickupRadioGroup">
         <label class="radio-option" id="pickupOptCentral"
                th:if="${detail.tour != null and detail.tour.allowMeetingPoint}"
                th:classappend="${booking.pickuptype == 'จุดรับส่วนกลาง'} ? ' radio-selected' : ''"
@@ -837,6 +894,7 @@ textarea.form-control { resize:vertical; min-height:110px; }
             <span>🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก (เฉพาะในเขตจังหวัดเชียงใหม่)</span>
         </label>
     </div>
+    <div class="field-error-msg" id="pickupTypeError">กรุณาเลือกประเภทจุดรับ</div>
 </div>
                             </div>
 
@@ -850,6 +908,7 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                     <input class="inline-input" type="text" name="pickuplocation" id="pickuplocation-input"
                                            placeholder="เช่น โรงแรม ดุสิต ดีทู เชียงใหม่, อ.เมือง จ.เชียงใหม่"
                                            th:value="${booking.pickuplocation != null ? booking.pickuplocation : ''}">
+                                    <div class="field-error-msg" id="pickupLocationError">กรุณาระบุสถานที่รับ (ต้องอยู่ในจังหวัดเชียงใหม่)</div>
                                     <div class="pickup-hint">
                                         ⚠️ บริการรับส่งถึงที่พัก รองรับเฉพาะที่พักในเขตจังหวัดเชียงใหม่เท่านั้น กรุณาระบุคำว่า "เชียงใหม่" ในที่อยู่
                                     </div>
@@ -870,8 +929,9 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                           th:text="${detail.tour != null ? #numbers.formatDecimal(detail.tour.adultprice,1,'COMMA',0,'POINT') + ' ฿' : ''}"></span>
                                 </div>
                                 <div class="inline-field">
-                                    <input class="inline-input" type="number" name="adult" min="1" max="99"
+                                    <input class="inline-input" type="number" name="adult" id="adult-input" min="1" max="99" required
                                            th:value="${detail.numofadult != null ? detail.numofadult : 1}">
+                                    <div class="field-error-msg">กรุณาระบุจำนวนผู้ใหญ่อย่างน้อย 1 ท่าน</div>
                                 </div>
                             </div>
 
@@ -884,8 +944,9 @@ textarea.form-control { resize:vertical; min-height:110px; }
                                           th:text="${detail.tour != null ? #numbers.formatDecimal(detail.tour.childprice,1,'COMMA',0,'POINT') + ' ฿' : ''}"></span>
                                 </div>
                                 <div class="inline-field">
-                                    <input class="inline-input" type="number" name="children" min="0" max="99"
+                                    <input class="inline-input" type="number" name="children" id="children-input" min="0" max="99"
                                            th:value="${detail.numofchild != null ? detail.numofchild : 0}">
+                                    <div class="field-error-msg">จำนวนเด็กต้องไม่ติดลบ</div>
                                 </div>
                             </div>
 
@@ -984,20 +1045,23 @@ textarea.form-control { resize:vertical; min-height:110px; }
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <div>
             <div class="detail-label">ชื่อจริง</div>
-            <input class="inline-input" type="text" name="guestFirstname" form="editForm"
-                   th:value="${g.firstname}" placeholder="ชื่อ">
+            <input class="inline-input guest-name-input" type="text" name="guestFirstname" form="editForm"
+                   th:value="${g.firstname}" placeholder="ชื่อ" required>
+            <div class="field-error-msg">กรุณากรอกชื่อ</div>
         </div>
         <div>
             <div class="detail-label">นามสกุล</div>
-            <input class="inline-input" type="text" name="guestLastname" form="editForm"
-                   th:value="${g.lastname}" placeholder="นามสกุล">
+            <input class="inline-input guest-name-input" type="text" name="guestLastname" form="editForm"
+                   th:value="${g.lastname}" placeholder="นามสกุล" required>
+            <div class="field-error-msg">กรุณากรอกนามสกุล</div>
         </div>
     </div>
     <div style="margin-top:8px;" th:if="${booking.wantInsurance}">
         <div class="detail-label">เลขบัตรประชาชน (สำหรับทำประกัน)</div>
-        <input class="inline-input" type="text" name="guestIdcard" form="editForm"
+        <input class="inline-input guest-idcard-input" type="text" name="guestIdcard" form="editForm"
                th:value="${g.idcardnumber}" placeholder="กรอกเลข 13 หลัก"
-               maxlength="13" inputmode="numeric" pattern="[0-9]{13}">
+               maxlength="13" inputmode="numeric" pattern="[0-9]{13}" required>
+        <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
     </div>
 </div>
 
@@ -1005,9 +1069,10 @@ textarea.form-control { resize:vertical; min-height:110px; }
     <input type="hidden" name="guestId" form="editForm" th:value="${g.guestid}">
     <div style="margin-top:8px;">
         <div class="detail-label">เลขบัตรประชาชนของผู้จอง (สำหรับทำประกัน)</div>
-        <input class="inline-input" type="text" name="guestIdcard" form="editForm"
+        <input class="inline-input guest-idcard-input" type="text" name="guestIdcard" form="editForm"
                th:value="${g.idcardnumber}" placeholder="กรอกเลข 13 หลัก"
-               maxlength="13" inputmode="numeric" pattern="[0-9]{13}">
+               maxlength="13" inputmode="numeric" pattern="[0-9]{13}" required>
+        <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
     </div>
     <!-- ต้องส่ง guestFirstname/guestLastname คู่กันเสมอ เพื่อให้ index ของทั้ง 3 list ตรงกัน แม้ผู้จองจะแก้ชื่อในหน้าโปรไฟล์เท่านั้น -->
     <input type="hidden" name="guestFirstname" form="editForm" th:value="${g.firstname}">
@@ -1023,6 +1088,14 @@ textarea.form-control { resize:vertical; min-height:110px; }
                         ไม่มีรายชื่อผู้เดินทาง
                     </p>
 
+                </div>
+
+                <!-- ⭐ FIX: เดิมการ์ดนี้ไม่มีปุ่ม บันทึก/ยกเลิก ของตัวเอง ทำให้ user แก้ชื่อผู้เดินทางแล้วหาปุ่มไม่เจอ
+                     ต้องเลื่อนไปการ์ดอื่นแทน ปุ่ม submit นี้อ้างฟอร์มเดียวกัน (form="editForm") ผ่าน form attribute
+                     ของ HTML5 จึงส่งข้อมูลรวมไปพร้อมกับฟอร์มหลักที่การ์ด 1 ได้โดยไม่ต้องสร้างฟอร์มซ้อนฟอร์ม -->
+                <div class="inline-actions">
+                    <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
+                    <button type="submit" form="editForm" class="btn-inline-save">💾 บันทึกการเปลี่ยนแปลง</button>
                 </div>
             </div>
 
@@ -1337,6 +1410,7 @@ function toggleEdit() {
 
 function cancelEdit() {
     exitEdit(document.getElementById('editToggleBtn'));
+    clearAllFieldErrors();
 }
 
 function exitEdit(btn) {
@@ -1366,7 +1440,193 @@ function selectPickupType(type) {
     if (locInline)  locInline.style.display  = isCentral ? 'none' : '';
 
     if (isCentral && locInput) locInput.value = '';
+
+    clearFieldError(document.getElementById('pickupRadioGroup'), document.getElementById('pickupTypeError'));
+
+    // ประเภทจุดรับเปลี่ยน อาจทำให้สถานะ error ของ "สถานที่รับ" เปลี่ยนตามไปด้วย
+    if (locInput) validatePickupLocation(locInput);
 }
+
+/* ════════════════════════════════════════════════════
+   ════ LIVE FIELD VALIDATION (เช็คก่อนกดบันทึกเสมอ) ════
+   ════════════════════════════════════════════════════ */
+
+function findErrorMsgEl(inputEl) {
+    // หา .field-error-msg ที่อยู่ถัดจาก input ใน DOM (พี่น้องกัน หรือใน wrapper เดียวกัน)
+    let sib = inputEl.nextElementSibling;
+    while (sib) {
+        if (sib.classList && sib.classList.contains('field-error-msg')) return sib;
+        sib = sib.nextElementSibling;
+    }
+    return null;
+}
+
+function showFieldError(inputOrGroupEl, msgEl, text) {
+    if (inputOrGroupEl) inputOrGroupEl.classList.add('field-error');
+    if (msgEl) {
+        if (text) msgEl.textContent = text;
+        msgEl.classList.add('show');
+    }
+}
+
+function clearFieldError(inputOrGroupEl, msgEl) {
+    if (inputOrGroupEl) inputOrGroupEl.classList.remove('field-error');
+    if (msgEl) msgEl.classList.remove('show');
+}
+
+function clearAllFieldErrors() {
+    document.querySelectorAll('.field-error').forEach(function (el) { el.classList.remove('field-error'); });
+    document.querySelectorAll('.field-error-msg.show').forEach(function (el) { el.classList.remove('show'); });
+}
+
+/* วันออกเดินทาง */
+function validateTourDate(el) {
+    const msgEl = findErrorMsgEl(el);
+    if (!el.value) { showFieldError(el, msgEl); return false; }
+    clearFieldError(el, msgEl);
+    return true;
+}
+
+/* จำนวนผู้ใหญ่ ต้อง >= 1 */
+function validateAdult(el) {
+    const msgEl = findErrorMsgEl(el);
+    const v = parseInt(el.value, 10);
+    if (el.value === '' || isNaN(v) || v < 1) {
+        showFieldError(el, msgEl);
+        return false;
+    }
+    clearFieldError(el, msgEl);
+    return true;
+}
+
+/* จำนวนเด็ก ต้อง >= 0 (ห้ามติดลบ / ห้ามว่างถ้าพิมพ์อะไรมาแล้ว) */
+function validateChildren(el) {
+    const msgEl = findErrorMsgEl(el);
+    if (el.value === '') { clearFieldError(el, msgEl); return true; } // ปล่อยว่างได้ ระบบจะถือเป็น 0
+    const v = parseInt(el.value, 10);
+    if (isNaN(v) || v < 0) {
+        showFieldError(el, msgEl);
+        return false;
+    }
+    clearFieldError(el, msgEl);
+    return true;
+}
+
+/* ชื่อ/นามสกุลผู้เดินทาง (เฉพาะที่ไม่ใช่ผู้จอง) */
+function validateGuestName(el) {
+    const msgEl = findErrorMsgEl(el);
+    if (!el.value.trim()) {
+        showFieldError(el, msgEl);
+        return false;
+    }
+    clearFieldError(el, msgEl);
+    return true;
+}
+
+/* เลขบัตรประชาชน (บังคับเมื่อทำประกัน) ต้องเป็นตัวเลข 13 หลัก */
+function validateIdcard(el) {
+    const msgEl = findErrorMsgEl(el);
+    const v = el.value.trim();
+    if (!v) {
+        showFieldError(el, msgEl, 'กรุณากรอกเลขบัตรประชาชน');
+        return false;
+    }
+    if (!/^[0-9]{13}$/.test(v)) {
+        showFieldError(el, msgEl, 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
+        return false;
+    }
+    clearFieldError(el, msgEl);
+    return true;
+}
+
+/* สถานที่รับ — บังคับเมื่อเลือก "โรงแรม/ที่พัก" และต้องมีคำว่า "เชียงใหม่" */
+function validatePickupLocation(el) {
+    const msgEl = findErrorMsgEl(el);
+    const isHotel = !!document.querySelector('input[name="pickuptype"][value="โรงแรม/ที่พัก"]:checked');
+
+    if (!isHotel) { clearFieldError(el, msgEl); return true; }
+
+    const v = el.value.trim();
+    if (!v) {
+        showFieldError(el, msgEl, 'กรุณาระบุสถานที่รับ');
+        return false;
+    }
+    if (!v.includes('เชียงใหม่')) {
+        showFieldError(el, msgEl, 'บริการรับที่พักรองรับเฉพาะในเขตจังหวัดเชียงใหม่ กรุณาระบุคำว่า "เชียงใหม่"');
+        return false;
+    }
+    clearFieldError(el, msgEl);
+    return true;
+}
+
+/* ประเภทจุดรับ — ต้องเลือกอย่างใดอย่างหนึ่งเสมอ */
+function validatePickupType() {
+    const group = document.getElementById('pickupRadioGroup');
+    const msgEl = document.getElementById('pickupTypeError');
+    if (!group) return true;
+
+    const checked = document.querySelector('input[name="pickuptype"]:checked');
+    if (!checked) {
+        showFieldError(group, msgEl);
+        return false;
+    }
+    clearFieldError(group, msgEl);
+    return true;
+}
+
+/* ════ ผูก live-validation ตอนพิมพ์/เปลี่ยนค่า (ไม่ต้องรอกดบันทึก) ════ */
+document.addEventListener('input', function (e) {
+    if (e.target.id === 'adult-input') validateAdult(e.target);
+    if (e.target.id === 'children-input') validateChildren(e.target);
+    if (e.target.classList.contains('guest-name-input')) validateGuestName(e.target);
+    if (e.target.classList.contains('guest-idcard-input')) validateIdcard(e.target);
+    if (e.target.id === 'pickuplocation-input') validatePickupLocation(e.target);
+});
+
+document.addEventListener('change', function (e) {
+    if (e.target.id === 'tourdate-input') validateTourDate(e.target);
+    if (e.target.name === 'pickuptype') validatePickupType();
+});
+
+/* ════ เช็คซ้ำอีกครั้งตอนกดบันทึก กันเคสที่ผู้ใช้ไม่เคยแตะช่องนั้นเลย ════ */
+document.getElementById('editForm')?.addEventListener('submit', function (e) {
+    let ok = true;
+
+    const tourdateEl = document.getElementById('tourdate-input');
+    if (tourdateEl && !validateTourDate(tourdateEl)) ok = false;
+
+    const adultEl = document.getElementById('adult-input');
+    if (adultEl && !validateAdult(adultEl)) ok = false;
+
+    const childrenEl = document.getElementById('children-input');
+    if (childrenEl && !validateChildren(childrenEl)) ok = false;
+    // ⭐ FIX: backend รับ children เป็น Integer ที่มี defaultValue="0" ซึ่งใช้ได้เฉพาะตอน
+    // "ไม่ส่งพารามิเตอร์มาเลย" เท่านั้น แต่ input นี้อยู่ในฟอร์มเสมอ ถ้าผู้ใช้ลบจนว่างเปล่า
+    // ค่าที่ส่งไปจะเป็น children="" ทำให้ Spring แปลงเป็น Integer ไม่ได้แล้ว throw 400
+    // จึงต้อง normalize ค่าว่างให้เป็น "0" ก่อน submit เสมอ
+    if (childrenEl && childrenEl.value.trim() === '') {
+        childrenEl.value = '0';
+    }
+
+    document.querySelectorAll('.guest-name-input').forEach(function (el) {
+        if (!validateGuestName(el)) ok = false;
+    });
+
+    document.querySelectorAll('.guest-idcard-input').forEach(function (el) {
+        if (!validateIdcard(el)) ok = false;
+    });
+
+    if (!validatePickupType()) ok = false;
+
+    const locEl = document.getElementById('pickuplocation-input');
+    if (locEl && !validatePickupLocation(locEl)) ok = false;
+
+    if (!ok) {
+        e.preventDefault();
+        const firstError = document.querySelector('.field-error, .radio-group.field-error');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
 
 /* ════ Review Modal ════ */
 function openReviewModal()  { document.getElementById('reviewModal')?.classList.add('open'); }

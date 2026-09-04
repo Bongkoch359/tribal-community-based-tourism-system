@@ -9,10 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <style>
-  *, *::before, *::after { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
     font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
   }
 
@@ -21,29 +21,29 @@
     --primary-container: #10b981;
     --on-primary: #ffffff;
     --on-primary-container: #00422b;
-    
+
     --secondary: #2b6954;
     --secondary-container: #adedd3;
-    
+
     --background: #f4fbf4;
     --surface: #f4fbf4;
     --surface-container-low: #eef6ee;
     --surface-container: #e8f0e9;
     --surface-container-lowest: #ffffff;
     --surface-variant: #dde4dd;
-    
+
     --on-surface: #161d19;
     --on-surface-variant: #3c4a42;
     --outline: #6c7a71;
     --outline-variant: #bbcabf;
-    
+
     --error: #ba1a1a;
     --error-container: #ffdad6;
     --on-error-container: #93000a;
 
     --gold-700: #92681b;
     --gold-100: #fbedce;
-    
+
     --navbar-h: 100px;
     --r-md: 10px;
     --r-lg: 16px;
@@ -133,20 +133,6 @@
 
   .nav-divider { width: 1px; height: 32px; background: rgba(255, 255, 255, 0.2); margin: 0 12px; }
 
-  .admin-area { display: flex; align-items: center; gap: 12px; }
-  .admin-info { text-align: right; }
-  .admin-name { color: #fff; font-size: 15px; font-weight: 600; line-height: 1.2; }
-  .admin-role { color: rgba(255, 255, 255, 0.7); font-size: 12px; }
-
-  .admin-avatar {
-    width: 42px; height: 42px;
-    background: var(--secondary);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px; color: #fff; flex-shrink: 0;
-  }
-
   .nav-badge {
     background-color: var(--error);
     color: #fff;
@@ -159,20 +145,68 @@
     display: inline-block;
   }
 
-  .logout-btn {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    transition: color 0.15s;
-    white-space: nowrap;
-    margin-left: 6px;
+  .navbar-accent {
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold-700) 0%, #f5c453 50%, var(--gold-700) 100%);
+    position: sticky;
+    top: var(--navbar-h);
+    z-index: 999;
   }
-  .logout-btn:hover { color: #fff; }
+
+  .profile-dropdown { position: relative; display: inline-block; cursor: pointer; }
+
+  .profile-trigger {
+    display: flex; align-items: center; gap: 10px;
+    padding: .45rem .75rem; border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    transition: background .2s, border-color .2s;
+  }
+  .profile-trigger:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .22); }
+
+  .nav-avatar {
+    width: 40px; height: 40px;
+    background: var(--secondary);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .72rem; font-weight: 700; color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
+    flex-shrink: 0;
+  }
+
+  .owner-name { color: #fff; font-size: .9rem; font-weight: 600; display: block; line-height: 1.2; }
+  .owner-role { color: rgba(255, 255, 255, .6); font-size: .72rem; display: block; line-height: 1; margin-top: 2px; }
+
+  .profile-chevron { color: rgba(255, 255, 255, .6); margin-left: 2px; transition: transform .2s; }
+  .profile-dropdown:hover .profile-chevron { transform: rotate(180deg); }
+
+  .dropdown-content {
+    display: none; position: absolute; right: 0; top: 100%;
+    background-color: #fff; min-width: 210px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    z-index: 1000; border-radius: 12px; margin-top: 10px;
+    padding: 6px 0; border: 1px solid #e8e8e8;
+  }
+  .profile-dropdown:hover .dropdown-content { display: block; }
+
+  .dropdown-header { padding: .75rem 1rem .55rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
+  .dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: var(--primary); }
+  .dropdown-header .d-email { font-size: .75rem; color: #6b7c6e; margin-top: 2px; }
+
+  .dropdown-content a {
+    color: #333; padding: .6rem 1rem; text-decoration: none;
+    display: flex; align-items: center; gap: .65rem;
+    font-size: .88rem; transition: background .15s;
+  }
+  .dropdown-content a .material-symbols-outlined { font-size: 16px; color: #6b7c6e; }
+  .dropdown-content a:hover { background-color: #faf7ef; color: var(--primary); }
+  .dropdown-content a:hover .material-symbols-outlined { color: var(--primary); }
+
+  .dropdown-content a.logout-item { color: #ba1a1a; }
+  .dropdown-content a.logout-item .material-symbols-outlined { color: #ba1a1a; }
+  .dropdown-content a.logout-item:hover { background-color: #fff5f5; }
 
   /* ── CONTENT ── */
-  .content { max-width: 1240px; margin: 0 auto; padding: 40px 24px 60px; flex: 1; width: 100%; }
+  .content { max-width: 1240px; margin: 0 auto; padding: 32px 24px 60px; flex: 1; width: 100%; }
 
   .back-link {
     display: inline-flex;
@@ -217,6 +251,22 @@
     gap: 8px;
   }
 
+  /* ── META BAR ── */
+  .meta-bar {
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--surface-variant);
+    border-radius: var(--r-lg);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+    padding: 18px 28px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 5px; min-width: 120px; }
+  .meta-label { font-size: 13px; color: var(--outline); font-weight: 600; }
+  .meta-value { font-size: 16px; font-weight: 700; color: var(--on-surface); word-break: break-word; }
+
   /* ── CARD ── */
   .card {
     background: var(--surface-container-lowest);
@@ -254,22 +304,6 @@
 
   .divider { border: none; border-top: 1px solid var(--surface-variant); margin: 22px 0; }
 
-  /* ── META BAR (แถบสรุปด้านบน) ── */
-  .meta-bar {
-    background: var(--surface-container-lowest);
-    border: 1px solid var(--surface-variant);
-    border-radius: var(--r-lg);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
-    padding: 20px 28px;
-    margin-bottom: 24px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 28px;
-  }
-  .meta-item { display: flex; flex-direction: column; gap: 5px; min-width: 120px; }
-  .meta-label { font-size: 13px; color: var(--outline); font-weight: 600; }
-  .meta-value { font-size: 16px; font-weight: 700; color: var(--on-surface); word-break: break-word; }
-
   /* ── 2-COLUMN LAYOUT ── */
   .layout-grid {
     display: grid;
@@ -304,8 +338,9 @@
     width: 100%; height: 100%;
     object-fit: cover;
   }
-  .hs-thumb-wrap { position: relative; width: 100%; height: 100%; }
-  .hs-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hs-thumb-wrap { position: relative; width: 100%; height: 100%; overflow: hidden; }
+  .hs-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+  .hs-thumb-wrap:hover img { transform: scale(1.05); }
   .hs-thumb-more-overlay {
     position: absolute; inset: 0;
     background: rgba(0,0,0,0.5);
@@ -324,7 +359,7 @@
   .hs-card-body { padding: 22px; }
   .hs-block h3 { color: var(--primary); font-size: 18px; font-weight: 700; margin-bottom: 4px; }
   .hs-address { font-size: 14px; color: var(--outline); margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
-  
+
   .hs-desc-box {
     background: var(--surface-container-lowest);
     border: 1px solid var(--surface-variant);
@@ -402,6 +437,7 @@
   @media (max-width: 900px) {
     .layout-grid { grid-template-columns: 1fr; }
     .side-col { position: static; }
+    .hero-cover { height: 240px; }
   }
 
   @media (max-width: 768px) {
@@ -412,66 +448,6 @@
     .footer { flex-direction: column; gap: 6px; text-align: center; }
     .hs-gallery { height: 200px; }
   }
-
-  .navbar-accent {
-  height: 4px;
-  background: linear-gradient(90deg, var(--action-orange) 0%, #f5c453 50%, var(--action-orange) 100%);
-  position: sticky;
-  top: var(--navbar-h);   /* ต้องเท่ากับความสูงของ navbar หน้านั้นๆ */
-  z-index: 999;
-}
-
-.profile-dropdown { position: relative; display: inline-block; cursor: pointer; }
-
-.profile-trigger {
-    display: flex; align-items: center; gap: 10px;
-    padding: .45rem .75rem; border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, .12);
-    transition: background .2s, border-color .2s;
-}
-.profile-trigger:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .22); }
-
-.nav-avatar {
-    width: 40px; height: 40px;
-    background: var(--action-orange); /* เปลี่ยนสีตามธีมหน้านั้น */
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .72rem; font-weight: 700; color: #fff;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
-    flex-shrink: 0;
-}
-
-.owner-name { color: #fff; font-size: .9rem; font-weight: 600; display: block; line-height: 1.2; }
-.owner-role { color: rgba(255, 255, 255, .6); font-size: .72rem; display: block; line-height: 1; margin-top: 2px; }
-
-.profile-chevron { color: rgba(255, 255, 255, .6); margin-left: 2px; transition: transform .2s; }
-.profile-dropdown:hover .profile-chevron { transform: rotate(180deg); }
-
-.dropdown-content {
-    display: none; position: absolute; right: 0; top: 100%;
-    background-color: #fff; min-width: 210px;
-    box-shadow: 0 8px 32px rgba(0,0,0,.18);
-    z-index: 1000; border-radius: 12px; margin-top: 10px;
-    padding: 6px 0; border: 1px solid #e8e8e8;
-}
-.profile-dropdown:hover .dropdown-content { display: block; }
-
-.dropdown-header { padding: .75rem 1rem .55rem; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
-.dropdown-header .d-name { font-size: .88rem; font-weight: 700; color: var(--primary); } /* เปลี่ยนสีตามธีม */
-.dropdown-header .d-email { font-size: .75rem; color: #6b7c6e; margin-top: 2px; }
-
-.dropdown-content a {
-    color: #333; padding: .6rem 1rem; text-decoration: none;
-    display: flex; align-items: center; gap: .65rem;
-    font-size: .88rem; transition: background .15s;
-}
-.dropdown-content a .material-symbols-outlined { font-size: 16px; color: #6b7c6e; }
-.dropdown-content a:hover { background-color: #faf7ef; color: var(--primary); }
-.dropdown-content a:hover .material-symbols-outlined { color: var(--primary); }
-
-.dropdown-content a.logout-item { color: #ba1a1a; }
-.dropdown-content a.logout-item .material-symbols-outlined { color: #ba1a1a; }
-.dropdown-content a.logout-item:hover { background-color: #fff5f5; }
 </style>
 </head>
 <body>
@@ -500,33 +476,33 @@
     <a href="/admin/homestay" class="nav-link active">
       <span class="material-symbols-outlined">home</span>
       จัดการโฮมสเตย์
-      <span th:if="${pendingCount != null and pendingCount > 0}" 
-            class="nav-badge" 
+      <span th:if="${pendingCount != null and pendingCount > 0}"
+            class="nav-badge"
             th:text="${pendingCount}">0</span>
     </a>
   </div>
 
   <div class="nav-divider"></div>
 
- <div class="profile-dropdown">
-  <div class="profile-trigger">
-    <div class="nav-avatar" th:text="${session.loggedInAdmin?.username != null and #strings.length(session.loggedInAdmin.username) >= 2} ? ${#strings.substring(session.loggedInAdmin.username,0,2).toUpperCase()} : (${session.loggedInAdmin?.username} ?: 'AD')">AD</div>
-    <div>
-      <span class="owner-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</span>
-      <span class="owner-role">Super Admin</span>
+  <div class="profile-dropdown">
+    <div class="profile-trigger">
+      <div class="nav-avatar" th:text="${session.loggedInAdmin?.username != null and #strings.length(session.loggedInAdmin.username) >= 2} ? ${#strings.substring(session.loggedInAdmin.username,0,2).toUpperCase()} : (${session.loggedInAdmin?.username} ?: 'AD')">AD</div>
+      <div>
+        <span class="owner-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</span>
+        <span class="owner-role">Super Admin</span>
+      </div>
+      <span class="material-symbols-outlined profile-chevron" style="font-size:16px;">expand_more</span>
     </div>
-    <span class="material-symbols-outlined profile-chevron" style="font-size:16px;">expand_more</span>
-  </div>
-  <div class="dropdown-content">
-    <div class="dropdown-header">
-      <div class="d-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
-      <div class="d-email" th:text="'Super Admin'">Super Admin</div>
+    <div class="dropdown-content">
+      <div class="dropdown-header">
+        <div class="d-name" th:text="${session.loggedInAdmin?.username ?: 'Administrator'}">Administrator</div>
+        <div class="d-email" th:text="'Super Admin'">Super Admin</div>
+      </div>
+      <a href="/admin/logout" class="logout-item">
+        <span class="material-symbols-outlined" style="font-size:16px;">logout</span> ออกจากระบบ
+      </a>
     </div>
-    <a href="/admin/logout" class="logout-item">
-      <span class="material-symbols-outlined" style="font-size:16px;">logout</span> ออกจากระบบ
-    </a>
   </div>
-</div>
 </header>
 <div class="navbar-accent"></div>
 
@@ -581,26 +557,7 @@
     <!-- ═══ MAIN COLUMN ═══ -->
     <div class="main-col">
 
-      <!-- ข้อมูลเจ้าของ -->
-      <div class="card">
-        <div class="card-title">
-          <span class="material-symbols-outlined">person</span> ข้อมูลเจ้าของ
-        </div>
-        <div class="info-grid">
-          <div class="info-field"><label>ชื่อ-นามสกุล</label><div class="value" th:text="${h.firstname + ' ' + h.lastname}">-</div></div>
-          <div class="info-field"><label>อีเมล</label><div class="value" th:text="${h.email}">-</div></div>
-          <div class="info-field"><label>เบอร์โทร</label><div class="value" th:text="${h.phone}">-</div></div>
-        </div>
-        <hr class="divider">
-        <div class="info-grid">
-          <div class="info-field"><label>ธนาคาร</label><div class="value" th:text="${h.bankName}">-</div></div>
-          <div class="info-field"><label>ชื่อบัญชี</label><div class="value" th:text="${h.accountName}">-</div></div>
-          <div class="info-field"><label>เลขที่บัญชี</label><div class="value" th:text="${h.accountNumber}">-</div></div>
-          <div class="info-field"><label>สาขา</label><div class="value" th:text="${h.bankBranch}">-</div></div>
-        </div>
-      </div>
-
-      <!-- ข้อมูลโฮมสเตย์ -->
+      <!-- ① ข้อมูลโฮมสเตย์ — มาก่อน เพราะรูป/รายละเอียดสถานที่คือสิ่งที่ต้องตรวจสอบก่อน -->
       <div class="card">
         <div class="card-title">
           <span class="material-symbols-outlined">home</span> ข้อมูลโฮมสเตย์
@@ -614,15 +571,15 @@
           <div class="hs-gallery"
                th:if="${hs.images != null and !hs.images.isEmpty()}"
                th:with="imgList=${#strings.arraySplit(hs.images, ',')}, imgCount=${imgList.length}">
-            <img class="hs-main-img" th:if="${imgCount > 0}" th:src="${imgList[0]}" alt="homestay image" onerror="this.style.display='none'"/>
+            <img class="hs-main-img" th:if="${imgCount > 0}" th:src="${imgList[0]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
             <div class="hs-thumb-wrap" th:if="${imgCount > 1}">
-              <img th:src="${imgList[1]}" alt="homestay image" onerror="this.style.display='none'"/>
+              <img th:src="${imgList[1]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
             </div>
             <div class="hs-thumb-wrap" th:if="${imgCount > 2}">
-              <img th:src="${imgList[2]}" alt="homestay image" onerror="this.style.display='none'"/>
+              <img th:src="${imgList[2]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
             </div>
             <div class="hs-thumb-wrap" th:if="${imgCount > 3}">
-              <img th:src="${imgList[3]}" alt="homestay image" onerror="this.style.display='none'"/>
+              <img th:src="${imgList[3]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
               <div class="hs-thumb-more-overlay" th:if="${imgCount > 4}" th:text="'+' + (${imgCount} - 4)"></div>
             </div>
           </div>
@@ -658,6 +615,25 @@
               </table>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- ② ข้อมูลเจ้าของ — มาหลังจากดูตัวสถานที่จริงแล้ว -->
+      <div class="card">
+        <div class="card-title">
+          <span class="material-symbols-outlined">person</span> ข้อมูลเจ้าของ
+        </div>
+        <div class="info-grid">
+          <div class="info-field"><label>ชื่อ-นามสกุล</label><div class="value" th:text="${h.firstname + ' ' + h.lastname}">-</div></div>
+          <div class="info-field"><label>อีเมล</label><div class="value" th:text="${h.email}">-</div></div>
+          <div class="info-field"><label>เบอร์โทร</label><div class="value" th:text="${h.phone}">-</div></div>
+        </div>
+        <hr class="divider">
+        <div class="info-grid">
+          <div class="info-field"><label>ธนาคาร</label><div class="value" th:text="${h.bankName}">-</div></div>
+          <div class="info-field"><label>ชื่อบัญชี</label><div class="value" th:text="${h.accountName}">-</div></div>
+          <div class="info-field"><label>เลขที่บัญชี</label><div class="value" th:text="${h.accountNumber}">-</div></div>
+          <div class="info-field"><label>สาขา</label><div class="value" th:text="${h.bankBranch}">-</div></div>
         </div>
       </div>
 
@@ -710,6 +686,19 @@
   <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
   <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
 </footer>
+
+<script>
+  // รูป placeholder ที่ใช้แทนรูปที่โหลดไม่ขึ้น (path ผิด/ไฟล์หาย)
+  // แทนที่จะปล่อยให้ browser โชว์ไอคอน broken-image ตัวใหญ่แปลกๆ
+  window.HS_IMG_FALLBACK =
+    "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(
+      "<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'>" +
+      "<rect width='100%' height='100%' fill='#e8f0e9'/>" +
+      "<text x='50%' y='50%' font-family='sans-serif' font-size='16' fill='#6c7a71' text-anchor='middle' dominant-baseline='middle'>ไม่พบรูปภาพ</text>" +
+      "</svg>"
+    );
+</script>
 
 </body>
 </html>

@@ -15,6 +15,7 @@ import com.example.miniproject.repository.Member.ActivitypostRepository;
 import com.example.miniproject.repository.Homestay.HomestayRepository;
 import com.example.miniproject.repository.Member.TourRepository;
 
+
 @Service
 public class SearchInfoService {
 
@@ -28,6 +29,9 @@ public class SearchInfoService {
 
     @Autowired
     private HomestayRepository homestayRepository;
+
+    @Autowired
+    private BookingService bookingService;
 
     /**
      * ดึงข้อมูลทัวร์ตาม ID ของผู้จัดการชุมชน
@@ -173,6 +177,24 @@ public class SearchInfoService {
         } catch (Exception e) {
             log.warn("parseDate failed, dateStr={}", dateStr, e);
             return null;
+        }
+    }
+
+        public long countAllActivities() {
+        try {
+            return activitypostRepository.count();
+        } catch (Exception e) {
+            log.error("countAllActivities failed", e);
+            return 0;
+        }
+    }
+
+    public long countDistinctTribes() {
+        try {
+            return tourRepository.countDistinctTribeid();
+        } catch (Exception e) {
+            log.error("countDistinctTribes failed", e);
+            return 0;
         }
     }
 }

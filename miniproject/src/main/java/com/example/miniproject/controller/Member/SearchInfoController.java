@@ -19,6 +19,7 @@ import com.example.miniproject.entity.Activitypost;
 import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.repository.Member.ReviewRepository;
+import com.example.miniproject.service.Member.BookingService;
 import com.example.miniproject.service.Member.SearchInfoService;
 import com.example.miniproject.service.Member.TourService;
 import java.util.stream.Collectors;
@@ -38,7 +39,8 @@ public class SearchInfoController {
     @Autowired
     private TourService tourService;
 
-       
+    @Autowired
+    private BookingService bookingService;
 
     @GetMapping
     public String searchPage(
@@ -129,6 +131,9 @@ public class SearchInfoController {
         model.addAttribute("tribeId",       tribeId); 
         model.addAttribute("tribeName", tribeName);
         model.addAttribute("tribeOptions", TribeCode.values());
+                // ตัวเลขภาพรวมสำหรับ hero stats — นับจาก DB จริงทุกครั้ง ไม่ผูกกับผลค้นหา/filter ปัจจุบัน
+        model.addAttribute("heroTribeCount",    searchInfoService.countDistinctTribes());
+        model.addAttribute("heroActivityCount", searchInfoService.countAllActivities());
         model.addAttribute("tourTypes",     tourService.getAllTourTypes());
 
         // นับจำนวนนับตามกลุ่มข้อมูลที่ดึงได้จริงของแท็บนั้นๆ
@@ -151,6 +156,27 @@ public class SearchInfoController {
 
         Map<String, String> actRating      = new HashMap<>();
         Map<String, Long>   actReviewCount = new HashMap<>();
+
+        // ── เช็คห้องว่าง (เฉพาะตอนมีวันที่ค้นหาจริง) ──────────────
+        if (startDate != null && !startDate.isBlank()
+                && endDate != null && !endDate.isBlank()
+                && !homestays.isEmpty()) {
+            try {
+                java.time.LocalDate checkin  = java.time.LocalDate.parse(startDate);
+                java.time.LocalDate checkout = java.time.LocalDate.parse(endDate);
+
+                List<Integer> homestayIds = homestays.stream()
+                        .map(Homestay::getHomestayid)
+                        .collect(Collectors.toList());
+
+                Map<Integer, Boolean> hsAvailability =
+                        bookingService.checkAvailabilityForHomestays(homestayIds, checkin, checkout);
+
+                model.addAttribute("hsAvailability", hsAvailability);
+            } catch (java.time.format.DateTimeParseException e) {
+                log.debug("Invalid date format for availability check: {}", e.getMessage());
+            }
+        }
 
         // Homestay rating
         Map<Integer, String> hsRating      = new HashMap<>();

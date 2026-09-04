@@ -687,12 +687,18 @@ img { display: block; }
   font-size: 16px; font-weight: 700; color: var(--neutral-800);
   line-height: 1.4; margin: 0;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.fcard-loc {
+}.fcard-loc {
   font-size: 13px; color: var(--neutral-500);
-  display: flex; align-items: center; gap: 4px; margin: 0;
+  display: flex; align-items: flex-start; gap: 4px; margin: 0;
 }
-.fcard-loc svg { width: 12px; height: 12px; flex-shrink: 0; }
+.fcard-loc svg { width: 12px; height: 12px; flex-shrink: 0; margin-top: 2px; }
+.fcard-loc span {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .seats-full-text { color: #b3462e; font-weight: 700; font-size: 13px; }
 
@@ -818,10 +824,17 @@ img { display: block; }
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .card-loc {
-  font-size: 14px; color: var(--neutral-500); margin-bottom: 11px;
-  display: flex; align-items: center; gap: 4px;
+  font-size: 13px; color: var(--neutral-500);
+  display: flex; align-items: flex-start; gap: 4px; margin: 0;
 }
-.card-loc svg { width: 13px; height: 13px; flex-shrink: 0; }
+.card-loc svg { width: 12px; height: 12px; flex-shrink: 0; margin-top: 2px; }
+.card-loc span {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
 .card-tag {
   background: var(--neutral-100); color: var(--neutral-600);
@@ -1031,4 +1044,9 @@ img { display: block; }
   white-space: nowrap;
   line-height: 1;
   margin-left: -10px; /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
+}
+
+.card-badge.badge-full,
+.fcard-badge.badge-full {
+  border: 2px solid #ffffff;
 }

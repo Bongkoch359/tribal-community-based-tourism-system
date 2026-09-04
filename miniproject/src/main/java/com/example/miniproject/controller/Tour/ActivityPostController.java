@@ -41,9 +41,12 @@ public class ActivityPostController {
 
     // ─── ฟังก์ชันช่วยบันทึกไฟล์รูปภาพลงดิสก์ แล้วคืน path คั่นด้วย "||" ───
     private String saveImages(List<MultipartFile> images) throws IOException {
+         System.out.println("UPLOAD DIR = " + UPLOAD_DIR);
         if (images == null || images.isEmpty()) {
             return null; // ไม่มีไฟล์ใหม่ -> ไม่แตะรูปเดิม
         }
+
+        System.out.println("จำนวนไฟล์ = " + images.size());
 
         File dir = new File(UPLOAD_DIR);
         if (!dir.exists()) {

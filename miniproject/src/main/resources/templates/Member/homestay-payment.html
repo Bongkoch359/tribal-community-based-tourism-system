@@ -468,13 +468,13 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
 </div>
 
 <!-- NAVBAR -->
-<nav class="top-navbar">
+<nav class="navbar">
     <a href="/search" class="navbar-brand">
         <div class="brand-logo">
             <img th:src="@{/images/logo5.png}" alt="Logo">
         </div>
         <span class="brand-text">ชนเผ่าพาเที่ยว</span>
-        </div>
+        
     </a>
 
     <div class="nav-links">
@@ -588,13 +588,6 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
     </div>
 </nav>
 
-<!-- BREADCRUMB -->
-<div class="breadcrumb">
-    <a href="/member/bookings/list">การจองของฉัน</a>
-    &nbsp;›&nbsp;
-    <a th:href="@{/member/bookings/{id}(id=${payment.bookingId})}">รายละเอียดการจอง</a>
-    &nbsp;›&nbsp; ชำระเงิน
-</div>
 
 <!-- STEPS -->
 <div class="steps-wrap">
@@ -643,7 +636,7 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
     <div class="deadline-wrap">
         <div class="deadline-icon">📅</div>
         <div style="flex:1;">
-            <div class="deadline-label">กรุณาชำระเงินก่อนวันที่</div>
+            <div class="deadline-label">กรุณาชำระเงินภายในวันที่และเวลา</div>
            <div class="deadline-date"
      th:text="${payment.paymentDeadline != null ?
         #dates.format(payment.paymentDeadline,'dd/MM/yyyy HH:mm') : '-'}">-</div>

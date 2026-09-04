@@ -101,7 +101,7 @@
             <div class="item-icon" style="background:#d8f3dc;">🌿</div>
             <div class="item-info">
               <strong>สมาชิกทั่วไป</strong>
-              <span>จองกิจกรรม ทัวร์ และที่พัก</span>
+              <span>ดูโพสต์กิจกรรมจองทัวร์ และที่พัก</span>
             </div>
             <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </a>
@@ -117,7 +117,7 @@
             <div class="item-icon" style="background:#dbeafe;">🏠</div>
             <div class="item-info">
               <strong>เจ้าของโฮมสเตย์</strong>
-              <span>จัดการที่พักของคุณ</span>
+              <span>จัดการที่พักโฮมสเตย์</span>
             </div>
             <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </a>
@@ -315,24 +315,30 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
-          </svg>
-        </div>
-        <div class="stat-text"><strong>7+ ชนเผ่า</strong><span>ในภาคเหนือ</span></div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-        </div>
-        <div class="stat-text"><strong>20+ กิจกรรม</strong><span>ให้เลือกสัมผัส</span></div>
-      </div>
+   <div class="hero-stats">
+  <div class="stat-item">
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+      </svg>
     </div>
+    <div class="stat-text">
+  <strong>8 ชนเผ่า</strong>
+  <span>ในภาคเหนือ</span>
+</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+      </svg>
+    </div>
+    <div class="stat-text">
+      <strong th:text="${heroActivityCount} + '+ กิจกรรม'">20+ กิจกรรม</strong>
+      <span>ให้เลือกสัมผัส</span>
+    </div>
+  </div>
+</div>
   </div>
 
   <div class="hero-dots" id="heroDots"></div>
@@ -535,14 +541,13 @@
       <!-- Activities -->
       <th:block th:each="a,iterStat : ${activities}" th:if="${iterStat.index < 4}">
         <a th:href="@{/member/activity/{id}(id=${a.activityid})}" class="fcard" data-type="activity">
-          <div class="fcard-img">
-            <img th:src="${a.images}"
-                 src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop"
-                 onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop'"
-                 alt="" loading="lazy"/>
-            <span class="fcard-badge badge-activity">กิจกรรม</span>
-
-          </div>
+           <div class="fcard-img">
+  <img th:with="imgs=${a.images != null ? #strings.arraySplit(a.images, '||') : null}"
+       th:src="${imgs != null and imgs.length > 0} ? @{${imgs[0]}} : 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop'"
+       onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop'"
+       alt="" loading="lazy"/>
+  <span class="fcard-badge badge-activity">กิจกรรม</span>
+</div>
           <div class="fcard-body">
             <p class="fcard-name" th:text="${a.title}">ชื่อกิจกรรม</p>
             <p class="fcard-loc">
@@ -578,6 +583,11 @@
            th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
            alt="ภาพทัวร์" loading="lazy"/>
       <span class="fcard-badge badge-tour">ทัวร์ชุมชน</span>
+      <span th:if="${t.tribeid != null}"
+            class="fcard-badge"
+            style="left:14px; right:auto; top:14px; background:#e2f0e5; color:#1c4026;"
+            th:text="${T(com.example.miniproject.model.TribeCode).labelOf(t.tribeid)}">
+      </span>
     </div>
 
     <div class="fcard-body">
@@ -624,7 +634,7 @@
 </th:block>
 
 
-      <!-- Homestays -->
+            <!-- Homestays -->
       <th:block th:each="h,iterStat : ${homestays}" th:if="${iterStat.index < 4}">
        <a th:href="@{/homestay/{id}(id=${h.homestayid}, checkin=${startDate}, checkout=${endDate}, guest=${numGuest})}" class="fcard" data-type="homestay">
           <div class="fcard-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
@@ -632,6 +642,10 @@
      th:src="@{${imgs[0]}}"
      alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="fcard-badge badge-homestay">โฮมสเตย์</span>
+
+            <!-- ✅ เพิ่มบรรทัดนี้ -->
+            <span th:if="${hsAvailability != null and hsAvailability[h.homestayid] == false}"
+                  class="fcard-badge badge-full">ห้องเต็ม</span>
 
           </div>
           <div class="fcard-body">
@@ -704,12 +718,12 @@
     <div class="grid">
       <th:block th:each="a : ${activities}">
         <div class="card">
-          <div class="card-img">
-            <img th:src="${a.images}"
-                 src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=380&fit=crop"
-                 onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=380&fit=crop'"
-                 alt="" loading="lazy"/>
-            <span class="card-badge badge-activity">กิจกรรม</span>
+        <div class="card-img">
+  <img th:with="imgs=${a.images != null ? #strings.arraySplit(a.images, '||') : null}"
+       th:src="${imgs != null and imgs.length > 0} ? @{${imgs[0]}} : 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=380&fit=crop'"
+       onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=380&fit=crop'"
+       alt="" loading="lazy"/>
+  <span class="card-badge badge-activity">กิจกรรม</span>
 
           </div>
           <div class="card-body">
@@ -774,18 +788,24 @@
 
       <div class="card">
 
-        <div class="fcard-img">
+       <div class="fcard-img">
 
-          <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
-               th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
-               alt="ภาพทัวร์"
-               loading="lazy"/>
+  <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
+       th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
+       alt="ภาพทัวร์"
+       loading="lazy"/>
 
-          <span class="card-badge badge-tour">
-            ทัวร์ชุมชน
-          </span>
+  <span class="card-badge badge-tour">
+    ทัวร์ชุมชน
+  </span>
 
-        </div>
+  <span th:if="${t.tribeid != null}"
+        class="card-badge"
+        style="left:14px; right:auto; top:14px; background:#e2f0e5; color:#1c4026;"
+        th:text="${T(com.example.miniproject.model.TribeCode).labelOf(t.tribeid)}">
+  </span>
+
+</div>
 
         <div class="card-body">
            <div class="fcard-rating" style="margin-bottom:6px;">
@@ -867,6 +887,8 @@
      th:src="@{${imgs[0]}}"
      alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="card-badge badge-homestay">โฮมสเตย์</span>
+             <span th:if="${hsAvailability != null and hsAvailability[h.homestayid] == false}"
+                  class="card-badge badge-full">ห้องเต็ม</span>
 
           </div>
           <div class="card-body">

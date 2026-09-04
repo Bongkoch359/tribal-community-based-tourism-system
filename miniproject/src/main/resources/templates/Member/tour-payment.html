@@ -121,6 +121,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
   color: #fff; margin-right: auto;
   margin-left: 20px;
   display: flex; align-items: center; gap: 0px; flex-shrink: 0;
+  text-decoration: none;
 }
     
 .brand-logo{
@@ -154,6 +155,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
   white-space: nowrap;
   display: flex; align-items: center; gap: 7px;
   position: relative;
+  text-decoration: none;
 }
 .nav-link svg { width: 17px; height: 17px; opacity: .75; flex-shrink: 0; }
 .nav-link:hover { background: rgba(255,255,255,0.10); color: var(--amber-400); }
@@ -522,10 +524,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
         <div class="brand-logo">
             <img th:src="@{/images/logo5.png}" src="../static/images/logo5.png" alt="Logo">
         </div>
-        <div class="brand-name">
-            <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนเผ่า</span>
-            <span class="brand-name-line2">Tribal Community Tourism</span>
-        </div>
+        <span class="brand-text">ชนเผ่าพาเที่ยว</span>
     </a>
 
     <div class="nav-links">
@@ -606,13 +605,6 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     </div>
 </nav>
 
-<!-- BREADCRUMB -->
-<div class="breadcrumb">
-    <a href="/member/bookings/list">การจองของฉัน</a> &nbsp;›&nbsp;
-    <a th:href="@{/member/bookings/detail/{id}(id=${payment.bookingId})}">รายละเอียดการจอง</a>
-    &nbsp;›&nbsp; ชำระเงิน
-</div>
-
 <!-- STEPS -->
 <div class="steps-wrap">
     <div class="steps">
@@ -666,7 +658,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     <div class="deadline-wrap">
         <div class="deadline-icon">📅</div>
         <div style="flex:1;">
-            <div class="deadline-label">กรุณาชำระเงินก่อนวันที่</div>
+            <div class="deadline-label">กรุณาชำระเงินภายในวันที่และเวลา</div>
           <div class="deadline-date"
      th:text="${payment.paymentDeadline != null ?
         #dates.format(payment.paymentDeadline,'dd/MM/yyyy HH:mm') : '-'}">-</div>
