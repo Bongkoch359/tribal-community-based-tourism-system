@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 /**
  * Tourschedule = "รอบ/วันที่เปิดทัวร์" ของ Tour หนึ่งตัว
  */
@@ -23,18 +27,18 @@ public class Tourschedule {
     private Date opendate;
 
     @Column(name = "enddate", nullable = false)
-private Date enddate;
+    private Date enddate;
 
     // ค่าที่ใช้: "เปิดรับจอง" | "เต็ม" | "ปิด"
     @Column(length = 20)
     private String status;
 
     @OneToMany(mappedBy = "tourschedule")
+    @Fetch(FetchMode.SUBSELECT)
     private List<Bookingtourdetail> bookingtourdetails = new ArrayList<>();
 
     public Tourschedule() {
     }
-    
 
     public String getScheduleid() {
         return scheduleid;
@@ -82,26 +86,25 @@ private Date enddate;
     // (ใส่ไว้ที่นี่เป็น convenience method เผื่อใช้ตรงๆ ใน view)
     // ─────────────────────────────────────────────────────────
     @Transient
-public int getBookedSeatsRaw() {
-    if (bookingtourdetails == null)
-        return 0;
-    return bookingtourdetails.stream()
-            .filter(b -> b.getBooking() != null
-                    && b.getBooking().getBookingStatus() != null
-                    && b.getBooking().getBookingStatus() != com.example.miniproject.entity.enums.BookingStatus.CANCEL)
-            .mapToInt(b -> {
-                int adult = b.getNumofadult() != null ? b.getNumofadult() : 0;
-                int child = b.getNumofchild() != null ? b.getNumofchild() : 0;
-                return adult + child;
-            })
-            .sum();
-}
-
+    public int getBookedSeatsRaw() {
+        if (bookingtourdetails == null)
+            return 0;
+        return bookingtourdetails.stream()
+                .filter(b -> b.getBooking() != null
+                        && b.getBooking().getBookingStatus() != null
+                        && b.getBooking()
+                                .getBookingStatus() != com.example.miniproject.entity.enums.BookingStatus.CANCEL)
+                .mapToInt(b -> {
+                    int adult = b.getNumofadult() != null ? b.getNumofadult() : 0;
+                    int child = b.getNumofchild() != null ? b.getNumofchild() : 0;
+                    return adult + child;
+                })
+                .sum();
+    }
 
     public Date getEnddate() {
         return enddate;
     }
-
 
     public void setEnddate(Date enddate) {
         this.enddate = enddate;

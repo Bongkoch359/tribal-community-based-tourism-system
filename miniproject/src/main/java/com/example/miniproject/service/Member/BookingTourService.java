@@ -255,12 +255,11 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         // ── 7. สร้าง Bookingtourdetail ──────────────────────
         Bookingtourdetailid detailId = new Bookingtourdetailid();
         detailId.setBookingid(booking.getBookingid());
-        detailId.settourid(tour.getTourid());
+        detailId.setScheduleid(schedule.getScheduleid());
 
         Bookingtourdetail detail = new Bookingtourdetail();
         detail.setId(detailId);
         detail.setBooking(booking);
-        detail.setTour(tour);
         detail.setTourschedule(schedule);
 
         detail.setNumofadult(adults);
@@ -456,12 +455,36 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         double grandTotal = subtotal + subtotalInsurance;
 
         // ── 7. อัปเดต detail ──────────────────────────────
-        detail.setTourschedule(newSchedule); // ⬅ผูกกับรอบใหม่ (สำคัญ — เดิมไม่เคยอัปเดต)
-        detail.setNumofadult(adults);
-        detail.setNumofchild(childs);
-        detail.setSubtotaltour(subtotal);
+        // ⚠️ scheduleid ตอนนี้เป็นส่วนหนึ่งของ primary key ของ Bookingtourdetail
+        // (bookingid + scheduleid) แล้ว — เปลี่ยนรอบทัวร์ (schedule) ของแถวที่
+        // persist ไปแล้ว ไม่สามารถทำได้ด้วยการ set แล้ว save() ตรงๆ (Hibernate
+        // ไม่อัปเดตคอลัมน์ที่เป็น PK) ถ้าเปลี่ยนวัน ต้องลบแถวเดิมแล้วสร้างแถวใหม่
+        // ด้วย id ชุดใหม่แทน
+        if (isChangingDate) {
+            bookingtourdetailRepository.delete(detail);
+            bookingtourdetailRepository.flush();
 
-        bookingtourdetailRepository.save(detail);
+            Bookingtourdetailid newDetailId = new Bookingtourdetailid();
+            newDetailId.setBookingid(booking.getBookingid());
+            newDetailId.setScheduleid(newSchedule.getScheduleid());
+
+            Bookingtourdetail newDetail = new Bookingtourdetail();
+            newDetail.setId(newDetailId);
+            newDetail.setBooking(booking);
+            newDetail.setTourschedule(newSchedule);
+            newDetail.setNumofadult(adults);
+            newDetail.setNumofchild(childs);
+            newDetail.setSubtotaltour(subtotal);
+
+            bookingtourdetailRepository.save(newDetail);
+        } else {
+            // วันเดิม ไม่ได้เปลี่ยนรอบ (PK ไม่เปลี่ยน) → อัปเดตค่าปกติได้เลย
+            detail.setNumofadult(adults);
+            detail.setNumofchild(childs);
+            detail.setSubtotaltour(subtotal);
+
+            bookingtourdetailRepository.save(detail);
+        }
 
         // ── 8. อัปเดต booking ─────────────────────────────
         booking.setNumofguest(totalGuest);
@@ -565,7 +588,6 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         "ยกเลิกโดยผู้จอง" + (reason != null && !reason.isBlank() ? ": " + reason.trim() : "")
     );
     bookingRepository.save(booking);
-
       
     }
 }

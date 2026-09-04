@@ -67,9 +67,6 @@ public class Tour {
     @JoinColumn(name = "managerid")
     private Communitymanager communitymanager;
 
-    @OneToMany(mappedBy = "tour")
-    private List<Bookingtourdetail> bookingTourDetails = new ArrayList<>();
-
     // 1 ทัวร์ ถูกโปรโมทได้หลายโพสกิจกรรม
     @OneToMany(mappedBy = "tour")
     private List<Activitypost> activityPosts = new ArrayList<>();
@@ -89,7 +86,6 @@ public class Tour {
     public void setOverallStatus(String overallStatus) {
         this.overallStatus = overallStatus;
     }
-
     public Tour() {
     }
 
@@ -171,14 +167,6 @@ public class Tour {
 
     public void setCommunitymanager(Communitymanager communitymanager) {
         this.communitymanager = communitymanager;
-    }
-
-    public List<Bookingtourdetail> getBookingTourDetails() {
-        return bookingTourDetails;
-    }
-
-    public void setBookingTourDetails(List<Bookingtourdetail> bookingTourDetails) {
-        this.bookingTourDetails = bookingTourDetails;
     }
 
     public TourType getTourtype() {

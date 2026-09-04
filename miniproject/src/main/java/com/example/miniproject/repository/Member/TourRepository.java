@@ -18,7 +18,10 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     // ที่นับทุกคน)
     long countByCommunitymanagerManagerid(String managerId);
 
-    //  นับทัวร์ "เผยแพร่/จองได้" เฉพาะของ manager คนนั้น (แทน
+    @Query("SELECT COUNT(DISTINCT t.tribeid) FROM Tour t WHERE t.tribeid IS NOT NULL")
+    long countDistinctTribeid();
+
+    // นับทัวร์ "เผยแพร่/จองได้" เฉพาะของ manager คนนั้น (แทน
     // countActivePublished() เดิมที่นับทุกคน)
     @Query("""
                 SELECT COUNT(t) FROM Tour t
@@ -34,7 +37,8 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     @Query("""
                 SELECT t.tourmname, COUNT(d)
                 FROM Tour t
-                LEFT JOIN t.bookingTourDetails d
+                LEFT JOIN t.tourSchedules sch
+                LEFT JOIN sch.bookingtourdetails d
                 LEFT JOIN d.booking b
                 WHERE t.communitymanager.managerid = :managerId
                 AND (b IS NULL OR b.bookingStatus <> com.example.miniproject.entity.enums.BookingStatus.CANCEL)
@@ -47,8 +51,7 @@ public interface TourRepository extends JpaRepository<Tour, String> {
 
     @Query("""
                 SELECT DISTINCT t FROM Tour t
-                LEFT JOIN FETCH t.bookingTourDetails bd
-                LEFT JOIN FETCH bd.booking b
+                LEFT JOIN FETCH t.tourSchedules sch
                 WHERE t.tourid = :tourid
             """)
     Optional<Tour> findByIdWithBookings(@Param("tourid") String tourid);
@@ -85,7 +88,7 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     List<Tour> search(@Param("keyword") String keyword,
             @Param("guests") Integer guests);
 
-    @Query("SELECT t FROM Tour t LEFT JOIN t.bookingTourDetails d GROUP BY t ORDER BY COUNT(d) DESC")
+    @Query("SELECT t FROM Tour t LEFT JOIN t.tourSchedules sch LEFT JOIN sch.bookingtourdetails d GROUP BY t ORDER BY COUNT(d) DESC")
     List<Tour> findTopToursByBookingCount(org.springframework.data.domain.Pageable pageable);
 
     @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerid ORDER BY t.tourmname ASC")
@@ -172,7 +175,8 @@ public interface TourRepository extends JpaRepository<Tour, String> {
                                 ELSE 0 END
                        ), 0)
                 FROM Tour t
-                LEFT JOIN t.bookingTourDetails d
+                LEFT JOIN t.tourSchedules sch
+                LEFT JOIN sch.bookingtourdetails d
                 LEFT JOIN d.booking b
                 GROUP BY t.tourid
             """)
@@ -194,7 +198,8 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     @Query("""
                 SELECT t.tourmname, COUNT(d)
                 FROM Tour t
-                LEFT JOIN t.bookingTourDetails d
+                LEFT JOIN t.tourSchedules sch
+                LEFT JOIN sch.bookingtourdetails d
                 LEFT JOIN d.booking b
                 WHERE b IS NULL OR b.bookingStatus <> com.example.miniproject.entity.enums.BookingStatus.CANCEL
                 GROUP BY t.tourid, t.tourmname
@@ -212,8 +217,4 @@ public interface TourRepository extends JpaRepository<Tour, String> {
 
     List<Tour> findByTribeid(Integer tribeid);
 
-
-    // นับจำนวนชนเผ่าที่มีทัวร์อยู่จริง (distinct) สำหรับ hero stats หน้า search
-    @Query("SELECT COUNT(DISTINCT t.tribeid) FROM Tour t WHERE t.tribeid IS NOT NULL")
-    long countDistinctTribeid();
 }

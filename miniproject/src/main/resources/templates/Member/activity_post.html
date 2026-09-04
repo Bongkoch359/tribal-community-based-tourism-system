@@ -1,955 +1,2053 @@
 <!DOCTYPE html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title th:text="${post.title} + ' — เรื่องราวชุมชน'">รายละเอียดกิจกรรม</title>
+    <title th:text="${post.title} + ' — เรื่องราวชุมชน'">รายละเอียดกิจกรรม</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Mitr:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Mitr:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-:root {
-    --pine-950: #0d2016;
-    --pine-900: #12301f;
-    --pine-800: #173d27;
-    --pine-700: #205234;
-    --pine-600: #2c6c44;
-    --pine-500: #3d8c5a;
-    --pine-400: #5aab77;
-    --moss-200: #bfe0c9;
-    --moss-100: #dcefe1;
+        :root {
+            --pine-950: #0d2016;
+            --pine-900: #12301f;
+            --pine-800: #173d27;
+            --pine-700: #205234;
+            --pine-600: #2c6c44;
+            --pine-500: #3d8c5a;
+            --pine-400: #5aab77;
+            --moss-200: #bfe0c9;
+            --moss-100: #dcefe1;
 
-    --turmeric-700: #93590f;
-    --turmeric-600: #b5741a;
-    --turmeric-500: #d68d28;
-    --turmeric-100: #f6e3bf;
+            --turmeric-700: #93590f;
+            --turmeric-600: #b5741a;
+            --turmeric-500: #d68d28;
+            --turmeric-100: #f6e3bf;
 
-    --clay-700: #833f1f;
-    --clay-600: #a4552a;
-    --clay-500: #c17640;
+            --clay-700: #833f1f;
+            --clay-600: #a4552a;
+            --clay-500: #c17640;
 
-    --ink-900: #211c14;
-    --ink-700: #4d4638;
-    --ink-500: #7d7461;
-    --ink-300: #ada38e;
+            --ink-900: #211c14;
+            --ink-700: #4d4638;
+            --ink-500: #7d7461;
+            --ink-300: #ada38e;
 
-    --paper: #fbf6ea;
-    --paper-warm: #f1e8d7;
-    --paper-line: #e6dac2;
-    --white: #ffffff;
+            --paper: #fbf6ea;
+            --paper-warm: #f1e8d7;
+            --paper-line: #e6dac2;
+            --white: #ffffff;
 
-    --shadow-sm: 0 1px 3px rgba(30,20,5,0.09), 0 1px 2px rgba(30,20,5,0.05);
-    --shadow-md: 0 10px 28px rgba(20,15,5,0.12), 0 2px 8px rgba(20,15,5,0.06);
-    --shadow-lg: 0 24px 64px rgba(15,25,15,0.20), 0 8px 20px rgba(15,25,15,0.10);
+            --shadow-sm: 0 1px 3px rgba(30, 20, 5, 0.09), 0 1px 2px rgba(30, 20, 5, 0.05);
+            --shadow-md: 0 10px 28px rgba(20, 15, 5, 0.12), 0 2px 8px rgba(20, 15, 5, 0.06);
+            --shadow-lg: 0 24px 64px rgba(15, 25, 15, 0.20), 0 8px 20px rgba(15, 25, 15, 0.10);
 
-    --r-sm: 8px;
-    --r-md: 14px;
-    --r-lg: 20px;
-    --r-xl: 28px;
+            --r-sm: 8px;
+            --r-md: 14px;
+            --r-lg: 20px;
+            --r-xl: 28px;
 
-    --navbar-h: 100px;
-}
+            --navbar-h: 100px;
+        }
 
-body {
-    font-family: 'Sarabun', sans-serif;
-    background: var(--paper);
-    color: var(--ink-900);
-    -webkit-font-smoothing: antialiased;
-}
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--paper);
+            color: var(--ink-900);
+            -webkit-font-smoothing: antialiased;
+        }
 
-a { text-decoration: none; color: inherit; }
-button { font-family: 'Sarabun', sans-serif; cursor: pointer; }
-img { display: block; }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-/* ============================================================
+        button {
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+        }
+
+        img {
+            display: block;
+        }
+
+        /* ============================================================
    TOP BAR / NAVBAR  (คงรูปแบบเดิมของระบบไว้)
 ============================================================ */
-.top-bar {
-    background: var(--pine-950);
-    padding: 8px 5%;
-    display: flex; align-items: center; justify-content: flex-end; gap: 20px;
-}
-.top-bar a {
-    color: rgba(255,255,255,.55); font-size: 14px; font-weight: 500;
-    transition: color .15s; display: flex; align-items: center; gap: 5px;
-}
-.top-bar a:hover { color: var(--turmeric-500); }
-.top-bar a svg { width: 14px; height: 14px; }
-.top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,.14); }
- .navbar {
-  background: var(--pine-900);
-  background-image: linear-gradient(180deg, var(--pine-800), var(--pine-900));
-  height: var(--navbar-h);
-  display: flex; align-items: center;
-  padding: 0 5% 0 3%; 
-  gap: 8px;
-  position: sticky; top: 0; z-index: 1000;
-  box-shadow: 0 3px 18px rgba(15,33,20,0.35);
-  border-bottom: 3px solid var(--turmeric-500);   /* เดิม: var(--amber-500) ไม่มีอยู่ */
-}
-       .navbar-brand {
-  color: #fff; margin-right: auto;
-  margin-left: 20px;
-  display: flex; align-items: center; gap: 0px; flex-shrink: 0;
-  text-decoration: none;   /* เพิ่ม */
-}
-    
-.brand-logo{
-    width:160px;
-    height:120px;
-    flex-shrink:0;
-}
+        .top-bar {
+            background: var(--pine-950);
+            padding: 8px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+        }
 
-.brand-logo img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-}
+        .top-bar a {
+            color: rgba(255, 255, 255, .55);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color .15s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-  .brand-text {
-  font-family: 'Sriracha', cursive;
-  color: var(--white);
-  font-size: 1.55rem;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  line-height: 1;
-  margin-left: -10px; /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
-}
+        .top-bar a:hover {
+            color: var(--turmeric-500);
+        }
 
-.nav-links { display: flex; align-items: center; gap: 2px; }
-.nav-link {
-    color: rgba(255,255,255,.80); font-size: 16px; font-weight: 600; padding: 10px 16px;
-    border-radius: var(--r-sm); transition: background .15s, color .15s; white-space: nowrap;
-    display: flex; align-items: center; gap: 7px;
-}
-.nav-link svg { width: 17px; height: 17px; opacity: .7; flex-shrink: 0; }
-.nav-link:hover { background: rgba(255,255,255,.10); color: #e4a53a; }
-.nav-divider { width: 1px; height: 32px; background: rgba(255,255,255,.14); margin: 0 8px; }
-.auth-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .top-bar a svg {
+            width: 14px;
+            height: 14px;
+        }
 
-.login-dropdown { position: relative; }
-.btn-login {
-    background: rgba(255,255,255,.10); border: 1.5px solid rgba(255,255,255,.25); color: #fff;
-    border-radius: 100px; padding: 9px 20px 9px 9px; font-size: 16px; font-weight: 600;
-    display: flex; align-items: center; gap: 9px; transition: background .15s, border-color .15s; white-space: nowrap;
-}
-.btn-login:hover { background: rgba(255,255,255,.18); border-color: var(--turmeric-500); }
-.btn-login .icon-user {
-    width: 34px; height: 34px; background: var(--turmeric-500); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-}
-.btn-login .icon-user svg { width: 17px; height: 17px; }
-.btn-login .chevron { width: 15px; height: 15px; transition: transform .2s; flex-shrink: 0; }
-.login-dropdown:hover .btn-login .chevron { transform: rotate(180deg); }
+        .top-bar-divider {
+            width: 1px;
+            height: 14px;
+            background: rgba(255, 255, 255, .14);
+        }
 
-.login-dropdown-menu {
-    display: none; position: absolute; top: calc(100% + 12px); right: 0;
-    background: var(--white); border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
-    min-width: 280px; z-index: 9999; border: 1px solid var(--paper-line); overflow: hidden;
-    animation: menuDrop .18s ease both;
-}
-@keyframes menuDrop { from { opacity: 0; transform: translateY(-8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.login-dropdown:hover .login-dropdown-menu { display: block; }
-.dropdown-top { padding: 18px 20px 14px; background: linear-gradient(135deg, var(--moss-100), #fff); border-bottom: 1px solid var(--paper-line); }
-.dropdown-top p { font-size: 15px; font-weight: 700; color: var(--ink-700); margin-bottom: 3px; }
-.dropdown-top span { font-size: 13px; color: var(--ink-300); }
-.dropdown-item {
-    display: flex; align-items: center; gap: 13px; padding: 14px 20px; font-size: 15px;
-    color: var(--ink-700); font-weight: 500; transition: background .12s, color .12s; border-bottom: 1px solid var(--paper-line);
-}
-.dropdown-item:last-child { border-bottom: none; }
-.dropdown-item:hover { background: var(--moss-100); color: var(--pine-800); }
-.item-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 19px; }
-.item-info { flex: 1; }
-.item-info strong { display: block; font-size: 15px; font-weight: 700; color: var(--ink-900); line-height: 1.2; }
-.item-info span { font-size: 13px; color: var(--ink-300); }
-.item-arrow { width: 17px; height: 17px; color: var(--ink-300); flex-shrink: 0; }
+        .navbar {
+            background: var(--pine-900);
+            background-image: linear-gradient(180deg, var(--pine-800), var(--pine-900));
+            height: var(--navbar-h);
+            display: flex;
+            align-items: center;
+            padding: 0 5% 0 3%;
+            gap: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 3px 18px rgba(15, 33, 20, 0.35);
+            border-bottom: 3px solid var(--turmeric-500);
+            /* เดิม: var(--amber-500) ไม่มีอยู่ */
+        }
 
-.btn-register {
-    background: linear-gradient(135deg, var(--turmeric-500), var(--turmeric-600)); border: none; color: #fff; border-radius: 100px; padding: 10px 22px;
-    font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;
-    transition: background .15s, transform .1s, box-shadow .15s; white-space: nowrap;
-    box-shadow: 0 3px 12px rgba(214,141,40,.40);
-}
-.btn-register:hover { box-shadow: 0 5px 20px rgba(214,141,40,.48); filter: brightness(1.04); }
-.btn-register:active { transform: scale(.97); }
-.btn-register svg { width: 17px; height: 17px; }
+        .navbar-brand {
+            color: #fff;
+            margin-right: auto;
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0px;
+            flex-shrink: 0;
+            text-decoration: none;
+            /* เพิ่ม */
+        }
 
-.user-menu-wrapper { position: relative; }
-.btn-user-menu {
-    display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.12);
-    border: 1.5px solid rgba(255,255,255,.25); border-radius: 50px; padding: 8px 18px 8px 8px;
-    cursor: pointer; color: white; transition: background .2s, border-color .2s;
-}
-.btn-user-menu:hover { background: rgba(255,255,255,.22); border-color: var(--turmeric-500); }
-.user-avatar {
-    width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--turmeric-500), var(--turmeric-600));
-    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; color: white;
-    flex-shrink: 0; border: 2px solid rgba(255,255,255,.3);
-}
-.user-info { display: flex; flex-direction: column; text-align: left; line-height: 1.25; }
-.user-name { font-size: 15px; font-weight: 700; color: white; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-role { font-size: 12px; color: rgba(255,255,255,.65); font-weight: 500; }
-.btn-user-menu .chevron { width: 15px; height: 15px; transition: transform .2s; flex-shrink: 0; }
-.user-menu-wrapper.open .btn-user-menu .chevron { transform: rotate(180deg); }
-.user-dropdown-menu {
-    display: none; position: absolute; top: calc(100% + 14px); right: 0; background: white; border-radius: var(--r-xl);
-    box-shadow: var(--shadow-lg); min-width: 240px; padding: 8px; z-index: 1000; border: 1px solid var(--paper-line);
-    animation: menuDrop .18s ease both;
-}
-.user-menu-wrapper.open .user-dropdown-menu { display: block; }
-.udrop-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: var(--r-md); color: var(--ink-700); transition: background .15s; cursor: pointer; }
-.udrop-item:hover { background: var(--moss-100); }
-.udrop-icon { width: 38px; height: 38px; border-radius: var(--r-sm); background: var(--paper-warm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.udrop-icon svg { width: 17px; height: 17px; color: var(--ink-700); }
-.udrop-item:hover .udrop-icon { background: var(--moss-200); }
-.udrop-item:hover .udrop-icon svg { color: var(--pine-700); }
-.udrop-text { flex: 1; }
-.udrop-text span { display: block; font-size: 15px; font-weight: 600; color: var(--ink-900); line-height: 1.2; }
-.udrop-text small { font-size: 12px; color: var(--ink-300); }
-.udrop-divider { height: 1px; background: var(--paper-line); margin: 8px 6px; }
-.udrop-logout:hover { background: #fdf1ee; }
-.udrop-icon-red { background: #fbe3db; }
-.udrop-icon-red svg { color: #b3401f; }
-.udrop-logout .udrop-text span { color: #b3401f; }
-.udrop-logout .udrop-text small { color: #cf6a4a; }
-.udrop-logout:hover .udrop-icon-red { background: #f6cfc1; }
+        .brand-logo {
+            width: 160px;
+            height: 120px;
+            flex-shrink: 0;
+        }
 
-/* ============================================================
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-text {
+            font-family: 'Sriracha', cursive;
+            color: var(--white);
+            font-size: 1.55rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            line-height: 1;
+            margin-left: -10px;
+            /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, .80);
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 16px;
+            border-radius: var(--r-sm);
+            transition: background .15s, color .15s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .nav-link svg {
+            width: 17px;
+            height: 17px;
+            opacity: .7;
+            flex-shrink: 0;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, .10);
+            color: #e4a53a;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 32px;
+            background: rgba(255, 255, 255, .14);
+            margin: 0 8px;
+        }
+
+        .auth-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .login-dropdown {
+            position: relative;
+        }
+
+        .btn-login {
+            background: rgba(255, 255, 255, .10);
+            border: 1.5px solid rgba(255, 255, 255, .25);
+            color: #fff;
+            border-radius: 100px;
+            padding: 9px 20px 9px 9px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            transition: background .15s, border-color .15s;
+            white-space: nowrap;
+        }
+
+        .btn-login:hover {
+            background: rgba(255, 255, 255, .18);
+            border-color: var(--turmeric-500);
+        }
+
+        .btn-login .icon-user {
+            width: 34px;
+            height: 34px;
+            background: var(--turmeric-500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-login .icon-user svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .btn-login .chevron {
+            width: 15px;
+            height: 15px;
+            transition: transform .2s;
+            flex-shrink: 0;
+        }
+
+        .login-dropdown:hover .btn-login .chevron {
+            transform: rotate(180deg);
+        }
+
+        .login-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            background: var(--white);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-lg);
+            min-width: 280px;
+            z-index: 9999;
+            border: 1px solid var(--paper-line);
+            overflow: hidden;
+            animation: menuDrop .18s ease both;
+        }
+
+        @keyframes menuDrop {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .login-dropdown:hover .login-dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-top {
+            padding: 18px 20px 14px;
+            background: linear-gradient(135deg, var(--moss-100), #fff);
+            border-bottom: 1px solid var(--paper-line);
+        }
+
+        .dropdown-top p {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink-700);
+            margin-bottom: 3px;
+        }
+
+        .dropdown-top span {
+            font-size: 13px;
+            color: var(--ink-300);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 14px 20px;
+            font-size: 15px;
+            color: var(--ink-700);
+            font-weight: 500;
+            transition: background .12s, color .12s;
+            border-bottom: 1px solid var(--paper-line);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: var(--moss-100);
+            color: var(--pine-800);
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 19px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-info strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink-900);
+            line-height: 1.2;
+        }
+
+        .item-info span {
+            font-size: 13px;
+            color: var(--ink-300);
+        }
+
+        .item-arrow {
+            width: 17px;
+            height: 17px;
+            color: var(--ink-300);
+            flex-shrink: 0;
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, var(--turmeric-500), var(--turmeric-600));
+            border: none;
+            color: #fff;
+            border-radius: 100px;
+            padding: 10px 22px;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background .15s, transform .1s, box-shadow .15s;
+            white-space: nowrap;
+            box-shadow: 0 3px 12px rgba(214, 141, 40, .40);
+        }
+
+        .btn-register:hover {
+            box-shadow: 0 5px 20px rgba(214, 141, 40, .48);
+            filter: brightness(1.04);
+        }
+
+        .btn-register:active {
+            transform: scale(.97);
+        }
+
+        .btn-register svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .user-menu-wrapper {
+            position: relative;
+        }
+
+        .btn-user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, .12);
+            border: 1.5px solid rgba(255, 255, 255, .25);
+            border-radius: 50px;
+            padding: 8px 18px 8px 8px;
+            cursor: pointer;
+            color: white;
+            transition: background .2s, border-color .2s;
+        }
+
+        .btn-user-menu:hover {
+            background: rgba(255, 255, 255, .22);
+            border-color: var(--turmeric-500);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--turmeric-500), var(--turmeric-600));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 17px;
+            color: white;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, .3);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            line-height: 1.25;
+        }
+
+        .user-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            max-width: 110px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .65);
+            font-weight: 500;
+        }
+
+        .btn-user-menu .chevron {
+            width: 15px;
+            height: 15px;
+            transition: transform .2s;
+            flex-shrink: 0;
+        }
+
+        .user-menu-wrapper.open .btn-user-menu .chevron {
+            transform: rotate(180deg);
+        }
+
+        .user-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 14px);
+            right: 0;
+            background: white;
+            border-radius: var(--r-xl);
+            box-shadow: var(--shadow-lg);
+            min-width: 240px;
+            padding: 8px;
+            z-index: 1000;
+            border: 1px solid var(--paper-line);
+            animation: menuDrop .18s ease both;
+        }
+
+        .user-menu-wrapper.open .user-dropdown-menu {
+            display: block;
+        }
+
+        .udrop-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--r-md);
+            color: var(--ink-700);
+            transition: background .15s;
+            cursor: pointer;
+        }
+
+        .udrop-item:hover {
+            background: var(--moss-100);
+        }
+
+        .udrop-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--r-sm);
+            background: var(--paper-warm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .udrop-icon svg {
+            width: 17px;
+            height: 17px;
+            color: var(--ink-700);
+        }
+
+        .udrop-item:hover .udrop-icon {
+            background: var(--moss-200);
+        }
+
+        .udrop-item:hover .udrop-icon svg {
+            color: var(--pine-700);
+        }
+
+        .udrop-text {
+            flex: 1;
+        }
+
+        .udrop-text span {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink-900);
+            line-height: 1.2;
+        }
+
+        .udrop-text small {
+            font-size: 12px;
+            color: var(--ink-300);
+        }
+
+        .udrop-divider {
+            height: 1px;
+            background: var(--paper-line);
+            margin: 8px 6px;
+        }
+
+        .udrop-logout:hover {
+            background: #fdf1ee;
+        }
+
+        .udrop-icon-red {
+            background: #fbe3db;
+        }
+
+        .udrop-icon-red svg {
+            color: #b3401f;
+        }
+
+        .udrop-logout .udrop-text span {
+            color: #b3401f;
+        }
+
+        .udrop-logout .udrop-text small {
+            color: #cf6a4a;
+        }
+
+        .udrop-logout:hover .udrop-icon-red {
+            background: #f6cfc1;
+        }
+
+        /* ============================================================
    BREADCRUMB
 ============================================================ */
-.breadcrumb {
-    background: var(--paper);
-    border-bottom: 1px solid var(--paper-line);
-    padding: .75rem 5%;
-    display: flex; align-items: center; gap: .45rem;
-    font-size: .82rem; color: var(--ink-500);
-}
-.breadcrumb a { color: var(--pine-700); font-weight: 600; }
-.breadcrumb a:hover { text-decoration: underline; }
-.breadcrumb span[aria-hidden] { color: var(--ink-300); }
+        .breadcrumb {
+            background: var(--paper);
+            border-bottom: 1px solid var(--paper-line);
+            padding: .75rem 5%;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            font-size: .82rem;
+            color: var(--ink-500);
+        }
 
-/* ============================================================
+        .breadcrumb a {
+            color: var(--pine-700);
+            font-weight: 600;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span[aria-hidden] {
+            color: var(--ink-300);
+        }
+
+        /* ============================================================
    PAGE HEADER
 ============================================================ */
-.page-wrap {
-    max-width: 1220px;
-    margin: auto;
-    padding: 1.8rem 1.2rem 3.2rem;
-}
+        .page-wrap {
+            max-width: 1220px;
+            margin: auto;
+            padding: 1.8rem 1.2rem 3.2rem;
+        }
 
-.btn-back {
-    display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
-    color: var(--ink-500); font-weight: 600; font-size: .88rem;
-    margin-bottom: 1.4rem; transition: color .15s, transform .15s;
-}
-.btn-back:hover { color: var(--pine-700); transform: translateX(-3px); }
-.btn-back svg { width: 15px; height: 15px; }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            text-decoration: none;
+            color: var(--ink-500);
+            font-weight: 600;
+            font-size: .88rem;
+            margin-bottom: 1.4rem;
+            transition: color .15s, transform .15s;
+        }
 
-.page-header { margin-bottom: 1.2rem; }
-.page-eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--clay-600); margin-bottom: .55rem;
-}
-.page-eyebrow::before { content: ''; width: 22px; height: 2px; background: var(--clay-500); border-radius: 2px; }
-.page-title {
-    font-family: 'Mitr', sans-serif; font-weight: 600; line-height: 1.24; color: var(--ink-900);
-    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
-    max-width: 34ch;
-    margin-bottom: .75rem;
-}
-.page-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; }
-.meta-item {
-    display: inline-flex; align-items: center; gap: .4rem;
-    font-size: .92rem; font-weight: 600; color: var(--ink-700);
-}
-.meta-item svg { width: 16px; height: 16px; color: var(--pine-600); flex-shrink: 0; }
-.meta-item.muted { color: var(--ink-500); font-weight: 500; }
-.meta-item.muted svg { color: var(--ink-300); }
-.meta-divider { color: var(--ink-300); font-size: .8rem; }
+        .btn-back:hover {
+            color: var(--pine-700);
+            transform: translateX(-3px);
+        }
 
-.meta-tribe-badge {
-    display: inline-flex; align-items: center; gap: .4rem;
-    background: var(--moss-100); color: var(--pine-800);
-    border: 1px solid var(--moss-200);
-    font-size: .82rem; font-weight: 700;
-    padding: .3rem .7rem; border-radius: 999px;
-}
-.meta-tribe-badge svg { width: 14px; height: 14px; color: var(--pine-600); flex-shrink: 0; }
+        .btn-back svg {
+            width: 15px;
+            height: 15px;
+        }
 
-/* ============================================================
-   GALLERY
+        .page-header {
+            margin-bottom: 1.2rem;
+        }
+
+        .page-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--clay-600);
+            margin-bottom: .55rem;
+        }
+
+        .page-eyebrow::before {
+            content: '';
+            width: 22px;
+            height: 2px;
+            background: var(--clay-500);
+            border-radius: 2px;
+        }
+
+        .page-title {
+            font-family: 'Mitr', sans-serif;
+            font-weight: 600;
+            line-height: 1.24;
+            color: var(--ink-900);
+            font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+            max-width: 34ch;
+            margin-bottom: .75rem;
+        }
+
+        .page-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .6rem 1rem;
+        }
+
+        .meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-size: .92rem;
+            font-weight: 600;
+            color: var(--ink-700);
+        }
+
+        .meta-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--pine-600);
+            flex-shrink: 0;
+        }
+
+        .meta-item.muted {
+            color: var(--ink-500);
+            font-weight: 500;
+        }
+
+        .meta-item.muted svg {
+            color: var(--ink-300);
+        }
+
+        .meta-divider {
+            color: var(--ink-300);
+            font-size: .8rem;
+        }
+
+        .meta-tribe-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: var(--moss-100);
+            color: var(--pine-800);
+            border: 1px solid var(--moss-200);
+            font-size: .82rem;
+            font-weight: 700;
+            padding: .3rem .7rem;
+            border-radius: 999px;
+        }
+
+        .meta-tribe-badge svg {
+            width: 14px;
+            height: 14px;
+            color: var(--pine-600);
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+   GALLERY — Carousel เต็มรูป เลื่อนทีละภาพ
 ============================================================ */
-.gallery-grid {
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 8px;
-    height: 260px;
-    border-radius: var(--r-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-md);
-    margin-bottom: 2.2rem;
-}
-.gallery-grid.gallery-grid--single { grid-template-columns: 1fr; height: 260px; }
+        .gallery-carousel {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2.2rem;
+            background: linear-gradient(155deg, var(--pine-800), var(--pine-950));
+        }
 
-.gallery-main { position: relative; overflow: hidden; cursor: pointer; background: linear-gradient(155deg, var(--pine-800), var(--pine-950)); }
-.gallery-main img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
-.gallery-main:hover img { transform: scale(1.045); }
-.gallery-expand-hint {
-    position: absolute; right: 14px; bottom: 14px;
-    background: rgba(13,32,22,.55); backdrop-filter: blur(4px);
-    color: #fff; font-size: .78rem; font-weight: 600; padding: 7px 13px;
-    border-radius: 999px; display: flex; align-items: center; gap: 6px;
-    opacity: 0; transition: opacity .2s;
-}
-.gallery-main:hover .gallery-expand-hint { opacity: 1; }
-.gallery-expand-hint svg { width: 14px; height: 14px; }
+        .gallery-track {
+            display: flex;
+            height: 100%;
+            transition: transform .4s ease;
+        }
 
-.gallery-thumbs { display: grid; gap: 6px; height: 100%; }
-.gallery-thumbs.gallery-thumbs--1 { grid-template-columns: 1fr; grid-template-rows: 1fr; }
-.gallery-thumbs.gallery-thumbs--2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
-.gallery-thumbs.gallery-thumbs--3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
-.gallery-thumbs.gallery-thumbs--3 .gallery-thumb:first-child { grid-row: 1 / 3; }
-.gallery-thumbs.gallery-thumbs--4plus { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
-.gallery-thumb { position: relative; overflow: hidden; cursor: pointer; }
-.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
-.gallery-thumb:hover img { transform: scale(1.06); }
-.gallery-thumb.has-overlay .gallery-more-overlay {
-    position: absolute; inset: 0; background: rgba(13,32,22,.62);
-    color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-family: 'Mitr', sans-serif; font-weight: 600; font-size: 1.15rem; gap: 2px;
-}
-.gallery-more-overlay small { font-family: 'Sarabun', sans-serif; font-weight: 500; font-size: .72rem; opacity: .85; }
+        .gallery-slide {
+            min-width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
 
-.gallery-placeholder {
-    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-    font-size: 4.5rem; background: linear-gradient(155deg, var(--pine-800), var(--pine-950));
-}
+        .gallery-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-/* ============================================================
+        .gallery-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(13, 32, 22, .55);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s;
+            z-index: 5;
+        }
+
+        .gallery-nav-btn:hover {
+            background: rgba(13, 32, 22, .8);
+        }
+
+        .gallery-nav-prev {
+            left: 14px;
+        }
+
+        .gallery-nav-next {
+            right: 14px;
+        }
+
+        .gallery-nav-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .gallery-counter {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            background: rgba(13, 32, 22, .55);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 600;
+            padding: 6px 13px;
+            border-radius: 999px;
+            z-index: 5;
+        }
+
+        .gallery-dots {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 7px;
+            z-index: 5;
+        }
+
+        .gallery-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .45);
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: background .15s, transform .15s;
+        }
+
+        .gallery-dot.active {
+            background: #fff;
+            transform: scale(1.25);
+        }
+
+        .gallery-expand-hint {
+            position: absolute;
+            left: 14px;
+            bottom: 14px;
+            background: rgba(13, 32, 22, .55);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 600;
+            padding: 7px 13px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 5;
+        }
+
+        .gallery-expand-hint svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .gallery-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            background: linear-gradient(155deg, var(--pine-800), var(--pine-950));
+        }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 15, 10, .92);
+            z-index: 5000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 88vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.6rem;
+            border: none;
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        /* ============================================================
    PAGE LAYOUT — เนื้อหา (ซ้าย) + sidebar sticky (ขวา)
 ============================================================ */
-.layout-container {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 2.4rem;
-    align-items: start;
-}
+        .layout-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2.4rem;
+            align-items: start;
+        }
 
-/* ── Story column: ห่อเป็นการ์ดให้น้ำหนักภาพสมดุลกับ sidebar ── */
-.content-col { display: flex; flex-direction: column; gap: 1.1rem; }
+        /* ── Story column: ห่อเป็นการ์ดให้น้ำหนักภาพสมดุลกับ sidebar ── */
+        .content-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
 
-.content-card {
-    background: var(--white); border: 1px solid var(--paper-line); border-radius: var(--r-lg);
-    padding: 1.7rem 1.8rem; box-shadow: var(--shadow-sm);
-}
+        .content-card {
+            background: var(--white);
+            border: 1px solid var(--paper-line);
+            border-radius: var(--r-lg);
+            padding: 1.7rem 1.8rem;
+            box-shadow: var(--shadow-sm);
+        }
 
-.eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: .78rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
-    color: var(--clay-600); margin-bottom: 1.1rem;
-}
-.eyebrow::before { content: ''; width: 22px; height: 2px; background: var(--clay-500); border-radius: 2px; }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--clay-600);
+            margin-bottom: 1.1rem;
+        }
 
-.desc-text { font-size: 1.05rem; line-height: 2; color: var(--ink-700); white-space: pre-line; }
-.desc-text.empty { color: var(--ink-300); font-style: italic; }
+        .eyebrow::before {
+            content: '';
+            width: 22px;
+            height: 2px;
+            background: var(--clay-500);
+            border-radius: 2px;
+        }
 
-/* ============================================================
+        .desc-text {
+            font-size: 1.05rem;
+            line-height: 2;
+            color: var(--ink-700);
+            white-space: pre-line;
+        }
+
+        .desc-text.empty {
+            color: var(--ink-300);
+            font-style: italic;
+        }
+
+        /* ============================================================
    SIDEBAR
 ============================================================ */
-.sidebar { display: flex; flex-direction: column; gap: 1.1rem; position: sticky; top: calc(var(--navbar-h) + 24px); }
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            position: sticky;
+            top: calc(var(--navbar-h) + 24px);
+        }
 
-.side-card {
-    background: var(--white); border: 1px solid var(--paper-line); border-radius: var(--r-lg);
-    padding: 1.3rem; box-shadow: var(--shadow-sm);
-}
-.side-card-label {
-    font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--ink-300); margin-bottom: .9rem;
-}
+        .side-card {
+            background: var(--white);
+            border: 1px solid var(--paper-line);
+            border-radius: var(--r-lg);
+            padding: 1.3rem;
+            box-shadow: var(--shadow-sm);
+        }
 
-.host-card-body { display: flex; align-items: center; gap: 13px; }
-.host-avatar {
-    width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
-    background: linear-gradient(135deg, var(--clay-500), var(--clay-700));
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 800; font-size: 1.05rem;
-}
-.host-info .h-name { font-size: .98rem; font-weight: 700; color: var(--ink-900); font-family: 'Mitr', sans-serif; }
-.host-info .h-role { font-size: .78rem; color: var(--ink-300); margin-top: 1px; }
+        .side-card-label {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--ink-300);
+            margin-bottom: .9rem;
+        }
 
-.host-tribe-link {
-    margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--paper-line);
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-}
-.host-tribe-info { display: flex; align-items: center; gap: 9px; min-width: 0; }
-.host-tribe-icon {
-    width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
-    background: var(--moss-100); color: var(--pine-700);
-    display: flex; align-items: center; justify-content: center;
-}
-.host-tribe-icon svg { width: 15px; height: 15px; }
-.host-tribe-text .tt-label { font-size: .68rem; color: var(--ink-300); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
-.host-tribe-text .tt-name { font-size: .92rem; font-weight: 700; color: var(--ink-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.host-tribe-arrow {
-    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
-    background: var(--paper-warm); color: var(--pine-700);
-    display: flex; align-items: center; justify-content: center; transition: background .15s, transform .15s;
-}
-.host-tribe-arrow svg { width: 13px; height: 13px; }
-.host-tribe-link:hover .host-tribe-arrow { background: var(--moss-200); transform: translateX(2px); }
+        .host-card-body {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
 
-.tour-card-name { font-size: 1.02rem; font-weight: 700; color: var(--ink-900); font-family: 'Mitr', sans-serif; line-height: 1.35; margin-bottom: 1.1rem; }
-.btn-ticket-cta {
-    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
-    background: var(--turmeric-500); color: #fff !important; padding: 12px 18px; border-radius: 10px;
-    font-weight: 700; font-size: .92rem; box-shadow: 0 6px 16px rgba(214,141,40,.32);
-    transition: all .2s ease;
-}
-.btn-ticket-cta:hover { background: var(--turmeric-600); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(214,141,40,.4); }
-.btn-ticket-cta svg { flex-shrink: 0; }
+        .host-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--clay-500), var(--clay-700));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.05rem;
+        }
 
-.no-tour-card { display: flex; align-items: flex-start; gap: 11px; }
-.no-tour-card .ntp-icon {
-    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-    background: var(--moss-100); color: var(--pine-700);
-    display: flex; align-items: center; justify-content: center;
-}
-.no-tour-card .ntp-icon svg { width: 16px; height: 16px; }
-.no-tour-card p { color: var(--ink-500); font-size: .84rem; line-height: 1.55; }
+        .host-info .h-name {
+            font-size: .98rem;
+            font-weight: 700;
+            color: var(--ink-900);
+            font-family: 'Mitr', sans-serif;
+        }
 
-/* ── แผนที่ (จาก post.location) ── */
-.map-embed-wrap {
-    width: 100%; height: 170px; border-radius: var(--r-md); overflow: hidden;
-    border: 1px solid var(--paper-line); margin-bottom: .8rem;
-}
-.map-embed-frame { width: 100%; height: 100%; border: 0; display: block; }
-.map-open-link {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    font-size: .84rem; font-weight: 600; color: var(--pine-700);
-    padding: 8px; border-radius: 8px; transition: background .15s;
-}
-.map-open-link:hover { background: var(--moss-100); }
-.map-note { font-size: .74rem; color: var(--ink-300); margin-top: .5rem; line-height: 1.5; }
+        .host-info .h-role {
+            font-size: .78rem;
+            color: var(--ink-300);
+            margin-top: 1px;
+        }
 
-/* ── Lightbox ── */
-.lightbox { display: none; position: fixed; inset: 0; background: rgba(8,15,10,.92); z-index: 5000; align-items: center; justify-content: center; }
-.lightbox.open { display: flex; }
-.lightbox img { max-width: 90vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
-.lightbox-close {
-    position: absolute; top: 1.2rem; right: 1.6rem; border: none; background: rgba(255,255,255,.1);
-    color: #fff; font-size: 1.4rem; cursor: pointer; width: 44px; height: 44px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; transition: background .15s;
-}
-.lightbox-close:hover { background: rgba(255,255,255,.2); }
+        .host-tribe-link {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--paper-line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
 
-/* ============================================================
+        .host-tribe-info {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-width: 0;
+        }
+
+        .host-tribe-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            flex-shrink: 0;
+            background: var(--moss-100);
+            color: var(--pine-700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .host-tribe-icon svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .host-tribe-text .tt-label {
+            font-size: .68rem;
+            color: var(--ink-300);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-weight: 600;
+        }
+
+        .host-tribe-text .tt-name {
+            font-size: .92rem;
+            font-weight: 700;
+            color: var(--ink-900);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .host-tribe-arrow {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: var(--paper-warm);
+            color: var(--pine-700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s, transform .15s;
+        }
+
+        .host-tribe-arrow svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .host-tribe-link:hover .host-tribe-arrow {
+            background: var(--moss-200);
+            transform: translateX(2px);
+        }
+
+        .tour-card-name {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: var(--ink-900);
+            font-family: 'Mitr', sans-serif;
+            line-height: 1.35;
+            margin-bottom: 1.1rem;
+        }
+
+        .btn-ticket-cta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background: var(--turmeric-500);
+            color: #fff !important;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: .92rem;
+            box-shadow: 0 6px 16px rgba(214, 141, 40, .32);
+            transition: all .2s ease;
+        }
+
+        .btn-ticket-cta:hover {
+            background: var(--turmeric-600);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(214, 141, 40, .4);
+        }
+
+        .btn-ticket-cta svg {
+            flex-shrink: 0;
+        }
+
+        .no-tour-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+        }
+
+        .no-tour-card .ntp-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: var(--moss-100);
+            color: var(--pine-700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .no-tour-card .ntp-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .no-tour-card p {
+            color: var(--ink-500);
+            font-size: .84rem;
+            line-height: 1.55;
+        }
+
+        /* ── แผนที่ (จาก post.location) ── */
+        .map-embed-wrap {
+            width: 100%;
+            height: 170px;
+            border-radius: var(--r-md);
+            overflow: hidden;
+            border: 1px solid var(--paper-line);
+            margin-bottom: .8rem;
+        }
+
+        .map-embed-frame {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        .map-open-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: .84rem;
+            font-weight: 600;
+            color: var(--pine-700);
+            padding: 8px;
+            border-radius: 8px;
+            transition: background .15s;
+        }
+
+        .map-open-link:hover {
+            background: var(--moss-100);
+        }
+
+        .map-note {
+            font-size: .74rem;
+            color: var(--ink-300);
+            margin-top: .5rem;
+            line-height: 1.5;
+        }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 15, 10, .92);
+            z-index: 5000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 88vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.6rem;
+            border: none;
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        /* ============================================================
    FOOTER  (โทนเดียวกับหน้านี้: pine + turmeric)
 ============================================================ */
-.footer {
-    background: var(--pine-950);
-    color: rgba(255,255,255,.55);
-    padding: 56px 5% 26px;
-    border-top: 3px solid var(--turmeric-500);
-    margin-top: 3.2rem;
-}
-.footer-inner { max-width: 1220px; margin: 0 auto; }
-.footer-top {
-    display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 40px;
-    padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 26px;
-}
-.footer-brand {
-    color: #fff; font-weight: 700; font-size: 17px; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 10px; font-family: 'Mitr', sans-serif;
-}
-.footer-brand .f-icon {
-    width: 34px; height: 34px; background: var(--turmeric-600); border-radius: 9px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.footer-brand .f-icon svg { width: 18px; height: 18px; }
-.footer-desc { font-size: 14px; line-height: 1.75; max-width: 280px; margin-bottom: 18px; color: rgba(255,255,255,.5); }
-.footer-social { display: flex; gap: 9px; }
-.social-btn {
-    width: 36px; height: 36px; background: rgba(255,255,255,.08); border-radius: 9px;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-    transition: background .14s; border: none;
-}
-.social-btn:hover { background: var(--turmeric-600); }
-.social-btn svg { width: 16px; height: 16px; color: rgba(255,255,255,.6); }
-.social-btn:hover svg { color: #fff; }
-.footer-col h4 { color: var(--turmeric-500); font-size: 12.5px; font-weight: 700; margin-bottom: 16px; letter-spacing: .5px; text-transform: uppercase; }
-.footer-col a { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,.55); font-size: 14px; margin-bottom: 11px; transition: color .14s; }
-.footer-col a:hover { color: #fff; }
-.footer-col a svg { width: 13px; height: 13px; opacity: .5; flex-shrink: 0; }
-.footer-bottom { display: flex; align-items: center; justify-content: space-between; font-size: 13px; flex-wrap: wrap; gap: 10px; }
-.footer-bottom-links { display: flex; gap: 20px; }
-.footer-bottom-links a { color: rgba(255,255,255,.40); font-size: 13px; transition: color .14s; }
-.footer-bottom-links a:hover { color: rgba(255,255,255,.85); }
+        .footer {
+            background: var(--pine-950);
+            color: rgba(255, 255, 255, .55);
+            padding: 56px 5% 26px;
+            border-top: 3px solid var(--turmeric-500);
+            margin-top: 3.2rem;
+        }
 
-/* ============================================================
+        .footer-inner {
+            max-width: 1220px;
+            margin: 0 auto;
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr 1fr 1fr;
+            gap: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            margin-bottom: 26px;
+        }
+
+        .footer-brand {
+            color: #fff;
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Mitr', sans-serif;
+        }
+
+        .footer-brand .f-icon {
+            width: 34px;
+            height: 34px;
+            background: var(--turmeric-600);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .footer-brand .f-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .footer-desc {
+            font-size: 14px;
+            line-height: 1.75;
+            max-width: 280px;
+            margin-bottom: 18px;
+            color: rgba(255, 255, 255, .5);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 9px;
+        }
+
+        .social-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, .08);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .14s;
+            border: none;
+        }
+
+        .social-btn:hover {
+            background: var(--turmeric-600);
+        }
+
+        .social-btn svg {
+            width: 16px;
+            height: 16px;
+            color: rgba(255, 255, 255, .6);
+        }
+
+        .social-btn:hover svg {
+            color: #fff;
+        }
+
+        .footer-col h4 {
+            color: var(--turmeric-500);
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        .footer-col a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, .55);
+            font-size: 14px;
+            margin-bottom: 11px;
+            transition: color .14s;
+        }
+
+        .footer-col a:hover {
+            color: #fff;
+        }
+
+        .footer-col a svg {
+            width: 13px;
+            height: 13px;
+            opacity: .5;
+            flex-shrink: 0;
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-bottom-links a {
+            color: rgba(255, 255, 255, .40);
+            font-size: 13px;
+            transition: color .14s;
+        }
+
+        .footer-bottom-links a:hover {
+            color: rgba(255, 255, 255, .85);
+        }
+
+        /* ============================================================
    RESPONSIVE
 ============================================================ */
-@media (max-width: 992px) {
-    .gallery-grid { height: 260px; }
-    .layout-container { grid-template-columns: 1fr; }
-    .sidebar { position: static; order: -1; }
-    .footer-top { grid-template-columns: 1fr 1fr; gap: 28px; }
-}
-@media (max-width: 768px) {
-    :root { --navbar-h: auto; }
-    .navbar { height: auto; padding: 14px 5%; flex-wrap: wrap; gap: 10px; }
-    .top-bar { display: none; }
+        @media (max-width: 992px) {
+            .layout-container {
+                grid-template-columns: 1fr;
+            }
 
-    .gallery-grid, .gallery-grid.gallery-grid--single {
-        display: flex; flex-direction: column; height: auto; gap: 8px; border-radius: var(--r-md); box-shadow: var(--shadow-sm);
-    }
-    .gallery-main { height: 220px; border-radius: var(--r-md); }
-    .gallery-thumbs,
-    .gallery-thumbs.gallery-thumbs--1,
-    .gallery-thumbs.gallery-thumbs--2,
-    .gallery-thumbs.gallery-thumbs--3,
-    .gallery-thumbs.gallery-thumbs--4plus {
-        display: flex; grid-template-columns: none; grid-template-rows: none;
-        overflow-x: auto; scrollbar-width: none; gap: 8px; height: auto;
-    }
-    .gallery-thumbs .gallery-thumb:first-child { grid-row: auto; }
-    .gallery-thumbs::-webkit-scrollbar { display: none; }
-    .gallery-thumb { width: 88px; height: 66px; flex-shrink: 0; border-radius: var(--r-sm); }
+            .sidebar {
+                position: static;
+                order: -1;
+            }
 
-    .page-title { max-width: none; }
-    .content-card { padding: 1.3rem 1.3rem; }
-    .footer-top { grid-template-columns: 1fr; gap: 24px; }
-    .footer-bottom { flex-direction: column; text-align: center; }
-}
-</style>
+            .footer-top {
+                grid-template-columns: 1fr 1fr;
+                gap: 28px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --navbar-h: auto;
+            }
+
+            .navbar {
+                height: auto;
+                padding: 14px 5%;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .top-bar {
+                display: none;
+            }
+
+            .gallery-carousel {
+                height: 260px;
+                border-radius: var(--r-md);
+            }
+
+            .page-title {
+                max-width: none;
+            }
+
+            .content-card {
+                padding: 1.3rem 1.3rem;
+            }
+
+            .footer-top {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="top-bar">
-  <a href="#">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
-    </svg>
-    ภาษาไทย
-  </a>
-  <div class="top-bar-divider"></div>
-  <a href="#">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-    </svg>
-    ช่วยเหลือ
-  </a>
-  <div class="top-bar-divider"></div>
-  <a href="/member/bookings/list">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-    </svg>
-    การจองของฉัน
-  </a>
-</div>
-
-<nav class="navbar">
-
-  <a href="/search" class="navbar-brand">
-    <div class="brand-logo">
-      <img th:src="@{/images/logo5.png}" alt="Logo">
+    <div class="top-bar">
+        <a href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+            ภาษาไทย
+        </a>
+        <div class="top-bar-divider"></div>
+        <a href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            ช่วยเหลือ
+        </a>
+        <div class="top-bar-divider"></div>
+        <a href="/member/bookings/list">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            การจองของฉัน
+        </a>
     </div>
-   <span class="brand-text">ชนเผ่าพาเที่ยว</span>
-  </a>
 
-  <div class="nav-links">
-    <a href="/search" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-      </svg>
-      หน้าแรก
-    </a>
-    <a th:href="@{/tribe-info}" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
-      </svg>
-      ข้อมูลชนเผ่า
-    </a>
+    <nav class="navbar">
 
-  </div>
+        <a href="/search" class="navbar-brand">
+            <div class="brand-logo">
+                <img th:src="@{/images/logo5.png}" alt="Logo">
+            </div>
+            <span class="brand-text">ชนเผ่าพาเที่ยว</span>
+        </a>
 
-  <div class="nav-divider"></div>
+        <div class="nav-links">
+            <a href="/search" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                หน้าแรก
+            </a>
+            <a th:href="@{/tribe-info}" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
+                </svg>
+                ข้อมูลชนเผ่า
+            </a>
 
-  <div class="auth-group">
+        </div>
 
-    <th:block th:if="${session.loggedInMember == null
+        <div class="nav-divider"></div>
+
+        <div class="auth-group">
+
+            <th:block th:if="${session.loggedInMember == null
                     and session.loggedInManager == null
                     and session.loggedInOwner   == null
                     and session.loggedInAdmin   == null}">
 
-      <div class="login-dropdown">
-        <button class="btn-login">
-          <span class="icon-user">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-          </span>
-          เข้าสู่ระบบ
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
-        </button>
+                <div class="login-dropdown">
+                    <button class="btn-login">
+                        <span class="icon-user">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </span>
+                        เข้าสู่ระบบ
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
 
-        <div class="login-dropdown-menu">
-          <div class="dropdown-top">
-            <p>เลือกประเภทผู้ใช้งาน</p>
-            <span>กรุณาเลือกประเภทบัญชีของคุณ</span>
-          </div>
-          <a href="/member/login" class="dropdown-item">
-            <div class="item-icon" style="background:#d8f3dc;">🌿</div>
-            <div class="item-info"><strong>สมาชิกทั่วไป</strong><span>จองกิจกรรม ทัวร์ และที่พัก</span></div>
-            <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </a>
-          <a href="/manager/login" class="dropdown-item">
-            <div class="item-icon" style="background:#fef3c7;">🏕️</div>
-            <div class="item-info"><strong>ผู้จัดการท่องเที่ยวชุมชน</strong><span>จัดการทัวร์และกิจกรรม</span></div>
-            <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </a>
-          <a href="/owner/login" class="dropdown-item">
-            <div class="item-icon" style="background:#dbeafe;">🏠</div>
-            <div class="item-info"><strong>เจ้าของโฮมสเตย์</strong><span>จัดการที่พักของคุณ</span></div>
-            <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </a>
-          <a href="/admin/login" class="dropdown-item">
-            <div class="item-icon" style="background:#ede9fe;">⚙️</div>
-            <div class="item-info"><strong>ผู้ดูแลระบบ</strong><span>Admin dashboard</span></div>
-            <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </a>
-        </div>
-      </div>
+                    <div class="login-dropdown-menu">
+                        <div class="dropdown-top">
+                            <p>เลือกประเภทผู้ใช้งาน</p>
+                            <span>กรุณาเลือกประเภทบัญชีของคุณ</span>
+                        </div>
+                        <a href="/member/login" class="dropdown-item">
+                            <div class="item-icon" style="background:#d8f3dc;">🌿</div>
+                            <div class="item-info"><strong>สมาชิกทั่วไป</strong><span>จองกิจกรรม ทัวร์ และที่พัก</span>
+                            </div>
+                            <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </a>
+                        <a href="/manager/login" class="dropdown-item">
+                            <div class="item-icon" style="background:#fef3c7;">🏕️</div>
+                            <div class="item-info">
+                                <strong>ผู้จัดการท่องเที่ยวชุมชน</strong><span>จัดการทัวร์และกิจกรรม</span>
+                            </div>
+                            <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </a>
+                        <a href="/owner/login" class="dropdown-item">
+                            <div class="item-icon" style="background:#dbeafe;">🏠</div>
+                            <div class="item-info"><strong>เจ้าของโฮมสเตย์</strong><span>จัดการที่พักของคุณ</span></div>
+                            <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </a>
+                        <a href="/admin/login" class="dropdown-item">
+                            <div class="item-icon" style="background:#ede9fe;">⚙️</div>
+                            <div class="item-info"><strong>ผู้ดูแลระบบ</strong><span>Admin dashboard</span></div>
+                            <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
 
-      <a href="/member/register" class="btn-register">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-        </svg>
-        สมัครสมาชิก
-      </a>
+                <a href="/member/register" class="btn-register">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    สมัครสมาชิก
+                </a>
 
-    </th:block>
+            </th:block>
 
-    <th:block th:if="${session.loggedInMember != null
+            <th:block th:if="${session.loggedInMember != null
                     or session.loggedInManager != null
                     or session.loggedInOwner   != null
                     or session.loggedInAdmin   != null}">
 
-      <div class="user-menu-wrapper" id="userMenuWrapper">
-        <button class="btn-user-menu" onclick="toggleUserMenu()">
-          <div class="user-avatar">
-            <span th:if="${session.loggedInMember != null}" th:text="${#strings.substring(session.loggedInMember.firstname, 0, 1)}">ม</span>
-            <span th:if="${session.loggedInManager != null}" th:text="${#strings.substring(session.loggedInManager.firstname, 0, 1)}">จ</span>
-            <span th:if="${session.loggedInOwner != null}" th:text="${#strings.substring(session.loggedInOwner.firstname, 0, 1)}">พ</span>
-            <span th:if="${session.loggedInAdmin != null}">A</span>
-          </div>
-          <div class="user-info">
-            <span class="user-name"
-                  th:text="${session.loggedInMember != null} ? ${session.loggedInMember.firstname} :
+                <div class="user-menu-wrapper" id="userMenuWrapper">
+                    <button class="btn-user-menu" onclick="toggleUserMenu()">
+                        <div class="user-avatar">
+                            <span th:if="${session.loggedInMember != null}"
+                                th:text="${#strings.substring(session.loggedInMember.firstname, 0, 1)}">ม</span>
+                            <span th:if="${session.loggedInManager != null}"
+                                th:text="${#strings.substring(session.loggedInManager.firstname, 0, 1)}">จ</span>
+                            <span th:if="${session.loggedInOwner != null}"
+                                th:text="${#strings.substring(session.loggedInOwner.firstname, 0, 1)}">พ</span>
+                            <span th:if="${session.loggedInAdmin != null}">A</span>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name" th:text="${session.loggedInMember != null} ? ${session.loggedInMember.firstname} :
                            (${session.loggedInManager != null} ? ${session.loggedInManager.firstname} :
                            (${session.loggedInOwner != null} ? ${session.loggedInOwner.firstname} : 'Admin'))"></span>
-            <span class="user-role"
-                  th:text="${session.loggedInMember  != null} ? 'สมาชิก' :
+                            <span class="user-role" th:text="${session.loggedInMember  != null} ? 'สมาชิก' :
                            (${session.loggedInManager != null} ? 'ผู้จัดการ' :
                            (${session.loggedInOwner   != null} ? 'เจ้าของโฮมสเตย์' : 'ผู้ดูแลระบบ'))">บทบาท</span>
-          </div>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
+                        </div>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
 
-        <div class="user-dropdown-menu" id="userDropdown">
-          <th:block th:if="${session.loggedInMember != null}">
-            <a href="/member/profile" class="udrop-item">
-              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-              <div class="udrop-text"><span>โปรไฟล์ของฉัน</span><small>ดูและแก้ไขข้อมูลส่วนตัว</small></div>
-            </a>
-            <a href="/member/bookings/list" class="udrop-item">
-              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
-              <div class="udrop-text"><span>การจองของฉัน</span><small>ตรวจสอบสถานะการจอง</small></div>
-            </a>
-          </th:block>
-          <th:block th:if="${session.loggedInManager != null}">
-            <a href="/manager/dashboard" class="udrop-item">
-              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-              <div class="udrop-text"><span>แดชบอร์ด</span><small>ภาพรวมการจัดการ</small></div>
-            </a>
-            <a href="/manager/tours" class="udrop-item">
-              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div>
-              <div class="udrop-text"><span>จัดการทัวร์</span><small>เพิ่ม / แก้ไข / ลบทัวร์</small></div>
-            </a>
-          </th:block>
-          <th:block th:if="${session.loggedInOwner != null}">
-            <a href="/owner/dashboard" class="udrop-item">
-              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
-              <div class="udrop-text"><span>จัดการโฮมสเตย์</span><small>ห้องพัก ราคา การจอง</small></div>
-            </a>
-          </th:block>
-          <th:block th:if="${session.loggedInAdmin != null}">
-            <a href="/admin/dashboard" class="udrop-item">
-              <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
-              <div class="udrop-text"><span>Admin Dashboard</span><small>จัดการระบบทั้งหมด</small></div>
-            </a>
-          </th:block>
+                    <div class="user-dropdown-menu" id="userDropdown">
+                        <th:block th:if="${session.loggedInMember != null}">
+                            <a href="/member/profile" class="udrop-item">
+                                <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg></div>
+                                <div class="udrop-text"><span>โปรไฟล์ของฉัน</span><small>ดูและแก้ไขข้อมูลส่วนตัว</small>
+                                </div>
+                            </a>
+                            <a href="/member/bookings/list" class="udrop-item">
+                                <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg></div>
+                                <div class="udrop-text"><span>การจองของฉัน</span><small>ตรวจสอบสถานะการจอง</small></div>
+                            </a>
+                        </th:block>
+                        <th:block th:if="${session.loggedInManager != null}">
+                            <a href="/manager/dashboard" class="udrop-item">
+                                <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7" />
+                                        <rect x="14" y="3" width="7" height="7" />
+                                        <rect x="14" y="14" width="7" height="7" />
+                                        <rect x="3" y="14" width="7" height="7" />
+                                    </svg></div>
+                                <div class="udrop-text"><span>แดชบอร์ด</span><small>ภาพรวมการจัดการ</small></div>
+                            </a>
+                            <a href="/manager/tours" class="udrop-item">
+                                <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                    </svg></div>
+                                <div class="udrop-text"><span>จัดการทัวร์</span><small>เพิ่ม / แก้ไข / ลบทัวร์</small>
+                                </div>
+                            </a>
+                        </th:block>
+                        <th:block th:if="${session.loggedInOwner != null}">
+                            <a href="/owner/dashboard" class="udrop-item">
+                                <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg></div>
+                                <div class="udrop-text"><span>จัดการโฮมสเตย์</span><small>ห้องพัก ราคา การจอง</small>
+                                </div>
+                            </a>
+                        </th:block>
+                        <th:block th:if="${session.loggedInAdmin != null}">
+                            <a href="/admin/dashboard" class="udrop-item">
+                                <div class="udrop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg></div>
+                                <div class="udrop-text"><span>Admin Dashboard</span><small>จัดการระบบทั้งหมด</small>
+                                </div>
+                            </a>
+                        </th:block>
 
-          <div class="udrop-divider"></div>
+                        <div class="udrop-divider"></div>
 
-          <a href="/member/login/logout" class="udrop-item udrop-logout">
-            <div class="udrop-icon udrop-icon-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></div>
-            <div class="udrop-text"><span>ออกจากระบบ</span><small>Sign out</small></div>
-          </a>
+                        <a href="/member/login/logout" class="udrop-item udrop-logout">
+                            <div class="udrop-icon udrop-icon-red"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg></div>
+                            <div class="udrop-text"><span>ออกจากระบบ</span><small>Sign out</small></div>
+                        </a>
+                    </div>
+                </div>
+
+            </th:block>
+
         </div>
-      </div>
+    </nav>
 
-    </th:block>
-
-  </div>
-</nav>
-
-<div class="breadcrumb">
-    <a href="/search">หน้าแรก</a>
-    <span aria-hidden="true">›</span>
-    <a href="/member/search">กิจกรรม</a>
-    <span aria-hidden="true">›</span>
-    <span th:text="${post.title}">รายละเอียดกิจกรรม</span>
-</div>
-
-<div class="page-wrap">
-
-    <a href="/member/search" class="btn-back">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
-        กลับหน้ากิจกรรมทั้งหมด
-    </a>
-
-    <!-- ═══════════════ หัวเรื่อง ═══════════════ -->
-    <div class="page-header">
-        <div class="page-eyebrow">เรื่องราวชุมชน</div>
-        <h1 class="page-title" th:text="${post.title}">ชื่อกิจกรรม</h1>
-        <div class="page-meta-row">
-            <span class="meta-item" th:if="${post.location != null}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
-                <span th:text="${post.location}">สถานที่</span>
-            </span>
-            <span class="meta-divider" th:if="${post.location != null and post.createddate != null}">•</span>
-            <span class="meta-item muted" th:if="${post.createddate != null}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span th:text="${#dates.format(post.createddate, 'dd MMMM yyyy')}"></span>
-            </span>
-            <span class="meta-divider" th:if="${post.communitymanager != null and post.communitymanager.tribe != null and !post.communitymanager.tribe.isEmpty()}">•</span>
-            <span class="meta-tribe-badge" th:if="${post.communitymanager != null and post.communitymanager.tribe != null and !post.communitymanager.tribe.isEmpty()}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-                <span th:text="'ชนเผ่า' + ${post.communitymanager.tribe}">ชนเผ่า</span>
-            </span>
-        </div>
+    <div class="breadcrumb">
+        <a href="/search">หน้าแรก</a>
+        <span aria-hidden="true">›</span>
+        <a href="/member/search">กิจกรรม</a>
+        <span aria-hidden="true">›</span>
+        <span th:text="${post.title}">รายละเอียดกิจกรรม</span>
     </div>
 
-    <!-- ═══════════════ แกลเลอรี ═══════════════ -->
-    <div class="gallery-grid" th:if="${post.images != null and !post.images.isEmpty()}"
-         th:with="imgs=${#strings.arraySplit(post.images, '||')}, thumbCount=${imgs.length - 1 > 4 ? 4 : imgs.length - 1}"
-         th:classappend="${imgs.length == 1} ? ' gallery-grid--single'">
+    <div class="page-wrap">
 
-        <div class="gallery-main" onclick="openLightbox(this.querySelector('img').src)">
-            <img th:src="${imgs[0]}" alt="ภาพหลักของกิจกรรม">
+        <a href="/member/search" class="btn-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                <path d="M15 18l-6-6 6-6" />
+            </svg>
+            กลับหน้ากิจกรรมทั้งหมด
+        </a>
+
+        <!-- ═══════════════ หัวเรื่อง ═══════════════ -->
+        <div class="page-header">
+            <!-- <div class="page-eyebrow">เรื่องราวชุมชน</div> -->
+            <h1 class="page-title" th:text="${post.title}">ชื่อกิจกรรม</h1>
+            <div class="page-meta-row">
+                <span class="meta-item" th:if="${post.location != null}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <circle cx="12" cy="11" r="3" />
+                    </svg>
+                    <span th:text="${post.location}">สถานที่</span>
+                </span>
+                <span class="meta-divider" th:if="${post.location != null and post.createddate != null}">•</span>
+                <span class="meta-item muted" th:if="${post.createddate != null}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    <span th:text="${#dates.format(post.createddate, 'dd MMMM yyyy')}"></span>
+                </span>
+                <span class="meta-divider"
+                    th:if="${post.communitymanager != null and post.communitymanager.tribe != null and !post.communitymanager.tribe.isEmpty()}">•</span>
+                <span class="meta-tribe-badge"
+                    th:if="${post.communitymanager != null and post.communitymanager.tribe != null and !post.communitymanager.tribe.isEmpty()}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
+                    </svg>
+                    <span th:text="'ชนเผ่า' + ${post.communitymanager.tribe}">ชนเผ่า</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- ═══════════════ แกลเลอรี (Carousel เต็มรูป) ═══════════════ -->
+        <div class="gallery-carousel" id="galleryCarousel" th:if="${post.images != null and !post.images.isEmpty()}"
+            th:with="imgs=${#strings.arraySplit(post.images, '||')}">
+
+            <div class="gallery-track" id="galleryTrack">
+                <div class="gallery-slide" th:each="img,iter : ${imgs}"
+                    onclick="openLightbox(this.querySelector('img').src)">
+                    <img th:src="${img}" alt="ภาพกิจกรรม">
+                </div>
+            </div>
+
+            <button class="gallery-nav-btn gallery-nav-prev" onclick="galleryMove(-1)" th:if="${imgs.length > 1}"
+                aria-label="รูปก่อนหน้า">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+            <button class="gallery-nav-btn gallery-nav-next" onclick="galleryMove(1)" th:if="${imgs.length > 1}"
+                aria-label="รูปถัดไป">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                    <path d="M9 18l6-6-6-6" />
+                </svg>
+            </button>
+
             <div class="gallery-expand-hint">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+                </svg>
                 ดูรูปขยาย
             </div>
-        </div>
 
-        <div class="gallery-thumbs" th:if="${imgs.length > 1}"
-             th:classappend="${thumbCount == 1} ? ' gallery-thumbs--1' : (${thumbCount == 2} ? ' gallery-thumbs--2' : (${thumbCount == 3} ? ' gallery-thumbs--3' : ' gallery-thumbs--4plus'))">
-            <th:block th:each="img,iter : ${imgs}" th:if="${iter.index > 0 and iter.index <= 4}">
-                <div class="gallery-thumb" th:classappend="${iter.index == 4 and imgs.length > 5} ? ' has-overlay'"
-                     onclick="openLightbox(this.querySelector('img').src)">
-                    <img th:src="${img}" alt="ภาพกิจกรรมย่อย">
-                    <div class="gallery-more-overlay" th:if="${iter.index == 4 and imgs.length > 5}">
-                        <span th:text="'+' + ${imgs.length - 4}">+</span>
-                        <small>ดูทั้งหมด</small>
-                    </div>
-                </div>
-            </th:block>
-        </div>
-    </div>
+            <div class="gallery-counter" th:if="${imgs.length > 1}">
+                <span id="galleryCounter">1</span> / <span th:text="${imgs.length}"></span>
+            </div>
 
-    <div class="gallery-grid gallery-grid--single" th:if="${post.images == null or post.images.isEmpty()}">
-        <div class="gallery-placeholder">🌿</div>
-    </div>
-
-    <div class="layout-container">
-
-        <!-- ═══════════════ คอลัมน์เนื้อหา (ห่อเป็นการ์ดให้สมดุลกับ sidebar) ═══════════════ -->
-        <div class="content-col">
-            <div class="content-card">
-                <div class="eyebrow">รายละเอียดกิจกรรม</div>
-                <p class="desc-text" th:if="${post.description != null and !post.description.isEmpty()}" th:text="${post.description}"></p>
-                <p class="desc-text empty" th:if="${post.description == null or post.description.isEmpty()}">ไม่มีรายละเอียดเพิ่มเติมสำหรับกิจกรรมนี้</p>
+            <div class="gallery-dots" id="galleryDots" th:if="${imgs.length > 1}">
+                <button class="gallery-dot" th:each="img,iter : ${imgs}" th:classappend="${iter.index == 0} ? ' active'"
+                    th:onclick="'galleryGoTo(' + ${iter.index} + ')'"></button>
             </div>
         </div>
 
-        <!-- ═══════════════ Sidebar ═══════════════ -->
-        <aside class="sidebar">
+        <div class="gallery-carousel" th:if="${post.images == null or post.images.isEmpty()}">
+            <div class="gallery-placeholder">🌿</div>
+        </div>
 
-            <!-- การ์ดผู้จัดการชุมชน + ชนเผ่า -->
-            <div class="side-card" th:if="${post.communitymanager != null}">
-                <div class="side-card-label">เผยแพร่โดย</div>
-                <div class="host-card-body">
-                    <div class="host-avatar" th:text="${#strings.substring(post.communitymanager.firstname, 0, 1)}">ช</div>
-                    <div class="host-info">
-                        <div class="h-name" th:text="${post.communitymanager.firstname + ' ' + post.communitymanager.lastname}">ชื่อผู้จัดการ</div>
-                        <div class="h-role">ผู้จัดการชุมชน</div>
-                    </div>
+        <div class="layout-container">
+
+            <!-- ═══════════════ คอลัมน์เนื้อหา (ห่อเป็นการ์ดให้สมดุลกับ sidebar) ═══════════════ -->
+            <div class="content-col">
+                <div class="content-card">
+                    <div class="eyebrow">รายละเอียดโพสกิจกรรม</div>
+                    <p class="desc-text" th:if="${post.description != null and !post.description.isEmpty()}"
+                        th:text="${post.description}"></p>
+                    <p class="desc-text empty" th:if="${post.description == null or post.description.isEmpty()}">
+                        ไม่มีรายละเอียดเพิ่มเติมสำหรับกิจกรรมนี้</p>
                 </div>
+            </div>
 
-                <a th:href="@{/tribe-info}" class="host-tribe-link"
-                   th:if="${post.communitymanager.tribe != null and !post.communitymanager.tribe.isEmpty()}">
-                    <div class="host-tribe-info">
-                        <div class="host-tribe-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-                        </div>
-                        <div class="host-tribe-text">
-                            <div class="tt-label">ชนเผ่า</div>
-                            <div class="tt-name" th:text="${post.communitymanager.tribe}">ชื่อชนเผ่า</div>
+            <!-- ═══════════════ Sidebar ═══════════════ -->
+            <aside class="sidebar">
+
+                <!-- การ์ดผู้จัดการชุมชน + ชนเผ่า -->
+                <div class="side-card" th:if="${post.communitymanager != null}">
+                    <div class="side-card-label">เผยแพร่โดย</div>
+                    <div class="host-card-body">
+                        <div class="host-avatar" th:text="${#strings.substring(post.communitymanager.firstname, 0, 1)}">
+                            ช</div>
+                        <div class="host-info">
+                            <div class="h-name"
+                                th:text="${post.communitymanager.firstname + ' ' + post.communitymanager.lastname}">
+                                ชื่อผู้จัดการ</div>
+                            <div class="h-role">ผู้จัดการชุมชน</div>
                         </div>
                     </div>
-                    <div class="host-tribe-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-                    </div>
-                </a>
-            </div>
 
-            <!-- ทัวร์ที่เกี่ยวข้อง -->
-            <div class="side-card" th:if="${post.tour != null}">
-                <div class="side-card-label">ทัวร์ที่เกี่ยวข้อง</div>
-                <div class="tour-card-name" th:text="${post.tour.tourmname}">ชื่อทัวร์</div>
-                <a th:href="@{/tour/{id}(id=${post.tour.tourid})}" class="btn-ticket-cta">
-                    ดูรายละเอียดทัวร์นี้
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </a>
-            </div>
-
-            <!-- โพสต์นี้ไม่ได้ผูกกับทัวร์ใด ๆ -->
-            <div class="side-card" th:if="${post.tour == null}">
-                <div class="no-tour-card">
-                    <div class="ntp-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                    </div>
-                    <p>โพสต์นี้เป็นข่าวสารทั่วไปของชุมชน ไม่ได้ผูกกับทัวร์ใดโดยเฉพาะ</p>
+                    <a th:href="@{/tribe-info}" class="host-tribe-link"
+                        th:if="${post.communitymanager.tribe != null and !post.communitymanager.tribe.isEmpty()}">
+                        <div class="host-tribe-info">
+                            <div class="host-tribe-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
+                                </svg>
+                            </div>
+                            <div class="host-tribe-text">
+                                <div class="tt-label">ชนเผ่า</div>
+                                <div class="tt-name" th:text="${post.communitymanager.tribe}">ชื่อชนเผ่า</div>
+                            </div>
+                        </div>
+                        <div class="host-tribe-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </div>
+                    </a>
                 </div>
-            </div>
 
-            <!-- ═══════════════ แผนที่ (จาก post.location) ═══════════════ -->
-            <div class="side-card" th:if="${post.location != null and !post.location.isEmpty()}">
-                <div class="side-card-label">แผนที่</div>
-                <div class="map-embed-wrap">
-                    <iframe
-                        class="map-embed-frame"
-                        th:src="'https://www.google.com/maps?q=' + ${#uris.escapePathSegment(post.location)} + '&output=embed'"
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        allowfullscreen>
-                    </iframe>
+                <!-- ทัวร์ที่เกี่ยวข้อง -->
+                <div class="side-card" th:if="${post.tour != null}">
+                    <div class="side-card-label">ทัวร์ที่เกี่ยวข้อง</div>
+                    <div class="tour-card-name" th:text="${post.tour.tourmname}">ชื่อทัวร์</div>
+                    <a th:href="@{/tour/{id}(id=${post.tour.tourid})}" class="btn-ticket-cta">
+                        ดูรายละเอียดทัวร์นี้
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                    </a>
                 </div>
-                <a class="map-open-link"
-                   th:href="'https://www.google.com/maps/search/?api=1&query=' + ${#uris.escapePathSegment(post.location)}"
-                   target="_blank" rel="noopener">
-                    เปิดใน Google Maps
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
-                    </svg>
-                </a>
-                <div class="map-note">* ตำแหน่งโดยประมาณจากข้อความสถานที่</div>
-            </div>
 
-        </aside>
+                <!-- โพสต์นี้ไม่ได้ผูกกับทัวร์ใด ๆ -->
+                <div class="side-card" th:if="${post.tour == null}">
+                    <div class="no-tour-card">
+                        <div class="ntp-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4M12 8h.01" />
+                            </svg>
+                        </div>
+                        <p>โพสต์นี้เป็นข่าวสารทั่วไปของชุมชน ไม่ได้ผูกกับทัวร์ใดโดยเฉพาะ</p>
+                    </div>
+                </div>
 
+                <!-- ═══════════════ แผนที่ (จาก post.location) ═══════════════ -->
+                <div class="side-card" th:if="${post.location != null and !post.location.isEmpty()}">
+                    <div class="side-card-label">แผนที่</div>
+                    <div class="map-embed-wrap">
+                        <iframe class="map-embed-frame"
+                            th:src="'https://www.google.com/maps?q=' + ${#uris.escapePathSegment(post.location)} + '&output=embed'"
+                            loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen>
+                        </iframe>
+                    </div>
+                    <a class="map-open-link"
+                        th:href="'https://www.google.com/maps/search/?api=1&query=' + ${#uris.escapePathSegment(post.location)}"
+                        target="_blank" rel="noopener">
+                        เปิดใน Google Maps
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                        </svg>
+                    </a>
+                    <div class="map-note">* ตำแหน่งโดยประมาณจากข้อความสถานที่</div>
+                </div>
+
+            </aside>
+
+        </div>
     </div>
-</div>
 
-<!-- ══════════════════════════════════════════
+    <!-- ══════════════════════════════════════════
      FOOTER
 ══════════════════════════════════════════ -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div>
-        <div class="footer-brand">
-          <div class="f-icon">
-            <svg viewBox="0 0 24 24" fill="white"><path d="M3 17l6-8 4 5 3-3 5 6H3z"/></svg>
-          </div>
-          ระบบท่องเที่ยวชุมชนชนเผ่า
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div>
+                    <div class="footer-brand">
+                        <div class="f-icon">
+                            <svg viewBox="0 0 24 24" fill="white">
+                                <path d="M3 17l6-8 4 5 3-3 5 6H3z" />
+                            </svg>
+                        </div>
+                        ระบบท่องเที่ยวชุมชนชนเผ่า
+                    </div>
+                    <p class="footer-desc">
+                        แพลตฟอร์มท่องเที่ยวที่เชื่อมโยงนักท่องเที่ยวกับชุมชนชนเผ่าภาคเหนือ
+                        เพื่อประสบการณ์ที่แท้จริงและยั่งยืน
+                    </p>
+                    <div class="footer-social">
+                        <button class="social-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+                            </svg></button>
+                        <button class="social-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg></button>
+                        <button class="social-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z" />
+                                <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
+                            </svg></button>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>สำรวจ</h4>
+                    <a href="/search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>กิจกรรมทั้งหมด</a>
+                    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>ทัวร์ชุมชน</a>
+                    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>โฮมสเตย์</a>
+                    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>แพ็กเกจทัวร์</a>
+                </div>
+                <div class="footer-col">
+                    <h4>บริการ</h4>
+                    <a href="/member/bookings/list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>การจองของฉัน</a>
+                    <a href="/owner/register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>ลงทะเบียนโฮมสเตย์</a>
+                </div>
+                <div class="footer-col">
+                    <h4>ติดต่อ</h4>
+                    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>053-xxx-xxx</a>
+                    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>info@tribal-tour.th</a>
+                    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                            <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>เชียงใหม่ 50200</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า · สงวนลิขสิทธิ์</span>
+                <div class="footer-bottom-links">
+                    <a href="#">นโยบายความเป็นส่วนตัว</a>
+                    <a href="#">เงื่อนไขการใช้งาน</a>
+                    <a href="#">แผนผังเว็บไซต์</a>
+                </div>
+            </div>
         </div>
-        <p class="footer-desc">
-          แพลตฟอร์มท่องเที่ยวที่เชื่อมโยงนักท่องเที่ยวกับชุมชนชนเผ่าภาคเหนือ เพื่อประสบการณ์ที่แท้จริงและยั่งยืน
-        </p>
-        <div class="footer-social">
-          <button class="social-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></button>
-          <button class="social-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></button>
-          <button class="social-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></button>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h4>สำรวจ</h4>
-        <a href="/search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>กิจกรรมทั้งหมด</a>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>ทัวร์ชุมชน</a>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>โฮมสเตย์</a>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>แพ็กเกจทัวร์</a>
-      </div>
-      <div class="footer-col">
-        <h4>บริการ</h4>
-        <a href="/member/bookings/list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>การจองของฉัน</a>
-        <a href="/owner/register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>ลงทะเบียนโฮมสเตย์</a>
-      </div>
-      <div class="footer-col">
-        <h4>ติดต่อ</h4>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>053-xxx-xxx</a>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>info@tribal-tour.th</a>
-        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>เชียงใหม่ 50200</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า · สงวนลิขสิทธิ์</span>
-      <div class="footer-bottom-links">
-        <a href="#">นโยบายความเป็นส่วนตัว</a>
-        <a href="#">เงื่อนไขการใช้งาน</a>
-        <a href="#">แผนผังเว็บไซต์</a>
-      </div>
-    </div>
-  </div>
-</footer>
+    </footer>
 
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-    <img id="lightbox-img" src="" alt="รูปขยาย">
-</div>
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+        <img id="lightbox-img" src="" alt="รูปขยาย">
+    </div>
 
-<script>
-function openLightbox(src) {
-    document.getElementById('lightbox-img').src = src;
-    document.getElementById('lightbox').classList.add('open');
-}
-function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('open');
-}
-function toggleUserMenu() {
-    document.getElementById('userMenuWrapper').classList.toggle('open');
-}
-document.addEventListener('click', function(e) {
-    const wrapper = document.getElementById('userMenuWrapper');
-    if (wrapper && !wrapper.contains(e.target)) wrapper.classList.remove('open');
-});
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeLightbox();
-});
-</script>
+    <script>
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.add('open');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('open');
+        }
+        function toggleUserMenu() {
+            document.getElementById('userMenuWrapper').classList.toggle('open');
+        }
+        document.addEventListener('click', function (e) {
+            const wrapper = document.getElementById('userMenuWrapper');
+            if (wrapper && !wrapper.contains(e.target)) wrapper.classList.remove('open');
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+        /* ════ Gallery Carousel ════ */
+        let galleryIndex = 0;
+        function galleryUpdate() {
+            const track = document.getElementById('galleryTrack');
+            if (!track) return;
+            const total = track.children.length;
+            if (galleryIndex < 0) galleryIndex = total - 1;
+            if (galleryIndex >= total) galleryIndex = 0;
+            track.style.transform = `translateX(-${galleryIndex * 100}%)`;
+
+            const counter = document.getElementById('galleryCounter');
+            if (counter) counter.textContent = galleryIndex + 1;
+
+            document.querySelectorAll('#galleryDots .gallery-dot').forEach(function (dot, i) {
+                dot.classList.toggle('active', i === galleryIndex);
+            });
+        }
+        function galleryMove(dir) {
+            galleryIndex += dir;
+            galleryUpdate();
+        }
+        function galleryGoTo(idx) {
+            galleryIndex = idx;
+            galleryUpdate();
+        }
+    </script>
 
 </body>
+
 </html>

@@ -63,7 +63,8 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
                 FROM Payment p
                 JOIN p.booking b
                 JOIN b.tourDetails td
-                JOIN td.tour t
+                JOIN td.tourschedule ts
+                JOIN ts.tour t
                 WHERE t.communitymanager.managerid = :managerId
                 AND p.paymentStatus = com.example.miniproject.entity.enums.PaymentStatus.PAID
             """)

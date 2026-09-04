@@ -8,20 +8,20 @@ import java.util.Objects;
 public class Bookingtourdetailid implements Serializable {
 
     private String bookingid;
-    private String tourid;
+    private String scheduleid;
 
     public Bookingtourdetailid() {}
 
-    public Bookingtourdetailid(String bookingid, String tourid) {
+    public Bookingtourdetailid(String bookingid, String scheduleid) {
         this.bookingid = bookingid;
-        this.tourid = tourid;
+        this.scheduleid = scheduleid;
     }
 
     public String getBookingid() { return bookingid; }
     public void setBookingid(String bookingid) { this.bookingid = bookingid; }
 
-    public String gettourid() { return tourid; }
-    public void settourid(String tourid) { this.tourid = tourid; }
+    public String getScheduleid() { return scheduleid; }
+    public void setScheduleid(String scheduleid) { this.scheduleid = scheduleid; }
 
     @Override
     public boolean equals(Object o) {
@@ -29,11 +29,11 @@ public class Bookingtourdetailid implements Serializable {
         if (!(o instanceof Bookingtourdetailid)) return false;
         Bookingtourdetailid that = (Bookingtourdetailid) o;
         return Objects.equals(bookingid, that.bookingid) &&
-               Objects.equals(tourid, that.tourid);
+               Objects.equals(scheduleid, that.scheduleid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bookingid, tourid);
+        return Objects.hash(bookingid, scheduleid);
     }
 }

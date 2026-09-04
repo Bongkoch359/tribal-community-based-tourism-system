@@ -18,14 +18,10 @@ public class Bookingtourdetail {
     @JoinColumn(name = "bookingid", insertable = false, updatable = false)
     private Booking booking;
 
-    @ManyToOne
-    @MapsId("tourid")
-    @JoinColumn(name = "tourid", insertable = false, updatable = false)
-    private Tour tour;
-
     // ผูกการจองนี้เข้ากับ "รอบ/วันที่เปิดทัวร์" ที่เลือกไว้ — วันที่จองอ่านได้จาก
-    // tourschedule.getOpendate() โดยตรง
+    // tourschedule.getOpendate() โดยตรง เป็นส่วนหนึ่งของ primary key ด้วย (bookingid + scheduleid)
     @ManyToOne
+    @MapsId("scheduleid")
     @JoinColumn(name = "scheduleid", nullable = false)
     private Tourschedule tourschedule;
 
@@ -59,12 +55,9 @@ public class Bookingtourdetail {
     public Booking getBooking() { return booking; }
     public void setBooking(Booking booking) { this.booking = booking; }
 
+    // ดึง Tour ผ่าน schedule แทน (ไม่มี FK ตรงไป Tour แล้ว)
     public Tour getTour() {
-        return tour;
-    }
-
-    public void setTour(Tour tour) {
-        this.tour = tour;
+        return tourschedule != null ? tourschedule.getTour() : null;
     }
 
 }

@@ -54,7 +54,7 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
         SELECT DISTINCT r FROM Review r
         JOIN r.booking b
         JOIN b.tourDetails btd
-        WHERE btd.tour.tourid = :tourid
+        WHERE btd.tourschedule.tour.tourid = :tourid
         ORDER BY r.reviewdate DESC
     """)
     List<Review> findByTourId(@Param("tourid") String tourid);
@@ -65,7 +65,7 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
             SELECT DISTINCT r2.reviewid FROM Review r2
             JOIN r2.booking b
             JOIN b.tourDetails btd
-            WHERE btd.tour.tourid = :tourid
+            WHERE btd.tourschedule.tour.tourid = :tourid
         )
     """)
     Double avgRatingByTourId(@Param("tourid") String tourid);
@@ -74,7 +74,7 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
         SELECT COUNT(DISTINCT r) FROM Review r
         JOIN r.booking b
         JOIN b.tourDetails btd
-        WHERE btd.tour.tourid = :tourid
+        WHERE btd.tourschedule.tour.tourid = :tourid
     """)
     Long countByTourId(@Param("tourid") String tourid);
 
@@ -88,7 +88,8 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
         SELECT DISTINCT r, t FROM Review r
         JOIN r.booking b
         JOIN b.tourDetails btd
-        JOIN btd.tour t
+        JOIN btd.tourschedule sch
+        JOIN sch.tour t
         WHERE t.communitymanager.managerid = :managerId
         ORDER BY r.reviewdate DESC
     """)
