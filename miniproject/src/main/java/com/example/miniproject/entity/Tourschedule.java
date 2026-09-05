@@ -12,7 +12,7 @@ import org.hibernate.annotations.FetchMode;
  * Tourschedule = "รอบ/วันที่เปิดทัวร์" ของ Tour หนึ่งตัว
  */
 @Entity
-@Table(name = "Tourschedule")
+@Table(name = "tourschedule")
 public class Tourschedule {
 
     @Id

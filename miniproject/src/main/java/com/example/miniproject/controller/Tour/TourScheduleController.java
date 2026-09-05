@@ -141,28 +141,66 @@ public class TourScheduleController {
     // ───────────────────────────────
 
     @PostMapping("/{scheduleid}/delete")
-    public String deleteSchedule(@PathVariable("tourid") String tourid,
+    @ResponseBody
+    public Map<String, Object> deleteSchedule(@PathVariable("tourid") String tourid,
             @PathVariable("scheduleid") String scheduleid,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+            HttpSession session) {
+
+        Map<String, Object> result = new java.util.HashMap<>();
+
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
-        if (manager == null)
-            return "redirect:/manager/login";
+        if (manager == null) {
+            result.put("ok", false);
+            result.put("message", "กรุณาเข้าสู่ระบบ");
+            return result;
+        }
 
         Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
         if (tour == null || !tour.getCommunitymanager().getManagerid().equals(manager.getManagerid())) {
-            return "redirect:/manager/tours?error=forbidden";
+            result.put("ok", false);
+            result.put("message", "ไม่มีสิทธิ์แก้ไขทัวร์นี้");
+            return result;
+        }
+
+        // ✅ เช็คว่ามีรอบนี้จริง และเป็นของทัวร์นี้จริง
+        Tourschedule schedule = tourScheduleService.getScheduleById(scheduleid).orElse(null);
+        if (schedule == null || !schedule.getTour().getTourid().equals(tourid)) {
+            result.put("ok", false);
+            result.put("message", "ไม่พบรอบทัวร์นี้ อาจถูกลบไปแล้ว");
+            return result;
         }
 
         Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
         if (bookedMap.getOrDefault(scheduleid, 0) > 0) {
-            redirectAttributes.addFlashAttribute("errorMessage", "ไม่สามารถลบรอบนี้ได้ เพราะมีคนจองแล้ว");
-            return "redirect:/manager/tours/" + tourid + "/schedules";
+            result.put("ok", false);
+            result.put("message", "ไม่สามารถลบรอบนี้ได้ เพราะมีคนจองแล้ว");
+            return result;
         }
 
-        tourScheduleService.deleteSchedule(scheduleid);
-        redirectAttributes.addFlashAttribute("successMessage", "ลบวันที่เปิดทัวร์สำเร็จ");
-        return "redirect:/manager/tours/" + tourid + "/schedules";
+        try {
+            tourScheduleService.deleteSchedule(scheduleid);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // มักเกิดจากยังมี Bookingtourdetail (เช่น booking ที่ถูกยกเลิกแล้ว)
+            // อ้างอิง FK มาที่รอบนี้อยู่ จึงลบไม่ได้จริงในระดับฐานข้อมูล
+            result.put("ok", false);
+            result.put("message", "ไม่สามารถลบรอบนี้ได้ เนื่องจากมีประวัติการจอง (รวมที่ยกเลิกแล้ว) ผูกอยู่กับรอบนี้");
+            return result;
+        } catch (Exception e) {
+            result.put("ok", false);
+            result.put("message", "เกิดข้อผิดพลาดขณะลบ: " + e.getMessage());
+            return result;
+        }
+
+        // ✅ ยืนยันอีกครั้งว่าหายไปจริงก่อนตอบว่าสำเร็จ
+        if (tourScheduleService.getScheduleById(scheduleid).isPresent()) {
+            result.put("ok", false);
+            result.put("message", "ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+            return result;
+        }
+
+        result.put("ok", true);
+        result.put("message", "ลบวันที่เปิดทัวร์สำเร็จ");
+        return result;
     }
 
     // ─── อัปเดตสถานะรอบทัวร์หลายรอบพร้อมกัน ตามช่วงวันที่
@@ -205,6 +243,39 @@ public class TourScheduleController {
         result.put("ok", true);
         result.put("updated", updated);
         result.put("message", "อัปเดตสถานะ " + updated + " รอบทัวร์เรียบร้อย");
+        return result;
+    }
+
+    @GetMapping("/data")
+    @ResponseBody
+    public Map<String, Object> getScheduleData(@PathVariable("tourid") String tourid, HttpSession session) {
+        Map<String, Object> result = new java.util.HashMap<>();
+        Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
+        if (manager == null) {
+            result.put("ok", false);
+            return result;
+        }
+        Tour tour = tourService.getTourByIdAny(tourid).orElse(null);
+        if (tour == null || !tour.getCommunitymanager().getManagerid().equals(manager.getManagerid())) {
+            result.put("ok", false);
+            return result;
+        }
+
+        List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
+        Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
+
+        List<Map<String, Object>> data = schedules.stream().map(s -> {
+            Map<String, Object> m = new java.util.HashMap<>();
+            m.put("scheduleid", s.getScheduleid());
+            m.put("opendate", s.getOpendate().toLocalDate().toString());
+            m.put("enddate", s.getEnddate().toLocalDate().toString());
+            m.put("status", s.getStatus());
+            m.put("booked", bookedMap.getOrDefault(s.getScheduleid(), 0));
+            return m;
+        }).collect(java.util.stream.Collectors.toList());
+
+        result.put("ok", true);
+        result.put("schedules", data);
         return result;
     }
 }

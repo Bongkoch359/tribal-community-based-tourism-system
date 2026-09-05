@@ -65,14 +65,14 @@ body {
 }
 
 .top-navbar .brand {
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-family: 'Sriracha', cursive;
+    font-size: 1.55rem;
+    letter-spacing: 0.5px;
     color: #fff;
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 10px;
-    white-space: nowrap;
 }
 
 .top-navbar .brand .brand-logo-img {

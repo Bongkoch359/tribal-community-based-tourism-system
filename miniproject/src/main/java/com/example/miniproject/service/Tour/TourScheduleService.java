@@ -23,6 +23,13 @@ public class TourScheduleService {
     private TourScheduleRepository tourScheduleRepository;
 
     // ─────────────────────────────────────────────────────────
+    // ดึงรอบทัวร์ตาม id เดียว (ใช้เช็คว่ามีอยู่จริงก่อน/หลังลบ)
+    // ─────────────────────────────────────────────────────────
+    public java.util.Optional<Tourschedule> getScheduleById(String scheduleid) {
+        return tourScheduleRepository.findById(scheduleid);
+    }
+
+    // ─────────────────────────────────────────────────────────
     //
     // สถานะที่ manager ตั้งเองได้ด้วยมือ — "เต็ม" คำนวณอัตโนมัติจากการจอง
     // เท่านั้น ไม่ให้ตั้งเองตรงนี้
@@ -93,48 +100,49 @@ public class TourScheduleService {
     // ─────────────────────────────────────────────────────────
     // เพิ่มรอบ/วันที่เปิดทัวร์ใหม่ให้ทัวร์หนึ่งๆ
     // ─────────────────────────────────────────────────────────
-   @Transactional
-public Tourschedule createSchedule(Tour tour, Date opendate, Date enddate) {
+    @Transactional
+    public Tourschedule createSchedule(Tour tour, Date opendate, Date enddate) {
 
-    // ✅ กันรอบทัวร์ใหม่ทับซ้อนกับรอบเดิมของทัวร์เดียวกัน
-    Date actualEnddate = (tour.getNumberOfDays() != null && tour.getNumberOfDays() == 1)
-            ? opendate
-            : enddate;
-    validateNoOverlap(tour.getTourid(), opendate, actualEnddate, null);
+        // ✅ กันรอบทัวร์ใหม่ทับซ้อนกับรอบเดิมของทัวร์เดียวกัน
+        Date actualEnddate = (tour.getNumberOfDays() != null && tour.getNumberOfDays() == 1)
+                ? opendate
+                : enddate;
+        validateNoOverlap(tour.getTourid(), opendate, actualEnddate, null);
 
-    Tourschedule schedule = new Tourschedule();
-    schedule.setScheduleid("SCH" + UUID.randomUUID().toString()
-            .replace("-", "").substring(0, 9).toUpperCase());
-    schedule.setTour(tour);
-    schedule.setOpendate(opendate);
-    schedule.setEnddate(actualEnddate);
-    schedule.setStatus("เปิดรับจอง");
-    return tourScheduleRepository.save(schedule);
-}
-
-// ─────────────────────────────────────────────────────────
-// เช็คว่าช่วงวันที่ [start, end] ทับซ้อนกับรอบทัวร์อื่นของทัวร์เดียวกันหรือไม่
-// ─────────────────────────────────────────────────────────
-private void validateNoOverlap(String tourid, Date start, Date end, String excludeScheduleId) {
-    LocalDate newStart = start.toLocalDate();
-    LocalDate newEnd = end.toLocalDate();
-
-    List<Tourschedule> existing = getSchedulesByTour(tourid);
-
-    boolean overlaps = existing.stream().anyMatch(s -> {
-        if (excludeScheduleId != null && excludeScheduleId.equals(s.getScheduleid())) {
-            return false;
-        }
-        LocalDate existStart = s.getOpendate().toLocalDate();
-        LocalDate existEnd = (s.getEnddate() != null) ? s.getEnddate().toLocalDate() : existStart;
-        return !(newEnd.isBefore(existStart) || newStart.isAfter(existEnd));
-    });
-
-    if (overlaps) {
-        throw new IllegalArgumentException(
-            "ช่วงวันที่นี้ทับซ้อนกับรอบทัวร์อื่นที่มีอยู่แล้ว กรุณาเลือกช่วงวันที่อื่น");
+        Tourschedule schedule = new Tourschedule();
+        schedule.setScheduleid("SCH" + UUID.randomUUID().toString()
+                .replace("-", "").substring(0, 9).toUpperCase());
+        schedule.setTour(tour);
+        schedule.setOpendate(opendate);
+        schedule.setEnddate(actualEnddate);
+        schedule.setStatus("เปิดรับจอง");
+        return tourScheduleRepository.save(schedule);
     }
-}
+
+    // ─────────────────────────────────────────────────────────
+    // เช็คว่าช่วงวันที่ [start, end] ทับซ้อนกับรอบทัวร์อื่นของทัวร์เดียวกันหรือไม่
+    // ─────────────────────────────────────────────────────────
+    private void validateNoOverlap(String tourid, Date start, Date end, String excludeScheduleId) {
+        LocalDate newStart = start.toLocalDate();
+        LocalDate newEnd = end.toLocalDate();
+
+        List<Tourschedule> existing = getSchedulesByTour(tourid);
+
+        boolean overlaps = existing.stream().anyMatch(s -> {
+            if (excludeScheduleId != null && excludeScheduleId.equals(s.getScheduleid())) {
+                return false;
+            }
+            LocalDate existStart = s.getOpendate().toLocalDate();
+            LocalDate existEnd = (s.getEnddate() != null) ? s.getEnddate().toLocalDate() : existStart;
+            return !(newEnd.isBefore(existStart) || newStart.isAfter(existEnd));
+        });
+
+        if (overlaps) {
+            throw new IllegalArgumentException(
+                    "ช่วงวันที่นี้ทับซ้อนกับรอบทัวร์อื่นที่มีอยู่แล้ว กรุณาเลือกช่วงวันที่อื่น");
+        }
+    }
+
     // ─────────────────────────────────────────────────────────
     // แก้ไขสถานะรอบ (เช่น ปิดรับจองรอบนี้ด้วยมือ แม้ที่นั่งยังไม่เต็ม)
     // ─────────────────────────────────────────────────────────
@@ -175,6 +183,9 @@ private void validateNoOverlap(String tourid, Date start, Date end, String exclu
     @Transactional
     public void deleteSchedule(String scheduleid) {
         tourScheduleRepository.deleteById(scheduleid);
+        tourScheduleRepository.flush(); // ✅ บังคับให้ DELETE ยิงจริงทันทีในเมธอดนี้
+                                        // แทนที่จะรอ flush ตอน commit เฉยๆ
+                                        // เพื่อให้ exception (เช่น FK constraint) โผล่ขึ้นมาที่นี่แน่ๆ
     }
 
     // ─────────────────────────────────────────────────────────
