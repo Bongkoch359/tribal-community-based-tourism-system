@@ -389,18 +389,18 @@
                     <div class="card-body">
                         <div class="action-note">
                             <i class="fas fa-circle-info"></i>
-                            กรุณาตรวจสอบหลักฐานการชำระเงินก่อนยืนยันการจอง
+                            กรุณาตรวจสอบหลักฐานการชำระเงินก่อนอนุมัติการชำระเงิน
                         </div>
 
-                        <button class="btn-confirm-booking" id="btnConfirmBooking"
+                        <button class="btn-confirm-booking" id="btnApprovePayment"
                             th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
                             th:attr="data-bookingid=${booking.bookingid}"
-                            onclick="openConfirmModal(this.dataset.bookingid)">
-                            <i class="fas fa-circle-check"></i> ยืนยันการจอง
+                            onclick="openApproveModal(this.dataset.bookingid)">
+                            <i class="fas fa-circle-check"></i> อนุมัติการชำระเงิน
                         </button>
                         <button class="btn-cancel-booking" th:attr="data-bookingid=${booking.bookingid}"
                             onclick="openCancelModal(this.dataset.bookingid)">
-                            <i class="fas fa-xmark"></i> ยกเลิกการจอง
+                            <i class="fas fa-xmark"></i> ยกเลิก
                         </button>
                     </div>
                 </div>
@@ -411,17 +411,18 @@
         </div>
     </div>
 
-    <!-- MODAL: ยืนยัน -->
-    <div class="modal-overlay" id="confirmModal">
+    <!-- MODAL: อนุมัติการชำระเงิน -->
+    <div class="modal-overlay" id="approveModal">
         <div class="modal-box">
-            <h3><i class="fas fa-circle-check" style="color:var(--green-dark);"></i> ยืนยันการจอง</h3>
-            <p>คุณต้องการ <strong>ยืนยัน</strong> การจองนี้ใช่หรือไม่?<br>เมื่อยืนยันแล้วสถานะจะเปลี่ยนเป็น
-                <strong>"ยืนยันแล้ว"</strong>
+            <h3><i class="fas fa-circle-check" style="color:var(--green-dark);"></i> อนุมัติการชำระเงิน</h3>
+            <p>ยืนยันการอนุมัติการชำระเงินใช่หรือไม่?
+                <!-- <strong>อนุมัติการชำระเงิน</strong> ของการจองนี้ใช่หรือไม่?<br>
+                เมื่ออนุมัติแล้วสถานะการจองจะเปลี่ยนเป็น <strong>"ยืนยันแล้ว"</strong> -->
             </p>
             <div class="modal-actions">
-                <button class="btn-modal-cancel" onclick="closeModal('confirmModal')">ยกเลิก</button>
-                <button class="btn-modal-confirm-green" onclick="doConfirm()"><i class="fas fa-check"></i>
-                    ยืนยัน</button>
+                <button class="btn-modal-cancel" onclick="closeModal('approveModal')">ยกเลิก</button>
+                <button class="btn-modal-confirm-green" onclick="doApprovePayment()"><i class="fas fa-check"></i>
+                    อนุมัติการชำระเงิน</button>
             </div>
         </div>
     </div>
@@ -457,7 +458,7 @@
         <img id="slipLightboxImg" src="" alt="สลิปการชำระเงิน">
     </div>
 
-    <!-- MODAL: แจ้งผลลัพธ์ (ยืนยันสำเร็จ / ยกเลิกสำเร็จ / เกิดข้อผิดพลาด) -->
+    <!-- MODAL: แจ้งผลลัพธ์ (อนุมัติสำเร็จ / ยกเลิกสำเร็จ / เกิดข้อผิดพลาด) -->
     <div class="result-modal-backdrop" id="resultModal">
         <div class="result-modal-box" id="resultModalBox">
             <div class="result-checkmark-wrap" id="resultIconWrap">
@@ -482,9 +483,9 @@
     <script th:inline="javascript">
         let pendingBookingId = null;
 
-        function openConfirmModal(bookingId) {
+        function openApproveModal(bookingId) {
             pendingBookingId = bookingId;
-            document.getElementById('confirmModal').classList.add('open');
+            document.getElementById('approveModal').classList.add('open');
         }
 
         function closeModal(id) {
@@ -516,9 +517,9 @@
             await postAction('/manager/bookings/cancel', 'ยกเลิกการจองแล้ว', { reason });
         }
 
-        async function doConfirm() {
-            closeModal('confirmModal');
-            await postAction('/manager/bookings/confirm', 'ยืนยันการจองสำเร็จ');
+        async function doApprovePayment() {
+            closeModal('approveModal');
+            await postAction('/manager/bookings/confirm', 'อนุมัติการชำระเงินสำเร็จ');
         }
 
         async function postAction(url, successMsg, extraParams = {}) {

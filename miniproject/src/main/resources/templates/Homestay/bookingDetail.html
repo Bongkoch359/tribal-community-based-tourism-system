@@ -384,14 +384,14 @@
                     <div class="card-body">
                         <div class="action-note">
                             <i class="fas fa-circle-info"></i>
-                            กรุณาตรวจสอบหลักฐานการชำระเงินก่อนยืนยันการจอง
+                            กรุณาตรวจสอบหลักฐานการชำระเงินก่อนอนุมัติการชำระเงิน
                         </div>
 
-                        <button class="btn-confirm-booking" id="btnConfirmBooking"
+                        <button class="btn-confirm-booking" id="btnApprovePayment"
                             th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
                             th:attr="data-bookingid=${booking.bookingid}, data-homestayid=${booking.roomDetails != null and !booking.roomDetails.isEmpty() ? booking.roomDetails[0].roomtype?.homestay?.homestayid : 0}"
-                            onclick="openConfirmModal(this.dataset.bookingid, this.dataset.homestayid)">
-                            <i class="fas fa-circle-check"></i> ยืนยันการจอง
+                            onclick="openApproveModal(this.dataset.bookingid, this.dataset.homestayid)">
+                            <i class="fas fa-circle-check"></i> อนุมัติการชำระเงิน
                         </button>
                         <button class="btn-cancel-booking"
                             th:attr="data-bookingid=${booking.bookingid}, data-homestayid=${booking.roomDetails != null and !booking.roomDetails.isEmpty() ? booking.roomDetails[0].roomtype?.homestay?.homestayid : 0}"
@@ -406,17 +406,18 @@
 
         </div>
     </div>
-
-    <!-- MODAL: ยืนยัน -->
-    <div class="modal-overlay" id="confirmModal">
+    <!-- MODAL: อนุมัติการชำระเงิน -->
+    <div class="modal-overlay" id="approveModal">
         <div class="modal-box">
-            <h3><i class="fas fa-circle-check" style="color:var(--green-dark);"></i> ยืนยันการจอง</h3>
-            <p>คุณต้องการ <strong>ยืนยัน</strong> การจองนี้ใช่หรือไม่?<br>
+            <h3><i class="fas fa-circle-check" style="color:var(--green-dark);"></i> อนุมัติการชำระเงิน</h3>
+            <p>ยืนยันการอนุมัติการชำระเงินใช่หรือไม่?
+                <!-- <strong>อนุมัติการชำระเงิน</strong> ของการจองนี้ใช่หรือไม่?<br>
+                เมื่ออนุมัติแล้วสถานะการจองจะเปลี่ยนเป็น <strong>"ยืนยันแล้ว"</strong> -->
             </p>
             <div class="modal-actions">
-                <button class="btn-modal-cancel" onclick="closeModal('confirmModal')">ยกเลิก</button>
-                <button class="btn-modal-confirm-green" onclick="doConfirm()"><i class="fas fa-check"></i>
-                    ยืนยัน</button>
+                <button class="btn-modal-cancel" onclick="closeModal('approveModal')">ยกเลิก</button>
+                <button class="btn-modal-confirm-green" onclick="doApprovePayment()"><i class="fas fa-check"></i>
+                    อนุมัติการชำระเงิน</button>
             </div>
         </div>
     </div>
@@ -497,10 +498,10 @@
         let pendingBookingId = null;
         let pendingHomestayId = null;
 
-        function openConfirmModal(bookingId, homestayId) {
+        function openApproveModal(bookingId, homestayId) {
             pendingBookingId = bookingId;
             pendingHomestayId = homestayId;
-            document.getElementById('confirmModal').classList.add('open');
+            document.getElementById('approveModal').classList.add('open');
         }
 
         function closeModal(id) {
@@ -534,9 +535,9 @@
             await postAction('/owner/bookings/cancel', 'ยกเลิกการจองสำเร็จ', 'ยกเลิกการจองเรียบร้อยแล้ว', { reason });
         }
 
-        async function doConfirm() {
-            closeModal('confirmModal');
-            await postAction('/owner/bookings/confirm', 'ยืนยันการจองสำเร็จ', 'การจองได้รับการยืนยันเรียบร้อยแล้ว');
+        async function doApprovePayment() {
+            closeModal('approveModal');
+            await postAction('/owner/bookings/confirm', 'อนุมัติการชำระเงินสำเร็จ', 'การจองได้รับการยืนยันเรียบร้อยแล้ว');
         }
 
         function showSuccessModal(title, desc) {
@@ -588,7 +589,6 @@
             el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
         });
     </script>
-
 </body>
 
 </html>
