@@ -420,7 +420,12 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
 ══════════════════════════════ */
 .pay-modal-overlay {
     display:none;
-    position:fixed; inset:0; z-index:5000;
+    position:fixed;
+    top: var(--navbar-h);   /* เดิมใช้ inset: 0 */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index:5000;
     background:rgba(30,40,32,.55);
     backdrop-filter:blur(3px);
     align-items:center; justify-content:center;
@@ -824,7 +829,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
                 </div>
 
                 <div style="margin-top:12px;font-size:.72rem;color:var(--gray-400);line-height:1.5;">
-                    ราคารวม VAT · ยืนยันการจองภายใน 24 ชั่วโมงหลังชำระเงิน
+                   
                 </div>
             </div>
         </div>

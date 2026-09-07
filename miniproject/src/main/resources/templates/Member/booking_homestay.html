@@ -509,7 +509,11 @@ body {
    SUCCESS MODAL + CONFIRM MODAL (สไตล์เดียวกับหน้าทัวร์)
 ═══════════════════════════ */
 .modal-backdrop {
-  position: fixed; inset: 0;
+  position: fixed;
+  top: var(--navbar-h);   /* เดิมใช้ inset: 0 */
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(15,33,20,0.55);
   backdrop-filter: blur(4px);
   z-index: 2000;

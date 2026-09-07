@@ -363,7 +363,12 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
 /* ════ SUCCESS MODAL ════ */
 .pay-modal-overlay {
     display:none;
-    position:fixed; inset:0; z-index:5000;
+    position:fixed;
+    top: var(--navbar-h);   /* เดิมใช้ inset: 0 */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index:5000;
     background:rgba(30,40,32,.55);
     backdrop-filter:blur(3px);
     align-items:center; justify-content:center;
@@ -729,10 +734,10 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
             <!-- SUBMIT -->
             <div class="submit-bar">
                 <button class="btn-back" type="button"
-                        th:data-url="@{/member/bookings/{id}(id=${payment.bookingId})}"
-                        onclick="location.href=this.dataset.url">
-                    ← ย้อนกลับ
-                </button>
+        th:data-url="@{/member/bookings/detail/{id}(id=${payment.bookingId})}"
+        onclick="location.href=this.dataset.url">
+    ← ย้อนกลับ
+</button>
                 <button class="btn-submit" id="submitBtn" onclick="submitPayment()" type="button">
                     ✅ ยืนยันการชำระเงิน
                 </button>
@@ -807,10 +812,7 @@ button { font-family:'Sarabun',sans-serif; cursor:pointer; }
                             #numbers.formatDecimal(payment.totalAmount,0,'COMMA',2,'POINT') : '0.00'}">0.00</span>
                     </div>
                 </div>
-                <div style="margin-top:12px;font-size:.72rem;color:var(--gray-400);line-height:1.5;">
-                    ราคารวม VAT · ยกเว้นภาษีท้องถิ่น<br>
-                    ยืนยันการจองภายใน 24 ชั่วโมงหลังชำระเงิน
-                </div>
+              
             </div>
         </div>
     </div>

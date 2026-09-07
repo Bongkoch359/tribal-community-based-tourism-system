@@ -153,7 +153,6 @@
             white-space: nowrap;
             line-height: 1;
             margin-left: -10px;
-            /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
             text-decoration: none;
         }
 
@@ -1745,7 +1744,7 @@
                             </div>
                         </div>
 
-                        <!-- ⬇️ FIX: form นี้ตอนนี้ครอบตั้งแต่ section 1 ยาวไปจนถึง section 3 (guestCard)
+                        <!-- ⬇️ form นี้ครอบตั้งแต่ section 1 ยาวไปจนถึง section 3 (guestCard)
                      เพื่อให้ input ชื่อผู้เข้าพักถูกส่งไปพร้อมกับปุ่ม "บันทึกการเปลี่ยนแปลง" -->
                         <form th:action="@{/booking/homestay/edit/{id}(id=${booking.bookingid})}" method="post"
                             id="editForm">
@@ -1835,8 +1834,7 @@
                                     </div>
                                 </div>
 
-                                <!-- ⬇️ FIX: ใช้ #dates.format ให้ได้รูปแบบ yyyy-MM-dd ที่ new Date() ฝั่ง JS parse ได้เสถียรทุกเบราว์เซอร์
-                             (ของเดิมใส่ Date object ตรงๆ จะได้ string แบบ "Wed Sep 02 00:00:00 ICT 2026" ซึ่ง Safari parse พลาดได้) -->
+                                <!-- ⬇️ ใช้ #dates.format ให้ได้รูปแบบ yyyy-MM-dd ที่ new Date() ฝั่ง JS parse ได้เสถียรทุกเบราว์เซอร์ -->
                                 <span id="js-checkin"
                                     th:attr="data-date=${detail.checkindate != null ? #dates.format(detail.checkindate,'yyyy-MM-dd') : ''}"
                                     style="display:none;"></span>
@@ -1866,14 +1864,10 @@
                                 </div>
                             </div>
 
-                            <!-- ⬇️ FIX: ปุ่ม "บันทึก"/"ยกเลิก" ยังอยู่ตรงนี้เหมือนเดิม (UI/UX ไม่เปลี่ยน)
-                         แต่ form ถูกขยายให้ครอบ guestCard ด้านล่างด้วยแล้ว (ปิด </form> หลัง guestCard) -->
-                            <div class="inline-actions">
-                                <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
-                                <button type="submit" class="btn-inline-save">💾 บันทึกการเปลี่ยนแปลง</button>
-                            </div>
-
                     </div>
+                    <!-- ⬆️ FIX: ปิด #stayCard ตรงนี้ (หลัง section 4) แทนที่จะเว้นเปิดค้างไว้
+                         เพื่อให้เห็นชัดว่า card ของ "ข้อมูลการเข้าพัก" จบตรงนี้ ส่วนปุ่มบันทึก
+                         ถูกย้ายไปไว้ท้ายสุดหลัง guestCard ด้านล่าง (ฟอร์ม #editForm ยังคงครอบทั้งสอง card เหมือนเดิม) -->
 
                     <!-- SECTION 2 : ข้อมูลผู้ติดต่อ -->
                     <div class="card">
@@ -1910,7 +1904,7 @@
                     </div>
 
                     <!-- SECTION 3 : รายชื่อผู้เข้าพัก -->
-                    <!-- ⬇️ FIX: การ์ดนี้ยังอยู่ "ใน" <form id="editForm"> เดียวกับ section 1 แล้ว
+                    <!-- ⬇️ การ์ดนี้ยังอยู่ "ใน" <form id="editForm"> เดียวกับ section 1
                  (ก่อนหน้านี้อยู่นอกฟอร์ม ทำให้กดบันทึกแล้วชื่อผู้เข้าพักไม่ถูกส่งไป backend เลย) -->
                     <div class="card" id="guestCard">
                         <div class="edit-banner">✏️ กำลังแก้ไข — แก้ชื่อผู้เข้าพักได้ที่นี่</div>
@@ -1937,7 +1931,7 @@
                                 </div>
                             </div>
 
-                            <!-- ⬇️ FIX: เพิ่ม hidden input name="guestId" (ผูก th:value="${g.guestid}" —
+                            <!-- ⬇️ hidden input name="guestId" (ผูก th:value="${g.guestid}" —
                          ⚠️ ปรับชื่อ property ให้ตรงกับ entity Guest จริงของคุณ เช่น g.id / g.guestid)
                          เพื่อให้ backend รู้ว่ากำลังแก้ guest record ไหน และรองรับหลายคนพร้อมกัน
                          ด้วยการ bind เป็น List<String> ตามลำดับ index ที่ตรงกันทั้ง 3 ฟิลด์ -->
@@ -1980,8 +1974,18 @@
                             </div>
 
                         </div>
+
+                        <!-- ⬇️ FIX: ย้ายปุ่ม "ยกเลิก / บันทึกการเปลี่ยนแปลง" มาไว้ท้ายสุด
+                     หลัง section 3 (guestCard) แทนที่จะอยู่หลัง section 4 (หมายเหตุ)
+                     เหตุผล: ผู้ใช้แก้ไขข้อมูลไล่จากบนลงล่าง (เช็คอิน/เช็คเอาท์ → หมายเหตุ → ชื่อผู้เข้าพัก)
+                     ปุ่มบันทึกควรอยู่ท้ายสุดของเนื้อหาที่แก้ไขได้ทั้งหมด ผู้ใช้จะได้ไม่ต้องเลื่อนย้อนกลับขึ้นไปหาปุ่ม
+                     (ฟอร์ม #editForm ยังคงครอบทั้ง stayCard และ guestCard เหมือนเดิม ข้อมูลจึงถูกส่งครบทุกช่องเช่นเดิม) -->
+                        <div class="inline-actions">
+                            <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
+                            <button type="submit" form="editForm" class="btn-inline-save">💾 บันทึกการเปลี่ยนแปลง</button>
+                        </div>
+
                     </div>
-                    <!-- ⬇️ FIX: ปิดฟอร์มตรงนี้ (หลัง guestCard) แทนที่จะปิดก่อนหน้า section 2 -->
                     </form>
 
                     <!-- ══ ACTION BAR ══ -->
@@ -2007,7 +2011,7 @@
                         </div>
                     </div>
 
-                    <!-- ★ เพิ่มตรงนี้ — แสดงแทน action-bar ตอนยกเลิกแล้ว -->
+                    <!-- ★ แสดงแทน action-bar ตอนยกเลิกแล้ว -->
                     <div class="reviewed-box" style="background:var(--red-light);color:#7a3220;border-color:#dba896;"
                         th:if="${sts == 'CANCEL'}">
                         ❌ การจองนี้ถูกยกเลิกแล้ว ไม่สามารถดำเนินการใดๆ เพิ่มเติมได้
@@ -2129,7 +2133,6 @@
                                     <button type="button" class="review-tag" data-txt="การต้อนรับและบริการ ">🙏
                                         การบริการ</button>
                                 </div>
-                                <!-- ⬇️ FIX: oninput ตอนนี้เรียก checkReviewReady() ด้วย ไม่ใช่แค่ update charCount -->
                                 <textarea class="form-control" name="comment" id="reviewComment" rows="4"
                                     maxlength="300" placeholder="คุณรู้สึกอย่างไรเกี่ยวกับที่พักนี้"
                                     oninput="document.getElementById('charCount').textContent=this.value.length; checkReviewReady();"></textarea>
@@ -2276,7 +2279,6 @@
         }
 
         function getErrEl(input) {
-            // เดินหา .field-error ที่อยู่ถัดไปใน DOM ใกล้ที่สุด (sibling หรือ sibling ของ parent)
             let el = input.nextElementSibling;
             if (el && el.classList.contains('field-error')) return el;
             let parent = input.closest('div');
@@ -2447,8 +2449,6 @@
             document.getElementById('reviewImgInput').files = dt.files;
             checkReviewReady();
         }
-        /* ════ FIX: ตอนนี้เช็คทั้งดาว "และ" ความยาวคอมเมนต์ >= 30 ตัวอักษร
-           ให้ตรงกับข้อความ UI ที่บอกผู้ใช้ว่า "เขียน 30+ ตัวอักษร" ════ */
         function checkReviewReady() {
             const hasRating = !!document.getElementById('ratingInput').value;
             const commentEl = document.getElementById('reviewComment');
