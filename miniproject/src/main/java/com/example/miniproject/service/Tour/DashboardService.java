@@ -3,6 +3,8 @@ package com.example.miniproject.service.Tour;
 import com.example.miniproject.dto.Tour.DashboardStatsDTO;
 import com.example.miniproject.dto.Tour.BookingRowDTO;
 import com.example.miniproject.dto.Tour.PostRowDTO;
+import com.example.miniproject.entity.Tour;
+import com.example.miniproject.entity.Tourschedule;
 import com.example.miniproject.dto.Tour.MonthlyRevenueDTO;
 import com.example.miniproject.repository.Member.BookingRepository;
 import com.example.miniproject.repository.Member.TourRepository;
@@ -38,19 +40,35 @@ public class DashboardService {
     @Autowired
     private TourScheduleRepository tourScheduleRepository;
 
+    @Autowired
+    private TourScheduleService tourScheduleService;
+
     private static final String[] THAI_MONTHS = {
             "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
             "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
     };
 
     // รวมสถิติภาพรวม
+
     public DashboardStatsDTO getDashboardStats(String managerId) {
         DashboardStatsDTO dto = new DashboardStatsDTO();
         dto.setTotalTours(tourRepository.countByCommunitymanagerManagerid(managerId));
-        dto.setActiveTours(tourRepository.countActivePublishedByManagerId(managerId));
+        List<Tour> tours = tourRepository.findByCommunitymanagerManagerid(managerId);
+        long activeCount = 0;
+        for (Tour t : tours) {
+            List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(t.getTourid());
+            Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(t.getTourid());
+            String overallStatus = tourScheduleService.computeOverallStatus(schedules, t, bookedMap);
+            if ("เปิดรับจอง".equals(overallStatus)) {
+                activeCount++;
+            }
+        }
+        dto.setActiveTours(activeCount);
+
         Double revenue = paymentRepository.sumPaidAmountByManagerId(managerId);
         dto.setTotalRevenue(revenue != null ? revenue : 0.0);
-        dto.setPendingBookings(bookingRepository.countPendingTourBookingsByManagerId(managerId));
+        dto.setPendingBookings(bookingRepository.countPendingTourBookingsByManagerId(managerId)); // แก้ enum
+                                                                                                  // ตามที่คุยไปก่อนหน้า
         return dto;
     }
 
@@ -194,4 +212,5 @@ public class DashboardService {
         }
         return result;
     }
+
 }

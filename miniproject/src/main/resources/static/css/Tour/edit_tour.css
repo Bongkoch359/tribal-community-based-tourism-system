@@ -532,9 +532,10 @@ input:disabled {
 }
 
 textarea {
-    resize: vertical;
-    min-height: 100px;
+    resize: none;
+    min-height: 70px;
     line-height: 1.7;
+    overflow-y: hidden;
 }
 
 .hint {

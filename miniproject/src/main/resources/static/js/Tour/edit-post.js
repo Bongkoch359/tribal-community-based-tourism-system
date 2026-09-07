@@ -1,3 +1,14 @@
+// ── ช่องข้อความ (รายละเอียด): ขยายความสูงอัตโนมัติตามจำนวนตัวอักษรที่พิมพ์ ──
+document.querySelectorAll('textarea.form-control').forEach(function (ta) {
+    const autoResize = () => {
+        ta.style.height = 'auto';
+        ta.style.height = (ta.scrollHeight + 2) + 'px';
+    };
+    ta.addEventListener('input', autoResize);
+    // เรียกครั้งแรกกรณีมีข้อความเดิมอยู่แล้ว (โพสต์เดิมที่กำลังแก้ไข)
+    autoResize();
+});
+
 // ── รูปภาพ: gallery แบบเดียวกับหน้าแก้ไขห้องพัก (ภาพใหญ่ + thumbnail strip) ──
         //    รูปเดิม (จาก DB) + รูปใหม่ (ไฟล์จริง) รวมอยู่ใน gallery เดียวกัน เลื่อนดู/ลบได้ทีละรูป
         const fileInput = document.getElementById('fileInput');

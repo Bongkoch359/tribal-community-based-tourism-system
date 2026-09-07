@@ -1,3 +1,14 @@
+// ── ช่องข้อความ (รายละเอียดทัวร์ / เงื่อนไขทัวร์): ขยายความสูงอัตโนมัติตามจำนวนตัวอักษรที่พิมพ์ ──
+document.querySelectorAll('textarea').forEach(function (ta) {
+    const autoResize = () => {
+        ta.style.height = 'auto';
+        ta.style.height = (ta.scrollHeight + 2) + 'px';
+    };
+    ta.addEventListener('input', autoResize);
+    // เรียกครั้งแรกกรณีมีข้อความเดิมอยู่แล้ว (ทัวร์เดิมที่กำลังแก้ไข)
+    autoResize();
+});
+
 (function () {
     if (window.showAlertModal) return; // กันประกาศซ้ำถ้าโหลดไฟล์นี้มากกว่า 1 ครั้ง
 

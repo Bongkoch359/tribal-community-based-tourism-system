@@ -751,8 +751,9 @@ input[type="file"] {
 }
 
 textarea.form-control {
-    resize: vertical;
-    min-height: 110px;
+    resize: none;
+    min-height: 70px;
+    overflow-y: hidden;
 }
 
 select.form-control {

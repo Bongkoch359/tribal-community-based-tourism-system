@@ -1,3 +1,14 @@
+// ── ช่องข้อความ (รายละเอียด): ขยายความสูงอัตโนมัติตามจำนวนตัวอักษรที่พิมพ์ ──
+document.querySelectorAll('textarea.form-control').forEach(function (ta) {
+    const autoResize = () => {
+        ta.style.height = 'auto';
+        ta.style.height = (ta.scrollHeight + 2) + 'px';
+    };
+    ta.addEventListener('input', autoResize);
+    // เรียกครั้งแรกกรณีมีข้อความเดิมอยู่แล้ว (เช่นตอนแก้ไขโพสต์)
+    autoResize();
+});
+
 // ── รูปภาพ: อัปโหลดเป็นไฟล์จริง (ไม่ใช้ base64) + drag & drop เหมือนหน้าแก้ไขทัวร์ ──
 const fileInput = document.getElementById('fileInput');
 const previewGrid = document.getElementById('previewGrid');

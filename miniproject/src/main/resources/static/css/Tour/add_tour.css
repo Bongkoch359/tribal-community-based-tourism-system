@@ -505,7 +505,9 @@ textarea.form-control {
 }
 
 #tourdetail {
-    min-height: 240px;
+    min-height: 70px;      /* เดิม 140px */
+    overflow-y: hidden;
+    resize: none;  
 }
 
 #conditiontour {
