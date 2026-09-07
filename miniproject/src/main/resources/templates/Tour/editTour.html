@@ -91,27 +91,43 @@
                 <!-- ── ซ้าย: รูปภาพ + สถานะ + ราคา ── -->
                 <div class="left-col">
 
-                    <!-- รูปภาพ -->
+                    <!-- รูปภาพ (รูปแบบเดียวกับหน้าแก้ไขห้องพัก: ภาพใหญ่ + thumbnail strip) -->
                     <div class="card">
                         <div class="card-title">รูปภาพทัวร์</div>
 
-                        <!-- zone drag & drop -->
-                        <div class="img-upload-zone" id="uploadZone" ondragover="handleDragOver(event)"
-                            ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
-                            onclick="document.getElementById('fileInput').click()">
-                            <i class="fas fa-cloud-arrow-up"></i>
-                            <div class="upload-title">ลากรูปมาวางหรือคลิกเพื่อเลือก</div>
-                            <!-- <label class="upload-btn-label" onclick="event.stopPropagation()">
-                                <i class="fas fa-folder-open"></i> เลือกรูป
-                                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
-                                    onchange="addFiles(Array.from(this.files)); this.value='';">
-                            </label> -->
-                            <div class="upload-hint">jpg · png · webp | สูงสุด 5 รูป</div>
+                        <!-- Gallery + Image Manager -->
+                        <div class="gallery-wrap">
+                            <div class="gallery-main">
+                                <img id="mainImg" alt="ทัวร์" style="display:none;" />
+                                <div class="no-image" id="noImagePlaceholder">ไม่มีรูปภาพ</div>
+                                <button type="button" class="gallery-arrow prev" id="prevBtn" onclick="prevImg()"
+                                    style="display:none;">&#8249;</button>
+                                <button type="button" class="gallery-arrow next" id="nextBtn" onclick="nextImg()"
+                                    style="display:none;">&#8250;</button>
+                                <div class="gallery-counter" id="imgCounter" style="display:none;">
+                                    1 / <span id="imgTotal">0</span>
+                                </div>
+                            </div>
+
+                            <!-- Thumbnails strip: คลิกดาว = ตั้งเป็นรูปหลัก, คลิก ✕ = ลบรูป -->
+                            <div class="gallery-thumbs" id="thumbStrip"></div>
+
+                            <!-- Upload strip -->
+                            <div class="upload-strip">
+                                <label class="upload-label" for="fileInput">
+                                    <i class="fas fa-plus" style="font-size:.8rem;"></i> เพิ่มรูปภาพ
+                                </label>
+                                <div class="upload-meta">
+                                    <span class="upload-hint">jpg · png · webp ไม่เกิน 5 MB/รูป</span>
+                                    <span class="upload-count" id="imgCountNote"></span>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- grid รูป -->
-                        <div class="img-grid" id="imgGrid"></div>
-                        <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
+                        <!-- File input จริง สำหรับไฟล์รูปใหม่ที่เลือก -->
+                        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
+                            style="display:none;"
+                            onchange="addFiles(Array.from(this.files)); this.value='';">
 
                         <!-- hidden inputs -->
                         <!-- เก็บ filename เดิมจาก DB เพื่อให้ JS โหลดแสดง -->
@@ -322,13 +338,11 @@
                                 🏨 ให้ทางทัวร์ไปรับที่โรงแรม/ที่พัก
                             </label>
                         </div>
+                        <!-- ✅ ตัดแผนที่ออกจาก "เขตพื้นที่ที่รับได้" ตามคำขอ เหลือแค่กรอกข้อความเอง -->
                         <div class="form-group" id="hotelPickupAreaGroup" style="display:none;">
                             <label>เขตพื้นที่ที่รับได้ <span class="req">*</span></label>
                             <input type="text" id="hotelPickupArea" name="hotelPickupArea"
                                 placeholder="เช่น อำเภอเมือง (เชียงใหม่)" th:value="${tour.hotelPickupArea}" />
-                            <!-- <p class="hint">ระบุให้ละเอียดระดับ<strong>อำเภอ</strong> เช่น "อำเภอเมือง" แทนที่จะระบุทั้งจังหวัด
-                                เพื่อจำกัดพื้นที่ให้บริการรับส่งให้แม่นยำ ระบบจะรับส่งเฉพาะที่พักที่มีคำนี้ในที่อยู่เท่านั้น
-                                สมาชิกต้องระบุคำนี้ในที่อยู่ตอนจอง</p> -->
                         </div>
                         <p class="hint" id="err-pickupOption" style="display:none; color:#c0392b;">
                             กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง
@@ -403,6 +417,18 @@
         </div>
     </div>
 
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span>
+                Version 1.0 |
+                <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+                <a href="#"><i class="fas fa-headset"></i> ติดต่อแอดมิน</a>
+            </span>
+        </div>
+    </footer>
+
     <script th:inline="javascript">
         // รอบทัวร์ทั้งหมดของทัวร์นี้ (primitive fields เท่านั้น)
         window.scheduleData = [
@@ -422,9 +448,10 @@
 
         const scheduleAddUrl = /*[[@{/manager/tours/{id}/schedules(id=${tour.tourid})}]]*/ '';
         const scheduleBulkStatusUrl = /*[[@{/manager/tours/{id}/schedules/bulk-status(id=${tour.tourid})}]]*/ '';
-        const scheduleDeleteUrlTemplate = /*[[@{/manager/tours/{id}/schedules/__SID__/delete(id=${tour.tourid})}]]*/ '';
+        const scheduleDeleteUrlTemplate = /*[[@{/manager/tours/{id}/schedules/PLACEHOLDERSID/delete(id=${tour.tourid})}]]*/ '';
 
         const tourSavedType = /*[[${tour.tourtype != null ? tour.tourtype.typename : ''}]]*/ '';
+        const scheduleDataUrl = /*[[@{/manager/tours/{id}/schedules/data(id=${tour.tourid})}]]*/ '';
     </script>
 
     <script src="/js/Tour/edit_tour.js"></script>

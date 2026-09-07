@@ -21,8 +21,10 @@ body {
 }
 
 .top-navbar .brand {
+    font-family: 'Sriracha', cursive;
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 1.55rem;      /* ให้เท่ากับ add-room */
+    letter-spacing: 0.5px;
     color: #fff;
     text-decoration: none;
     display: flex;

@@ -20,6 +20,7 @@ public interface TourScheduleRepository extends JpaRepository<Tourschedule, Stri
     List<Tourschedule> findByTourTouridOrderByOpendateAsc(String tourid);
 
     Optional<Tourschedule> findByTourTouridAndOpendate(String tourid, Date opendate);
+    
 
     // ดึงเฉพาะรอบที่ "เปิดรับจอง" และยังไม่ผ่านวันที่มาแล้ว (สำหรับหน้าจองของ
     // member)

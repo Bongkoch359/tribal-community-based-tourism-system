@@ -245,11 +245,42 @@
             --red: #c0392b;
         }
 
+        html {
+            height: 100%;
+        }
+
         body {
             font-family: 'Sarabun', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ─── Footer ─── */
+        .footer {
+            margin-top: auto;
+            padding: 1rem 2rem;
+            background: #0d3d30;
+            color: #c8f0e4;
+            font-size: 0.9rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer a {
+            color: #5ecfb0;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
         }
 
         /* ── Layout ── */
@@ -257,6 +288,8 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 28px 20px 60px;
+            flex: 1;
+            width: 100%;
         }
 
         /* ── Page title row & Back Button Circle ── */
@@ -1306,6 +1339,20 @@
             </button>
         </div>
     </div>
+
+    <!-- ─── FOOTER ─── -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span class="footer-right">
+                Version 1.0 |
+                <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+                <a href="#" onclick="openContactModal()">
+                    <i class="fas fa-headset"></i> ติดต่อแอดมิน
+                </a>
+            </span>
+        </div>
+    </footer>
 
     <script th:inline="javascript">
         /*<![CDATA[*/

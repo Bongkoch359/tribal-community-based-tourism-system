@@ -1,9 +1,14 @@
-// ── รูปภาพ: รูปเดิม (จาก DB) + รูปใหม่ (ไฟล์จริง) รวมอยู่ใน grid เดียวกัน
-        //    ลบได้ทีละรูป ไม่ว่าจะเป็นรูปเดิมหรือรูปใหม่ ── รูปแบบเดียวกับหน้าแก้ไขทัวร์ ──
+// ── รูปภาพ: gallery แบบเดียวกับหน้าแก้ไขห้องพัก (ภาพใหญ่ + thumbnail strip) ──
+        //    รูปเดิม (จาก DB) + รูปใหม่ (ไฟล์จริง) รวมอยู่ใน gallery เดียวกัน เลื่อนดู/ลบได้ทีละรูป
         const fileInput = document.getElementById('fileInput');
-        const imgGrid = document.getElementById('imgGrid');
+        const mainImg = document.getElementById('mainImg');
+        const noImgEl = document.getElementById('noImagePlaceholder');
+        const counter = document.getElementById('imgCounter');
+        const imgTotal = document.getElementById('imgTotal');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const thumbStrip = document.getElementById('thumbStrip');
         const imgCountNote = document.getElementById('imgCountNote');
-        const uploadZone = document.getElementById('uploadZone');
         const existingImagesDataEl = document.getElementById('existingImagesData');
         const keepImagesInput = document.getElementById('keepImagesInput');
 
@@ -14,7 +19,147 @@
             ? existingImagesDataEl.value.split('||').filter(Boolean)
             : [];
 
-        let fileList = []; // เก็บ File object จริง ๆ ของรูปที่เลือกใหม่
+        let newFileList = [];       // เก็บ File object จริง ๆ ของรูปที่เลือกใหม่ (ตามลำดับที่แสดง)
+        let images = existingImages.slice(); // path/objectUrl ของรูปทั้งหมดตามลำดับที่แสดงใน gallery
+        let current = 0;
+
+        // ส่งรายชื่อรูปเดิมที่ยังเหลืออยู่ (หลังลบ) กลับไปให้ backend ผ่าน hidden input
+        function syncKeepImagesInput() {
+            keepImagesInput.value = existingImages.join('||');
+        }
+
+        // อัปเดต input.files จริงให้ตรงกับ newFileList
+        // จำเป็นเพราะฟอร์มนี้ submit แบบปกติ (ไม่ใช่ AJAX) จึงต้องพึ่งพา fileInput.files ตอน submit จริง
+        function syncFileInput() {
+            const dt = new DataTransfer();
+            newFileList.forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
+        }
+
+        function refreshUI() {
+            const total = images.length;
+            if (total === 0) {
+                mainImg.style.display = 'none';
+                noImgEl.style.display = '';
+                counter.style.display = 'none';
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            } else {
+                mainImg.style.display = '';
+                noImgEl.style.display = 'none';
+                if (current >= total) current = total - 1;
+                mainImg.src = images[current];
+                const showNav = total > 1;
+                counter.style.display = showNav ? '' : 'none';
+                prevBtn.style.display = showNav ? '' : 'none';
+                nextBtn.style.display = showNav ? '' : 'none';
+                if (imgTotal) imgTotal.textContent = total;
+                counter.childNodes[0].textContent = (current + 1) + ' / ';
+            }
+            thumbStrip.querySelectorAll('img').forEach((t, i) => t.classList.toggle('active', i === current));
+
+            if (imgCountNote) {
+                imgCountNote.style.display = total > 0 ? '' : 'none';
+                imgCountNote.textContent = `รูปภาพ ${total} / ${MAX_IMAGES}`;
+                imgCountNote.classList.toggle('limit-reached', total >= MAX_IMAGES);
+            }
+            const uploadLabel = document.querySelector('.upload-label');
+            if (uploadLabel) {
+                if (total >= MAX_IMAGES) {
+                    uploadLabel.style.opacity = '.5';
+                    uploadLabel.style.pointerEvents = 'none';
+                    fileInput.disabled = true;
+                } else {
+                    uploadLabel.style.opacity = '';
+                    uploadLabel.style.pointerEvents = '';
+                    fileInput.disabled = false;
+                }
+            }
+        }
+
+        function goToImg(index) {
+            if (images.length === 0) return;
+            current = (index + images.length) % images.length;
+            refreshUI();
+        }
+        function nextImg() { goToImg(current + 1); }
+        function prevImg() { goToImg(current - 1); }
+
+        function buildExistingThumb(url) {
+            const wrap = document.createElement('div');
+            wrap.className = 'thumb-wrap existing-thumb';
+            wrap.dataset.src = url;
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'รูปโพสต์ปัจจุบัน';
+            img.onclick = () => goToImg(images.indexOf(url));
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'thumb-remove';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = () => removeExistingThumb(wrap, url);
+
+            wrap.appendChild(img);
+            wrap.appendChild(removeBtn);
+            return wrap;
+        }
+
+        function removeExistingThumb(wrap, url) {
+            const eIdx = existingImages.indexOf(url);
+            if (eIdx > -1) existingImages.splice(eIdx, 1);
+            const gIdx = images.indexOf(url);
+            if (gIdx > -1) images.splice(gIdx, 1);
+            wrap.remove();
+            if (current >= images.length) current = Math.max(0, images.length - 1);
+            syncKeepImagesInput();
+            refreshUI();
+        }
+
+        function buildNewThumb(file, objectUrl) {
+            const wrap = document.createElement('div');
+            wrap.className = 'thumb-wrap new-thumb';
+
+            const img = document.createElement('img');
+            img.src = objectUrl;
+            img.alt = 'รูปใหม่';
+            img.onclick = () => goToImg(images.indexOf(objectUrl));
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'thumb-remove';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = () => removeNewThumb(wrap, file, objectUrl);
+
+            wrap.appendChild(img);
+            wrap.appendChild(removeBtn);
+            return wrap;
+        }
+
+        function removeNewThumb(wrap, file, objectUrl) {
+            const fIdx = newFileList.indexOf(file);
+            if (fIdx > -1) newFileList.splice(fIdx, 1);
+            const gIdx = images.indexOf(objectUrl);
+            if (gIdx > -1) images.splice(gIdx, 1);
+            wrap.remove();
+            if (current >= images.length) current = Math.max(0, images.length - 1);
+            syncFileInput();
+            refreshUI();
+        }
+
+        function addFiles(files) {
+            files.forEach(file => {
+                if (!file || !file.type.startsWith('image/')) return;
+                if (images.length >= MAX_IMAGES) return;
+                const objectUrl = URL.createObjectURL(file);
+                newFileList.push(file);
+                images.push(objectUrl);
+                thumbStrip.appendChild(buildNewThumb(file, objectUrl));
+            });
+            syncFileInput();
+            refreshUI();
+        }
 
         fileInput.addEventListener('change', function () {
             // ต้อง reset value "ก่อน" เรียก addFiles() เสมอ
@@ -26,121 +171,10 @@
             addFiles(files);
         });
 
-        function addFiles(files) {
-            files.forEach(file => {
-                if (!file || !file.type.startsWith('image/')) return;
-                if (existingImages.length + fileList.length >= MAX_IMAGES) return;
-                fileList.push(file);
-            });
-            syncFileInput();
-            renderGrid();
-        }
-
-        // อัปเดต input.files ให้ตรงกับ fileList (จำเป็นเวลาลบรูปออกจาก preview)
-        function syncFileInput() {
-            const dt = new DataTransfer();
-            fileList.forEach(file => dt.items.add(file));
-            fileInput.files = dt.files;
-        }
-
-        // ส่งรายชื่อรูปเดิมที่ยังเหลืออยู่ (หลังลบ) กลับไปให้ backend ผ่าน hidden input
-        function syncKeepImagesInput() {
-            keepImagesInput.value = existingImages.join('||');
-        }
-
-        function renderGrid() {
-            imgGrid.innerHTML = '';
-
-            // รูปเดิมจาก DB
-            existingImages.forEach((url, idx) => {
-                const thumb = document.createElement('div');
-                thumb.className = 'img-thumb';
-
-                const img = document.createElement('img');
-                img.src = url;
-                img.alt = 'รูปโพสต์ปัจจุบัน';
-
-                const badge = document.createElement('span');
-                badge.className = 'existing-badge';
-                badge.textContent = 'ปัจจุบัน';
-
-                const overlay = document.createElement('div');
-                overlay.className = 'thumb-overlay';
-
-                const delBtn = document.createElement('button');
-                delBtn.type = 'button';
-                delBtn.className = 'thumb-btn del-btn';
-                delBtn.innerHTML = '<i class="fas fa-xmark"></i>';
-                delBtn.onclick = () => {
-                    existingImages.splice(idx, 1);
-                    syncKeepImagesInput();
-                    renderGrid();
-                };
-
-                overlay.appendChild(delBtn);
-                thumb.appendChild(img);
-                thumb.appendChild(badge);
-                thumb.appendChild(overlay);
-                imgGrid.appendChild(thumb);
-            });
-
-            // รูปใหม่ที่เพิ่งเลือก/ลากมาวาง
-            fileList.forEach((file, idx) => {
-                const thumb = document.createElement('div');
-                thumb.className = 'img-thumb';
-
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                img.onload = () => URL.revokeObjectURL(img.src);
-
-                const overlay = document.createElement('div');
-                overlay.className = 'thumb-overlay';
-
-                const delBtn = document.createElement('button');
-                delBtn.type = 'button';
-                delBtn.className = 'thumb-btn del-btn';
-                delBtn.innerHTML = '<i class="fas fa-xmark"></i>';
-                delBtn.onclick = () => {
-                    fileList.splice(idx, 1);
-                    syncFileInput();
-                    renderGrid();
-                };
-
-                overlay.appendChild(delBtn);
-                thumb.appendChild(img);
-                thumb.appendChild(overlay);
-                imgGrid.appendChild(thumb);
-            });
-
-            const total = existingImages.length + fileList.length;
-            if (total > 0) {
-                imgCountNote.style.display = '';
-                imgCountNote.textContent = `ทั้งหมด ${total}/${MAX_IMAGES} รูป`;
-            } else {
-                imgCountNote.style.display = 'none';
-            }
-        }
-
+        // วาด thumbnail รูปเดิมจาก DB ตอนโหลดหน้า
+        existingImages.forEach(url => thumbStrip.appendChild(buildExistingThumb(url)));
         syncKeepImagesInput();
-        renderGrid();
-
-        // ── Drag & drop ──
-        function handleDragOver(e) {
-            e.preventDefault();
-            uploadZone.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            e.preventDefault();
-            uploadZone.classList.remove('drag-over');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            uploadZone.classList.remove('drag-over');
-            const files = Array.from(e.dataTransfer.files || []);
-            addFiles(files);
-        }
+        refreshUI();
 
         // ── แสดง/ซ่อนฟิลด์สถานที่ ตามการเลือกทัวร์ ──
         const tourSelect = document.getElementById('tourSelect');

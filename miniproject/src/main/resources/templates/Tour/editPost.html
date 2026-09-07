@@ -106,32 +106,48 @@
                 <!-- ── LEFT: รูปภาพ + ข้อมูล meta ── -->
                 <div>
 
-                    <!-- Image card (รูปแบบเดียวกับหน้าแก้ไขทัวร์: รูปเดิม+รูปใหม่รวมใน grid เดียว) -->
+                    <!-- Image card (รูปแบบเดียวกับหน้าแก้ไขห้องพัก: ภาพใหญ่ + thumbnail strip) -->
                     <div class="card">
                         <div class="card-title">รูปภาพโพสต์</div>
 
-                        <!-- zone drag & drop -->
-                        <div class="img-upload-zone" id="uploadZone" ondragover="handleDragOver(event)"
-                            ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
-                            onclick="document.getElementById('fileInput').click()">
-                            <i class="fas fa-cloud-arrow-up"></i>
-                            <div class="upload-title">ลากรูปมาวางหรือคลิกเพื่อเลือก</div>
-                            <div class="upload-hint">jpg · png · webp | สูงสุด 5 รูป</div>
+                        <!-- Gallery + Image Manager -->
+                        <div class="gallery-wrap">
+                            <div class="gallery-main">
+                                <img id="mainImg" alt="โพสต์" style="display:none;" />
+                                <div class="no-image" id="noImagePlaceholder">ไม่มีรูปภาพ</div>
+                                <button type="button" class="gallery-arrow prev" id="prevBtn" onclick="prevImg()"
+                                    style="display:none;">&#8249;</button>
+                                <button type="button" class="gallery-arrow next" id="nextBtn" onclick="nextImg()"
+                                    style="display:none;">&#8250;</button>
+                                <div class="gallery-counter" id="imgCounter" style="display:none;">
+                                    1 / <span id="imgTotal">0</span>
+                                </div>
+                            </div>
+
+                            <!-- Thumbnails strip (รูปเดิมจาก DB + รูปใหม่ที่เพิ่งเลือก แสดงรวมกัน) -->
+                            <div class="gallery-thumbs" id="thumbStrip"></div>
+
+                            <!-- Upload strip -->
+                            <div class="upload-strip">
+                                <label class="upload-label" for="fileInput">
+                                    <i class="fas fa-plus" style="font-size:.8rem;"></i> เพิ่มรูปภาพ
+                                </label>
+                                <div class="upload-meta">
+                                    <span class="upload-hint">jpg · png · webp ไม่เกิน 5 MB/รูป</span>
+                                    <span class="upload-count" id="imgCountNote"></span>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- grid รูป (รูปเดิมจาก DB + รูปใหม่ที่เพิ่งเลือก แสดงรวมกัน) -->
-                        <div class="img-grid" id="imgGrid"></div>
-                        <div class="img-count-note" id="imgCountNote" style="display:none;"></div>
-
-                        <!-- เก็บรูปเดิมจาก DB (คั่นด้วย ||) เพื่อให้ JS โหลดมาแสดงใน grid เดียวกับรูปใหม่ -->
+                        <!-- เก็บรูปเดิมจาก DB (คั่นด้วย ||) เพื่อให้ JS โหลดมาแสดงใน gallery -->
                         <input type="hidden" id="existingImagesData"
                             th:if="${post.images != null and !#strings.isEmpty(post.images)}"
                             th:value="${post.images}" />
-                        <!-- รายชื่อรูปเดิมที่ยังเก็บไว้ (หลังผู้ใช้อาจลบบางรูปออกจาก grid) ส่งกลับไปให้ backend -->
+                        <!-- รายชื่อรูปเดิมที่ยังเก็บไว้ (หลังผู้ใช้อาจลบบางรูปออกจาก gallery) ส่งกลับไปให้ backend -->
                         <input type="hidden" name="keepImages" id="keepImagesInput" value="">
 
                         <!-- File input จริง สำหรับไฟล์รูปใหม่ที่เลือก/ลากมาวาง -->
-                        <input type="file" id="fileInput" name="images" accept="image/*" multiple />
+                        <input type="file" id="fileInput" name="images" accept="image/*" multiple style="display:none;" />
                     </div>
 
                 </div>
@@ -208,6 +224,18 @@
 
         </form>
     </div>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 ระบบท่องเที่ยวชุมชนชนเผ่า</span>
+            <span>
+                Version 1.0 |
+                <a href="#"><i class="fas fa-circle-question"></i> Help</a> |
+                <a href="#"><i class="fas fa-headset"></i> ติดต่อแอดมิน</a>
+            </span>
+        </div>
+    </footer>
 
     <script th:src="@{/js/Tour/edit-post.js}"></script>
 </body>

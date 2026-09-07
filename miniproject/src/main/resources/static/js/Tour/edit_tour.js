@@ -1,23 +1,91 @@
-
 (function () {
     if (window.showAlertModal) return; // กันประกาศซ้ำถ้าโหลดไฟล์นี้มากกว่า 1 ครั้ง
 
     const style = document.createElement('style');
     style.textContent = `
-        .ui-modal-icon.error   { background: linear-gradient(135deg, #ba1a1a, #e14b4b); box-shadow: 0 8px 24px rgba(186,26,26,.35); }
-        .ui-modal-icon.warning { background: linear-gradient(135deg, #ff8e4d, #c9600f); box-shadow: 0 8px 24px rgba(255,142,77,.35); }
-        .ui-modal-icon.success { background: linear-gradient(135deg, var(--green-dark,#006e2f), var(--green-mid,#22c55e)); box-shadow: 0 8px 24px rgba(0,110,47,.35); }
-        .modal-btn-secondary {
-            font-size: 13px; font-family: 'Sarabun', sans-serif; padding: 10px 22px;
-            background: transparent; color: var(--text-muted, #3d4a3d);
-            border: 1px solid var(--border, #e4e0d4); border-radius: 8px;
-            cursor: pointer; font-weight: 700; transition: background .15s;
-        }
-        .modal-btn-secondary:hover { background: #faf7ef; }
-        .modal-btn-danger { background: #ba1a1a !important; }
-        .modal-btn-danger:hover { background: #931414 !important; }
-        .ui-modal-desc { white-space: pre-line; }
-    `;
+    .ui-modal-icon.error   { background: linear-gradient(135deg, #ba1a1a, #e14b4b); box-shadow: 0 8px 24px rgba(186,26,26,.35); }
+    .ui-modal-icon.warning { background: linear-gradient(135deg, #ff8e4d, #c9600f); box-shadow: 0 8px 24px rgba(255,142,77,.35); }
+    .ui-modal-icon.success { background: linear-gradient(135deg, var(--green-dark,#006e2f), var(--green-mid,#22c55e)); box-shadow: 0 8px 24px rgba(0,110,47,.35); }
+
+    .ui-modal-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-main, #0b1c30);
+        margin-bottom: 8px;
+        font-family: 'Sarabun', sans-serif;
+    }
+
+    .ui-modal-desc {
+        white-space: pre-line;
+        font-size: 13.5px;
+        color: var(--text-muted, #3d4a3d);
+        line-height: 1.7;
+        margin-bottom: 26px;
+        font-family: 'Sarabun', sans-serif;
+    }
+
+    .modal-btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .modal-btn-primary {
+        font-size: 13.5px;
+        font-family: 'Sarabun', sans-serif;
+        padding: 10px 28px;
+        background: linear-gradient(135deg, #ff8e4d, #e8720f);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        box-shadow: 0 3px 10px rgba(255, 142, 77, .38);
+        transition: box-shadow .15s ease, transform .12s ease;
+    }
+    .modal-btn-primary:hover {
+        box-shadow: 0 6px 16px rgba(255, 142, 77, .46);
+        transform: translateY(-1.5px);
+    }
+    .modal-btn-primary:active {
+        transform: translateY(0) scale(.97);
+        box-shadow: 0 2px 6px rgba(255, 142, 77, .35);
+    }
+    .modal-btn-primary:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+    }
+
+    .modal-btn-secondary {
+        font-size: 13.5px; font-family: 'Sarabun', sans-serif; padding: 10px 24px;
+        background: transparent; color: var(--text-muted, #3d4a3d);
+        border: 1.5px solid var(--border, #e4e0d4); border-radius: 10px;
+        cursor: pointer; font-weight: 700; transition: background .15s, border-color .15s, transform .1s;
+    }
+    .modal-btn-secondary:hover {
+        background: #faf7ef;
+        border-color: #cfc8b8;
+        transform: translateY(-1px);
+    }
+    .modal-btn-secondary:active {
+        transform: translateY(0) scale(.97);
+    }
+
+    .modal-btn-danger { background: linear-gradient(135deg, #ba1a1a, #931414) !important; box-shadow: 0 3px 10px rgba(186,26,26,.35) !important; }
+    .modal-btn-danger:hover { box-shadow: 0 6px 16px rgba(186,26,26,.42) !important; }
+    .checkmark-wrap.ui-modal-icon {
+        width: 72px;
+        height: 72px;
+        margin-bottom: 18px;
+    }
+    .checkmark-icon.ui-modal-icon-glyph {
+        font-size: 30px;
+    }
+`;
     document.head.appendChild(style);
 
     const ICON_CLASS = { error: 'fa-circle-exclamation', warning: 'fa-triangle-exclamation', success: 'fa-check' };
@@ -135,14 +203,23 @@
 
 // ✅ ปรับให้ตรงกับ requirement เดียวกับฟอร์มเพิ่มทัวร์ (สูงสุด 5 รูป)
 //    เดิมฟอร์มนี้ตั้งไว้ 10 รูป ทำให้ไม่ตรงกับฟอร์มเพิ่มทัวร์ที่จำกัดไว้ 5 รูป
+// ── รูปภาพ: gallery แบบเดียวกับหน้าแก้ไขห้องพัก (ภาพใหญ่ + thumbnail strip) ──
+//    ดาว = ตั้งเป็นรูปหลัก, ✕ = ลบรูป
 const MAX_IMAGES = 5;
 let imageDataList = []; // { src: 'data:...' หรือ '/uploads/tours/...' , base64: '...' หรือ null, name: '...' }
 let primaryIndex = 0;
+let current = 0;
 
-const imgGrid = document.getElementById('imgGrid');
+const mainImg = document.getElementById('mainImg');
+const noImgEl = document.getElementById('noImagePlaceholder');
+const counter = document.getElementById('imgCounter');
+const imgTotal = document.getElementById('imgTotal');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const thumbStrip = document.getElementById('thumbStrip');
 const imgCountNote = document.getElementById('imgCountNote');
 const imagesInput = document.getElementById('imagesInput');
-const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
 
 // ── โหลดรูปเดิมจาก DB ──
 (function loadExisting() {
@@ -152,17 +229,7 @@ const uploadZone = document.getElementById('uploadZone');
     names.forEach(name => {
         imageDataList.push({ src: '/uploads/tours/' + name, base64: null, name: name });
     });
-    renderGrid();
 })();
-
-// ── Drag & Drop ──
-function handleDragOver(e) { e.preventDefault(); uploadZone.classList.add('drag-over'); }
-function handleDragLeave(e) { uploadZone.classList.remove('drag-over'); }
-function handleDrop(e) {
-    e.preventDefault();
-    uploadZone.classList.remove('drag-over');
-    addFiles(Array.from(e.dataTransfer.files));
-}
 
 // ── เพิ่มไฟล์ใหม่ ──
 // ✅ แก้บั๊ก: เดิม slice() ตัดไฟล์ตามโควตาก่อนเช็คชนิดไฟล์ ทำให้ถ้ามีไฟล์ผิดชนิดปนมาก่อน
@@ -192,38 +259,94 @@ function addFiles(files) {
         reader.onload = e => {
             imageDataList.push({ src: e.target.result, base64: e.target.result, name: file.name });
             loaded++;
-            if (loaded === validFiles.length) renderGrid();
+            if (loaded === validFiles.length) renderGallery();
         };
         reader.readAsDataURL(file);
     });
 }
 
-// ── Render grid ──
-function renderGrid() {
-    imgGrid.innerHTML = '';
+// ── Render gallery (ภาพใหญ่ + thumbnail strip) ──
+function renderGallery() {
+    const total = imageDataList.length;
+
+    if (total === 0) {
+        mainImg.style.display = 'none';
+        noImgEl.style.display = '';
+        counter.style.display = 'none';
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+    } else {
+        mainImg.style.display = '';
+        noImgEl.style.display = 'none';
+        if (current >= total) current = total - 1;
+        mainImg.src = imageDataList[current].src;
+        const showNav = total > 1;
+        counter.style.display = showNav ? '' : 'none';
+        prevBtn.style.display = showNav ? '' : 'none';
+        nextBtn.style.display = showNav ? '' : 'none';
+        if (imgTotal) imgTotal.textContent = total;
+        counter.childNodes[0].textContent = (current + 1) + ' / ';
+    }
+
+    thumbStrip.innerHTML = '';
     imageDataList.forEach((img, i) => {
-        const thumb = document.createElement('div');
-        thumb.className = 'img-thumb' + (i === primaryIndex ? ' primary' : '');
-        thumb.innerHTML = `
-            <img src="${img.src}" alt="${img.name}"/>
-            <div class="thumb-overlay">
-                <button type="button" class="thumb-btn star-btn" onclick="setPrimary(${i})" title="ตั้งรูปหลัก"><i class="fas fa-star"></i></button>
-                <button type="button" class="thumb-btn del-btn"  onclick="removeImage(${i})"  title="ลบรูป"><i class="fas fa-trash"></i></button>
-            </div>
-            ${i === primaryIndex ? '<div class="primary-badge">หลัก</div>' : ''}
-        `;
-        imgGrid.appendChild(thumb);
+        const wrap = document.createElement('div');
+        wrap.className = 'thumb-wrap' + (i === primaryIndex ? ' primary' : '');
+
+        const thumbImg = document.createElement('img');
+        thumbImg.src = img.src;
+        thumbImg.alt = img.name;
+        thumbImg.className = i === current ? 'active' : '';
+        thumbImg.onclick = () => goToImg(i);
+
+        const starBtn = document.createElement('button');
+        starBtn.type = 'button';
+        starBtn.className = 'thumb-star' + (i === primaryIndex ? ' active' : '');
+        starBtn.title = 'ตั้งเป็นรูปหลัก';
+        starBtn.innerHTML = '<i class="fas fa-star"></i>';
+        starBtn.onclick = () => setPrimary(i);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'thumb-remove';
+        removeBtn.title = 'ลบรูป';
+        removeBtn.textContent = '✕';
+        removeBtn.onclick = () => removeImage(i);
+
+        wrap.appendChild(thumbImg);
+        wrap.appendChild(starBtn);
+        wrap.appendChild(removeBtn);
+        thumbStrip.appendChild(wrap);
     });
 
-    if (imageDataList.length > 0) {
-        imgCountNote.style.display = 'block';
-        imgCountNote.textContent = `เลือกแล้ว ${imageDataList.length}/${MAX_IMAGES} รูป`;
-    } else {
-        imgCountNote.style.display = 'none';
+    if (imgCountNote) {
+        imgCountNote.style.display = total > 0 ? '' : 'none';
+        imgCountNote.textContent = `เลือกแล้ว ${total}/${MAX_IMAGES} รูป`;
+        imgCountNote.classList.toggle('limit-reached', total >= MAX_IMAGES);
+    }
+    const uploadLabel = document.querySelector('.upload-label');
+    if (uploadLabel) {
+        if (total >= MAX_IMAGES) {
+            uploadLabel.style.opacity = '.5';
+            uploadLabel.style.pointerEvents = 'none';
+            if (fileInput) fileInput.disabled = true;
+        } else {
+            uploadLabel.style.opacity = '';
+            uploadLabel.style.pointerEvents = '';
+            if (fileInput) fileInput.disabled = false;
+        }
     }
 
     packImages();
 }
+
+function goToImg(index) {
+    if (imageDataList.length === 0) return;
+    current = (index + imageDataList.length) % imageDataList.length;
+    renderGallery();
+}
+function nextImg() { goToImg(current + 1); }
+function prevImg() { goToImg(current - 1); }
 
 // ── pack ส่งไป Controller ──
 function packImages() {
@@ -247,7 +370,7 @@ function packImages() {
     }
 }
 
-function setPrimary(index) { primaryIndex = index; renderGrid(); }
+function setPrimary(index) { primaryIndex = index; renderGallery(); }
 
 // ✅ แก้บั๊ก: เดิมเช็คแค่กรณี primaryIndex เกินขอบเขตหลังลบ (>= length)
 //    แต่ถ้าลบรูปที่ index ก่อนหน้ารูปหลัก จะทำให้ primaryIndex ชี้ไปผิดรูป (เลื่อนตำแหน่งไม่ทัน)
@@ -260,8 +383,11 @@ function removeImage(index) {
         primaryIndex = 0;
     }
     if (primaryIndex >= imageDataList.length) primaryIndex = 0;
-    renderGrid();
+    if (current >= imageDataList.length) current = Math.max(0, imageDataList.length - 1);
+    renderGallery();
 }
+
+renderGallery(); // แสดงรูปเดิมจาก DB ตั้งแต่โหลดหน้า
 
 /* ═══════════════════════════════════════════
    TOUR TYPE (เหมือนฟอร์มเพิ่มทัวร์)
@@ -309,16 +435,15 @@ function applyPickupRules() {
     hotelPickupAreaGroup.style.display = allowHotelPickupChk.checked ? 'block' : 'none';
     if (pickupOptionErr) pickupOptionErr.style.display = 'none';
 
-    // ✅ เพิ่มใหม่: สร้างแผนที่ตอนเปิดใช้งาน checkbox (Leaflet ไม่ต้องรอ API โหลด)
+    // ✅ ตัดแผนที่ "เขตพื้นที่ที่รับได้" ออกตามคำขอ — เหลือแค่แผนที่จุดรวมพลเท่านั้น
     if (allowMeetingPointChk.checked) initMeetingMap();
-    if (allowHotelPickupChk.checked) initHotelMap();
 }
 allowMeetingPointChk.addEventListener('change', applyPickupRules);
 allowHotelPickupChk.addEventListener('change', applyPickupRules);
 window.addEventListener('DOMContentLoaded', applyPickupRules);
 
 /* ═══════════════════════════════════════════
-   LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่ (จุดรวมพล / เขตรับที่โรงแรม)
+   LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่ (จุดรวมพลเท่านั้น)
    ฟรี ไม่ต้องมี API Key ไม่เก็บ lat/lng ลง backend
    ใช้ Nominatim (OSM) สำหรับค้นหาสถานที่ + reverse geocode
 ═══════════════════════════════════════════ */
@@ -326,7 +451,6 @@ const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเ
 const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
 
 let meetingMap, meetingMarker;
-let hotelMap, hotelMarker;
 
 function createLeafletMap(divId) {
     const map = L.map(divId, { center: DEFAULT_MAP_CENTER, zoom: 13 });
@@ -463,50 +587,6 @@ function initMeetingMap() {
     );
 }
 
-/* ── เขตรับที่โรงแรม ── */
-function initHotelMap() {
-    if (hotelMap) return;
-
-    hotelMap = createLeafletMap('hotelPickupMap');
-    hotelMap.setZoom(12);
-    hotelMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(hotelMap);
-
-    if (hotelPickupAreaInput.value.trim() !== '') {
-        geocodeAddressToLatLng(hotelPickupAreaInput.value, (latlng) => {
-            if (latlng) {
-                hotelMap.setView(latlng, 14);
-                hotelMarker.setLatLng(latlng);
-            }
-        });
-    }
-
-    hotelMarker.on('dragend', () => {
-        const pos = hotelMarker.getLatLng();
-        reverseGeocode(pos.lat, pos.lng, (address) => {
-            hotelPickupAreaInput.value = address;
-        });
-    });
-
-    hotelMap.on('click', (e) => {
-        hotelMarker.setLatLng(e.latlng);
-        reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => {
-            hotelPickupAreaInput.value = address;
-        });
-    });
-
-    setTimeout(() => hotelMap.invalidateSize(), 200);
-
-    attachPlaceSearch(
-        hotelPickupAreaInput,
-        document.getElementById('hotelPickupSuggest'),
-        (lat, lng) => {
-            hotelMap.setView([lat, lng], 14);
-            hotelMarker.setLatLng([lat, lng]);
-        },
-        { id: null }
-    );
-}
-
 // ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
 // ✅ tourtype เป็น entity แล้ว ต้องอ่านชื่อผ่าน .typename และกัน null (ทัวร์ที่ยังไม่ผูกประเภท)
 (function initTourType() {
@@ -615,21 +695,21 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         method: 'POST',
         body: new URLSearchParams(formData)
     })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(() => {
-                throw new Error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (status ' + response.status + ')');
-            });
-        }
-        return response.url;
-    })
-    .then((redirectUrl) => {
-        showSuccessModal(redirectUrl);
-    })
-    .catch(err => {
-        console.error('บันทึกการแก้ไขไม่สำเร็จ:', err);
-        showAlertModal('เกิดข้อผิดพลาด: ' + err.message, { type: 'error' });
-    });
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(() => {
+                    throw new Error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (status ' + response.status + ')');
+                });
+            }
+            return response.url;
+        })
+        .then((redirectUrl) => {
+            showSuccessModal(redirectUrl);
+        })
+        .catch(err => {
+            console.error('บันทึกการแก้ไขไม่สำเร็จ:', err);
+            showAlertModal('เกิดข้อผิดพลาด: ' + err.message, { type: 'error' });
+        });
 });
 
 /* ═══════════════════════════════════════════
@@ -825,14 +905,13 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     //    เพื่อไม่ให้ข้อมูลฟอร์มแก้ไขทัวร์ที่ยังไม่ได้กดบันทึกหายไป) ──
     async function refreshScheduleData() {
         try {
-            const url = window.location.href.split('#')[0].split('?')[0] + '?_ts=' + Date.now();
-            const res = await fetch(url, { method: 'GET', cache: 'no-store' });
-            const html = await res.text();
-            const match = html.match(/window\.scheduleData\s*=\s*(\[[\s\S]*?\]);/);
-            if (match) {
-                const cleanJson = match[1].replace(/,(\s*)\]/g, '$1]');
-                window.scheduleData = JSON.parse(cleanJson);
+            const res = await fetch(scheduleDataUrl + '?_ts=' + Date.now(), { method: 'GET', cache: 'no-store' });
+            const body = await res.json();
+            if (body && body.ok && Array.isArray(body.schedules)) {
+                window.scheduleData = body.schedules;
                 buildScheduleByDate();
+            } else {
+                console.error('รีเฟรชข้อมูลรอบทัวร์ไม่สำเร็จ: response ไม่ถูกต้อง', body);
             }
         } catch (e) {
             console.error('รีเฟรชข้อมูลรอบทัวร์ไม่สำเร็จ:', e);
@@ -861,9 +940,11 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         return res.ok;
     }
     async function deleteScheduleRequest(scheduleid) {
-        const url = scheduleDeleteUrlTemplate.replace('__SID__', scheduleid);
+        const url = scheduleDeleteUrlTemplate.replace('PLACEHOLDERSID', scheduleid);
         const res = await fetch(url, { method: 'POST' });
-        return res.ok;
+        let body = null;
+        try { body = await res.json(); } catch (e) { /* response อาจไม่ใช่ JSON ก็ได้ */ }
+        return { httpOk: res.ok, ok: body ? body.ok : res.ok, message: body && body.message };
     }
 
     // ── ปุ่ม: เปิด/ปิดรับจองทั้งช่วง (bulk-status endpoint เดิม) ──
@@ -925,13 +1006,23 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
 
         setToolbarBusy(true);
         let ok = 0, fail = 0;
+        const failMessages = [];
         for (const s of deletable) {
-            const success = await deleteScheduleRequest(s.scheduleid);
-            if (success) ok++; else fail++;
+            const result = await deleteScheduleRequest(s.scheduleid);
+            if (result.ok) {
+                ok++;
+            } else {
+                fail++;
+                if (result.message) failMessages.push(result.message);
+            }
         }
         setToolbarBusy(false);
-        await showAlertModal(`ลบสำเร็จ ${ok} รอบ` + (fail > 0 ? ` (ล้มเหลว ${fail} รอบ)` : '') +
-            (blocked > 0 ? ` · ข้าม ${blocked} รอบที่มีคนจองแล้ว` : ''), { type: 'success' });
+
+        let summary = `ลบสำเร็จ ${ok} รอบ`;
+        if (fail > 0) summary += ` (ล้มเหลว ${fail} รอบ${failMessages.length ? ': ' + [...new Set(failMessages)].join(', ') : ''})`;
+        if (blocked > 0) summary += ` · ข้าม ${blocked} รอบที่มีคนจองแล้ว`;
+
+        await showAlertModal(summary, { type: fail > 0 ? 'warning' : 'success' });
         await refreshScheduleData();
     });
 

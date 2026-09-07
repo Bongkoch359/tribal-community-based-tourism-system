@@ -540,3 +540,383 @@ textarea.form-control {
 .hs-dropdown-content a.hs-logout:hover {
     background: #fff5f5;
 }
+
+.nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+/* ── Upload Zone ── */
+.upload-box {
+    border: 2px dashed #b5d6b5;
+    border-radius: 12px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    background: #fafff8;
+}
+
+.upload-box:hover,
+.upload-box.dragover {
+    border-color: #2d6a2d;
+    background: #f0faf0;
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: #555;
+}
+
+.upload-placeholder i {
+    font-size: 2.4rem;
+    color: #2d6a2d;
+}
+
+.upload-placeholder p {
+    margin: 0;
+    font-weight: 600;
+}
+
+.upload-placeholder small {
+    color: #888;
+    font-size: .82rem;
+}
+
+/* ── Preview Grid ── */
+#previewGrid {
+    margin-top: 14px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.preview-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+    background: #eee;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+}
+
+.preview-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.preview-card .remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(200, 0, 0, .8);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+}
+
+.preview-card .remove-btn:hover {
+    background: #c00;
+}
+
+.preview-card .file-size-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, .5);
+    color: #fff;
+    font-size: 10px;
+    text-align: center;
+    padding: 2px 0;
+}
+
+/* ── Badge จำนวนรูป ── */
+#imageCountBadge {
+    display: none;
+    background: #2d6a2d;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+}
+
+/* ── Status Dropdown ── */
+.status-select-wrap {
+    position: relative;
+}
+
+.status-select-wrap select.form-control {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.status-select-wrap::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none;
+    font-size: .75rem;
+}
+
+/* ── Facility chip checked state (CSS-only, no JS needed) ── */
+.facility-chip {
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s, border-color .15s, color .15s;
+}
+
+.facility-chip input[type="checkbox"] {
+    display: none;
+}
+
+.facility-chip:has(input:checked) {
+    background: #2d6a2d !important;
+    border-color: #2d6a2d !important;
+    color: #fff !important;
+}
+
+.facility-chip .fac-icon {
+    display: inline-block;
+}
+
+/* ═══ SUCCESS MODAL ═══ */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 30, 12, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-backdrop.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-box {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px 36px 32px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    opacity: 0;
+}
+
+.modal-backdrop.show .modal-box {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.checkmark-wrap {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #1a3d1f, #2d6a35);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(26, 61, 31, 0.35);
+    position: relative;
+}
+
+.checkmark-wrap::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 3px solid rgba(26, 61, 31, 0.15);
+}
+
+.checkmark-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(26, 61, 31, 0.08);
+    animation: ring-pulse 1.5s ease-out 0.4s both;
+}
+
+@keyframes ring-pulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
+
+.checkmark-icon {
+    font-size: 36px;
+    color: #fff;
+    animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+@keyframes pop-in {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2d6a2d;
+    margin-bottom: 8px;
+}
+
+.modal-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+.modal-countdown {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.countdown-num {
+    display: inline-block;
+    background: #f3fae8;
+    border: 1.5px solid #ccc;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-weight: 700;
+    color: #2d6a2d;
+    min-width: 28px;
+}
+
+.modal-btn-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.modal-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #2d6a2d;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Sarabun', sans-serif;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.modal-btn-primary:hover {
+    background: #3d8c3d;
+}
+
+.modal-btn-primary:active {
+    transform: scale(0.97);
+}
+
+.modal-progress-bar {
+    height: 3px;
+    background: #e8f4ea;
+    border-radius: 0 0 20px 20px;
+    margin: 24px -36px -32px;
+    overflow: hidden;
+}
+
+.modal-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #65a30d, #2d6a2d);
+    border-radius: 3px;
+    width: 100%;
+    transform-origin: left;
+    animation: progress-drain 3s linear forwards;
+}
+
+@keyframes progress-drain {
+    from {
+        transform: scaleX(1);
+    }
+
+    to {
+        transform: scaleX(0);
+    }
+}
+
+.form-control.error {
+    border-color: #d32f2f !important;
+}
+/* ─── Footer ─── */
+.footer {
+    margin-top: auto;
+    padding: 1rem 2rem;
+    background: #0d3d30;
+    color: #c8f0e4;
+    font-size: 0.9rem;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer a {
+    color: #5ecfb0;
+    text-decoration: none;
+    margin-left: 8px;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
