@@ -100,7 +100,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     .then(res => res.json())
     .then(data => {
     if (data.success) {
-        window.location.href = '/owner/dashboard';
+        window.location.href = '/owner/rooms';
     } else {
         // กรณีบัญชีรอ Admin อนุมัติ → แสดง banner แยก ไม่ mark ช่อง email ว่า invalid
         if (data.message && data.message.includes('ยังไม่ได้รับการอนุมัติ')) {

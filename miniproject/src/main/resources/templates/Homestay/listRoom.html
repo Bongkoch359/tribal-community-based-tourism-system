@@ -23,7 +23,7 @@
             ชนเผ่าพาเที่ยว
         </a>
         <div class="hs-nav-links">
-            <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a>
+            <!-- <a class="hs-nav-link" th:href="@{/owner/dashboard}"><i class="fas fa-chart-pie"></i> ภาพรวม</a> -->
             <a class="hs-nav-link active" th:href="@{/owner/rooms}"><i class="fas fa-door-open"></i> ห้องพัก</a>
             <a class="hs-nav-link" th:href="@{/owner/bookings}"><i class="fas fa-calendar-check"></i> ตรวจสอบการจอง</a>
             <a class="hs-nav-link" th:href="@{/owner/homestays}"><i class="fas fa-house"></i> ข้อมูลโฮมสเตย์</a>
@@ -80,6 +80,33 @@
                 th:onclick="${bankInfoMissing} ? 'return blockAddRoom(event)' : null">
                 <i class="fas fa-plus"></i> เพิ่มห้องพัก
             </a>
+        </div>
+
+        <!-- ── Banner แจ้งเตือนข้อมูลธนาคารไม่ครบ ── -->
+        <div class="bank-banner" th:if="${bankInfoMissing}">
+            <i class="fas fa-triangle-exclamation"></i>
+            <div class="bank-banner-text">
+                <strong>ยังไม่ได้กรอกข้อมูลบัญชีธนาคาร</strong>
+                โฮมสเตย์จะไม่สามารถรับเงินจากการจองได้ กรุณากรอกข้อมูลธนาคารก่อนเปิดรับจอง
+            </div>
+            <a class="bank-banner-btn" th:href="@{/owner/profile-edit}">
+                <i class="fas fa-pen-to-square me-1"></i> กรอกข้อมูลธนาคาร
+            </a>
+        </div>
+
+        <!-- ── Banner แจ้งเตือนลายเซ็น (แสดงเมื่อยังไม่ได้อัปโหลดลายเซ็น) ── -->
+        <div class="signature-banner" id="signatureBanner" th:if="${signatureMissing}">
+            <i class="fas fa-signature"></i>
+            <div class="signature-banner-text">
+                <strong>ยังไม่ได้อัปโหลดลายเซ็น</strong>
+                <span>ลายเซ็นจะถูกนำไปแสดงในใบเสร็จรับเงินของโฮมสเตย์</span>
+            </div>
+            <a class="signature-banner-btn" th:href="@{/owner/profile-edit}">
+                <i class="fas fa-pen-to-square me-1"></i> อัปโหลดลายเซ็น
+            </a>
+            <button class="signature-banner-dismiss" onclick="dismissSignatureBanner()" title="ปิด">
+                <i class="fas fa-xmark"></i>
+            </button>
         </div>
 
         <!-- ── Filter & Homestay Toolbar ── -->

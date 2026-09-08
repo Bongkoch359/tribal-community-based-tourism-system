@@ -186,7 +186,7 @@ public class HomestayownerController {
                 session.setAttribute("homestayname", "ยังไม่มีโฮมสเตย์");
             }
 
-            return "redirect:/owner/dashboard";
+            return "redirect:/owner/rooms";
 
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage();

@@ -26,14 +26,15 @@
 
         <div style="flex:1;"></div>
 
-        <a th:href="@{/manager/dashboard}" class="nav-link">
+        <!-- <a th:href="@{/manager/dashboard}" class="nav-link">
             <i class="fas fa-globe"></i> ภาพรวม
+        </a> -->
+
+        <a th:href="@{/manager/tours}" class="nav-link">
+            <i class="fas fa-bus"></i> ทัวร์
         </a>
         <a th:href="@{/manager/posts}" class="nav-link">
             <i class="fas fa-bullhorn"></i> โพสต์กิจกรรม
-        </a>
-        <a th:href="@{/manager/tours}" class="nav-link">
-            <i class="fas fa-bus"></i> ทัวร์
         </a>
         <a th:href="@{/manager/bookings}" class="nav-link active">
             <i class="fas fa-calendar-days"></i> ตรวจสอบการจอง
@@ -135,6 +136,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ── ช่องค้นหา: Booking ID / ชื่อผู้จอง / เบอร์โทร / ชื่อทัวร์ ── -->
+            <div class="filter-item-group search-item-group">
+                <label class="filter-item-label"><i class="fas fa-magnifying-glass"></i> ค้นหา :</label>
+                <div class="search-box-wrapper">
+                    <i class="fas fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="bookingSearchInput" class="search-input"
+                        placeholder="ค้นหาด้วย Booking ID, ชื่อผู้จอง, เบอร์โทร, ชื่อทัวร์..."
+                        oninput="onBookingSearchInput()" autocomplete="off">
+                    <i class="fas fa-circle-xmark search-clear-btn" id="bookingSearchClear"
+                        onclick="clearBookingSearch()"></i>
+                </div>
+            </div>
         </div>
 
         <!-- ─── Table ─── -->
@@ -159,7 +173,12 @@
 
                     <!-- รายการข้อมูล -->
                     <tr th:each="b : ${bookings}"
-                        th:attr="data-status=${b.bookingStatus != null ? b.bookingStatus.name() : ''}">
+                        th:with="searchDetail=${b.tourDetails != null and !#lists.isEmpty(b.tourDetails)} ? ${b.tourDetails[0]} : null,
+                                 searchTourName=${searchDetail != null and searchDetail.tour != null ? searchDetail.tour.tourmname : ''},
+                                 searchMemberName=${b.member != null ? (b.member.firstname + ' ' + b.member.lastname) : ''},
+                                 searchMemberPhone=${b.member != null and b.member.phone != null ? b.member.phone : ''}"
+                        th:attr="data-status=${b.bookingStatus != null ? b.bookingStatus.name() : ''},
+                                 data-search=${#strings.toLowerCase(b.bookingid + ' ' + searchMemberName + ' ' + searchMemberPhone + ' ' + searchTourName)}">
                         <td class="booking-id" th:text="${b.bookingid}">BK-2024-001</td>
                         <td>
                             <div th:text="${b.member != null ? (b.member.firstname + ' ' + b.member.lastname) : '-'}">
@@ -231,8 +250,9 @@
         </div>
     </footer>
 
-    <!-- ═══ JAVASCRIPT ควบคุม Dropdown ═══ -->
-   <script th:src="@{/js/Tour/list-booking.js}"></script>
+    <!-- ═══ JAVASCRIPT ควบคุม Dropdown + ค้นหา ═══ -->
+    <script th:src="@{/js/Tour/list-booking.js}"></script>
+    <script th:src="@{/js/Tour/booking-search-service.js}"></script>
 </body>
 
 </html>

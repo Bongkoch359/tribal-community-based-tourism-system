@@ -24,17 +24,18 @@
 
         <div style="flex:1;"></div>
 
-        <a th:href="@{/manager/dashboard}" class="nav-link">
+        <!-- <a th:href="@{/manager/dashboard}" class="nav-link">
             <i class="fas fa-globe"></i>
             ภาพรวม
+        </a> -->
+
+        <a th:href="@{/manager/tours}" class="nav-link active">
+            <i class="fas fa-bus"></i>
+            ทัวร์
         </a>
         <a th:href="@{/manager/posts}" class="nav-link">
             <i class="fas fa-bullhorn"></i>
             โพสต์กิจกรรม
-        </a>
-        <a th:href="@{/manager/tours}" class="nav-link active">
-            <i class="fas fa-bus"></i>
-            ทัวร์
         </a>
         <a th:href="@{/manager/bookings}" class="nav-link">
             <i class="fas fa-calendar-days"></i>
@@ -86,13 +87,45 @@
                 รายการทัวร์
             </div>
             <div style="display:flex; align-items:center; gap:10px;">
-                <a th:href="@{/manager/tours/create}" class="btn-create">
+                <a th:href="@{/manager/tours/create}" class="btn-create" id="btnCreateTour"
+                    th:attr="data-bank-missing=${bankInfoMissing}" onclick="return handleCreateTourClick(event)">
                     <i class="fas fa-plus"></i> เพิ่มทัวร์
                 </a>
                 <a th:href="@{/manager/tours/reviews}" class="btn-create"
                     style="background:#ffffff; color:#3a7d1e; border:1px solid #3a7d1e;">
                     <i class="fas fa-star"></i> ดูรีวิว
                 </a>
+            </div>
+        </div>
+
+        <!-- ═══ BANK BANNER ═══ -->
+        <div class="bank-warning-banner" id="bankWarningBanner" th:if="${bankInfoMissing}" style="display:block;">
+            <div class="bank-warning-inner">
+                <i class="fas fa-triangle-exclamation warn-icon"></i>
+                <div class="warn-text">
+                    <span class="warn-title">ยังไม่ได้กรอกข้อมูลธนาคาร</span>
+                    <span class="warn-sub">กรุณากรอกข้อมูลธนาคารก่อนเปิดรับการจอง</span>
+                </div>
+                <a th:href="@{/manager/profile}" class="bank-warning-btn"><i class="fas fa-building-columns"></i>
+                    กรอกข้อมูลธนาคาร</a>
+                <button class="bank-warning-dismiss" onclick="dismissBankWarning()" title="ปิด"><i
+                        class="fas fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <!-- ═══ SIGNATURE BANNER ═══ -->
+        <div class="bank-warning-banner signature-warning-banner" id="signatureWarningBanner" th:if="${signatureMissing}"
+            style="display:block;">
+            <div class="bank-warning-inner">
+                <i class="fas fa-signature warn-icon"></i>
+                <div class="warn-text">
+                    <span class="warn-title">ยังไม่ได้อัปโหลดลายเซ็น</span>
+                    <span class="warn-sub">ลายเซ็นจะถูกนำไปแสดงในใบเสร็จรับเงินของทัวร์</span>
+                </div>
+                <a th:href="@{/manager/profile}" class="bank-warning-btn"><i class="fas fa-signature"></i>
+                    อัปโหลดลายเซ็น</a>
+                <button class="bank-warning-dismiss" onclick="dismissSignatureWarning()" title="ปิด"><i
+                        class="fas fa-xmark"></i></button>
             </div>
         </div>
 
@@ -236,8 +269,8 @@
                 </tbody>
             </table>
 
-            <!-- Empty state (JS filter) -->
-            <div class="empty-state" id="emptyState" style="display:none;">
+            <!-- Empty state (JS filter) - แสดงเฉพาะตอนมีทัวร์ในระบบแต่ filter ไม่เจอ -->
+            <div class="empty-state" id="emptyState" style="display:none;" th:unless="${tours == null or tours.isEmpty()}">
                 <i class="fas fa-bus-simple"></i>
                 <p>ไม่พบทัวร์ในหมวดหมู่นี้</p>
             </div>
@@ -266,6 +299,40 @@
     </footer>
 
     <script th:src="@{/js/Tour/list-tour.js}"></script>
+    <script>
+        // ถ้ายังไม่ได้กรอกข้อมูลธนาคาร ห้ามกดเพิ่มทัวร์ ให้ขึ้นแจ้งเตือนแทน
+        function handleCreateTourClick(event) {
+            const btn = document.getElementById('btnCreateTour');
+            const bankMissing = btn && btn.getAttribute('data-bank-missing') === 'true';
+            if (bankMissing) {
+                event.preventDefault();
+                const banner = document.getElementById('bankWarningBanner');
+                if (banner) {
+                    banner.style.display = 'block';
+                    banner.style.maxHeight = '';
+                    banner.style.padding = '';
+                    banner.style.opacity = '1';
+                    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    banner.classList.add('shake-warning');
+                    setTimeout(() => banner.classList.remove('shake-warning'), 600);
+                } else {
+                    alert('กรุณากรอกข้อมูลธนาคารก่อนเพิ่มทัวร์');
+                }
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <style>
+        @keyframes shakeWarning {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake-warning {
+            animation: shakeWarning 0.5s ease-in-out;
+        }
+    </style>
 </body>
 
 </html>

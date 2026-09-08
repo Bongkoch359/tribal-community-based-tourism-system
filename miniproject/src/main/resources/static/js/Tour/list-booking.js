@@ -1,9 +1,12 @@
-  const bookingStatusClassMap = {
+const bookingStatusClassMap = {
             'WAITING_APPROVAL': 'status-waiting',
             'CONFIRMED': 'status-confirmed',
             'COMPLETED': 'status-completed',
             'CANCEL': 'status-cancel'
         };
+
+        // สถานะที่กำลังเลือกอยู่ในปัจจุบัน (ใช้ร่วมกับ booking-search-service.js)
+        let currentBookingStatus = 'WAITING_APPROVAL';
 
         // สลับเปิด/ปิด Dropdown (ใส่ stopPropagation เพื่อไม่ให้ window click ปิดทันที)
         function toggleBookingDropdown(e) {
@@ -45,8 +48,18 @@
             filterBookings(statusKey);
         }
 
-        // ฟังก์ชันซ่อน/แสดงแถวตาราง
+        // ฟังก์ชันซ่อน/แสดงแถวตาราง (กรองตามสถานะ)
         function filterBookings(statusKey) {
+            currentBookingStatus = statusKey;
+
+            // ถ้ามีไฟล์ booking-search-service.js โหลดอยู่ ให้ใช้ฟังก์ชันรวม
+            // (กรองทั้งสถานะ + คำค้นหา พร้อมกัน) แทนการกรองแค่สถานะอย่างเดียว
+            if (typeof applyBookingFilters === 'function') {
+                applyBookingFilters();
+                return;
+            }
+
+            // ── fallback เดิม เผื่อยังไม่ได้แนบ booking-search-service.js ──
             const rows = document.querySelectorAll('#tourBookingsTbody tr[data-status]');
             const noResults = document.getElementById('noFilterResults');
             let visibleCount = 0;

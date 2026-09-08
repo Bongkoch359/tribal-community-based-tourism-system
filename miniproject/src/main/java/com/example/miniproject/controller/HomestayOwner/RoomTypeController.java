@@ -52,6 +52,9 @@ public class RoomTypeController {
         boolean bankInfoMissing = checkBankInfoMissing(ownerid);
         model.addAttribute("bankInfoMissing", bankInfoMissing);
 
+        boolean signatureMissing = checkSignatureMissing(ownerid);
+        model.addAttribute("signatureMissing", signatureMissing);
+
         // ดึงโฮมสเตย์ทั้งหมดของเจ้าของคนนี้
         List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
 
@@ -394,5 +397,20 @@ public class RoomTypeController {
         return owner.getBankName() == null || owner.getBankName().isBlank()
                 || owner.getAccountNumber() == null || owner.getAccountNumber().isBlank()
                 || owner.getAccountName() == null || owner.getAccountName().isBlank();
+    }
+
+    // ─── helper: เช็คว่ายังไม่ได้อัปโหลดลายเซ็นหรือไม่ ──────────────────────
+    private boolean checkSignatureMissing(String ownerid) {
+        if (ownerid == null)
+            return true;
+
+        Homestayowner owner;
+        try {
+            owner = homestayOwnerService.getProfile(ownerid);
+        } catch (IllegalArgumentException e) {
+            return true; // ไม่พบ owner
+        }
+
+        return owner.getSignatureImageUrl() == null || owner.getSignatureImageUrl().isBlank();
     }
 }

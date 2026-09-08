@@ -32,6 +32,115 @@
     --red: #ba1a1a;
 }
 
+/* ─── BANK BANNER ─── */
+.bank-warning-banner {
+    background: #fff8e1;
+    border-bottom: 2px solid #f9a825;
+    padding: 0 2rem;
+}
+
+.bank-warning-inner {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 0;
+    font-size: 13px;
+    color: #5f3e00;
+}
+
+.warn-icon {
+    font-size: 1.25rem;
+    color: #f9a825;
+    flex-shrink: 0;
+}
+
+.warn-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.warn-title {
+    font-weight: 700;
+    font-size: 13.5px;
+    color: #4e2d00;
+}
+
+.warn-sub {
+    color: #7a5200;
+    font-size: 12.5px;
+}
+
+.bank-warning-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f9a825;
+    color: #fff;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+
+.bank-warning-btn:hover {
+    background: #e65100;
+}
+
+.bank-warning-dismiss {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #b07000;
+    font-size: 14px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.bank-warning-dismiss:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* ─── SIGNATURE BANNER (soft reminder, สีต่างจาก bank เพื่อลด priority visual) ─── */
+.signature-warning-banner {
+    background: #eef7ff;
+    border-bottom: 2px solid #4a90d9;
+    padding: 0 2rem;
+}
+
+.signature-warning-banner .warn-icon {
+    color: #4a90d9;
+}
+
+.signature-warning-banner .warn-title {
+    color: #1d3f5e;
+}
+
+.signature-warning-banner .warn-sub {
+    color: #3a6a94;
+}
+
+.signature-warning-banner .bank-warning-btn {
+    background: #4a90d9;
+}
+
+.signature-warning-banner .bank-warning-btn:hover {
+    background: #2f6cad;
+}
+
+.signature-warning-banner .bank-warning-dismiss {
+    color: #4a76a0;
+}
+
 body {
     font-family: 'Sarabun', sans-serif;
     background: var(--bg-page);

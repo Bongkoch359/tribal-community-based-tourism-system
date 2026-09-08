@@ -1,3 +1,14 @@
+/* ═══ ปิดแบนเนอร์แจ้งเตือนลายเซ็น ═══ */
+function dismissSignatureBanner() {
+    const b = document.getElementById('signatureBanner');
+    if (!b) return;
+    b.style.transition = 'opacity .3s, max-height .4s';
+    b.style.opacity = '0'; b.style.overflow = 'hidden';
+    b.style.maxHeight = b.offsetHeight + 'px';
+    setTimeout(() => { b.style.maxHeight = '0'; b.style.padding = '0'; b.style.margin = '0'; b.style.border = 'none'; }, 10);
+    setTimeout(() => { b.style.display = 'none'; }, 420);
+}
+
 /* ═══ ALERT MODAL — แทน alert() ของเบราว์เซอร์ ═══ */
 function openAlertModal(message, title) {
     const modal = document.getElementById('alertModal');
@@ -71,7 +82,9 @@ function filterByStatus(status) {
     const oldNotice = document.getElementById('noStatusRow');
     if (oldNotice) oldNotice.remove();
 
-    if (visibleCount === 0) {
+    // กันข้อความซ้อนกับ Thymeleaf empty-state: แสดงเฉพาะตอนที่ "มีห้องพักในระบบ"
+    // แต่กรองตามสถานะนี้แล้วไม่เจอเท่านั้น ไม่ใช่ตอนที่ไม่มีห้องพักในระบบเลย
+    if (rows.length > 0 && visibleCount === 0) {
         const tbody = document.getElementById('roomBody');
         const tr = document.createElement('tr');
         tr.id = 'noStatusRow';

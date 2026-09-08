@@ -1,4 +1,26 @@
 /* ═══════════════════════════════════════════
+   ปิดแบนเนอร์แจ้งเตือนข้อมูลธนาคาร / ลายเซ็น
+═══════════════════════════════════════════ */
+function dismissBankWarning() {
+    const b = document.getElementById('bankWarningBanner');
+    if (!b) return;
+    b.style.transition = 'opacity .3s, max-height .4s';
+    b.style.opacity = '0'; b.style.overflow = 'hidden';
+    b.style.maxHeight = b.offsetHeight + 'px';
+    setTimeout(() => { b.style.maxHeight = '0'; b.style.padding = '0'; }, 10);
+    setTimeout(() => { b.style.display = 'none'; }, 420);
+}
+function dismissSignatureWarning() {
+    const b = document.getElementById('signatureWarningBanner');
+    if (!b) return;
+    b.style.transition = 'opacity .3s, max-height .4s';
+    b.style.opacity = '0'; b.style.overflow = 'hidden';
+    b.style.maxHeight = b.offsetHeight + 'px';
+    setTimeout(() => { b.style.maxHeight = '0'; b.style.padding = '0'; }, 10);
+    setTimeout(() => { b.style.display = 'none'; }, 420);
+}
+
+/* ═══════════════════════════════════════════
    โหลดรูป thumbnail จาก data-src ผ่าน JS
    หลีกเลี่ยง HTML attribute ยาวเกิน limit
 ═══════════════════════════════════════════ */

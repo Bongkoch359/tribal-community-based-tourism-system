@@ -115,6 +115,24 @@ public class TourController {
         }
     }
 
+    // ─── ตรวจสอบว่าข้อมูลบัญชีธนาคารของ manager ยังไม่ครบหรือไม่ ──────────────
+    private boolean checkBankInfoMissing(Communitymanager manager) {
+        if (manager == null)
+            return true;
+
+        return manager.getBankName() == null || manager.getBankName().isBlank()
+                || manager.getAccountName() == null || manager.getAccountName().isBlank()
+                || manager.getAccountNumber() == null || manager.getAccountNumber().isBlank();
+    }
+
+    // ─── ตรวจสอบว่ายังไม่ได้อัปโหลดลายเซ็นหรือไม่ ─────────────────────────────
+    private boolean checkSignatureMissing(Communitymanager manager) {
+        if (manager == null)
+            return true;
+
+        return manager.getSignatureImageUrl() == null || manager.getSignatureImageUrl().isBlank();
+    }
+
     // ─── แสดงรายการทัวร์ทั้งหมดของ manager ─────────────────────────────────────
     @GetMapping
     public String listTours(HttpSession session, Model model) {
@@ -133,6 +151,8 @@ public class TourController {
 
         model.addAttribute("tours", tours);
         model.addAttribute("loggedInManager", manager);
+        model.addAttribute("bankInfoMissing", checkBankInfoMissing(manager));
+        model.addAttribute("signatureMissing", checkSignatureMissing(manager));
         return "Tour/listTour";
     }
     // ─── แสดงฟอร์มเพิ่มทัวร์ ────────────────────────────────────────────────────

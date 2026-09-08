@@ -41,11 +41,11 @@ public class TourManagerController {
             if (manager.getAccountstatus() != null &&
                     ("INACTIVE".equals(manager.getAccountstatus().toString()) ||
                             "SUSPENDED".equals(manager.getAccountstatus().toString()))) {
-                
+
                 // ดึงเหตุผลการระงับมาต่อท้ายข้อความ
                 String reason = manager.getSuspensionReason();
                 String errorMsg = "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ";
-                
+
                 if (reason != null && !reason.isBlank()) {
                     errorMsg += " (เหตุผล: " + reason + ")";
                 }
@@ -53,9 +53,9 @@ public class TourManagerController {
                 model.addAttribute("errorMessage", errorMsg);
                 return "Tour/manager_login";
             }
-            
+
             session.setAttribute("loggedInManager", manager);
-            return "redirect:/manager/dashboard";
+            return "redirect:/manager/tours";
         }
 
         model.addAttribute("errorMessage", "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
