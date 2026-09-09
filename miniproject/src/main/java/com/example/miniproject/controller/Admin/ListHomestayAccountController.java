@@ -12,7 +12,7 @@ import com.example.miniproject.entity.Homestay;
 import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
 import com.example.miniproject.service.Admin.EmailService;
-import com.example.miniproject.service.Admin.ReportService;
+import com.example.miniproject.service.Admin.HomestayReportService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -27,7 +27,7 @@ public class ListHomestayAccountController {
     private EmailService emailService;
 
     @Autowired
-    private ReportService reportService;
+private HomestayReportService homestayReportService;
 
     // GET /admin/homestay → รายการคำขอสมัคร
     // Basic Flow 1-6 ของ List Homestay Account
@@ -93,13 +93,13 @@ public class ListHomestayAccountController {
         // ที่ method นี้ หรือเปลี่ยน fetch เป็น EAGER/JOIN FETCH ใน repository
         // ══════════════════════════════════════════
         approved.forEach(owner -> {
-            List<Homestay> ownedHomestays = owner.getHomestays();
-            long pendingReports = (ownedHomestays == null) ? 0 :
-                ownedHomestays.stream()
-                    .mapToLong(hs -> reportService.countReportsForHomestay(hs.getHomestayid()))
-                    .sum();
-            owner.setPendingReportCount((int) pendingReports);
-        });
+    List<Homestay> ownedHomestays = owner.getHomestays();
+    long pendingReports = (ownedHomestays == null) ? 0 :
+        ownedHomestays.stream()
+            .mapToLong(hs -> homestayReportService.countReportsForHomestay(hs.getHomestayid()))
+            .sum();
+    owner.setPendingReportCount((int) pendingReports);
+});
 
         model.addAttribute("homestays",    approved);
         model.addAttribute("allCount",     approved.size());
@@ -211,12 +211,12 @@ public String suspendHomestay(@PathVariable String id,
         ownerrepository.save(owner);
 
         // resolve report ที่ PENDING ทั้งหมดของทุกโฮมสเตย์ที่ owner คนนี้เป็นเจ้าของ
-        List<Homestay> ownedHomestays = owner.getHomestays();
-        if (ownedHomestays != null) {
-            for (Homestay hs : ownedHomestays) {
-                reportService.resolveReportsForHomestay(hs.getHomestayid());
-            }
-        }
+     List<Homestay> ownedHomestays = owner.getHomestays();
+if (ownedHomestays != null) {
+    for (Homestay hs : ownedHomestays) {
+        homestayReportService.resolveReportsForHomestay(hs.getHomestayid());
+    }
+}
 
     } catch (Exception e) {
         redirectAttrs.addFlashAttribute("errorMessage",

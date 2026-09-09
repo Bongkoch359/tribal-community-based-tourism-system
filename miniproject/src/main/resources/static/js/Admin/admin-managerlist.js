@@ -33,18 +33,47 @@ function getTargetType(rp) {
   return null;
 }
 
-// evidenceImage เป็น LONGTEXT — อาจเป็น URL หรือ base64 ดิบ ๆ รองรับทั้งสองแบบ
+function openEvidenceImageModal(src) {
+  let modal = document.getElementById('evidenceImageModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'evidenceImageModal';
+    modal.style.cssText = 'display:flex; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:20000; align-items:center; justify-content:center; padding:24px; cursor:zoom-out;';
+    modal.innerHTML =
+      '<img id="evidenceImageModalImg" style="max-width:92vw; max-height:88vh; border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,0.5); cursor:default;" />' +
+      '<button type="button" id="evidenceImageModalClose" style="position:absolute; top:20px; right:24px; width:42px; height:42px; border-radius:50%; border:none; background:rgba(255,255,255,0.15); color:#fff; font-size:22px; cursor:pointer;">&times;</button>';
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal || e.target.id === 'evidenceImageModalClose') closeEvidenceImageModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeEvidenceImageModal();
+    });
+  }
+  document.getElementById('evidenceImageModalImg').src = src;
+  modal.style.display = 'flex';
+}
+
+function closeEvidenceImageModal() {
+  const modal = document.getElementById('evidenceImageModal');
+  if (modal) modal.style.display = 'none';
+}
 function buildEvidenceLinkEl(evidenceImage) {
   if (!evidenceImage) return null;
   const isUrlOrDataUri = /^https?:\/\//i.test(evidenceImage) || /^data:image\//i.test(evidenceImage);
   const src = isUrlOrDataUri ? evidenceImage : ('data:image/jpeg;base64,' + evidenceImage);
 
   const link = document.createElement('a');
-  link.href = src;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
+  link.href = '#';
   link.style.cssText = 'display:inline-flex; align-items:center; gap:4px; margin-top:8px; margin-left:8px; font-size:12px; font-weight:700; color: var(--primary); text-decoration:none;';
   link.innerHTML = '<span class="material-symbols-outlined" style="font-size:15px;">image</span> ดูหลักฐาน';
+
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+    openEvidenceImageModal(src);
+  });
+
   return link;
 }
 
@@ -140,7 +169,7 @@ function renderReportSummary(reports) {
 
   row.appendChild(buildSummaryChip(reports.length, 'การรายงานทั้งหมด'));
   row.appendChild(buildSummaryChip(tourNames.size, 'ทัวร์ที่ถูกรายงาน'));
-  row.appendChild(buildSummaryChip(homestayNames.size, 'โฮมสเตย์ที่ถูกรายงาน'));
+  
 }
 
 function renderReportList(reports) {

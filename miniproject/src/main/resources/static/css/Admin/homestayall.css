@@ -609,3 +609,13 @@ tbody tr:hover { background: var(--surface-container-low); }
   top: var(--navbar-h);   /* ต้องเท่ากับความสูงของ navbar หน้านั้นๆ */
   z-index: 999;
 }
+
+  .brand-text {
+  font-family: 'Sriracha', cursive;
+  color: var(--white);
+  font-size: 1.55rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  line-height: 1;
+  margin-left: -10px;
+}

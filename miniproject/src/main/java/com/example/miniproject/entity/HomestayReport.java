@@ -1,16 +1,15 @@
 package com.example.miniproject.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Report")
-public class Report {
+@Table(name = "HomestayReport")
+public class HomestayReport {
 
     @Id
-@Column(name = "reportid", length = 10)
-private String reportid;
+    @Column(name = "homestayreportid", length = 10)
+    private String homestayreportid;
 
     @Column(length = 100)
     private String reason;
@@ -30,16 +29,11 @@ private String reportid;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // เชื่อมกับ Tour หรือ Homestay อย่างใดอย่างหนึ่งเท่านั้น (nullable ทั้งคู่)
-    @ManyToOne
-    @JoinColumn(name = "tourid")
-    private Tour tour;
-
-    @ManyToOne
-    @JoinColumn(name = "homestayid")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "homestayid", nullable = false)
     private Homestay homestay;
 
-    public Report() {
+    public HomestayReport() {
     }
 
     @PrePersist
@@ -50,19 +44,12 @@ private String reportid;
         this.createdAt = LocalDateTime.now();
     }
 
-    // ต้องมี tour หรือ homestay อย่างใดอย่างหนึ่งเท่านั้น ห้ามใส่ทั้งคู่หรือไม่ใส่เลย
-    @Transient
-    public boolean isValidTarget() {
-        return (tour != null && homestay == null)
-                || (tour == null && homestay != null);
+    public String getHomestayreportid() {
+        return homestayreportid;
     }
 
-    public String getReportid() {
-        return reportid;
-    }
-
-    public void setReportid(String reportid) {
-        this.reportid = reportid;
+    public void setHomestayreportid(String homestayreportid) {
+        this.homestayreportid = homestayreportid;
     }
 
     public String getReason() {
@@ -103,14 +90,6 @@ private String reportid;
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Tour getTour() {
-        return tour;
-    }
-
-    public void setTour(Tour tour) {
-        this.tour = tour;
     }
 
     public Homestay getHomestay() {

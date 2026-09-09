@@ -1527,10 +1527,32 @@ document.addEventListener('click', function(e) {
   if (w && !w.contains(e.target)) w.classList.remove('open');
 });
 
-/* ★ แก้: ตัดส่วนที่เคยตั้งค่า input.value จาก query param 'tourdate' ตรงๆ ออก
-   เพราะตอนนี้ server (Thymeleaf th:selected) เป็นคนเลือก option ที่ถูกต้องให้แล้ว
-   ทั้งกรณีมาจาก tourdate และ scheduleid — เหลือแค่ sync ข้อความ sidebar-date
-   จากค่าที่ select ถูกเลือกไว้อยู่แล้วตอนโหลดหน้า */
+document.addEventListener('input', function (e) {
+  if (!e.target.matches('input[name="guestIdcard"]')) return;
+
+  var cleaned = e.target.value.replace(/[^0-9]/g, '');
+  if (cleaned !== e.target.value) {
+    e.target.value = cleaned;
+  }
+
+  if (cleaned.length === 0) {
+    e.target.classList.remove('is-invalid', 'is-valid');
+  } else if (cleaned.length === 13) {
+    e.target.classList.remove('is-invalid');
+    e.target.classList.add('is-valid');
+  } else {
+    e.target.classList.add('is-invalid');
+    e.target.classList.remove('is-valid');
+  }
+});
+
+document.addEventListener('paste', function (e) {
+  if (!e.target.matches('input[name="guestIdcard"]')) return;
+  setTimeout(function () {
+    e.target.dispatchEvent(new Event('input'));
+  }, 0);
+});
+
 window.addEventListener('DOMContentLoaded', function() {
   const dateInput = document.getElementById('tourdate-input');
   if (dateInput && dateInput.value) {

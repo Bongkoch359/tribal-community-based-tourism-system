@@ -9,12 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <link rel="stylesheet" th:href="@{/css/Admin/homestayall.css}" href="../static/css/Admin/homestayall.css">
+<link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
 
-<!-- ══════════════════════════════════════════
-     เพิ่มใหม่: สไตล์สำหรับคอลัมน์ "การรายงาน" +
-     Modal รายละเอียดรายงาน/ระงับบัญชี (แบบขยาย: สรุปยอด + การ์ดกลุ่มรายการ)
-     (ถ้า homestayall.css มีตัวแปรชื่อเดียวกันอยู่แล้ว ส่วนนี้จะใช้ค่าเดิมโดยอัตโนมัติ)
-══════════════════════════════════════════ -->
 <style>
   :root {
     --primary: #006c49;
@@ -205,15 +201,12 @@
 
 <!-- NAVBAR -->
 <header class="navbar">
-  <a href="/admin/dashboard" class="navbar-brand">
+  <a th:href="@{/}" href="/" class="navbar-brand">
     <div class="brand-logo">
-      <img th:src="@{/images/logo5.png}" alt="ตราสัญลักษณ์ระบบท่องเที่ยวชุมชนชนเผ่า">
+        <img th:src="@{/images/logo5.png}" src="../static/images/logo5.png" alt="Logo">
     </div>
-    <div class="brand-name">
-      <span class="brand-name-line1">ระบบท่องเที่ยวชุมชนชนเผ่า</span>
-      <span class="brand-name-line2">Tribal Community-Based Tourism System</span>
-    </div>
-  </a>
+    <span class="brand-text">ชนเผ่าพาเที่ยว</span>
+</a>
 <div class="nav-group">
   <a href="/admin/dashboard" class="nav-link">
     <span class="material-symbols-outlined">dashboard</span>

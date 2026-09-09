@@ -1691,12 +1691,7 @@
             <div class="alert alert-error" th:if="${errorMsg   != null}"><span>❌</span><span
                     th:text="${errorMsg}"></span></div>
 
-            <div class="alert alert-error"
-                th:if="${sts == 'CANCEL' and booking.cancelReason != null and !booking.cancelReason.isEmpty()}">
-                <span>❌</span>
-                <span>เหตุผลที่ยกเลิก: <strong th:text="${booking.cancelReason}"></strong></span>
-            </div>
-
+           
             <!-- ══ BOOKING HEADER ══ -->
             <div class="booking-header">
                 <div class="booking-header-left">
@@ -2190,14 +2185,7 @@
             การดำเนินการนี้ไม่สามารถย้อนกลับได้
         </p>
 
-        <div class="form-group" style="margin-bottom:6px;">
-            <label class="cancel-modal-label">
-                กรุณาระบุเหตุผลในการยกเลิก <span style="color:var(--red);">*</span>
-            </label>
-            <textarea class="inline-textarea" id="cancelReasonTextarea" rows="3" maxlength="300"
-                placeholder="เช่น ยอดชำระเงินไม่ตรงกับยอดที่ต้องชำระ ฯลฯ"></textarea>
-            <div class="field-error" id="err-cancelReason"></div>
-        </div>
+       
 
         <div class="cancel-modal-actions">
             <button type="button" class="btn-modal-cancel-gray" onclick="closeCancelModal()">ปิด</button>
@@ -2456,15 +2444,12 @@
             document.getElementById('submitReviewBtn').disabled = !(hasRating && commentLen >= 5);
         }
 
-      /* ════ Cancel (Modal) ════ */
-function confirmCancel() {
-    const textarea = document.getElementById('cancelReasonTextarea');
-    const errEl = document.getElementById('err-cancelReason');
-    textarea.value = '';
-    textarea.classList.remove('input-error');
-    errEl.classList.remove('show');
-    errEl.textContent = '';
+     function confirmCancel() {
     document.getElementById('cancelModal').classList.add('open');
+}
+
+function submitCancel() {
+    document.getElementById('cancelForm').submit();
 }
 
 function closeCancelModal() {

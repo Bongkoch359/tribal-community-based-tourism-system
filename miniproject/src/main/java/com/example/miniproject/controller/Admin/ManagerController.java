@@ -14,7 +14,7 @@ import com.example.miniproject.entity.Communitymanager;
 import com.example.miniproject.entity.enums.ManagerStatus;
 import com.example.miniproject.service.Admin.EmailService;
 import com.example.miniproject.service.Admin.ManagerService;
-import com.example.miniproject.service.Admin.ReportService;
+import com.example.miniproject.service.Admin.TourReportService;
 import com.example.miniproject.entity.Homestayowner;
 import com.example.miniproject.repository.Homestay.HomestayOwnerRepository;
 
@@ -33,8 +33,8 @@ public class ManagerController {
     @Autowired
     private HomestayOwnerRepository ownerRepository;
 
-    @Autowired 
-    private ReportService reportService;
+    @Autowired
+private TourReportService tourReportService;
 
     // ============================================================
     // GET /admin/manager
@@ -53,7 +53,7 @@ public String listManager(Model model, HttpSession session,
     List<Communitymanager> managers = managerService.getAll();
 
     // ══ เพิ่มบรรทัดนี้ ══
-    model.addAttribute("reportCountByManager", reportService.getPendingCountByManager());
+    model.addAttribute("reportCountByManager", tourReportService.getPendingCountByManager());
 
     if (managers == null || managers.isEmpty()) {
         model.addAttribute("managers", List.of());
@@ -188,28 +188,30 @@ public String listManager(Model model, HttpSession session,
     // POST /admin/manager/suspend/{id}
     // Suspend Manager Account
     // ============================================================
-    @PostMapping("/suspend/{id}")
-    public String suspendManager(@PathVariable String id,
-                                   @RequestParam("reason") String reason, // <-- เพิ่มรับค่าเหตุผลจากฟอร์ม
-                                   HttpSession session,
-                                   RedirectAttributes redirectAttributes) {
+   @PostMapping("/suspend/{id}")
+public String suspendManager(@PathVariable String id,
+                               @RequestParam("reason") String reason,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
 
-        if (session.getAttribute("loggedInAdmin") == null) {
-            return "redirect:/admin/login";
-        }
-
-        // ส่ง id และ reason ไปให้ Service จัดการบันทึก
-        boolean success = managerService.suspend(id, reason); // <-- ปรับให้ Service รับเหตุผลด้วย
-        
-        if (success) {
-            redirectAttributes.addFlashAttribute("message", "ระงับบัญชีเรียบร้อยแล้ว");
-            redirectAttributes.addFlashAttribute("alertType", "success");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "ไม่พบบัญชีที่ต้องการระงับ");
-            redirectAttributes.addFlashAttribute("alertType", "error");
-        }
-        return "redirect:/admin/manager";
+    if (session.getAttribute("loggedInAdmin") == null) {
+        return "redirect:/admin/login";
     }
+
+    boolean success = managerService.suspend(id, reason);
+
+    if (success) {
+        // ปิด (RESOLVED) report ที่ PENDING ทั้งหมดของทัวร์ในความดูแลของ manager คนนี้
+        tourReportService.resolveReportsForManager(id);
+
+        redirectAttributes.addFlashAttribute("message", "ระงับบัญชีเรียบร้อยแล้ว");
+        redirectAttributes.addFlashAttribute("alertType", "success");
+    } else {
+        redirectAttributes.addFlashAttribute("message", "ไม่พบบัญชีที่ต้องการระงับ");
+        redirectAttributes.addFlashAttribute("alertType", "error");
+    }
+    return "redirect:/admin/manager";
+}
 
     // ============================================================
     // POST /admin/manager/activate/{id}

@@ -17,7 +17,7 @@ public class ManagerService {
     private CommunitymanagerRepository managerRepository;
 
     @Autowired
-    private ReportService reportService; // เชื่อมต่อเพื่อเคลียร์รายงานอัตโนมัติ
+    private TourReportService tourReportService;
 
     // List Manager Account — step 4.1-4.2
     public List<Communitymanager> getAll() {
@@ -51,7 +51,7 @@ public class ManagerService {
 
             // เคลียร์/อัปเดตสถานะรายงานที่เกี่ยวข้องกับผู้จัดการคนนี้ให้เป็น RESOLVED อัตโนมัติ
             try {
-                reportService.resolveReportsForManager(managerid);
+                tourReportService.resolveReportsForManager(managerid);
             } catch (Exception e) {
                 System.err.println("ไม่สามารถอัปเดตสถานะรายงานได้: " + e.getMessage());
             }

@@ -1,8 +1,10 @@
 package com.example.miniproject.controller.Admin;
 
 import com.example.miniproject.dto.Admin.ReportResponseDto;
-import com.example.miniproject.entity.Report;
-import com.example.miniproject.service.Admin.ReportService;
+import com.example.miniproject.entity.HomestayReport;
+import com.example.miniproject.entity.TourReport;
+import com.example.miniproject.service.Admin.HomestayReportService;
+import com.example.miniproject.service.Admin.TourReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +14,10 @@ import org.springframework.web.bind.annotation.*;
 public class ReportSubmitController {
 
     @Autowired
-    private ReportService reportService;
+    private TourReportService tourReportService;
+
+    @Autowired
+    private HomestayReportService homestayReportService;
 
     @PostMapping
     public ResponseEntity<?> submitReport(
@@ -21,17 +26,23 @@ public class ReportSubmitController {
             @RequestParam String reason,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String evidenceImage) {
+
+        boolean hasTour = tourId != null && !tourId.isBlank();
+        boolean hasHomestay = homestayId != null;
+
+        if (hasTour == hasHomestay) {
+            return ResponseEntity.badRequest().body("ต้องระบุ tourId หรือ homestayId อย่างใดอย่างหนึ่งเท่านั้น");
+        }
+
         try {
-            Report saved = reportService.createReport(reason, description, evidenceImage, tourId, homestayId);
-
-            // ✅ เปลี่ยนตรงนี้ — ส่ง DTO แทน entity ทั้งก้อน
-            ReportResponseDto dto = new ReportResponseDto(
-                saved.getReportid(),
-                saved.getStatus(),
-                saved.getReason(),
-                "ส่งรายงานเรียบร้อยแล้ว"
-            );
-
+            ReportResponseDto dto;
+            if (hasTour) {
+                TourReport saved = tourReportService.createReport(reason, description, evidenceImage, tourId);
+                dto = new ReportResponseDto(saved.getTourreportid(), saved.getStatus(), saved.getReason(), "ส่งรายงานเรียบร้อยแล้ว");
+            } else {
+                HomestayReport saved = homestayReportService.createReport(reason, description, evidenceImage, homestayId);
+                dto = new ReportResponseDto(saved.getHomestayreportid(), saved.getStatus(), saved.getReason(), "ส่งรายงานเรียบร้อยแล้ว");
+            }
             return ResponseEntity.ok(dto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

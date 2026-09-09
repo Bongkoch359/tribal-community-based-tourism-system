@@ -1922,12 +1922,7 @@
             <div class="alert alert-error" th:if="${errorMsg != null}"><span>❌</span><span th:text="${errorMsg}"></span>
             </div>
 
-            <!-- ★ เพิ่มตรงนี้ -->
-            <div class="alert alert-error"
-                th:if="${sts == 'CANCEL' and booking.cancelReason != null and !booking.cancelReason.isEmpty()}">
-                <span>❌</span>
-                <span>เหตุผลที่ยกเลิก: <strong th:text="${booking.cancelReason}"></strong></span>
-            </div>
+           
 
             <!-- ══ BOOKING HEADER ══ -->
             <div class="booking-header">
@@ -2297,36 +2292,31 @@
                                                     <div class="field-error-msg">กรุณากรอกนามสกุล</div>
                                                 </div>
                                             </div>
-                                            <div class="guest-insurance-block" style="margin-top:8px;"
-                                                th:style="${booking.wantInsurance} ? '' : 'display:none;'">
-                                                <div class="detail-label">เลขบัตรประชาชน (สำหรับทำประกัน)</div>
-                                                <input class="inline-input guest-idcard-input" type="text"
-                                                    name="guestIdcard" form="editForm" th:value="${g.idcardnumber}"
-                                                    placeholder="กรอกเลข 13 หลัก" maxlength="13" inputmode="numeric"
-                                                    pattern="[0-9]{13}" th:attr="required=${booking.wantInsurance}">
-                                                <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
-                                            </div>
+                                          <div class="guest-insurance-block" style="margin-top:8px;">
+    <div class="detail-label">เลขบัตรประชาชน (สำหรับทำประกัน) <span class="req" style="color:var(--red);">*</span></div>
+    <input class="inline-input guest-idcard-input" type="text"
+        name="guestIdcard" form="editForm" th:value="${g.idcardnumber}"
+        placeholder="กรอกเลข 13 หลัก" maxlength="13" inputmode="numeric"
+        pattern="[0-9]{13}" required>
+    <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
+</div>
                                         </div>
 
-                                        <div class="inline-field" th:if="${isBooker}">
-                                            <input type="hidden" name="guestId" form="editForm" th:value="${g.guestid}">
-                                            <div class="guest-insurance-block" style="margin-top:8px;"
-                                                th:style="${booking.wantInsurance} ? '' : 'display:none;'">
-                                                <div class="detail-label">เลขบัตรประชาชนของผู้จอง (สำหรับทำประกัน)</div>
-                                                <input class="inline-input guest-idcard-input" type="text"
-                                                    name="guestIdcard" form="editForm" th:value="${g.idcardnumber}"
-                                                    placeholder="กรอกเลข 13 หลัก" maxlength="13" inputmode="numeric"
-                                                    pattern="[0-9]{13}" th:attr="required=${booking.wantInsurance}">
-                                                <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
-                                            </div>
-                                            <!-- ⭐ FIX: ต้องส่ง guestFirstname/guestLastname คู่กันเสมอ ไม่ผูกกับ wantInsurance
-                                         เพื่อให้ index ของ guestId/guestFirstname/guestLastname/guestIdcard ตรงกันทุกกรณี
-                                         แม้ผู้จองจะแก้ชื่อได้แค่ในหน้าโปรไฟล์ก็ตาม -->
-                                            <input type="hidden" name="guestFirstname" form="editForm"
-                                                th:value="${g.firstname}">
-                                            <input type="hidden" name="guestLastname" form="editForm"
-                                                th:value="${g.lastname}">
-                                        </div>
+                                       <div class="inline-field" th:if="${isBooker}">
+    <input type="hidden" name="guestId" form="editForm" th:value="${g.guestid}">
+    <div class="guest-insurance-block" style="margin-top:8px;">
+        <div class="detail-label">เลขบัตรประชาชนของผู้จอง (สำหรับทำประกัน) <span class="req" style="color:var(--red);">*</span></div>
+        <input class="inline-input guest-idcard-input" type="text"
+            name="guestIdcard" form="editForm" th:value="${g.idcardnumber}"
+            placeholder="กรอกเลข 13 หลัก" maxlength="13" inputmode="numeric"
+            pattern="[0-9]{13}" required>
+        <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
+    </div>
+    <input type="hidden" name="guestFirstname" form="editForm" th:value="${g.firstname}">
+    <input type="hidden" name="guestLastname" form="editForm" th:value="${g.lastname}">
+</div>
+                                           
+                                      
 
                                     </div>
                                 </div>
@@ -2378,128 +2368,102 @@
                         </div>
                     </div>
 
-                    <!-- SECTION 5 : ประกันการเดินทาง -->
-                    <div class="card" id="insuranceCard" style="margin-bottom:16px;overflow:visible;" th:if="${detail != null}">
-                        <div class="edit-banner">✏️ กำลังแก้ไข — เลือกทำ/ไม่ทำประกันได้เลย</div>
-                        <div class="section-header">
-                            <div class="section-header-left">
-                                <div class="section-num">5</div>
-                                ประกันการเดินทาง
-                            </div>
-                        </div>
-                        <div class="section-body" style="padding-top:0;"
-                            th:attr="data-fee=${booking.insuranceFeePerPerson != null ? booking.insuranceFeePerPerson : 0}"
-                            id="insuranceSection">
-                            <div class="insurance-info-card">
-                                <div class="insurance-info-top">
-                                    <div class="insurance-info-icon">🛡️</div>
-                                    <div class="insurance-info-body">
-                                        <div class="insurance-info-title-row">
-                                            <span class="insurance-info-title">ประกันอุบัติเหตุการเดินทาง</span>
-                                            <span class="insurance-info-badge included view-val"
-                                                th:if="${booking.wantInsurance}">✅ รวมในการจองแล้ว</span>
-                                            <span class="insurance-info-badge excluded view-val"
-                                                th:if="${!booking.wantInsurance}">ไม่ได้ทำประกัน</span>
-                                        </div>
-                                        <div class="insurance-info-desc">
-                                            คุ้มครองอุบัติเหตุระหว่างการเดินทาง ครอบคลุมค่ารักษาพยาบาลกรณีฉุกเฉิน
-                                            สำหรับผู้เดินทางทุกท่านตามรายชื่อด้านล่าง
-                                        </div>
-
-                                        <!-- ✏️ เลือกทำ/ไม่ทำประกัน เฉพาะตอนอยู่ในโหมดแก้ไข -->
-                                        <div class="inline-field" style="margin-top:12px;">
-                                            <div class="radio-group" id="insuranceRadioGroup">
-                                                <label class="radio-option" id="insuranceOptYes"
-                                                    th:classappend="${booking.wantInsurance} ? ' radio-selected' : ''"
-                                                    onclick="selectInsurance('true')">
-                                                    <input type="radio" name="wantInsurance" value="true"
-                                                        form="editForm" th:checked="${booking.wantInsurance}">
-                                                    <span>🛡️ ต้องการทำประกันการเดินทาง</span>
-                                                </label>
-                                                <label class="radio-option" id="insuranceOptNo"
-                                                    th:classappend="${!booking.wantInsurance} ? ' radio-selected' : ''"
-                                                    onclick="selectInsurance('false')">
-                                                    <input type="radio" name="wantInsurance" value="false"
-                                                        form="editForm" th:checked="${!booking.wantInsurance}">
-                                                    <span>ไม่ต้องการทำประกัน</span>
-                                                </label>
-                                            </div>
-                                            <div class="pickup-hint">
-                                                ⚠️ ถ้าเลือกทำประกัน ต้องกรอกเลขบัตรประชาชนของผู้เดินทางทุกคนใน
-                                                "รายชื่อผู้เดินทาง" ด้านบนด้วย
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- รายชื่อผู้เอาประกัน พร้อมเลขบัตรประชาชน (แสดงแบบปิดบางส่วนเพื่อความปลอดภัยของข้อมูล) -->
-                                <div class="insurance-info-list view-val" th:if="${booking.wantInsurance}">
-                                    <div class="insurance-guest-row" th:if="${booking.guests != null}"
-                                        th:each="g : ${booking.guests}"
-                                        th:with="isBooker=${booking.isBookerGoing and g.firstname == booking.member.firstname and g.lastname == booking.member.lastname}">
-                                        <span class="insurance-guest-name"
-                                            th:text="${(isBooker ? '🙋 ' : '👤 ') + (g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '') + (isBooker ? ' (ผู้จอง)' : '')}"></span>
-                                        <span class="insurance-guest-id"
-                                            th:text="${g.idcardnumber != null and g.idcardnumber.length() == 13 ? #strings.substring(g.idcardnumber,0,1) + '-XXXX-XXXX-' + #strings.substring(g.idcardnumber,9,13) : 'ไม่ระบุ'}"></span>
-                                    </div>
-                                </div>
-
-                                <div class="insurance-total-row" id="insuranceTotalRowWrap"
-                                    th:style="${booking.wantInsurance} ? '' : 'display:none;'">
-                                    <span>ค่าประกันรวม (<span id="insuranceGuestCountDisplay"
-                                            th:text="${booking.numofguest != null ? booking.numofguest : 0}"></span>
-                                        ท่าน
-                                        &times; <span
-                                            th:text="${booking.insuranceFeePerPerson != null ? #numbers.formatDecimal(booking.insuranceFeePerPerson,0,'COMMA',0,'POINT') : '0'}"></span>
-                                        ฿/ท่าน)</span>
-                                    <span>฿ <span id="insuranceSubtotalDisplay"
-                                            th:text="${booking.subtotalInsurance != null ? #numbers.formatDecimal(booking.subtotalInsurance,0,'COMMA',0,'POINT') : '0'}"></span></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="inline-actions">
-                            <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
-                            <button type="submit" form="editForm" class="btn-inline-save">💾
-                                บันทึกการเปลี่ยนแปลง</button>
-                        </div>
+                  <!-- SECTION 5 : ประกันการเดินทาง -->
+<div class="card" id="insuranceCard" style="margin-bottom:16px;overflow:visible;" th:if="${detail != null}">
+    <div class="section-header">
+        <div class="section-header-left">
+            <div class="section-num">5</div>
+            ประกันการเดินทาง
+        </div>
+    </div>
+    <div class="section-body" style="padding-top:0;"
+        th:attr="data-fee=${booking.insuranceFeePerPerson != null ? booking.insuranceFeePerPerson : 0}"
+        id="insuranceSection">
+        <div class="insurance-info-card">
+            <div class="insurance-info-top">
+                <div class="insurance-info-icon">🛡️</div>
+                <div class="insurance-info-body">
+                    <div class="insurance-info-title-row">
+                        <span class="insurance-info-title">ประกันอุบัติเหตุการเดินทาง</span>
+                        <span class="insurance-info-badge included">✅ รวมในการจองเสมอ</span>
+                    </div>
+                    <div class="insurance-info-desc">
+                        คุ้มครองอุบัติเหตุระหว่างการเดินทาง ครอบคลุมค่ารักษาพยาบาลกรณีฉุกเฉิน
+                        ทุกการจองต้องทำประกันให้ผู้เดินทางทุกท่าน (ไม่สามารถยกเลิกได้)
                     </div>
 
-                    <!-- ══ ACTION BAR ══ -->
-                    <!-- ══ ACTION BAR ══ -->
-                    <div class="action-bar" th:if="${sts != 'CANCEL'}">
+                    <!-- ★ แก้: ประกันฟิกเป็น true เสมอ ไม่มีตัวเลือกไม่ทำประกันอีกต่อไป -->
+                    <input type="hidden" name="wantInsurance" value="true" form="editForm">
 
-                        <!-- ยกเลิก: PENDING / WAITING_APPROVAL -->
-                        <button class="btn-cancel-booking" th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
-                            onclick="confirmCancel()">❌ ยกเลิกการจอง</button>
-
-                        <!-- ชำระเงิน: PENDING -->
-                        <a th:if="${sts == 'PENDING'}" th:href="@{/payment/tour/{id}(id=${booking.bookingid})}"
-                            class="btn-pay">
-                            💳 ไปหน้าชำระเงิน
-                        </a>
-
-                        <!-- ใบเสร็จ: CONFIRMED / COMPLETED -->
-                        <a th:if="${sts == 'CONFIRMED' or sts == 'COMPLETED'}"
-                            th:href="@{/member/bookings/receipt/{id}(id=${booking.bookingid}, print=true)}"
-                            class="btn-receipt">🧾 ดูใบเสร็จ</a>
-
-                        <!-- รีวิว: COMPLETED ยังไม่ได้รีวิว -->
-                        <button class="btn-review" th:if="${sts == 'COMPLETED' and booking.review == null}"
-                            onclick="openReviewModal()">⭐ เขียนรีวิว</button>
-
-                        <!-- รีวิวแล้ว -->
-                        <div class="reviewed-box" th:if="${sts == 'COMPLETED' and booking.review != null}">
-                            ✅ คุณรีวิวทัวร์นี้แล้ว &nbsp;
-                            <span th:text="${'⭐'.repeat(booking.review.rating)}"></span>
-                        </div>
-
+                    <div class="pickup-hint" style="margin-top:10px;">
+                        ⚠️ กรุณากรอกเลขบัตรประชาชนของผู้เดินทางทุกคนใน "รายชื่อผู้เดินทาง" ด้านบน เพื่อออกกรมธรรม์ประกัน
                     </div>
+                </div>
+            </div>
 
-                    <!-- ★ เพิ่มตรงนี้ — แสดงแทน action-bar ตอนยกเลิกแล้ว -->
-                    <div class="reviewed-box" style="background:var(--red-light);color:#b71c1c;border-color:#ef9a9a;"
-                        th:if="${sts == 'CANCEL'}">
-                        ❌ การจองนี้ถูกยกเลิกแล้ว ไม่สามารถดำเนินการใดๆ เพิ่มเติมได้
-                    </div>
+            <!-- รายชื่อผู้เอาประกัน พร้อมเลขบัตรประชาชน (แสดงแบบปิดบางส่วนเพื่อความปลอดภัยของข้อมูล) -->
+            <div class="insurance-info-list view-val" th:if="${booking.wantInsurance}">
+                <div class="insurance-guest-row" th:if="${booking.guests != null}"
+                    th:each="g : ${booking.guests}"
+                    th:with="isBooker=${booking.isBookerGoing and g.firstname == booking.member.firstname and g.lastname == booking.member.lastname}">
+                    <span class="insurance-guest-name"
+                        th:text="${(isBooker ? '🙋 ' : '👤 ') + (g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '') + (isBooker ? ' (ผู้จอง)' : '')}"></span>
+                    <span class="insurance-guest-id"
+                        th:text="${g.idcardnumber != null and g.idcardnumber.length() == 13 ? #strings.substring(g.idcardnumber,0,1) + '-XXXX-XXXX-' + #strings.substring(g.idcardnumber,9,13) : 'ไม่ระบุ'}"></span>
+                </div>
+            </div>
+
+            <div class="insurance-total-row" id="insuranceTotalRowWrap">
+                <span>ค่าประกันรวม (<span id="insuranceGuestCountDisplay"
+                        th:text="${booking.numofguest != null ? booking.numofguest : 0}"></span>
+                    ท่าน
+                    &times; <span
+                        th:text="${booking.insuranceFeePerPerson != null ? #numbers.formatDecimal(booking.insuranceFeePerPerson,0,'COMMA',0,'POINT') : '0'}"></span>
+                    ฿/ท่าน)</span>
+                <span>฿ <span id="insuranceSubtotalDisplay"
+                        th:text="${booking.subtotalInsurance != null ? #numbers.formatDecimal(booking.subtotalInsurance,0,'COMMA',0,'POINT') : '0'}"></span></span>
+            </div>
+        </div>
+    </div>
+    <!-- ไม่มี inline-actions แล้ว — ไม่มีช่องกรอกในการ์ดนี้ ปุ่มบันทึก/ยกเลิกอยู่ใน section 1 และ 3 แล้ว -->
+</div><!-- ปิด #insuranceCard -->
+
+<!-- ══ ACTION BAR ══ -->
+<div class="action-bar" th:if="${sts != 'CANCEL'}">
+
+    <!-- ยกเลิก: PENDING / WAITING_APPROVAL -->
+    <button class="btn-cancel-booking" th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
+        onclick="confirmCancel()">❌ ยกเลิกการจอง</button>
+
+    <!-- ชำระเงิน: PENDING -->
+    <a th:if="${sts == 'PENDING'}" th:href="@{/payment/tour/{id}(id=${booking.bookingid})}"
+        class="btn-pay">
+        💳 ไปหน้าชำระเงิน
+    </a>
+
+    <!-- ใบเสร็จ: CONFIRMED / COMPLETED -->
+    <a th:if="${sts == 'CONFIRMED' or sts == 'COMPLETED'}"
+        th:href="@{/member/bookings/receipt/{id}(id=${booking.bookingid}, print=true)}"
+        class="btn-receipt">🧾 ดูใบเสร็จ</a>
+
+    <!-- รีวิว: COMPLETED ยังไม่ได้รีวิว -->
+    <button class="btn-review" th:if="${sts == 'COMPLETED' and booking.review == null}"
+        onclick="openReviewModal()">⭐ เขียนรีวิว</button>
+
+    <!-- รีวิวแล้ว -->
+    <div class="reviewed-box" th:if="${sts == 'COMPLETED' and booking.review != null}">
+        ✅ คุณรีวิวทัวร์นี้แล้ว &nbsp;
+        <span th:text="${'⭐'.repeat(booking.review.rating)}"></span>
+    </div>
+
+</div>
+
+<!-- ★ แสดงแทน action-bar ตอนยกเลิกแล้ว -->
+<div class="reviewed-box" style="background:var(--red-light);color:#b71c1c;border-color:#ef9a9a;"
+    th:if="${sts == 'CANCEL'}">
+    ❌ การจองนี้ถูกยกเลิกแล้ว ไม่สามารถดำเนินการใดๆ เพิ่มเติมได้
+</div>
+
                 </div>
                 <!-- /LEFT -->
 
@@ -2553,7 +2517,7 @@
                                 <span class="val"
                                     th:text="${booking.isBookerGoing ? 'เดินทางด้วยตนเอง' : 'จองให้ผู้อื่น'}">-</span>
                             </div>
-                            <div class="sum-row" id="sidebarInsuranceRow" th:if="${booking.wantInsurance}">
+                            <div class="sum-row" id="sidebarInsuranceRow">
                                 <span class="lbl">ประกันการเดินทาง</span>
                                 <span class="val">฿ <span id="sidebarInsuranceValue"
                                         th:text="${booking.subtotalInsurance != null ? #numbers.formatDecimal(booking.subtotalInsurance,0,'COMMA',0,'POINT') : '0'}"></span></span>
@@ -2682,14 +2646,7 @@
             การยกเลิกอาจมีเงื่อนไขตามนโยบายของทัวร์ และไม่สามารถย้อนกลับได้
         </p>
 
-        <div class="form-group" style="margin-bottom:6px;">
-            <label class="cancel-modal-label">
-                กรุณาระบุเหตุผลในการยกเลิก <span style="color:var(--red);">*</span>
-            </label>
-            <textarea class="inline-textarea" id="cancelReasonTextarea" rows="3" maxlength="300"
-                placeholder="เช่น เปลี่ยนแผนการเดินทาง, จองผิดรอบ ฯลฯ"></textarea>
-            <div class="field-error-msg" id="cancelReasonError">กรุณากรอกเหตุผลก่อนยืนยันการยกเลิก</div>
-        </div>
+       
 
         <div class="cancel-modal-actions">
             <button type="button" class="btn-modal-cancel-gray" onclick="closeCancelModal()">ปิด</button>
@@ -2701,6 +2658,13 @@
         </div><!-- /th:with -->
     </div><!-- /page-wrap -->
 
+    <div class="modal-overlay open" id="cancelSuccessModal" th:if="${successMsg != null}">
+    <div class="modal-box">
+        <h3>✅ สำเร็จ</h3>
+        <p th:text="${successMsg}"></p>
+        <button class="btn-modal-confirm-red" onclick="location.href='/member/bookings/list'">ตกลง</button>
+    </div>
+</div>
     <script>
         /* ════ Inline Edit Toggle ════ */
         let editing = false;
@@ -2767,32 +2731,6 @@
             if (locInput) validatePickupLocation(locInput);
         }
 
-        /* ════ Insurance Yes/No Radio ════ */
-        function selectInsurance(val) {
-            const yesOpt = document.getElementById('insuranceOptYes');
-            const noOpt = document.getElementById('insuranceOptNo');
-            const isYes = val === 'true';
-
-            document.querySelectorAll('input[name="wantInsurance"]').forEach(function (r) {
-                r.checked = (r.value === val);
-            });
-
-            if (yesOpt) yesOpt.classList.toggle('radio-selected', isYes);
-            if (noOpt) noOpt.classList.toggle('radio-selected', !isYes);
-
-            // โชว์/ซ่อนช่องเลขบัตรประชาชนของผู้เดินทางทุกคน แล้วปรับ required ตามสถานะ
-            document.querySelectorAll('.guest-insurance-block').forEach(function (block) {
-                block.style.display = isYes ? '' : 'none';
-                const idcardInput = block.querySelector('.guest-idcard-input');
-                if (idcardInput) {
-                    idcardInput.required = isYes;
-                    if (!isYes) clearFieldError(idcardInput, findErrorMsgEl(idcardInput));
-                }
-            });
-
-            recalcTotals();
-        }
-
         /* ════ Live Price Recalculation (จำนวนคน x ราคา + ประกัน) ════ */
         function recalcTotals() {
             const adultEl = document.getElementById('adult-input');
@@ -2807,8 +2745,7 @@
 
             const tourSubtotal = (adultQty * adultPrice) + (childQty * childPrice);
 
-            const insuranceYes = !!document.querySelector('input[name="wantInsurance"]:checked') &&
-                document.querySelector('input[name="wantInsurance"]:checked').value === 'true';
+           const insuranceYes = true; // ★ แก้: ประกันฟิกเป็น true เสมอ
             const insuranceSection = document.getElementById('insuranceSection');
             const fee = insuranceSection ? (parseFloat(insuranceSection.dataset.fee) || 0) : 0;
             const insuranceSubtotal = insuranceYes ? (totalGuests * fee) : 0;
@@ -2917,25 +2854,21 @@
             return true;
         }
 
-        /* เลขบัตรประชาชน (บังคับเมื่อทำประกัน) ต้องเป็นตัวเลข 13 หลัก */
-        function validateIdcard(el) {
-            const msgEl = findErrorMsgEl(el);
-            const isYes = !!document.querySelector('input[name="wantInsurance"]:checked') &&
-                document.querySelector('input[name="wantInsurance"]:checked').value === 'true';
-            if (!isYes) { clearFieldError(el, msgEl); return true; } // ไม่ได้ทำประกัน ไม่ต้องเช็ค
-
-            const v = el.value.trim();
-            if (!v) {
-                showFieldError(el, msgEl, 'กรุณากรอกเลขบัตรประชาชน');
-                return false;
-            }
-            if (!/^[0-9]{13}$/.test(v)) {
-                showFieldError(el, msgEl, 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
-                return false;
-            }
-            clearFieldError(el, msgEl);
-            return true;
-        }
+       function validateIdcard(el) {
+    const msgEl = findErrorMsgEl(el);
+    // ★ แก้: ประกันฟิกเป็น true เสมอ ต้องกรอกเลขบัตรทุกคนเสมอ ไม่มีเงื่อนไขอีกต่อไป
+    const v = el.value.trim();
+    if (!v) {
+        showFieldError(el, msgEl, 'กรุณากรอกเลขบัตรประชาชน');
+        return false;
+    }
+    if (!/^[0-9]{13}$/.test(v)) {
+        showFieldError(el, msgEl, 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
+        return false;
+    }
+    clearFieldError(el, msgEl);
+    return true;
+}
 
         /* สถานที่รับ — บังคับเมื่อเลือก "โรงแรม/ที่พัก" และต้องมีคำว่า "เชียงใหม่" */
         function validatePickupLocation(el) {
@@ -3086,33 +3019,15 @@
             document.getElementById('submitReviewBtn').disabled = !hasRating;
         }
 
-        /* ════ Cancel ════ */
         /* ════ Cancel (Modal) ════ */
 function confirmCancel() {
-    const textarea = document.getElementById('cancelReasonTextarea');
-    const errEl = document.getElementById('cancelReasonError');
-    textarea.value = '';
-    clearFieldError(textarea, errEl);
     document.getElementById('cancelModal').classList.add('open');
 }
 
 function closeCancelModal() {
     document.getElementById('cancelModal').classList.remove('open');
 }
-
 function submitCancel() {
-    const textarea = document.getElementById('cancelReasonTextarea');
-    const errEl = document.getElementById('cancelReasonError');
-    const reason = textarea.value.trim();
-
-    if (!reason) {
-        showFieldError(textarea, errEl);
-        textarea.focus();
-        return;
-    }
-
-    clearFieldError(textarea, errEl);
-    document.getElementById('cancelReasonInput').value = reason;
     document.getElementById('cancelForm').submit();
 }
 
