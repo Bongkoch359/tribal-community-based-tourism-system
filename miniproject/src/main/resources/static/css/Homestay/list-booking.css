@@ -1,4 +1,4 @@
-        /* ─── NAVBAR ─── */
+/* ─── NAVBAR ─── */
         .hs-navbar {
             background: #0d3d30;
             display: flex;
@@ -705,6 +705,77 @@
         .homestay-select-input:hover,
         .homestay-select-input:focus {
             border-color: #1a6b52;
+        }
+
+        /* ─── Search Box ─── */
+        .search-item-group {
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .search-box-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            font-size: .85rem;
+            color: #9aa;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 38px;
+            padding: 0 34px 0 34px;
+            border-radius: 8px;
+            border: 1.5px solid #b0d4c8;
+            background: #f0faf7;
+            font-family: inherit;
+            font-size: .9rem;
+            color: #0d3d30;
+            transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+
+        .search-input::placeholder {
+            color: #7fa79a;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1a6b52;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(26, 107, 82, .15);
+        }
+
+        .search-clear-btn {
+            display: none;
+            position: absolute;
+            right: 12px;
+            font-size: .9rem;
+            color: #7fa79a;
+            cursor: pointer;
+            transition: color .15s;
+        }
+
+        .search-clear-btn:hover {
+            color: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            .search-item-group {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .search-box-wrapper {
+                min-width: 0;
+            }
         }
 
         /* ─── Custom Filter Dropdown ─── */

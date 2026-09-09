@@ -121,6 +121,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ── ช่องค้นหา: Booking ID / ชื่อผู้จอง / เบอร์โทร / ประเภทห้อง ── -->
+            <div class="filter-item-group search-item-group">
+                <label class="filter-item-label"><i class="fas fa-magnifying-glass"></i> ค้นหา :</label>
+                <div class="search-box-wrapper">
+                    <i class="fas fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="bookingSearchInput" class="search-input"
+                        placeholder="ค้นหาด้วย Booking ID, ชื่อผู้จอง, เบอร์โทร, ประเภทห้อง..."
+                        oninput="onBookingSearchInput()" autocomplete="off">
+                    <i class="fas fa-circle-xmark search-clear-btn" id="bookingSearchClear"
+                        onclick="clearBookingSearch()"></i>
+                </div>
+            </div>
         </div>
 
         <!-- Table -->
@@ -150,7 +163,13 @@
                     </tr>
 
                     <!-- Rows -->
-                    <tr th:each="b : ${bookings}" th:attr="data-status=${b['bookingStatus']}">
+                    <tr th:each="b : ${bookings}"
+                        th:attr="data-status=${b['bookingStatus']},
+                                 data-search=${#strings.toLowerCase(
+                                     (b['bookingid'] ?: '') + ' ' +
+                                     (b['membername'] ?: '') + ' ' +
+                                     (b['memberphone'] ?: '') + ' ' +
+                                     (b['roomtypename'] ?: ''))}">
                         <!-- Booking ID -->
                         <td style="font-family:monospace;font-size:.85rem;color:#666;" th:text="${b['bookingid']}">BK001
                         </td>
@@ -278,10 +297,14 @@
             <span>Version 1.0 | <a href="#"><i class="fas fa-circle-question"></i> Help</a></span>
         </div>
     </footer>
+    <script th:src="@{/js/Homestay/search-booking.js}"></script>
     <script th:inline="javascript">
         const HOMESTAY_ID = /*[[${homestayid}]]*/ 0;
 
         let pendingBookingId = null;
+
+        // สถานะที่กำลังเลือกอยู่ในปัจจุบัน (ใช้ร่วมกับ booking-search-service.js)
+        let currentBookingStatus = 'WAITING_APPROVAL';
 
         // ── Map สถานะ -> Class สไตล์สีของปุ่ม Dropdown ──────
         const bookingStatusClassMap = {
@@ -336,6 +359,16 @@
 
         // ── กรองแถวในตารางตามสถานะ (Client-side) ──────────────
         function filterBookings(statusKey) {
+            currentBookingStatus = statusKey;
+
+            // ถ้ามีไฟล์ booking-search-service.js โหลดอยู่ ให้ใช้ฟังก์ชันรวม
+            // (กรองทั้งสถานะ + คำค้นหา พร้อมกัน) แทนการกรองแค่สถานะอย่างเดียว
+            if (typeof applyBookingFilters === 'function') {
+                applyBookingFilters();
+                return;
+            }
+
+            // ── fallback เดิม เผื่อยังไม่ได้แนบ booking-search-service.js ──
             const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
             const noResults = document.getElementById('noFilterResults');
             let visibleCount = 0;

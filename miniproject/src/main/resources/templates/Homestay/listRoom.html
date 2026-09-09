@@ -76,14 +76,14 @@
                 รายการห้องพักทั้งหมด
                 <!-- <span class="count-chip" th:text="${rooms.size()} + ' ห้อง'">0 ห้อง</span> -->
             </div>
-            <a class="btn-add" th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}"
-                th:onclick="${bankInfoMissing} ? 'return blockAddRoom(event)' : null">
+            <a class="btn-add" id="btnAddRoom" th:href="@{/addroom(homestayid=${homestayid}, homestayname=${homestayname})}"
+                th:attr="data-bank-missing=${bankInfoMissing}" onclick="return handleAddRoomClick(event)">
                 <i class="fas fa-plus"></i> เพิ่มห้องพัก
             </a>
         </div>
 
         <!-- ── Banner แจ้งเตือนข้อมูลธนาคารไม่ครบ ── -->
-        <div class="bank-banner" th:if="${bankInfoMissing}">
+        <div class="bank-banner" id="bankBanner" th:if="${bankInfoMissing}">
             <i class="fas fa-triangle-exclamation"></i>
             <div class="bank-banner-text">
                 <strong>ยังไม่ได้กรอกข้อมูลบัญชีธนาคาร</strong>
@@ -299,7 +299,30 @@
         </div>
     </footer>
     <script th:src="@{/js/Homestay/list-room.js}"></script>
-
+    <script>
+        // ถ้ายังไม่ได้กรอกข้อมูลธนาคาร ห้ามกดเพิ่มห้องพัก ให้เลื่อนไปเขย่า banner แทน (เหมือนหน้าทัวร์)
+        function handleAddRoomClick(event) {
+            const btn = document.getElementById('btnAddRoom');
+            const bankMissing = btn && btn.getAttribute('data-bank-missing') === 'true';
+            if (bankMissing) {
+                event.preventDefault();
+                const banner = document.getElementById('bankBanner');
+                if (banner) {
+                    banner.style.display = 'flex';
+                    banner.style.maxHeight = '';
+                    banner.style.padding = '';
+                    banner.style.opacity = '1';
+                    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    banner.classList.add('shake-warning');
+                    setTimeout(() => banner.classList.remove('shake-warning'), 600);
+                } else {
+                    alert('กรุณากรอกข้อมูลธนาคารก่อนเพิ่มห้องพัก');
+                }
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 
 </html>

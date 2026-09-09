@@ -35,12 +35,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-function blockAddRoom(e) {
-    e.preventDefault();
-    openAlertModal('กรุณากรอกข้อมูลบัญชีธนาคารให้ครบก่อน จึงจะสามารถเพิ่มห้องพักได้');
-    return false;
-}
-
 const statusKeyMap = {
     'เปิดจอง': 'available',
     'เต็ม': 'full',
