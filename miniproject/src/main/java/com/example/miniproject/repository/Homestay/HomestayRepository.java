@@ -97,4 +97,13 @@ List<Homestay> searchByGuestOnly(
     @Param("keyword") String keyword,
     @Param("guests")  Integer guests
 );
+
+/** top N โฮมสเตย์ที่ rating เฉลี่ยสูงสุด (คืน entity ตรงๆ ใช้กับหน้า featured) */
+@Query("""
+    SELECT rt.homestay FROM Review r
+    JOIN r.booking b JOIN b.roomDetails rd JOIN rd.roomtype rt
+    GROUP BY rt.homestay
+    ORDER BY AVG(r.rating) DESC
+""")
+List<Homestay> findTopRatedHomestays(org.springframework.data.domain.Pageable pageable);
 }

@@ -194,6 +194,8 @@
 .dropdown-content a.logout-item { color: #ba1a1a; }
 .dropdown-content a.logout-item .material-symbols-outlined { color: #ba1a1a; }
 .dropdown-content a.logout-item:hover { background-color: #fff5f5; }
+
+
 </style>
 
 </head>
@@ -317,64 +319,43 @@
     <h1>บัญชีโฮมสเตย์ทั้งหมด</h1>
     <p>ตรวจสอบและจัดการสถานะบัญชีเจ้าของโฮมสเตย์ที่ได้รับอนุมัติแล้ว</p>
   </div>
+<!-- แท็บมุมมองบนสุด -->
+<div class="view-tabs">
+  <a href="/admin/homestay" class="view-tab" th:classappend="${currentView == 'pending'} ? ' active'">
+    <span class="material-symbols-outlined">inbox</span>
+    คำขอรออนุมัติ
+  </a>
+  <a href="/admin/homestay/all" class="view-tab" th:classappend="${currentView == 'all'} ? ' active'">
+    <span class="material-symbols-outlined">list_alt</span>
+    บัญชีทั้งหมด
+  </a>
+</div>
 
-  <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+<!-- แถวกรองสถานะ -->
+<div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+  <div class="status-filter-card">
+    <span class="material-symbols-outlined sf-icon">filter_alt</span>
+    <span class="sf-label">สถานะบัญชี :</span>
 
-    <!-- Dropdown: เปลี่ยนหน้า (มุมมอง) -->
-    <div class="status-filter-card">
-      <span class="material-symbols-outlined sf-icon">swap_horiz</span>
-      <span class="sf-label">มุมมอง :</span>
+    <div class="sf-dropdown" id="statusFilterDropdown">
+      <button type="button" class="sf-trigger" id="sfTriggerBtn" onclick="toggleStatusFilterMenu()">
+        <span class="material-symbols-outlined sf-trigger-icon" id="sfTriggerIcon">check_circle</span>
+        <span class="sf-trigger-text" id="sfTriggerText">ทั้งหมด</span>
+        <span class="sf-trigger-count" id="sfTriggerCount" th:text="${allCount}">0</span>
+        <span class="material-symbols-outlined sf-chevron">expand_more</span>
+      </button>
 
-      <div class="sf-dropdown" id="pageNavDropdown">
-        <button type="button" class="sf-trigger" onclick="togglePageNavMenu(event)">
-          <span class="material-symbols-outlined sf-trigger-icon" id="pageNavTriggerIcon">list_alt</span>
-          <span id="pageNavTriggerText">บัญชีโฮมสเตย์ทั้งหมด</span>
-          <span class="material-symbols-outlined sf-chevron">expand_more</span>
-        </button>
-
-        <div class="sf-menu">
-          <a href="/admin/homestay"
-             class="sf-option page-nav-option"
-             th:classappend="${currentView == 'pending'} ? ' active'"
-             data-icon="inbox"
-             data-label="คำขอรออนุมัติ">
-            📥 คำขอรออนุมัติ
-          </a>
-
-          <a href="/admin/homestay/all"
-             class="sf-option page-nav-option"
-             th:classappend="${currentView == 'all'} ? ' active'"
-             data-icon="list_alt"
-             data-label="บัญชีโฮมสเตย์ทั้งหมด">
-            📋 บัญชีโฮมสเตย์ทั้งหมด
-          </a>
-        </div>
+      <div class="sf-menu" id="sfMenu">
+        <a href="#" class="sf-option active" data-filter="all" data-icon="apps"
+           th:text="'ทั้งหมด (' + ${allCount} + ')'">ทั้งหมด (0)</a>
+        <a href="#" class="sf-option" data-filter="active" data-icon="check_circle"
+           th:text="'เปิดใช้งานอยู่ (' + ${activeCount} + ')'">เปิดใช้งานอยู่ (0)</a>
+        <a href="#" class="sf-option" data-filter="suspended" data-icon="block"
+           th:text="'ถูกระงับ (' + ${suspendCount} + ')'">ถูกระงับ (0)</a>
       </div>
     </div>
-
-    <!-- Dropdown: กรองตามสถานะบัญชี (ของเดิม) -->
-    <div class="status-filter-card">
-      <span class="material-symbols-outlined sf-icon">filter_alt</span>
-      <span class="sf-label">สถานะบัญชี :</span>
-
-      <div class="sf-dropdown" id="statusFilterDropdown">
-        <button type="button" class="sf-trigger" id="sfTriggerBtn" onclick="toggleStatusFilterMenu()">
-          <span class="material-symbols-outlined sf-trigger-icon" id="sfTriggerIcon">check_circle</span>
-          <span class="sf-trigger-text" id="sfTriggerText">ทั้งหมด</span>
-          <span class="sf-trigger-count" id="sfTriggerCount" th:text="${allCount}">0</span>
-          <span class="material-symbols-outlined sf-chevron">expand_more</span>
-        </button>
-
-        <div class="sf-menu" id="sfMenu">
-          <a href="#" class="sf-option active" data-filter="all" data-icon="apps"
-             th:text="'ทั้งหมด (' + ${allCount} + ')'">ทั้งหมด (0)</a>
-          <a href="#" class="sf-option" data-filter="active" data-icon="check_circle"
-             th:text="'เปิดใช้งานอยู่ (' + ${activeCount} + ')'">เปิดใช้งานอยู่ (0)</a>
-          <a href="#" class="sf-option" data-filter="suspended" data-icon="block"
-             th:text="'ถูกระงับ (' + ${suspendCount} + ')'">ถูกระงับ (0)</a>
-        </div>
-      </div>
-    </div>
+  </div>
+</div>
 
   </div>
 

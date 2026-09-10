@@ -671,6 +671,20 @@
       .booking-gallery .g-side:nth-child(3) { display: none; }
     }
 
+    .btn-login-prompt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--green-800);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 11px 22px;
+  border-radius: 100px;
+  transition: background .15s;
+}
+.btn-login-prompt:hover { background: var(--green-900); }
+
     /* ============================================================
    REPORT BUTTON + MODAL — style เหมือนหน้าทัวร์ (file 2)
 ============================================================ */
@@ -945,12 +959,14 @@
       <span th:text="${homestay.homestayname}">บ้านสุขโฮมสเตย์</span>
     </div>
 
-    <button type="button" class="btn-report-link" onclick="openReportModal()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 3v18M3 4h13l-1.5 4L16 12H3"/>
-      </svg>
-      รายงานโฮมสเตย์นี้
-    </button>
+   <button type="button" class="btn-report-link" onclick="openReportModal()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M3 3v18M3 4h13l-1.5 4L16 12H3"/>
+  </svg>
+  รายงานโฮมสเตย์นี้
+</button>
+
+
   </div>
 </div>
 
@@ -1439,16 +1455,32 @@
 
 <!-- REPORT MODAL -->
 <div class="report-modal-overlay" id="reportModalOverlay" onclick="if(event.target===this) closeReportModal()">
-  <div class="report-modal">
-    <div class="report-modal-header">
-      <div class="report-modal-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-        รายงานโฮมสเตย์นี้
-      </div>
-      <button type="button" class="cal-close-btn" onclick="closeReportModal()">&times;</button>
+ <div class="report-modal">
+  <div class="report-modal-header">
+    <div class="report-modal-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      รายงานโฮมสเตย์นี้
     </div>
+    <button type="button" class="cal-close-btn" onclick="closeReportModal()">&times;</button>
+  </div>
+
+  <!-- ยังไม่ login -->
+  <div th:if="${session.loggedInMember == null}" style="text-align:center;padding:30px 10px 10px;">
+    <p style="color:var(--neutral-600);font-size:14.5px;margin-bottom:18px;">
+      กรุณาเข้าสู่ระบบด้วยบัญชีสมาชิกก่อนทำการรายงาน
+    </p>
+    <a href="/member/login" class="btn-login-prompt" style="display:inline-flex;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px;height:16px;">
+        <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+      </svg>
+      เข้าสู่ระบบ
+    </a>
+  </div>
+
+  <!-- login แล้ว: ฟอร์มเดิมทั้งหมด -->
+  <div th:if="${session.loggedInMember != null}">
     <p class="report-modal-sub">ช่วยเราตรวจสอบเนื้อหาที่ไม่เหมาะสมหรือไม่ถูกต้อง ทีมงานจะรีบดำเนินการโดยเร็วที่สุด</p>
 
     <div class="report-field">
@@ -1490,7 +1522,6 @@
     </div>
   </div>
 </div>
-
 <!-- ══════════════════════════════════════════
      CONFIRM REPORT MODAL — ให้กดยืนยันก่อนส่งจริง (เหมือนหน้าทัวร์)
 ══════════════════════════════════════════ -->

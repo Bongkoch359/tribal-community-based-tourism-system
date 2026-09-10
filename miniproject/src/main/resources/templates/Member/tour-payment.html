@@ -743,19 +743,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     </div>
 </div>
 
-            <!-- ③ หมายเหตุ -->
-            <div class="card">
-                <div class="section-header">
-                    <div class="section-num">3</div>
-                    หมายเหตุเพิ่มเติม (ถ้ามี)
-                </div>
-                <div class="section-body">
-                    <div class="form-group">
-                        <textarea class="form-control" id="payNoteInput" rows="3"
-                                  placeholder="เช่น โอนจากบัญชีสำรอง, ชื่อผู้โอน…"></textarea>
-                    </div>
-                </div>
-            </div>
+          
 
             <!-- SUBMIT -->
             <div class="submit-bar">
@@ -767,7 +755,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
                 <button class="btn-submit" id="submitBtn" onclick="submitPayment()" type="button">
                     ✅ ยืนยันการชำระเงิน
                 </button>
-                <div class="secure-row">🔒 ข้อมูลของคุณปลอดภัย · เข้ารหัส SSL</div>
+                <div class="secure-row">🔒 ข้อมูลของคุณปลอดภัย </div>
             </div>
 
         </div>
@@ -840,7 +828,6 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     <form id="paymentForm"
           th:action="@{/payment/tour/{id}/confirm(id=${payment.bookingId})}"
           method="post" enctype="multipart/form-data" style="display:none;">
-        <input type="hidden" name="payNote" id="hPayNote">
     </form>
 
 </div>
@@ -1020,8 +1007,6 @@ function confirmAndSubmit() {
     const fileInput = document.getElementById('slipFile');
     fileInput.name = 'slipFile';
     form.appendChild(fileInput);
-
-    document.getElementById('hPayNote').value = document.getElementById('payNoteInput').value;
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true; btn.textContent = '⏳ กำลังส่งข้อมูล…';

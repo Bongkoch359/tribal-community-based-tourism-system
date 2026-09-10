@@ -646,3 +646,121 @@
   line-height: 1;
   margin-left: -10px;
 }
+
+.view-tabs {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--surface-container);
+  padding: 5px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  border: 1px solid var(--surface-variant);
+}
+.view-tabs {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--surface-container-lowest);
+  padding: 6px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--surface-variant);
+}
+
+.view-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px 9px 14px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  border-radius: 999px;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .15s ease;
+}
+
+.view-tab .material-symbols-outlined {
+  font-size: 17px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  transition: background .2s ease, color .2s ease;
+}
+
+.view-tab:hover {
+  color: var(--on-surface);
+  background: rgba(0, 108, 73, 0.06);
+}
+
+.view-tab:active { transform: scale(0.97); }
+
+.view-tab.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 108, 73, 0.28);
+}
+
+.view-tab.active .material-symbols-outlined {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.view-tab.active:hover {
+  background: var(--primary);
+}
+
+.status-filter-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-container-lowest);
+  border-radius: 999px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
+.sf-icon { color: var(--primary); font-size: 20px; }
+.sf-label { color: var(--primary); font-weight: 700; font-size: 15px; white-space: nowrap; }
+.sf-dropdown { position: relative; }
+.sf-trigger {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--action-orange-light); border: 1px solid var(--action-orange);
+  color: var(--action-orange-hover); padding: 7px 14px; border-radius: 999px;
+  font-size: 14.5px; font-weight: 700; cursor: pointer;
+  font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
+}
+.sf-trigger-icon { font-size: 17px; color: var(--action-orange); }
+.sf-trigger-count {
+  background: var(--action-orange); color: #fff; font-size: 12px; font-weight: 700;
+  min-width: 20px; height: 20px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center; padding: 0 4px;
+}
+.sf-chevron { font-size: 18px; transition: transform 0.2s; }
+.sf-dropdown.open .sf-chevron { transform: rotate(180deg); }
+.sf-menu {
+  display: none; position: absolute; top: calc(100% + 8px); left: 0;
+  min-width: 200px; background: var(--surface-container-lowest);
+  border: 1px solid var(--surface-variant); border-radius: var(--r-md);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12); overflow: hidden; z-index: 100;
+}
+.sf-dropdown.open .sf-menu { display: block; }
+.sf-option { display: block; padding: 11px 16px; font-size: 14.5px; color: var(--on-surface-variant); transition: background 0.15s; }
+.sf-option:hover { background: var(--surface-container); }
+.sf-option.active { color: var(--action-orange-hover); font-weight: 700; background: var(--action-orange-light); }
+
+.page-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.page-toolbar .view-tabs,
+.page-toolbar .status-filter-card {
+  margin-bottom: 0; /* กัน margin เดิมซ้อนกับ gap ของ toolbar */
+}

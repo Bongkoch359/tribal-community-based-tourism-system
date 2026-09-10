@@ -93,98 +93,49 @@
         </button>
       </div>
     </div>
-  </div>
+  </div>  </div>
+  <!-- ↑ ปิด resultModal -->
 
-  <!-- ══════════════════════════════
-       Toolbar รวม: เปลี่ยนหน้า + กรองสถานะ (สไตล์เดียวกับ list-room)
-       ══════════════════════════════ -->
-  <div class="control-toolbar">
+  <div class="page-toolbar">
+    <!-- แท็บมุมมองบนสุด -->
+    <div class="view-tabs">
+      <a href="/admin/homestay" class="view-tab" th:classappend="${currentView == 'pending'} ? ' active'">
+        <span class="material-symbols-outlined">inbox</span>
+        คำขอรออนุมัติ
+      </a>
+      <a href="/admin/homestay/all" class="view-tab" th:classappend="${currentView == 'all'} ? ' active'">
+        <span class="material-symbols-outlined">list_alt</span>
+        บัญชีทั้งหมด
+      </a>
+    </div>
 
-    <!-- Dropdown 1: เปลี่ยนหน้า (คำขอรออนุมัติ / บัญชีทั้งหมด) -->
-    <div class="filter-item-group">
-      <span class="filter-item-label">
-        <span class="material-symbols-outlined" style="font-size: 18px;">swap_horiz</span>
-        มุมมอง :
-      </span>
+    <div class="status-filter-card">
+      <span class="material-symbols-outlined sf-icon">filter_alt</span>
+      <span class="sf-label">สถานะบัญชี :</span>
 
-      <div class="custom-filter-dropdown" id="pageNavDropdown">
-        <button type="button" class="filter-dropdown-trigger status-neutral" onclick="togglePageNavMenu(event)">
-          <span class="selected-text">
-            <span class="material-symbols-outlined" style="font-size: 17px;" id="pageNavTriggerIcon">inbox</span>
-            <span id="pageNavTriggerText">คำขอรออนุมัติ</span>
-          </span>
-          <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+      <div class="sf-dropdown" id="statusFilterDropdown">
+        <button type="button" class="sf-trigger" id="sfTriggerBtn" onclick="toggleStatusFilterMenu(event)">
+          <span class="material-symbols-outlined sf-trigger-icon" id="sfTriggerIcon">check_circle</span>
+          <span class="sf-trigger-text" id="sfTriggerText">ทั้งหมด</span>
+          <span class="sf-trigger-count" id="sfTriggerCount" th:text="${allCount}">0</span>
+          <span class="material-symbols-outlined sf-chevron">expand_more</span>
         </button>
 
-        <div class="filter-dropdown-menu">
-          <a href="/admin/homestay"
-             class="dropdown-item page-nav-option"
-             th:classappend="${currentView == 'pending'} ? ' active'"
-             data-icon="inbox"
-             data-label="คำขอรออนุมัติ">
-            <span class="material-symbols-outlined" style="font-size: 17px;">inbox</span>
-            คำขอรออนุมัติ
-          </a>
-
-          <a href="/admin/homestay/all"
-             class="dropdown-item page-nav-option"
-             th:classappend="${currentView == 'all'} ? ' active'"
-             data-icon="list_alt"
-             data-label="บัญชีโฮมสเตย์ทั้งหมด">
-            <span class="material-symbols-outlined" style="font-size: 17px;">list_alt</span>
-            บัญชีโฮมสเตย์ทั้งหมด
-          </a>
+        <div class="sf-menu" id="sfMenu">
+          <a href="#" class="sf-option active" data-filter="all" data-icon="apps"
+             th:text="'ทั้งหมด (' + ${allCount} + ')'">ทั้งหมด (0)</a>
+          <a href="#" class="sf-option" data-filter="pending" data-icon="schedule"
+             th:text="'รออนุมัติ (' + ${pendingCount} + ')'">รออนุมัติ (0)</a>
+          <a href="#" class="sf-option" data-filter="approved" data-icon="task_alt"
+             th:text="'อนุมัติแล้ว (' + ${approvedCount} + ')'">อนุมัติแล้ว (0)</a>
+          <a href="#" class="sf-option" data-filter="rejected" data-icon="block"
+             th:text="'ปฏิเสธแล้ว (' + ${rejectedCount} + ')'">ปฏิเสธแล้ว (0)</a>
         </div>
       </div>
     </div>
-
-    <!-- Dropdown 2: กรองตามสถานะบัญชี -->
-    <div class="filter-item-group">
-      <span class="filter-item-label">
-        <span class="material-symbols-outlined" style="font-size: 18px;">filter_alt</span>
-        สถานะบัญชี :
-      </span>
-
-      <div class="custom-filter-dropdown" id="statusFilterDropdown">
-        <button type="button" class="filter-dropdown-trigger status-all" id="sfTriggerBtn" onclick="toggleStatusFilterMenu(event)">
-          <span class="selected-text">
-            <span class="material-symbols-outlined" style="font-size: 17px;" id="sfTriggerIcon">check_circle</span>
-            <span id="sfTriggerText">ทั้งหมด</span>
-            <span class="count-badge" id="sfTriggerCount" th:text="${allCount}">0</span>
-          </span>
-          <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
-        </button>
-
-        <div class="filter-dropdown-menu">
-          <div class="dropdown-item status-opt-all active" data-filter="all" data-icon="check_circle">
-            <span class="status-dot"></span>
-            <span class="material-symbols-outlined" style="font-size: 17px;">check_circle</span>
-            <span class="label-text">ทั้งหมด</span>
-            <span class="count-badge" th:text="${allCount}">0</span>
-          </div>
-          <div class="dropdown-item status-opt-pending" data-filter="pending" data-icon="schedule">
-            <span class="status-dot"></span>
-            <span class="material-symbols-outlined" style="font-size: 17px;">schedule</span>
-            <span class="label-text">รออนุมัติ</span>
-            <span class="count-badge" th:text="${pendingCount}">0</span>
-          </div>
-          <div class="dropdown-item status-opt-approved" data-filter="approved" data-icon="task_alt">
-            <span class="status-dot"></span>
-            <span class="material-symbols-outlined" style="font-size: 17px;">task_alt</span>
-            <span class="label-text">อนุมัติแล้ว</span>
-            <span class="count-badge" th:text="${approvedCount}">0</span>
-          </div>
-          <div class="dropdown-item status-opt-rejected" data-filter="rejected" data-icon="block">
-            <span class="status-dot"></span>
-            <span class="material-symbols-outlined" style="font-size: 17px;">block</span>
-            <span class="label-text">ปฏิเสธแล้ว</span>
-            <span class="count-badge" th:text="${rejectedCount}">0</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
+
+  <div class="table-wrap">
 
   <div class="table-wrap">
     <table>

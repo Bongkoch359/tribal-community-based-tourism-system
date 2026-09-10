@@ -2,16 +2,17 @@ package com.example.miniproject.controller.Member;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import com.example.miniproject.model.TribeCode;
 
@@ -61,14 +62,10 @@ public class SearchInfoController {
             numGuest = 1;
         }
 
-        // ถ้ามีการส่ง managerId มา ให้เปลี่ยนแท็บเริ่มต้นเป็นหน้าทัวร์อัตโนมัติ
         if (managerId != null && !managerId.isEmpty()) {
             type = "tour";
         }
 
-        // 1. ดึงข้อมูลของทุกแท็บ — ห่อ try-catch แยกแต่ละส่วน
-        //    เพื่อกัน IllegalArgumentException จาก validation วันที่ (searchTour/searchHomestay)
-        //    ไม่ให้พุ่งขึ้นมาจน controller error ทั้งหน้า (whitelabel 500)
         List<Activitypost> activities = searchInfoService.searchActivity(keyword);
 
         List<Homestay> homestays;
@@ -79,7 +76,6 @@ public class SearchInfoController {
             homestays = new ArrayList<>();
         }
 
-        // 2. แยกเฉพาะตรรกะของ Tour ที่มีเงื่อนไข managerId เพิ่มเติมเท่านั้น
         List<Tour> tours;
         if (managerId != null && !managerId.isEmpty()) {
             tours = searchInfoService.getToursByManagerId(managerId);
@@ -87,7 +83,6 @@ public class SearchInfoController {
             try {
                 tours = searchInfoService.searchTour(keyword, numGuest, startDate, endDate, tourTypeId);
             } catch (IllegalArgumentException e) {
-                // ถ้า homestay error ไปก่อนหน้าแล้ว ไม่ต้อง overwrite ข้อความเดิม
                 if (model.getAttribute("errorMessage") == null) {
                     model.addAttribute("errorMessage", e.getMessage());
                 }
@@ -95,16 +90,19 @@ public class SearchInfoController {
             }
         }
 
-        
         tourService.injectBookedSeats(tours);
         if (tribeId != null) {
-    tours = tours.stream()
-            .filter(t -> t.getTribeid() != null && t.getTribeid().equals(tribeId))
-            .collect(Collectors.toList());
-}
+            tours = tours.stream()
+                    .filter(t -> t.getTribeid() != null && t.getTribeid().equals(tribeId))
+                    .collect(Collectors.toList());
+        }
 
-        // เปลี่ยนจาก System.out.println เป็น logger — debug log จะไม่ไปโผล่ปนกับ log จริงบน production
-        // และควบคุมเปิด/ปิดได้ผ่าน log level (DEBUG) โดยไม่ต้องแก้โค้ด
+        // ── ดึงทัวร์/โฮมสเตย์ยอดนิยม (rating สูงสุด) สำหรับ featured section ──
+        List<Tour> featuredTours = searchInfoService.getTopRatedTours(4);
+        List<Homestay> featuredHomestays = searchInfoService.getTopRatedHomestays(4);
+        model.addAttribute("featuredTours", featuredTours);
+        model.addAttribute("featuredHomestays", featuredHomestays);
+
         if (log.isDebugEnabled()) {
             log.debug("========== DEBUG SEARCH ==========");
             log.debug("keyword   : {}", keyword);
@@ -117,7 +115,6 @@ public class SearchInfoController {
             log.debug("===================================");
         }
 
-        // 3. ส่งข้อมูลและสเตททั้งหมดเข้าสู่ Model เพื่อแสดงผลและคงค่าไว้บนฟอร์มหน้าเว็บ
         model.addAttribute("activities",    activities);
         model.addAttribute("tours",         tours);
         model.addAttribute("homestays",     homestays);
@@ -131,33 +128,33 @@ public class SearchInfoController {
         model.addAttribute("tribeId",       tribeId); 
         model.addAttribute("tribeName", tribeName);
         model.addAttribute("tribeOptions", TribeCode.values());
-                // ตัวเลขภาพรวมสำหรับ hero stats — นับจาก DB จริงทุกครั้ง ไม่ผูกกับผลค้นหา/filter ปัจจุบัน
         model.addAttribute("heroTribeCount",    searchInfoService.countDistinctTribes());
         model.addAttribute("heroActivityCount", searchInfoService.countAllActivities());
         model.addAttribute("tourTypes",     tourService.getAllTourTypes());
 
-        // นับจำนวนนับตามกลุ่มข้อมูลที่ดึงได้จริงของแท็บนั้นๆ
         model.addAttribute("activityCount", activities.size());
         model.addAttribute("tourCount",     tours.size());
         model.addAttribute("homestayCount", homestays.size());
         model.addAttribute("totalCount",    activities.size() + tours.size() + homestays.size());
 
-        // ── คำนวณ rating map (ระบบจะวนลูปทำงานเฉพาะแท็บที่มีข้อมูลส่งกลับไปเท่านั้น) ──
+        // ── Tour rating (union กับ featuredTours เพื่อให้ template หา key เจอทั้ง 2 ส่วน) ──
+        Set<String> allTourIds = tours.stream()
+                .map(Tour::getTourid)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        featuredTours.forEach(t -> allTourIds.add(t.getTourid()));
 
-        // Tour rating
         Map<String, String> tourRating      = new HashMap<>();
         Map<String, Long>   tourReviewCount = new HashMap<>();
-        for (Tour t : tours) {
-            Double avg   = reviewRepository.avgRatingByTourId(t.getTourid());
-            Long   count = reviewRepository.countByTourId(t.getTourid());
-            tourRating.put(t.getTourid(), avg != null ? String.format("%.1f", avg) : "-");
-            tourReviewCount.put(t.getTourid(), count != null ? count : 0L);
+        for (String tid : allTourIds) {
+            Double avg   = reviewRepository.avgRatingByTourId(tid);
+            Long   count = reviewRepository.countByTourId(tid);
+            tourRating.put(tid, avg != null ? String.format("%.1f", avg) : "-");
+            tourReviewCount.put(tid, count != null ? count : 0L);
         }
 
         Map<String, String> actRating      = new HashMap<>();
         Map<String, Long>   actReviewCount = new HashMap<>();
 
-        // ── เช็คห้องว่าง (เฉพาะตอนมีวันที่ค้นหาจริง) ──────────────
         if (startDate != null && !startDate.isBlank()
                 && endDate != null && !endDate.isBlank()
                 && !homestays.isEmpty()) {
@@ -178,14 +175,19 @@ public class SearchInfoController {
             }
         }
 
-        // Homestay rating
+        // ── Homestay rating (union กับ featuredHomestays) ──
+        Set<Integer> allHsIds = homestays.stream()
+                .map(Homestay::getHomestayid)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        featuredHomestays.forEach(h -> allHsIds.add(h.getHomestayid()));
+
         Map<Integer, String> hsRating      = new HashMap<>();
         Map<Integer, Long>   hsReviewCount = new HashMap<>();
-        for (Homestay h : homestays) {
-            Double avg   = reviewRepository.avgRatingByHomestayId(h.getHomestayid());
-            Long   count = reviewRepository.countByHomestayId(h.getHomestayid());
-            hsRating.put(h.getHomestayid(), avg != null ? String.format("%.1f", avg) : "-");
-            hsReviewCount.put(h.getHomestayid(), count != null ? count : 0L);
+        for (Integer hid : allHsIds) {
+            Double avg   = reviewRepository.avgRatingByHomestayId(hid);
+            Long   count = reviewRepository.countByHomestayId(hid);
+            hsRating.put(hid, avg != null ? String.format("%.1f", avg) : "-");
+            hsReviewCount.put(hid, count != null ? count : 0L);
         }
 
         model.addAttribute("tourRating",      tourRating);

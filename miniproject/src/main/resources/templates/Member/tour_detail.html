@@ -739,7 +739,78 @@
       color: var(--amber-400);
       flex-shrink: 0;
     }
+.tour-hero-track {
+  position: absolute; inset: 0;
+  display: flex;
+  transition: transform .45s cubic-bezier(.4,0,.2,1);
+}
+.tour-hero-slide {
+  position: relative;
+  min-width: 100%; height: 100%;
+  flex-shrink: 0;
+}
+.tour-hero-slide img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+}
 
+.hero-nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(15,33,20,0.45); border: none; color: #fff;
+  font-size: 22px; cursor: pointer; z-index: 5;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sarabun', sans-serif;
+  transition: background .15s, transform .15s;
+  backdrop-filter: blur(4px);
+}
+.hero-nav-btn:hover { background: rgba(15,33,20,0.72); }
+.hero-nav-btn.hero-prev { left: 20px; }
+.hero-nav-btn.hero-next { right: 20px; }
+
+.hero-dots {
+  position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 7px; z-index: 5;
+}
+.hero-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.45);
+  cursor: pointer; transition: background .2s, transform .2s;
+  border: none; padding: 0;
+}
+.hero-dot.active { background: #fff; transform: scale(1.3); }
+
+.hero-counter {
+  position: absolute; top: 18px; right: 20px; z-index: 5;
+  background: rgba(15,33,20,0.55); backdrop-filter: blur(4px);
+  color: #fff; font-size: 13px; font-weight: 700;
+  padding: 6px 14px; border-radius: 100px;
+  display: flex; align-items: center; gap: 6px;
+}
+.hero-counter svg { width: 14px; height: 14px; opacity: .8; }
+
+.hero-thumbs {
+  position: absolute; bottom: 18px; right: 20px; z-index: 5;
+  display: flex; gap: 6px;
+}
+.hero-thumb {
+  width: 52px; height: 40px; border-radius: var(--r-sm);
+  overflow: hidden; cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.4);
+  opacity: .65; transition: opacity .15s, border-color .15s;
+  flex-shrink: 0;
+}
+.hero-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-thumb.active, .hero-thumb:hover { opacity: 1; border-color: var(--amber-400); }
+
+@media (max-width: 768px) {
+  .hero-nav-btn { width: 36px; height: 36px; font-size: 18px; }
+  .hero-nav-btn.hero-prev { left: 10px; }
+  .hero-nav-btn.hero-next { right: 10px; }
+  .hero-thumbs { display: none; } /* จอเล็กซ่อน thumbnail ให้เหลือแค่ dots */
+  .hero-counter { top: 12px; right: 12px; }
+}
     /* ============================================================
    STAT STRIP
 ============================================================ */
@@ -2434,66 +2505,86 @@
         <span th:text="${tour.tourmname}">ชื่อทัวร์</span>
       </div>
 
-      <button type="button" class="btn-report-link" onclick="openReportModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 3v18M3 4h13l-1.5 4L16 12H3" />
-        </svg>
-        รายงานทัวร์นี้
-      </button>
+    
+
+<button type="button" class="btn-report-link" onclick="openReportModal()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M3 3v18M3 4h13l-1.5 4L16 12H3"/>
+  </svg>
+  รายงานทัวร์นี้
+</button>
+    </div>
+  </div>
+  
+<div class="tour-hero" id="tourHero"
+     th:with="imgs=${tour.images != null ? #strings.arraySplit(tour.images, '||') : null}">
+
+  <!-- Carousel track: loop รูปทั้งหมด -->
+  <div class="tour-hero-track" id="heroTrack" th:if="${imgs != null and imgs.length > 0}">
+    <div class="tour-hero-slide" th:each="img : ${imgs}">
+      <img th:src="@{/uploads/tours/{img}(img=${img})}" alt="ภาพทัวร์" loading="lazy"/>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-     TOUR HERO — สัดส่วนคงที่ + object-fit:cover
-     ป้องกันรูปยืด/บีบ/แตกเมื่อภาพต้นฉบับมีขนาดต่างกัน
-══════════════════════════════════════════ -->
-  <div class="tour-hero" th:with="imgs=${tour.images != null ? #strings.arraySplit(tour.images, '||') : null}">
-    <img th:if="${imgs != null and imgs.length > 0}" th:src="@{/uploads/tours/{img}(img=${imgs[0]})}" alt="ภาพทัวร์"
-      loading="eager" />
-    <div class="tour-hero-overlay"></div>
-    <div style="position:absolute;bottom:0;left:0;right:0;">
-      <div class="tour-hero-inner">
-        <div style="padding: 28px 0;">
-          <div class="tour-hero-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
-              <path
-                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+  <div class="tour-hero-overlay"></div>
+
+  <!-- ปุ่มเลื่อน + dots + thumbnail: โชว์เฉพาะตอนมีมากกว่า 1 รูป -->
+  <th:block th:if="${imgs != null and imgs.length > 1}">
+    <button type="button" class="hero-nav-btn hero-prev" onclick="heroPrev()">‹</button>
+    <button type="button" class="hero-nav-btn hero-next" onclick="heroNext()">›</button>
+
+    <div class="hero-counter" id="heroCounter">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <path d="M3 9l4-4 4 4 4-5 4 5"/><circle cx="8.5" cy="6.5" r="1"/>
+      </svg>
+      <span id="heroCounterText">1 / 1</span>
+    </div>
+
+    <div class="hero-dots" id="heroDots"></div>
+
+    <div class="hero-thumbs" id="heroThumbs"></div>
+  </th:block>
+
+  <div style="position:absolute;bottom:0;left:0;right:0;">
+    <div class="tour-hero-inner">
+      <div style="padding: 28px 0;">
+        <div class="tour-hero-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+            <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          ทัวร์ชุมชน
+        </div>
+        <h1 class="tour-hero-title" th:text="${tour.tourmname}">ชื่อทัวร์</h1>
+        <div class="tour-hero-meta">
+          <div class="tour-hero-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
             </svg>
-            ทัวร์ชุมชน
+            <span th:text="${tour.minSeatstour} + ' – ' + ${tour.maxSeatstour} + ' ที่นั่ง'">2 – 15 ที่นั่ง</span>
           </div>
-          <h1 class="tour-hero-title" th:text="${tour.tourmname}">ชื่อทัวร์</h1>
-          <div class="tour-hero-meta">
-            <div class="tour-hero-meta-item">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
-              </svg>
-              <span th:text="${tour.minSeatstour} + ' – ' + ${tour.maxSeatstour} + ' ที่นั่ง'">2 – 15 ที่นั่ง</span>
-            </div>
-
-            <div class="tour-hero-meta-item">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 6v6l4 2" />
-              </svg>
-              <span th:text="${tourTypeDisplay} + ' · ' + ${tour.numberOfDays} + ' วัน'
-                           + (${tour.numberOfNights} != null and ${tour.numberOfNights} > 0
-                               ? ' ' + ${tour.numberOfNights} + ' คืน' : '')">
-                ทัวร์รายวัน · 1 วัน
-              </span>
-            </div>
-
-            <div class="tour-hero-meta-item" th:if="${tour.communitymanager != null}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <span th:text="'จัดโดย: ' + ${tour.communitymanager.firstname}">ผู้จัดการ</span>
-            </div>
+          <div class="tour-hero-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            <span th:text="${tourTypeDisplay} + ' · ' + ${tour.numberOfDays} + ' วัน'
+                         + (${tour.numberOfNights} != null and ${tour.numberOfNights} > 0
+                             ? ' ' + ${tour.numberOfNights} + ' คืน' : '')">
+              ทัวร์รายวัน · 1 วัน
+            </span>
+          </div>
+          <div class="tour-hero-meta-item" th:if="${tour.communitymanager != null}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span th:text="'จัดโดย: ' + ${tour.communitymanager.firstname}">ผู้จัดการ</span>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
   <!-- ══════════════════════════════════════════
      STAT STRIP
@@ -2917,60 +3008,73 @@
 ══════════════════════════════════════════ -->
   <div class="report-modal-overlay" id="reportModalOverlay" onclick="if(event.target===this) closeReportModal()">
     <div class="report-modal">
-      <div class="report-modal-header">
-        <div class="report-modal-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          รายงานทัวร์นี้
-        </div>
-        <button type="button" class="cal-close-btn" onclick="closeReportModal()">&times;</button>
-      </div>
-      <p class="report-modal-sub">ช่วยเราตรวจสอบเนื้อหาที่ไม่เหมาะสมหรือไม่ถูกต้อง ทีมงานจะรีบดำเนินการโดยเร็วที่สุด</p>
+  <div class="report-modal-header">
+    <div class="report-modal-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      รายงานทัวร์นี้
+    </div>
+    <button type="button" class="cal-close-btn" onclick="closeReportModal()">&times;</button>
+  </div>
 
-      <div class="report-field">
-        <label class="report-label">เหตุผลในการรายงาน <span class="req">*</span></label>
-        <select class="report-select" id="reportReason">
-          <option value="">-- เลือกเหตุผล --</option>
-          <option value="ข้อมูลไม่ถูกต้อง">ข้อมูลไม่ถูกต้อง / คลาดเคลื่อน</option>
-          <option value="ราคาไม่ตรงกับความเป็นจริง">ราคาไม่ตรงกับความเป็นจริง</option>
-          <option value="รูปภาพไม่ตรงกับสถานที่จริง">รูปภาพไม่ตรงกับสถานที่จริง</option>
-          <option value="พฤติกรรมไม่เหมาะสมของผู้จัดการ">พฤติกรรมไม่เหมาะสมของผู้จัดการทัวร์</option>
-          <option value="สงสัยว่าหลอกลวง/ฉ้อโกง">สงสัยว่าหลอกลวง / ฉ้อโกง</option>
-          <option value="เนื้อหาไม่เหมาะสม">เนื้อหาไม่เหมาะสม</option>
-          <option value="อื่นๆ">อื่นๆ</option>
-        </select>
-      </div>
+  <!-- ยังไม่ login -->
+  <div th:if="${session.loggedInMember == null}" style="text-align:center;padding:30px 10px 10px;">
+    <p style="color:var(--neutral-600);font-size:14.5px;margin-bottom:18px;">
+      กรุณาเข้าสู่ระบบด้วยบัญชีสมาชิกก่อนทำการรายงาน
+    </p>
+    <a href="/member/login" class="btn-login-prompt" style="display:inline-flex;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px;height:16px;">
+        <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+      </svg>
+      เข้าสู่ระบบ
+    </a>
+  </div>
 
-      <div class="report-field">
-        <label class="report-label">รายละเอียดเพิ่มเติม</label>
-        <textarea class="report-textarea" id="reportDescription"
-          placeholder="อธิบายสิ่งที่พบเจอ (ไม่บังคับ)"></textarea>
-      </div>
+  <!-- login แล้ว: ฟอร์มเดิมทั้งหมด -->
+  <div th:if="${session.loggedInMember != null}">
+    <p class="report-modal-sub">ช่วยเราตรวจสอบเนื้อหาที่ไม่เหมาะสมหรือไม่ถูกต้อง ทีมงานจะรีบดำเนินการโดยเร็วที่สุด</p>
 
-      <div class="report-field">
-        <label class="report-label">แนบรูปหลักฐาน (ไม่บังคับ)</label>
-        <div class="report-file-wrap" onclick="document.getElementById('reportFileInput').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <div class="report-file-hint">คลิกเพื่อเลือกรูปภาพ (JPG, PNG)</div>
-          <img id="reportFilePreview" class="report-file-preview" />
-        </div>
-        <input type="file" id="reportFileInput" accept="image/*" style="display:none"
-          onchange="handleReportFile(event)">
-      </div>
+    <div class="report-field">
+      <label class="report-label">เหตุผลในการรายงาน <span class="req">*</span></label>
+      <select class="report-select" id="reportReason">
+        <option value="">-- เลือกเหตุผล --</option>
+        <option value="ข้อมูลไม่ถูกต้อง">ข้อมูลไม่ถูกต้อง / คลาดเคลื่อน</option>
+        <option value="ราคาไม่ตรงกับความเป็นจริง">ราคาไม่ตรงกับความเป็นจริง</option>
+        <option value="รูปภาพไม่ตรงกับสถานที่จริง">รูปภาพไม่ตรงกับสถานที่จริง</option>
+        <option value="พฤติกรรมไม่เหมาะสมของผู้จัดการ">พฤติกรรมไม่เหมาะสมของผู้จัดการทัวร์</option>
+        <option value="สงสัยว่าหลอกลวง/ฉ้อโกง">สงสัยว่าหลอกลวง / ฉ้อโกง</option>
+        <option value="เนื้อหาไม่เหมาะสม">เนื้อหาไม่เหมาะสม</option>
+        <option value="อื่นๆ">อื่นๆ</option>
+      </select>
+    </div>
 
-      <div id="reportMsg" class="report-msg"></div>
+    <div class="report-field">
+      <label class="report-label">รายละเอียดเพิ่มเติม</label>
+      <textarea class="report-textarea" id="reportDescription" placeholder="อธิบายสิ่งที่พบเจอ (ไม่บังคับ)"></textarea>
+    </div>
 
-      <div class="report-modal-actions">
-        <button type="button" class="btn-report-cancel" onclick="closeReportModal()">ยกเลิก</button>
-        <button type="button" class="btn-report-submit" id="reportSubmitBtn" onclick="submitReport()">ส่งรายงาน</button>
+    <div class="report-field">
+      <label class="report-label">แนบรูปหลักฐาน (ไม่บังคับ)</label>
+      <div class="report-file-wrap" onclick="document.getElementById('reportFileInput').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <div class="report-file-hint">คลิกเพื่อเลือกรูปภาพ (JPG, PNG)</div>
+        <img id="reportFilePreview" class="report-file-preview" />
       </div>
+      <input type="file" id="reportFileInput" accept="image/*" style="display:none" onchange="handleReportFile(event)">
+    </div>
+
+    <div id="reportMsg" class="report-msg"></div>
+
+    <div class="report-modal-actions">
+      <button type="button" class="btn-report-cancel" onclick="closeReportModal()">ยกเลิก</button>
+      <button type="button" class="btn-report-submit" id="reportSubmitBtn" onclick="submitReport()">ส่งรายงาน</button>
     </div>
   </div>
+</div>
+</div>
 
   <!-- ══════════════════════════════════════════
      CONFIRM REPORT MODAL — ให้กดยืนยันก่อนส่งจริง
@@ -3485,6 +3589,69 @@
     function closeSuccessReportModal() {
       document.getElementById('successReportOverlay').classList.remove('open');
     }
+
+    // ═══════════════════════════════════════════
+// TOUR HERO CAROUSEL — เลื่อนดูรูปทัวร์ทั้งหมด
+// ═══════════════════════════════════════════
+(function () {
+  var track = document.getElementById('heroTrack');
+  if (!track) return;
+
+  var slides = track.querySelectorAll('.tour-hero-slide');
+  var total = slides.length;
+  if (total <= 1) return; // มีรูปเดียวไม่ต้องทำ carousel
+
+  var idx = 0;
+  var dotsWrap = document.getElementById('heroDots');
+  var thumbsWrap = document.getElementById('heroThumbs');
+  var counterText = document.getElementById('heroCounterText');
+
+  // สร้าง dots
+  for (var i = 0; i < total; i++) {
+    var dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = (function (n) { return function () { goToSlide(n); }; })(i);
+    dotsWrap.appendChild(dot);
+  }
+
+  // สร้าง thumbnail strip (ใช้ src เดียวกับรูปใน slide)
+  slides.forEach(function (slide, i) {
+    var imgSrc = slide.querySelector('img').src;
+    var thumb = document.createElement('div');
+    thumb.className = 'hero-thumb' + (i === 0 ? ' active' : '');
+    thumb.innerHTML = '<img src="' + imgSrc + '" alt=""/>';
+    thumb.onclick = (function (n) { return function () { goToSlide(n); }; })(i);
+    thumbsWrap.appendChild(thumb);
+  });
+
+  function updateUI() {
+    track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+    counterText.textContent = (idx + 1) + ' / ' + total;
+    dotsWrap.querySelectorAll('.hero-dot').forEach(function (d, i) {
+      d.classList.toggle('active', i === idx);
+    });
+    thumbsWrap.querySelectorAll('.hero-thumb').forEach(function (t, i) {
+      t.classList.toggle('active', i === idx);
+    });
+  }
+
+  function goToSlide(n) {
+    idx = (n + total) % total;
+    updateUI();
+  }
+
+  window.heroPrev = function () { goToSlide(idx - 1); };
+  window.heroNext = function () { goToSlide(idx + 1); };
+
+  // เลื่อนอัตโนมัติทุก 5 วิ (ถอดออกได้ถ้าไม่ต้องการ)
+  var autoTimer = setInterval(function () { goToSlide(idx + 1); }, 5000);
+  var heroEl = document.getElementById('tourHero');
+  heroEl.addEventListener('mouseenter', function () { clearInterval(autoTimer); });
+  heroEl.addEventListener('mouseleave', function () {
+    autoTimer = setInterval(function () { goToSlide(idx + 1); }, 5000);
+  });
+})();
   </script>
   <script>
 

@@ -12,30 +12,7 @@ function handleConfirmClick(button) {
 }
 
 // ══════════════════════════════════════════
-// Dropdown 1: เปลี่ยนหน้า (มุมมอง)
-// ══════════════════════════════════════════
-function togglePageNavMenu(e) {
-  e.stopPropagation();
-  document.getElementById('pageNavDropdown').classList.toggle('open');
-}
-
-function initPageNavDropdown() {
-  const nav = document.getElementById('pageNavDropdown');
-  if (!nav) return;
-
-  const activeOpt = nav.querySelector('.page-nav-option.active');
-  if (activeOpt) {
-    document.getElementById('pageNavTriggerText').textContent = activeOpt.dataset.label;
-    document.getElementById('pageNavTriggerIcon').textContent = activeOpt.dataset.icon;
-  }
-
-  document.addEventListener('click', (e) => {
-    if (!nav.contains(e.target)) nav.classList.remove('open');
-  });
-}
-
-// ══════════════════════════════════════════
-// Dropdown 2: กรองตามสถานะบัญชี (data-status)
+// กรองตามสถานะบัญชี (data-status)
 // ══════════════════════════════════════════
 function toggleStatusFilterMenu(e) {
   e.stopPropagation();
@@ -55,7 +32,6 @@ function initFilterDropdown() {
 
       const filter = this.dataset.filter;
 
-      // อัปเดตข้อความ/ไอคอน/ตัวเลขบนปุ่มหลัก
       document.getElementById('sfTriggerText').textContent = this.textContent.split('(')[0].trim();
       document.getElementById('sfTriggerCount').textContent =
         this.textContent.match(/\((\d+)\)/)?.[1] ?? '0';
@@ -80,7 +56,6 @@ function initFilterDropdown() {
     });
   });
 
-  // ปิด dropdown เมื่อคลิกนอกกล่อง
   document.addEventListener('click', (e) => {
     if (!dropdown.contains(e.target)) dropdown.classList.remove('open');
   });
@@ -99,7 +74,6 @@ function openConfirmModal(ownerId, action, ownerName) {
   const reasonInput = document.getElementById('rejectReasonInput');
   const hiddenReason = document.getElementById('confirmHiddenReason');
 
-  // เคลียร์ค่าเหตุผลทุกครั้งที่เปิด modal ใหม่
   reasonInput.value = '';
   hiddenReason.value = '';
 
@@ -120,7 +94,7 @@ function openConfirmModal(ownerId, action, ownerName) {
     desc.innerHTML = 'คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?';
     submitBtn.className = 'btn-action btn-reject';
     submitBtn.textContent = 'ยืนยันการปฏิเสธ';
-    submitBtn.disabled = true; // ปิดไว้ก่อน จนกว่าจะกรอกเหตุผล
+    submitBtn.disabled = true;
     form.action = '/admin/homestay/reject/' + ownerId;
     reasonField.style.display = 'block';
 
@@ -145,10 +119,8 @@ function closeConfirmModal() {
 // INIT ทั้งหมดตอนโหลดหน้า
 // ══════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
-  initPageNavDropdown();
   initFilterDropdown();
 
-  // ปิด confirm modal เมื่อคลิกพื้นหลัง
   const modal = document.getElementById('confirmModal');
   if (modal) {
     modal.addEventListener('click', function (e) {
@@ -156,7 +128,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // เลือก "รออนุมัติ" อัตโนมัติเมื่อโหลดหน้า (เหมือนพฤติกรรมเดิม)
   const pendingOption = document.querySelector('#statusFilterDropdown [data-filter="pending"]');
   if (pendingOption) pendingOption.click();
 });

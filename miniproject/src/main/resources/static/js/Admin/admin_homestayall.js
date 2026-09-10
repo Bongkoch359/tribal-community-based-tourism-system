@@ -18,16 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initFilterPills();
   initSuspendConfirmButton();
   initActivateConfirmButton();
-  initPageNavDropdown();
 
-  // ปิด modal เมื่อคลิกพื้นหลัง (นอกกล่อง)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closeModal(overlay.id);
     });
   });
 });
-
 // ══════════════════════════════════════════
 // Modal เปิด/ปิด (ใช้ร่วมกันทั้ง activateModal และ reportDetailModal)
 // ══════════════════════════════════════════
@@ -314,26 +311,5 @@ function toggleStatusFilterMenu() {
   document.getElementById('statusFilterDropdown').classList.toggle('open');
 }
 
-// ══════════════════════════════════════════
-// Dropdown: เปลี่ยนหน้า (มุมมอง)
-// ══════════════════════════════════════════
-function togglePageNavMenu(e) {
-  e.stopPropagation();
-  document.getElementById('pageNavDropdown').classList.toggle('open');
-}
 
-function initPageNavDropdown() {
-  const nav = document.getElementById('pageNavDropdown');
-  if (!nav) return;
-
-  const activeOpt = nav.querySelector('.page-nav-option.active');
-  if (activeOpt) {
-    document.getElementById('pageNavTriggerText').textContent = activeOpt.dataset.label;
-    document.getElementById('pageNavTriggerIcon').textContent = activeOpt.dataset.icon;
-  }
-
-  document.addEventListener('click', (e) => {
-    if (!nav.contains(e.target)) nav.classList.remove('open');
-  });
-}
 

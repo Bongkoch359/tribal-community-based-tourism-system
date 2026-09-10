@@ -404,3 +404,200 @@ tbody tr:hover { background: var(--surface-container-low); }
   line-height: 1;
   margin-left: -10px;
 }
+
+/* ═══════════════════════════════════════════════════
+   ส่วนเพิ่มเติมสำหรับหน้า "จัดการผู้จัดการ" (managerlist)
+   Modal รายละเอียดผู้จัดการ + สรุปรายงาน + ระงับบัญชี
+═══════════════════════════════════════════════════ */
+
+.report-count-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 12px; border-radius: 20px; font-size: 13.5px; font-weight: 700;
+  background: var(--surface-container); color: var(--outline);
+}
+.report-count-badge.has-report { background: var(--error-container); color: var(--error); }
+.report-count-badge .material-symbols-outlined { font-size: 15px; }
+
+.btn-view-report {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 14px; border-radius: 8px; border: 1.5px solid var(--outline-variant);
+  background: var(--surface-container-lowest); color: var(--on-surface-variant);
+  font-size: 13.5px; font-weight: 700; cursor: pointer; transition: border-color .15s, color .15s;
+}
+.btn-view-report:hover { border-color: var(--primary); color: var(--primary); }
+.btn-view-report.has-report { border-color: var(--error); color: var(--error); }
+.btn-view-report .material-symbols-outlined { font-size: 16px; }
+
+/* ── โปรไฟล์ผู้จัดการด้านบน Modal ── */
+.rm-profile-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+}
+.rm-profile-avatar {
+  width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+  background: var(--primary); color: #fff; font-weight: 700; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+.rm-profile-name { font-size: 17px; font-weight: 700; color: var(--on-surface); }
+.rm-profile-id { font-size: 12.5px; color: var(--outline); }
+.rm-status-chip {
+  margin-left: auto; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  white-space: nowrap;
+}
+.rm-status-chip.active { background: #f0fdf4; color: #15803d; }
+.rm-status-chip.inactive { background: var(--error-container); color: var(--error); }
+
+.rm-profile-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px;
+  padding: 14px; margin-bottom: 18px; border-radius: 10px; background: var(--surface-container);
+}
+.rm-profile-grid .rm-field-label { font-size: 11.5px; color: var(--outline); font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.rm-profile-grid .rm-field-value { font-size: 14px; color: var(--on-surface); margin-top: 1px; word-break: break-word; }
+
+/* ── สรุปการรายงาน ── */
+.rm-summary-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.rm-summary-chip {
+  flex: 1; min-width: 100px; text-align: center; padding: 12px 8px; border-radius: 10px;
+  background: var(--surface-container); border: 1px solid var(--surface-variant);
+}
+.rm-summary-chip .rm-summary-num { font-size: 20px; font-weight: 800; color: var(--on-surface); }
+.rm-summary-chip.has-value .rm-summary-num { color: var(--error); }
+.rm-summary-chip .rm-summary-label { font-size: 11.5px; color: var(--outline); margin-top: 2px; }
+
+.rm-list-title {
+  font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--outline); margin-bottom: 10px; text-align: left;
+}
+.rm-report-list { max-height: 260px; overflow-y: auto; margin-bottom: 20px; text-align: left; }
+
+/* ── การ์ดกลุ่ม: รายการ (ทัวร์/โฮมสเตย์) ที่ถูกรายงาน ── */
+.rm-group-card {
+  border: 1px solid var(--surface-variant); border-radius: 10px; margin-bottom: 10px;
+  background: var(--surface-container); overflow: hidden;
+}
+.rm-group-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 14px; cursor: pointer;
+}
+.rm-group-name { font-weight: 700; color: var(--on-surface); font-size: 14px; }
+.rm-group-type { font-size: 12px; color: var(--outline); margin-top: 1px; }
+.rm-group-count {
+  flex-shrink: 0; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  background: var(--error-container); color: var(--error);
+}
+.rm-group-toggle { font-size: 18px; color: var(--outline); transition: transform .15s; }
+.rm-group-card.open .rm-group-toggle { transform: rotate(180deg); }
+.rm-group-detail { display: none; padding: 0 14px 12px; }
+.rm-group-card.open .rm-group-detail { display: block; }
+
+.report-item {
+  padding: 12px 14px; border: 1px solid var(--surface-variant); border-radius: 10px;
+  margin-bottom: 10px; background: var(--surface-container-lowest);
+}
+.rm-group-detail .report-item:last-child { margin-bottom: 0; }
+.report-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+.report-item-reason { font-weight: 700; color: var(--on-surface); font-size: 14px; }
+.report-item-date { font-size: 11.5px; color: var(--outline); white-space: nowrap; }
+.report-item-desc { font-size: 13px; color: var(--on-surface-variant); line-height: 1.5; margin-top: 2px; }
+.report-item-status { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.report-item-footer { display: flex; align-items: center; flex-wrap: wrap; }
+.ris-pending  { background: #eff6ff; color: #2563eb; }
+.ris-resolved { background: #f0fdf4; color: #15803d; }
+.ris-rejected { background: var(--error-container); color: var(--error); }
+.rm-empty { text-align: center; color: var(--outline); font-size: 13.5px; padding: 18px 0; }
+
+/* ── ปุ่มเริ่มต้น: กด "ระงับบัญชี" เพื่อเปิดฟอร์มเหตุผล (progressive disclosure) ── */
+.rm-btn-trigger-suspend {
+  width: 100%; padding: 12px 20px; border-radius: 8px;
+  background: var(--error-container); border: 1px solid #fca5a5;
+  color: var(--error); font-size: 15px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background .15s;
+}
+.rm-btn-trigger-suspend:hover { background: #fecaca; }
+.rm-btn-trigger-suspend .material-symbols-outlined { font-size: 18px; }
+
+/* ── ฟอร์มระบุเหตุผลการระงับบัญชี: ซ่อนไว้ก่อน จนกว่าจะกดปุ่ม trigger ── */
+.rm-reason-field {
+  margin-bottom: 0; text-align: left;
+  max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height .25s ease, opacity .2s ease, margin .25s ease;
+}
+.rm-reason-field.expanded {
+  max-height: 220px; opacity: 1; margin-bottom: 20px; margin-top: 4px;
+}
+.rm-reason-field label {
+  display: block; font-size: 13.5px; font-weight: 700; color: var(--on-surface);
+  margin-bottom: 8px;
+}
+.rm-reason-field .required { color: var(--error); }
+.rm-reason-field textarea {
+  width: 100%; min-height: 90px; padding: 12px 14px; border-radius: 8px;
+  border: 1.5px solid var(--outline-variant); background: var(--surface-container-lowest);
+  color: var(--on-surface); font-size: 14.5px; line-height: 1.5; resize: vertical;
+}
+.rm-reason-field textarea:focus { outline: none; border-color: var(--error); }
+
+/* ── ปุ่ม ยกเลิก/ยืนยัน: ซ่อนไว้ก่อน โผล่มาพร้อมฟอร์มเหตุผล ── */
+.rm-actions { display: none; gap: 12px; justify-content: center; }
+.rm-actions.expanded { display: flex; }
+.rm-btn-cancel {
+  flex: 1; padding: 10px 20px; border-radius: 8px;
+  background: var(--surface-container-lowest); border: 1px solid var(--outline-variant);
+  color: var(--on-surface-variant); font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.rm-btn-suspend {
+  flex: 1; padding: 10px 20px; border-radius: 8px;
+  background: var(--error); border: none; color: #fff;
+  font-size: 15px; font-weight: 700; cursor: pointer; transition: background .15s;
+}
+.rm-btn-suspend:hover { background: #93000a; }
+
+/* ── Modal ยืนยันการระงับ (ซ้อนทับ suspendModal, โทนสีแดงทั้งหมด) ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(22, 29, 25, 0.65);
+  z-index: 10000;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+
+.confirm-box {
+  background: var(--surface-container-lowest);
+  padding: 32px;
+  border-radius: var(--r-lg);
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--error-container);
+}
+
+.modal-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-icon.suspend {
+  background: var(--error-container);
+  color: var(--error);
+  border: 1px solid #fca5a5;
+}
+
+.modal-title { font-size: 20px; font-weight: 700; color: var(--on-surface); margin-bottom: 10px; }
+.modal-desc { color: var(--on-surface-variant); font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
+
+.modal-actions { display: flex; gap: 12px; justify-content: center; }
+.btn-modal-cancel {
+  flex: 1; padding: 10px 20px; border-radius: 8px;
+  background: var(--surface-container-lowest); border: 1px solid var(--outline-variant);
+  color: var(--on-surface-variant); font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.btn-modal-confirm-suspend {
+  flex: 1; padding: 10px 20px; border-radius: 8px;
+  background: var(--error); border: 1px solid var(--error); color: #fff;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background .15s;
+}
+.btn-modal-confirm-suspend:hover { background: #93000a; }
+.btn-modal-confirm-suspend:disabled { opacity: .7; cursor: not-allowed; }

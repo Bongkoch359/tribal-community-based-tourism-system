@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.example.miniproject.entity.Activitypost;
@@ -197,4 +198,22 @@ public class SearchInfoService {
             return 0;
         }
     }
+
+    public List<Tour> getTopRatedTours(int limit) {
+    try {
+        return tourRepository.findTopRatedTours(PageRequest.of(0, limit));
+    } catch (Exception e) {
+        log.error("getTopRatedTours failed", e);
+        return new ArrayList<>();
+    }
+}
+
+public List<Homestay> getTopRatedHomestays(int limit) {
+    try {
+        return homestayRepository.findTopRatedHomestays(PageRequest.of(0, limit));
+    } catch (Exception e) {
+        log.error("getTopRatedHomestays failed", e);
+        return new ArrayList<>();
+    }
+}
 }

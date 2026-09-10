@@ -94,4 +94,22 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
         ORDER BY r.reviewdate DESC
     """)
     List<Object[]> findReviewsWithTourByManagerId(@Param("managerId") String managerId);
+
+    // ─── หา id ที่มีรีวิวอยู่จริง (ไว้เลือก top rated) ──────
+@Query("""
+    SELECT DISTINCT btd.tourschedule.tour.tourid
+    FROM Review r
+    JOIN r.booking b
+    JOIN b.tourDetails btd
+""")
+List<String> findTourIdsWithReview();
+
+@Query("""
+    SELECT DISTINCT rt.homestay.homestayid
+    FROM Review r
+    JOIN r.booking b
+    JOIN b.roomDetails rd
+    JOIN rd.roomtype rt
+""")
+List<Integer> findHomestayIdsWithReview();
 }

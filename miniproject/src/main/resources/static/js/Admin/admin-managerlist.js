@@ -169,7 +169,7 @@ function renderReportSummary(reports) {
 
   row.appendChild(buildSummaryChip(reports.length, 'การรายงานทั้งหมด'));
   row.appendChild(buildSummaryChip(tourNames.size, 'ทัวร์ที่ถูกรายงาน'));
-  
+
 }
 
 function renderReportList(reports) {
@@ -197,6 +197,24 @@ function renderReportList(reports) {
   });
 }
 
+// ══════════════════════════════════════════
+// Progressive disclosure: ปุ่ม "ระงับบัญชีผู้จัดการคนนี้" -> เปิดฟอร์มเหตุผล
+// (แยก step "ดูรายละเอียด" ออกจาก "กรอกเหตุผลระงับ" โดยไม่ต้องเปิด modal ใหม่)
+// ══════════════════════════════════════════
+function toggleSuspendReasonField() {
+  document.getElementById('rmReasonField').classList.add('expanded');
+  document.getElementById('rmActionsRow').classList.add('expanded');
+  document.getElementById('rmTriggerSuspendBtn').style.display = 'none';
+  document.getElementById('rmSuspendReasonInput').focus();
+}
+
+function cancelSuspendReasonField() {
+  document.getElementById('rmReasonField').classList.remove('expanded');
+  document.getElementById('rmActionsRow').classList.remove('expanded');
+  document.getElementById('rmSuspendReasonInput').value = '';
+  document.getElementById('rmTriggerSuspendBtn').style.display = 'flex';
+}
+
 async function showReportModal(btn) {
   const id = btn.dataset.id;
 
@@ -218,8 +236,10 @@ async function showReportModal(btn) {
   statusEl.innerText = isActive ? 'ใช้งานปกติ' : 'ถูกระงับการใช้งาน';
   statusEl.className = 'rm-status-chip ' + (isActive ? 'active' : 'inactive');
 
-  document.getElementById('rmSuspendReasonInput').value = ""; // รีเซ็ตช่องเหตุผล
   currentSuspendUrl = '/admin/manager/suspend/' + id;
+
+  // รีเซ็ตฟอร์มเหตุผลให้กลับไปเป็นสถานะ "ยังไม่เปิด" ทุกครั้งที่เปิด modal ใหม่
+  cancelSuspendReasonField();
 
   const listEl = document.getElementById('rmReportList');
   const emptyEl = document.getElementById('rmEmptyState');
@@ -254,6 +274,7 @@ async function showReportModal(btn) {
 function closeSuspendModal() {
   const modal = document.getElementById('suspendModal');
   if (modal) modal.style.display = 'none';
+  cancelSuspendReasonField(); // รีเซ็ตฟอร์มเหตุผลกลับสู่สถานะเริ่มต้นเสมอเมื่อปิด modal
 }
 
 // modal ทั่วไปแบบ overlay (ใช้กับ suspendConfirmModal)

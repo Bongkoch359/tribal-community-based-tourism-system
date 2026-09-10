@@ -217,4 +217,12 @@ public interface TourRepository extends JpaRepository<Tour, String> {
 
     List<Tour> findByTribeid(Integer tribeid);
 
+    /** top N ทัวร์ที่ rating เฉลี่ยสูงสุด (คืน entity ตรงๆ ใช้กับหน้า featured) */
+@Query("""
+    SELECT btd.tourschedule.tour FROM Review r
+    JOIN r.booking b JOIN b.tourDetails btd
+    GROUP BY btd.tourschedule.tour
+    ORDER BY AVG(r.rating) DESC
+""")
+List<Tour> findTopRatedTours(org.springframework.data.domain.Pageable pageable);
 }

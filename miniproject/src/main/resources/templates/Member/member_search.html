@@ -576,7 +576,7 @@
 
 
 <!-- Tours -->
-<th:block th:each="t,iterStat : ${tours}" th:if="${iterStat.index < 4}">
+<th:block th:each="t : ${featuredTours}">
   <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
     <div class="fcard-img">
       <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
@@ -635,7 +635,7 @@
 
 
             <!-- Homestays -->
-      <th:block th:each="h,iterStat : ${homestays}" th:if="${iterStat.index < 4}">
+      <th:block th:each="h : ${featuredHomestays}">
        <a th:href="@{/homestay/{id}(id=${h.homestayid}, checkin=${startDate}, checkout=${endDate}, guest=${numGuest})}" class="fcard" data-type="homestay">
           <div class="fcard-img" th:with="imgs=${h.images != null ? #strings.arraySplit(h.images, ',') : null}">
            <img th:if="${imgs != null and imgs.length > 0}"
@@ -686,7 +686,8 @@
         </a>
       </th:block>
 
-      <div th:if="${#lists.isEmpty(activities) and #lists.isEmpty(tours) and #lists.isEmpty(homestays)}"
+     <div th:if="${#lists.isEmpty(activities) and #lists.isEmpty(featuredTours) and #lists.isEmpty(featuredHomestays)}"
+     class="fcard-empty">
            class="fcard-empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>

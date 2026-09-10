@@ -460,22 +460,34 @@
 
 <script>
   document.getElementById('login-form').addEventListener('submit', function(e) {
-    const email    = document.getElementById('email');
-    const password = document.getElementById('password');
+  const email    = document.getElementById('email');
+  const password = document.getElementById('password');
+  const eVal = email.value.trim();
+  const pVal = password.value.trim();
 
-    email.classList.remove('input-error');
-    password.classList.remove('input-error');
-    hideAlert();
+  email.classList.remove('input-error');
+  password.classList.remove('input-error');
+  hideAlert();
 
-    // Flow 3.1 — ไม่กรอกข้อมูล
-    if (!email.value.trim() || !password.value.trim()) {
-      e.preventDefault();
-      if (!email.value.trim())    email.classList.add('input-error');
-      if (!password.value.trim()) password.classList.add('input-error');
-      showAlert('กรุณากรอกอีเมลและรหัสผ่าน');
-      return;
-    }
-  });
+  // แยกข้อความตามช่องที่ขาด (เหมือน flow ของ admin)
+  if (!eVal && !pVal) {
+    e.preventDefault();
+    email.classList.add('input-error');
+    password.classList.add('input-error');
+    showAlert('กรุณากรอกอีเมลและรหัสผ่าน');
+    return;
+  } else if (!eVal) {
+    e.preventDefault();
+    email.classList.add('input-error');
+    showAlert('กรุณากรอกอีเมล');
+    return;
+  } else if (!pVal) {
+    e.preventDefault();
+    password.classList.add('input-error');
+    showAlert('กรุณากรอกรหัสผ่าน');
+    return;
+  }
+});
 
   function showAlert(msg) {
     var box = document.getElementById('js-alert');
