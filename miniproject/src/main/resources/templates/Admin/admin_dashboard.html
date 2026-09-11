@@ -608,7 +608,7 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   <div class="nav-group">
     <a href="/admin/dashboard" class="nav-link active">
       <span class="material-symbols-outlined">dashboard</span>
-      Dashboard
+      หน้าหลัก
     </a>
     <a href="/admin/manager" class="nav-link">
       <span class="material-symbols-outlined">group</span>
@@ -656,7 +656,7 @@ button { cursor: pointer; font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sara
   <!-- WELCOME BANNER: สรุปด้วยข้อมูลที่มีอยู่แล้ว (homestayTotal, managerTotal, homestayPending, managerActive, homestayApproved) -->
   <div class="welcome-banner">
     <div class="welcome-text">
-      <h1>ยินดีต้อนรับ, <span th:text="${session.loggedInAdmin?.username ?: 'Admin'}">Admin</span> 👋</h1>
+      <h1>ยินดีต้อนรับ, <span th:text="${session.loggedInAdmin?.username ?: 'Admin'}">ผูดูแลระบบ</span> 👋</h1>
       <p>แผงควบคุมสำหรับดูแลบัญชีผู้ใช้งานและภาพรวมทั้งระบบ — ข้อมูลรายได้และการจองแยกไปอยู่ที่แดชบอร์ดของแต่ละโฮมสเตย์/ผู้จัดการแล้ว</p>
     </div>
     <div class="welcome-stats">

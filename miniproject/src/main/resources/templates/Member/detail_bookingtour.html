@@ -1913,10 +1913,10 @@
 
     <!-- ══ PAGE CONTENT ══ -->
     <div class="page-wrap">
-
-        <div th:with="
+<div th:with="
     detail=${booking.tourDetails != null and !booking.tourDetails.isEmpty() ? booking.tourDetails[0] : null},
-    sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'}">
+    sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'},
+    thMonths=${#strings.arraySplit('มกราคม,กุมภาพันธ์,มีนาคม,เมษายน,พฤษภาคม,มิถุนายน,กรกฎาคม,สิงหาคม,กันยายน,ตุลาคม,พฤศจิกายน,ธันวาคม',',')}">
 
             <!-- Alerts -->
             <div class="alert alert-error" th:if="${errorMsg != null}"><span>❌</span><span th:text="${errorMsg}"></span>
@@ -1940,11 +1940,13 @@
                         <span th:if="${sts == 'CANCEL'}">❌ ยกเลิกแล้ว</span>
                     </span>
 
-                    <span style="font-size:.8rem;color:#666;">
-                        วันที่จอง :
-                        <strong
-                            th:text="${booking.bookingdate != null ? #dates.format(booking.bookingdate,'dd/MM/yyyy') : '-'}"></strong>
-                    </span>
+                   <span style="font-size:.8rem;color:#666;">
+    วันที่จอง :
+    <strong
+        th:if="${booking.bookingdate != null}"
+        th:text="|${#numbers.formatInteger(#dates.day(booking.bookingdate),2)}/${#numbers.formatInteger(#dates.month(booking.bookingdate),2)}/${#dates.year(booking.bookingdate)}|"></strong>
+    <strong th:if="${booking.bookingdate == null}">-</strong>
+</span>
                 </div>
 
                 <!-- ปุ่มแก้ไข เฉพาะ PENDING / WAITING_APPROVAL -->
@@ -1993,9 +1995,11 @@
                                  เหมือนกับที่ BookingTourController#bookingPage ทำไว้ตอน create -->
                                     <div class="detail-item editable" style="grid-column:1/-1;">
                                         <div class="detail-label">วันออกเดินทาง (เลือกรอบที่เปิดจอง)</div>
-                                        <div class="detail-value view-val"
-                                            th:text="${detail.tourschedule != null and detail.tourschedule.opendate != null ? #dates.format(detail.tourschedule.opendate,'dd MMMM yyyy') + (detail.tourschedule.enddate != null ? ' - ' + #dates.format(detail.tourschedule.enddate,'dd MMMM yyyy') : '') : '-'}">
-                                            -</div>
+                                 <div class="detail-value view-val"
+    th:if="${detail.tourschedule != null and detail.tourschedule.opendate != null}"
+    th:text="|${#dates.day(detail.tourschedule.opendate)} ${thMonths[#dates.month(detail.tourschedule.opendate)-1]} ${#dates.year(detail.tourschedule.opendate)}${detail.tourschedule.enddate != null ? ' - ' + #dates.day(detail.tourschedule.enddate) + ' ' + thMonths[#dates.month(detail.tourschedule.enddate)-1] + ' ' + #dates.year(detail.tourschedule.enddate) : ''}|">
+    -</div>
+<div class="detail-value view-val" th:if="${detail.tourschedule == null or detail.tourschedule.opendate == null}">-</div>
 
                                         <div class="inline-field">
                                             <!-- ⭐ FIX: เดิมใช้ th:disabled ตอนไม่มี schedule เปิดจอง แต่ input/select ที่ disabled
@@ -2007,31 +2011,32 @@
                                                 th:if="${schedules != null and !schedules.isEmpty()}">
 
                                                 <!-- รอบที่เปิดจองอยู่ตอนนี้ -->
-                                                <option th:each="s : ${schedules}"
-                                                    th:value="${#dates.format(s.opendate,'yyyy-MM-dd')}"
-                                                    th:text="${#dates.format(s.opendate,'dd/MM/yyyy')} + ' - ' + ${#dates.format(s.enddate,'dd/MM/yyyy')}"
-                                                    th:selected="${detail.tourschedule != null and s.scheduleid == detail.tourschedule.scheduleid}">
-                                                </option>
+                                              <!-- รอบที่เปิดจองอยู่ตอนนี้ -->
+    <option th:each="s : ${schedules}"
+        th:value="${#dates.format(s.opendate,'yyyy-MM-dd')}"
+        th:attr="data-scheduleid=${s.scheduleid}"
+        th:selected="${detail.tourschedule != null and s.scheduleid == detail.tourschedule.scheduleid}"
+        th:text="|${#numbers.formatInteger(#dates.day(s.opendate),2)}/${#numbers.formatInteger(#dates.month(s.opendate),2)}/${#dates.year(s.opendate)} - ${#numbers.formatInteger(#dates.day(s.enddate),2)}/${#numbers.formatInteger(#dates.month(s.enddate),2)}/${#dates.year(s.enddate)}|">
+    </option>
 
-                                                <!-- เผื่อรอบเดิมของการจองนี้ไม่ได้อยู่ในลิสต์ที่เปิดจองแล้ว (เช่นปิดรับจองไปแล้ว)
-                                             ให้แสดงรอบเดิมไว้เป็นตัวเลือกเสมอ กันไม่ให้ select ว่างหรือเด้งไปรอบอื่นโดยไม่ตั้งใจ -->
-                                                <option
-                                                    th:if="${detail.tourschedule != null and !#lists.contains(schedules.![scheduleid], detail.tourschedule.scheduleid)}"
-                                                    th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
-                                                    th:text="${#dates.format(detail.tourschedule.opendate,'dd/MM/yyyy')} + ' - ' + ${#dates.format(detail.tourschedule.enddate,'dd/MM/yyyy')} + ' (รอบปัจจุบันของการจองนี้)'"
-                                                    selected="selected">
-                                                </option>
-                                            </select>
+    <!-- เผื่อรอบเดิมของการจองนี้ไม่ได้อยู่ในลิสต์ที่เปิดจองแล้ว -->
+    <option
+        th:if="${detail.tourschedule != null and !#lists.contains(schedules.![scheduleid], detail.tourschedule.scheduleid)}"
+        th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
+        th:text="|${#numbers.formatInteger(#dates.day(detail.tourschedule.opendate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.opendate),2)}/${#dates.year(detail.tourschedule.opendate)} - ${#numbers.formatInteger(#dates.day(detail.tourschedule.enddate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.enddate),2)}/${#dates.year(detail.tourschedule.enddate)} (รอบปัจจุบันของการจองนี้)|"
+        selected="selected">
+    </option>
+</select>
 
-                                            <!-- ไม่มีรอบเปิดจองเลย: ให้ select เหลือตัวเลือกเดียวคือรอบเดิม (ไม่ disable เพื่อให้ยังส่งค่าได้) -->
-                                            <select class="inline-select" name="tourdate" id="tourdate-input" required
-                                                th:if="${schedules == null or schedules.isEmpty()}">
-                                                <option th:if="${detail.tourschedule != null}"
-                                                    th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
-                                                    th:text="${#dates.format(detail.tourschedule.opendate,'dd/MM/yyyy')} + ' - ' + ${#dates.format(detail.tourschedule.enddate,'dd/MM/yyyy')} + ' (รอบปัจจุบันของการจองนี้)'"
-                                                    selected="selected">
-                                                </option>
-                                            </select>
+<!-- ไม่มีรอบเปิดจองเลย -->
+<select class="inline-select" name="tourdate" id="tourdate-input" required
+    th:if="${schedules == null or schedules.isEmpty()}">
+    <option th:if="${detail.tourschedule != null}"
+        th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
+        th:text="|${#numbers.formatInteger(#dates.day(detail.tourschedule.opendate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.opendate),2)}/${#dates.year(detail.tourschedule.opendate)} - ${#numbers.formatInteger(#dates.day(detail.tourschedule.enddate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.enddate),2)}/${#dates.year(detail.tourschedule.enddate)} (รอบปัจจุบันของการจองนี้)|"
+        selected="selected">
+    </option>
+</select>
                                             <div class="field-error-msg">กรุณาเลือกวันออกเดินทาง</div>
 
                                             <div class="pickup-hint"
@@ -2493,10 +2498,12 @@
                             <div class="summary-divider"></div>
 
                             <div class="sum-row">
-                                <span class="lbl">วันออกเดินทาง</span>
-                                <span class="val"
-                                    th:text="${detail != null and detail.tourschedule.opendate != null ? #dates.format(detail.tourschedule.opendate,'dd/MM/yyyy') : '-'}">-</span>
-                            </div>
+    <span class="lbl">วันออกเดินทาง</span>
+    <span class="val"
+        th:if="${detail != null and detail.tourschedule != null and detail.tourschedule.opendate != null}"
+        th:text="|${#dates.day(detail.tourschedule.opendate)} ${thMonths[#dates.month(detail.tourschedule.opendate)-1]} ${#dates.year(detail.tourschedule.opendate)}|">-</span>
+    <span class="val" th:if="${detail == null or detail.tourschedule == null or detail.tourschedule.opendate == null}">-</span>
+</div>
                             <div class="sum-row">
                                 <span class="lbl">ผู้ใหญ่</span>
                                 <span class="val"

@@ -26,7 +26,7 @@
 <div class="nav-group">
   <a href="/admin/dashboard" class="nav-link">
     <span class="material-symbols-outlined">dashboard</span>
-    Dashboard
+    หน้าหลัก
   </a>
   <a href="/admin/manager" class="nav-link active">
     <span class="material-symbols-outlined">group</span>
@@ -111,7 +111,14 @@
         </tr>
       </thead>
       <tbody id="tableBody">
-        <tr th:each="m : ${managers}" th:attr="data-status=${m.accountstatus}">
+        <!--
+          th:with คำนวณวันที่แบบไทยครั้งเดียวต่อแถว (thDate)
+          รูปแบบ: dd + ชื่อเดือนย่อภาษาไทย + ปี พ.ศ. (ค.ศ. + 543)
+          ถ้าอยากใช้ปี ค.ศ. แทน ให้ตัด "+543" ออกจาก thDate ด้านล่าง
+        -->
+        <tr th:each="m : ${managers}" th:attr="data-status=${m.accountstatus}"
+            th:with="thMonths=${ {'ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'} },
+                     thDate=|${#numbers.formatInteger(m.createdDate.dayOfMonth,2)} ${thMonths.get(m.createdDate.monthValue-1)} ${m.createdDate.year+543}|">
           <td>
             <div class="name-main" th:text="${m.firstname + ' ' + m.lastname}">ชื่อ-นามสกุล</div>
             <div class="name-sub">ID: <span th:text="${m.managerid}">001</span></div>
@@ -123,7 +130,7 @@
             <div style="font-size: 14px;" th:text="${m.email}">email@example.com</div>
             <div style="font-size: 14px; color: var(--outline);" th:text="${m.phone}">081-234-5678</div>
           </td>
-          <td th:text="${#temporals.format(m.createdDate,'dd MMM yyyy')}">01 ม.ค. 2024</td>
+          <td th:text="${thDate}">01 ม.ค. 2567</td>
 
           <!-- ══ คอลัมน์ใหม่: การรายงาน (นับเฉพาะ PENDING รวมทุกทัวร์ในความดูแล) ══ -->
           <td>
@@ -147,7 +154,7 @@
                                data-community=${m.tribe},
                                data-email=${m.email},
                                data-phone=${m.phone},
-                               data-date=${#temporals.format(m.createdDate,'dd MMM yyyy')},
+                               data-date=${thDate},
                                data-status=${m.accountstatus.name()}"
                       onclick="showReportModal(this)">
                 <span class="material-symbols-outlined">visibility</span> ดู
@@ -194,6 +201,17 @@
         <div class="rm-profile-id" id="modalManagerId">-</div>
       </div>
       <span class="rm-status-chip" id="modalManagerStatus">-</span>
+
+      <!-- ปุ่มกากบาทปิด modal นี้ (modal นี้เปิด/ปิดด้วย inline style.display) -->
+      <button type="button"
+              onclick="document.getElementById('suspendModal').style.display='none'"
+              aria-label="ปิด"
+              style="flex-shrink:0; width:32px; height:32px; border-radius:50%; border:none;
+                     background:var(--surface-container, #e8f0e9); color:var(--outline, #6c7a71);
+                     display:flex; align-items:center; justify-content:center; cursor:pointer;
+                     margin-left:auto;">
+        <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+      </button>
     </div>
 
     <div class="rm-profile-grid">

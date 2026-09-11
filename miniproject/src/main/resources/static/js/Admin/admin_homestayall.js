@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 // ══════════════════════════════════════════
-// Modal เปิด/ปิด (ใช้ร่วมกันทั้ง activateModal และ reportDetailModal)
+// Modal เปิด/ปิด (ใช้ร่วมกันทุก modal ในหน้านี้)
 // ══════════════════════════════════════════
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
@@ -67,14 +67,33 @@ function openReportModal(btn) {
   const ownerId    = btn.dataset.id;
   const targetName = btn.dataset.target;
   const ownerName  = btn.dataset.owner;
+  const email      = btn.dataset.email;
+  const phone      = btn.dataset.phone;
+  const address    = btn.dataset.address;
+  const status     = btn.dataset.status; // เช่น 'SUSPENDED' หรือค่าอื่นที่ถือว่าปกติ
 
   currentSuspendOwnerId = ownerId;
 
-  document.getElementById('rmTargetName').textContent = targetName || '-';
-  document.getElementById('rmOwnerName').textContent  = ownerName || '-';
+  // ── หัว modal: avatar / ชื่อ / ไอดี / badge สถานะ ──
+  document.getElementById('rmOwnerName').textContent = ownerName || '-';
+  document.getElementById('rmOwnerId').textContent   = ownerId ? `ID: ${ownerId}` : '-';
+  document.getElementById('rmAvatar').textContent     = getInitials(ownerName);
 
-  // เคลียร์ค่าเก่าทุกครั้งที่เปิด modal ใหม่
+  const statusBadge = document.getElementById('rmStatusBadge');
+  const isSuspended = status === 'SUSPENDED';
+  statusBadge.textContent = isSuspended ? 'ถูกระงับ' : 'ใช้งานปกติ';
+  statusBadge.classList.toggle('suspended', isSuspended);
+
+  // ── กล่องข้อมูลติดต่อ ──
+  document.getElementById('rmAddress').textContent = address && address !== '-' ? address : 'ไม่มีข้อมูลที่อยู่';
+  document.getElementById('rmEmail').textContent   = email || '-';
+  document.getElementById('rmPhone').textContent   = phone || '-';
+
+  // ── รีเซ็ตฟอร์มระงับให้กลับไปเป็นปุ่มเดียวทุกครั้งที่เปิด modal ใหม่ ──
   document.getElementById('rmSuspendReasonInput').value = '';
+  document.getElementById('rmSuspendForm').classList.remove('show');
+  document.getElementById('rmSuspendTriggerBtn').style.display = '';
+
   document.getElementById('rmSummaryRow').innerHTML = '';
   document.getElementById('rmReportList').innerHTML = '';
   document.getElementById('rmEmptyState').style.display = 'none';
@@ -93,6 +112,14 @@ function openReportModal(btn) {
       document.getElementById('rmReportList').innerHTML =
         '<div class="report-empty">ไม่สามารถโหลดข้อมูลรายงานได้ กรุณาลองใหม่อีกครั้ง</div>';
     });
+}
+
+// เอาอักษรแรกของชื่อ-นามสกุลมาทำเป็นตัวย่อ avatar เช่น "รานี วันดี" -> "รว"
+function getInitials(fullName) {
+  if (!fullName) return '-';
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].substring(0, 2);
+  return (parts[0][0] || '') + (parts[1][0] || '');
 }
 
 // รับ List<ReportListItemDto> จาก /api/admin/reports/by-owner/{id} มา render
@@ -117,28 +144,25 @@ function renderReportModal(reports) {
   });
 }
 
-// สร้าง summary chip 3 ช่อง: รอดำเนินการ / ดำเนินการแล้ว / ปฏิเสธแล้ว
+// สรุป 2 ช่อง: จำนวนการรายงานทั้งหมด / จำนวนโฮมสเตย์ที่ถูกรายงาน (เหมือนหน้าทัวร์)
 function renderSummary(reports) {
-  const counts = { PENDING: 0, RESOLVED: 0, REJECTED: 0 };
-  (reports || []).forEach(r => {
-    if (counts[r.status] !== undefined) counts[r.status]++;
-  });
+  const list = reports || [];
+  const totalReports = list.length;
+  const groupCount = groupReportsByTarget(list).length;
 
   const row = document.getElementById('rmSummaryRow');
   row.innerHTML = '';
 
   const chipsConfig = [
-    { key: 'PENDING',  label: 'รอดำเนินการ' },
-    { key: 'RESOLVED', label: 'ดำเนินการแล้ว' },
-    { key: 'REJECTED', label: 'ปฏิเสธแล้ว' },
+    { num: totalReports, label: 'การรายงานทั้งหมด' },
+    { num: groupCount,   label: 'โฮมสเตย์ที่ถูกรายงาน' },
   ];
 
   chipsConfig.forEach(cfg => {
-    const num = counts[cfg.key] || 0;
     const chip = document.createElement('div');
-    chip.className = 'rm-summary-chip' + (num > 0 ? ' has-value' : '');
+    chip.className = 'rm-summary-chip' + (cfg.num > 0 ? ' has-value' : '');
     chip.innerHTML = `
-      <div class="rm-summary-num">${num}</div>
+      <div class="rm-summary-num">${cfg.num}</div>
       <div class="rm-summary-label">${cfg.label}</div>
     `;
     row.appendChild(chip);
@@ -180,7 +204,7 @@ function buildGroupCard(group, idx) {
       <div class="rm-group-type">${typeLabel}</div>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
-      <span class="rm-group-count">${group.items.length} รายงาน</span>
+      <span class="rm-group-count">ถูกรายงาน ${group.items.length} ครั้ง</span>
       <span class="material-symbols-outlined rm-group-toggle">expand_more</span>
     </div>
   `;
@@ -199,9 +223,10 @@ function buildGroupCard(group, idx) {
   return card;
 }
 
-// สร้าง 1 รายการรายงาน (การ์ดเล็กในกลุ่ม)
+// สร้าง 1 รายการรายงาน (การ์ดเล็กในกลุ่ม) — มีปุ่ม "ดูหลักฐาน" ถ้ามีรูปแนบ
 function buildReportItem(item) {
   const statusInfo = REPORT_STATUS_MAP[item.status] || { label: item.status, cssClass: 'ris-pending' };
+  const hasEvidence = !!item.evidenceImage;
 
   const el = document.createElement('div');
   el.className = 'report-item';
@@ -213,9 +238,37 @@ function buildReportItem(item) {
     <div class="report-item-desc">${escapeHtml(item.description || '')}</div>
     <div class="report-item-footer">
       <span class="report-item-status ${statusInfo.cssClass}">${statusInfo.label}</span>
+      ${hasEvidence ? `
+        <button type="button" class="btn-view-evidence">
+          <span class="material-symbols-outlined">image</span> ดูหลักฐาน
+        </button>` : ''}
     </div>
   `;
+
+  if (hasEvidence) {
+    el.querySelector('.btn-view-evidence').addEventListener('click', () => {
+      openEvidenceModal(item.evidenceImage);
+    });
+  }
+
   return el;
+}
+
+// เปิด modal แสดงรูปหลักฐานของรายงานที่เลือก
+function openEvidenceModal(imageUrl) {
+  const body = document.getElementById('evidenceModalBody');
+  body.innerHTML = '';
+
+  if (!imageUrl) {
+    body.innerHTML = '<div class="evidence-modal-empty">ไม่มีรูปหลักฐานแนบมากับรายงานนี้</div>';
+  } else {
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = 'รูปหลักฐานการรายงาน';
+    body.appendChild(img);
+  }
+
+  openModal('evidenceImageModal');
 }
 
 function escapeHtml(str) {
@@ -225,12 +278,33 @@ function escapeHtml(str) {
 }
 
 // ══════════════════════════════════════════
-// ปุ่ม "ยืนยันระงับบัญชี" ใน modal รายละเอียดรายงาน
+// ปุ่มระงับบัญชี: ขั้นแรกกด "ระงับบัญชี..." เพื่อกางฟอร์มเหตุผล
+// จากนั้นกด "ยืนยันระงับบัญชี" -> เปิด modal ยืนยันซ้อน
 // ══════════════════════════════════════════
 function initSuspendConfirmButton() {
+  const triggerBtn = document.getElementById('rmSuspendTriggerBtn');
+  const suspendForm = document.getElementById('rmSuspendForm');
+  const cancelBtn = document.getElementById('rmSuspendCancelBtn');
   const textarea = document.getElementById('rmSuspendReasonInput');
   const btn = document.getElementById('rmSuspendConfirmBtn');
-  if (!textarea || !btn) return;
+  if (!textarea || !btn || !triggerBtn || !suspendForm) return;
+
+  // ขั้นที่ 0: กดปุ่มแดงแรก -> ซ่อนปุ่มนั้น แล้วกางฟอร์มเหตุผลแทน
+  triggerBtn.addEventListener('click', () => {
+    triggerBtn.style.display = 'none';
+    suspendForm.classList.add('show');
+    textarea.focus();
+  });
+
+  // กดยกเลิกในฟอร์ม -> พับฟอร์มกลับ แสดงปุ่มแดงเหมือนเดิม
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      textarea.value = '';
+      suspendForm.classList.remove('show');
+      triggerBtn.style.display = '';
+      updateSuspendButtonState();
+    });
+  }
 
   textarea.addEventListener('input', updateSuspendButtonState);
 
@@ -310,6 +384,3 @@ function initFilterPills() {
 function toggleStatusFilterMenu() {
   document.getElementById('statusFilterDropdown').classList.toggle('open');
 }
-
-
-

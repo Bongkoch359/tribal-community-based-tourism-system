@@ -635,7 +635,8 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
     </div>
 </div>
 
-<div class="page-wrap">
+<div class="page-wrap"
+    th:with="thMonths=${#strings.arraySplit('มกราคม,กุมภาพันธ์,มีนาคม,เมษายน,พฤษภาคม,มิถุนายน,กรกฎาคม,สิงหาคม,กันยายน,ตุลาคม,พฤศจิกายน,ธันวาคม',',')}">
 
     <!-- ALERTS -->
     <div class="alert alert-error"   th:if="${errorMsg}">⚠️ <span th:text="${errorMsg}"></span></div>
@@ -664,10 +665,10 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
         <div class="deadline-icon">📅</div>
         <div style="flex:1;">
             <div class="deadline-label">กรุณาชำระเงินภายในวันที่และเวลา</div>
-          <div class="deadline-date"
-     th:text="${payment.paymentDeadline != null ?
-        #dates.format(payment.paymentDeadline,'dd/MM/yyyy HH:mm') : '-'}">-</div>
-            <div class="deadline-remain" id="remainText"></div>
+         <div class="deadline-date"
+    th:if="${payment.paymentDeadline != null}"
+    th:text="|${#numbers.formatInteger(#dates.day(payment.paymentDeadline),2)}/${#numbers.formatInteger(#dates.month(payment.paymentDeadline),2)}/${#dates.year(payment.paymentDeadline)} ${#numbers.formatInteger(#dates.hour(payment.paymentDeadline),2)}:${#numbers.formatInteger(#dates.minute(payment.paymentDeadline),2)}|">-</div>
+<div class="deadline-date" th:if="${payment.paymentDeadline == null}">-</div>
             <div class="deadline-sub">หากเลยกำหนดการจองจะถูกยกเลิกอัตโนมัติ</div>
         </div>
     </div>
@@ -786,17 +787,19 @@ body { font-family:'Sarabun',sans-serif; background:var(--cream-100); color:var(
                 <div class="sum-divider"></div>
 
                 <div class="sum-row">
-                    <span class="label">วันเริ่มทัวร์</span>
-                    <span class="val"
-                          th:text="${payment.scheduleOpenDate != null ? #dates.format(payment.scheduleOpenDate,'dd MMM yyyy') : '-'}">-</span>
-                </div>
+    <span class="label">วันเริ่มทัวร์</span>
+    <span class="val"
+        th:if="${payment.scheduleOpenDate != null}"
+        th:text="|${#dates.day(payment.scheduleOpenDate)} ${thMonths[#dates.month(payment.scheduleOpenDate)-1]} ${#dates.year(payment.scheduleOpenDate)}|">-</span>
+    <span class="val" th:if="${payment.scheduleOpenDate == null}">-</span>
+</div>
                 <div class="sum-row">
-                    <span class="label">ชำระก่อนวันที่</span>
-                    <span class="val" style="color:var(--amber-700);"
-                          th:text="${payment.paymentDeadline != null ?
-                            #dates.format(payment.paymentDeadline,'dd/MM/yyyy') : '-'}">-</span>
-                </div>
-
+    <span class="label">ชำระก่อนวันที่</span>
+    <span class="val" style="color:var(--amber-700);"
+        th:if="${payment.paymentDeadline != null}"
+        th:text="|${#dates.day(payment.paymentDeadline)} ${thMonths[#dates.month(payment.paymentDeadline)-1]} ${#dates.year(payment.paymentDeadline)}|">-</span>
+    <span class="val" style="color:var(--amber-700);" th:if="${payment.paymentDeadline == null}">-</span>
+</div>
                 <div class="sum-divider"></div>
 
                 <div class="sum-row">

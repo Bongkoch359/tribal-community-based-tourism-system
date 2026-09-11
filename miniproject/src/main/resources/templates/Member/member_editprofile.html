@@ -127,7 +127,7 @@
 
     .user-avatar {
       width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--green-400), var(--green-600));
+      background: linear-gradient(135deg, var(--amber-500), var(--amber-600));
       display: flex; align-items: center; justify-content: center;
       font-weight: 800; font-size: 17px; color: white;
       flex-shrink: 0; border: 2px solid rgba(255,255,255,0.3);
@@ -301,6 +301,23 @@
       display: flex; align-items: center; gap: 4px;
     }
     .readonly-note svg { width: 13px; height: 13px; }
+
+    /* ── ช่อง input ที่ผิดพลาด (validation) ── */
+    .form-control.input-error {
+      border-color: #dc2626 !important;
+      background: #fff5f5 !important;
+    }
+    .form-control.input-error:focus {
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.14);
+    }
+    .field-error-msg {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
 
     /* Password toggle */
     .pw-toggle {
@@ -821,59 +838,90 @@
 <script>
   /* ══════════════════════════════════════════
      Step 6 (ซีเควนซ์): validate script — ฝั่ง Client
-     Alternate Flow 6.1: ข้อมูลไม่ถูกต้อง → แสดง error script
+     Alternate Flow 6.1: ข้อมูลไม่ถูกต้อง → แสดง error ที่ช่องนั้นเป็นสีแดง
   ══════════════════════════════════════════ */
-  function validateForm() {
-    const fn    = document.getElementById('firstname').value.trim();
-    const ln    = document.getElementById('lastname').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const pw1   = document.getElementById('newPassword').value;
-    const pw2   = document.getElementById('confirmPassword').value;
 
-    // Alternate Flow 6.1 — ชื่อ/นามสกุลไม่ครบ
-    if (!fn || !ln) {
-      showErr('กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน');
-      return false;
-    }
-
-    // Alternate Flow 6.1 — เบอร์โทรไม่ใช่ตัวเลข 10 หลัก (ถ้ากรอก)
-    if (phone && !/^[0-9]{10}$/.test(phone)) {
-      showErr('กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน');
-      return false;
-    }
-
-    // Alternate Flow 6.1 — รหัสผ่านน้อยกว่า 6 ตัว
-    if (pw1 || pw2) {
-      if (pw1.length < 6) {
-        showErr('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
-        return false;
-      }
-      // Alternate Flow 6.1 — รหัสผ่านไม่ตรงกัน
-      if (pw1 !== pw2) {
-        showErr('รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน');
-        return false;
-      }
-    }
-
-    // Step 7 (ซีเควนซ์): get edit profile → ส่งฟอร์มไปยัง Controller
-    return true;
+  /* ล้าง error เดิมทั้งหมดก่อนตรวจใหม่ทุกครั้ง */
+  function clearErrors() {
+    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('input-error'));
+    document.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+    document.querySelectorAll('.alert-error').forEach(el => el.remove());
   }
 
-  /* แสดง alert error บนหน้าจอ */
-  function showErr(msg) {
-    document.querySelectorAll('.alert').forEach(e => e.remove());
-    const div = document.createElement('div');
-    div.className = 'alert alert-error';
-    div.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  /* ทำให้ input เป็นกรอบแดง + แสดงข้อความ error ใต้ช่องนั้น */
+  function setFieldError(inputEl, msg) {
+    inputEl.classList.add('input-error');
+    const p = document.createElement('p');
+    p.className = 'field-error-msg';
+    p.innerHTML = `
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/>
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
       <span>${msg}</span>`;
-    const form = document.getElementById('editProfileForm');
-    form.parentNode.insertBefore(div, form);
-    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // แทรกข้อความ error ไว้หลัง input-wrap ของช่องนั้น (หรือหลัง input ถ้าไม่มี wrap)
+    const wrap = inputEl.closest('.input-wrap');
+    (wrap || inputEl).insertAdjacentElement('afterend', p);
+  }
+
+  function validateForm() {
+    clearErrors();
+
+    const fnEl    = document.getElementById('firstname');
+    const lnEl    = document.getElementById('lastname');
+    const phoneEl = document.getElementById('phone');
+    const pw1El   = document.getElementById('newPassword');
+    const pw2El   = document.getElementById('confirmPassword');
+
+    const fn    = fnEl.value.trim();
+    const ln    = lnEl.value.trim();
+    const phone = phoneEl.value.trim();
+    const pw1   = pw1El.value;
+    const pw2   = pw2El.value;
+
+    let hasError = false;
+
+    // Alternate Flow 6.1 — ชื่อว่าง
+    if (!fn) {
+      setFieldError(fnEl, 'กรุณากรอกชื่อ');
+      hasError = true;
+    }
+
+    // Alternate Flow 6.1 — นามสกุลว่าง
+    if (!ln) {
+      setFieldError(lnEl, 'กรุณากรอกนามสกุล');
+      hasError = true;
+    }
+
+    // Alternate Flow 6.1 — เบอร์โทรไม่ถูกต้อง (ถ้ากรอก)
+    // ต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06, 08 หรือ 09 เท่านั้น
+    if (phone) {
+      if (!/^0[689][0-9]{8}$/.test(phone)) {
+        setFieldError(phoneEl, 'เบอร์โทรศัพท์ไม่ถูกต้อง ต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06, 08 หรือ 09');
+        hasError = true;
+      }
+    }
+
+    // Alternate Flow 6.1 — รหัสผ่าน (ถ้ากรอกช่องใดช่องหนึ่ง)
+    if (pw1 || pw2) {
+      if (pw1.length < 6) {
+        setFieldError(pw1El, 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
+        hasError = true;
+      } else if (pw1 !== pw2) {
+        setFieldError(pw2El, 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน');
+        hasError = true;
+      }
+    }
+
+    if (hasError) {
+      const firstBad = document.querySelector('.input-error');
+      if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+
+    // Step 7 (ซีเควนซ์): get edit profile → ส่งฟอร์มไปยัง Controller
+    return true;
   }
 
   /* Toggle แสดง/ซ่อน รหัสผ่าน */

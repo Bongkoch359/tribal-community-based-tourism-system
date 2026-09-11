@@ -1043,12 +1043,12 @@ img { display: block; }
           th:disabled="${schedules == null or schedules.isEmpty()}"
           @change="onScheduleChange($event)">
     <option value="" disabled th:selected="${selectedScheduleId == null}">-- กรุณาเลือกรอบวันที่ --</option>
-    <option th:each="s : ${schedules}"
-            th:value="${#dates.format(s.opendate, 'yyyy-MM-dd')}"
-            th:attr="data-scheduleid=${s.scheduleid}"
-            th:selected="${selectedScheduleId != null and s.scheduleid == selectedScheduleId}"
-            th:text="${#dates.format(s.opendate, 'dd/MM/yyyy')} + ' - ' + ${#dates.format(s.enddate, 'dd/MM/yyyy')}">
-    </option>
+   <option th:each="s : ${schedules}"
+        th:value="${#dates.format(s.opendate, 'yyyy-MM-dd')}"
+        th:attr="data-scheduleid=${s.scheduleid}"
+        th:selected="${selectedScheduleId != null and s.scheduleid == selectedScheduleId}"
+        th:text="|${#numbers.formatInteger(#dates.day(s.opendate),2)}/${#numbers.formatInteger(#dates.month(s.opendate),2)}/${#dates.year(s.opendate)} - ${#numbers.formatInteger(#dates.day(s.enddate),2)}/${#numbers.formatInteger(#dates.month(s.enddate),2)}/${#dates.year(s.enddate)}|">
+</option>
   </select>
 
   <div class="idcard-hint" th:if="${schedules == null or schedules.isEmpty()}">

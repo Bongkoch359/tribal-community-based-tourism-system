@@ -59,14 +59,36 @@
     max-width: 560px; width: 100%; max-height: 85vh; display: flex; flex-direction: column;
     box-shadow: 0 20px 60px rgba(0,0,0,0.18); border: 1px solid var(--surface-variant); overflow: hidden;
   }
+
+  /* ── หัว modal: avatar + ชื่อ + ไอดี + badge สถานะบัญชี ── */
   .report-modal-header { padding: 24px 28px 16px; border-bottom: 1px solid var(--surface-container); }
+  .rm-header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .rm-header-left { display: flex; align-items: center; gap: 12px; }
+  .rm-avatar {
+    width: 46px; height: 46px; border-radius: 50%; background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0;
+  }
   .report-modal-header .rm-target { font-size: 19px; font-weight: 700; color: var(--on-surface); }
-  .report-modal-header .rm-owner { font-size: 14px; color: var(--outline); margin-top: 2px; }
+  .report-modal-header .rm-owner { font-size: 13.5px; color: var(--outline); margin-top: 2px; }
+  .rm-status-badge {
+    flex-shrink: 0; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 700;
+    background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;
+  }
+  .rm-status-badge.suspended { background: var(--error-container); color: var(--error); border-color: #fca5a5; }
+
+  /* กล่องข้อมูลติดต่อ */
+  .rm-info-box {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px;
+    background: var(--surface-container); border-radius: 10px; padding: 14px 16px;
+  }
+  .rm-info-item.rm-span-2 { grid-column: 1 / -1; }
+  .rm-info-label { font-size: 12.5px; font-weight: 700; color: var(--outline); margin-bottom: 3px; }
+  .rm-info-value { font-size: 14.5px; font-weight: 600; color: var(--on-surface); word-break: break-word; }
 
   .report-modal-body { padding: 16px 28px; overflow-y: auto; flex: 1; }
   .report-list-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--outline); margin-bottom: 10px; }
 
-  /* สรุปการรายงาน */
+  /* สรุปการรายงาน (2 ช่อง: รวมทั้งหมด / จำนวนรายการที่ถูกรายงาน) */
   .rm-summary-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
   .rm-summary-chip {
     flex: 1; min-width: 100px; text-align: center; padding: 12px 8px; border-radius: 10px;
@@ -106,23 +128,48 @@
   .report-item-date { font-size: 12px; color: var(--outline); white-space: nowrap; }
   .report-item-desc { font-size: 13.5px; color: var(--on-surface-variant); line-height: 1.5; margin-top: 2px; }
   .report-item-status { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
-  .report-item-footer { display: flex; align-items: center; flex-wrap: wrap; }
+  .report-item-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
   .ris-pending  { background: #eff6ff; color: #2563eb; }
   .ris-resolved { background: #f0fdf4; color: #15803d; }
   .ris-rejected { background: var(--error-container); color: var(--error); }
 
+  /* ปุ่ม "ดูหลักฐาน" ต่อรายงาน */
+  .btn-view-evidence {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: none; padding: 0; margin: 0;
+    font-size: 12.5px; font-weight: 700; color: var(--primary); cursor: pointer;
+    font-family: inherit; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .btn-view-evidence .material-symbols-outlined { font-size: 15px; }
+  .btn-view-evidence:hover { color: var(--on-surface); }
+
   .report-empty { text-align: center; color: var(--outline); font-size: 14px; padding: 24px 0; }
 
   .report-modal-footer { padding: 18px 28px 24px; border-top: 1px solid var(--surface-container); }
+
+  /* ปุ่มระงับบัญชีตัวแรก (เต็มความกว้าง สีแดงอ่อน) — กดแล้วค่อยกางฟอร์มเหตุผล */
+  .rm-suspend-trigger {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 18px; border-radius: 10px; border: 1px solid #fca5a5;
+    background: var(--error-container); color: var(--error);
+    font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s;
+  }
+  .rm-suspend-trigger:hover { background: #ffc9c2; }
+
+  .rm-suspend-form { display: none; }
+  .rm-suspend-form.show { display: block; }
+
   .rm-reason-field { margin-bottom: 16px; }
   .rm-reason-field label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--on-surface); }
   .rm-reason-field label .required { color: var(--error); }
-  .rm-reason-field select {
-    width: 100%; padding: 10px 12px; border-radius: 8px;
+  .rm-reason-field textarea {
+    width: 100%; min-height: 90px; padding: 12px 14px; border-radius: 8px;
     border: 1px solid var(--outline-variant); font-size: 15px; font-family: inherit;
     background: var(--surface-container-lowest); color: var(--on-surface);
+    resize: vertical; line-height: 1.5;
   }
-  .rm-reason-field select:focus { outline: none; border-color: var(--primary); }
+  .rm-reason-field textarea:focus { outline: none; border-color: var(--primary); }
+  .rm-reason-field textarea::placeholder { color: var(--outline); }
 
   .rm-actions { display: flex; gap: 12px; justify-content: center; }
   .rm-btn-cancel {
@@ -134,6 +181,26 @@
     background: var(--error); color: #fff; font-size: 15px; font-weight: 700;
   }
   .rm-btn-suspend:disabled { opacity: .6; cursor: not-allowed; }
+
+  /* ── Lightbox ดูรูปหลักฐาน ── */
+  .evidence-modal-box {
+    background: var(--surface-container-lowest); border-radius: var(--r-lg);
+    max-width: 640px; width: 100%; max-height: 88vh; display: flex; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25); overflow: hidden;
+  }
+  .evidence-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid var(--surface-container);
+  }
+  .evidence-modal-header .em-title { font-size: 15.5px; font-weight: 700; color: var(--on-surface); }
+  .evidence-modal-close {
+    background: none; border: none; cursor: pointer; color: var(--outline);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .evidence-modal-close:hover { color: var(--on-surface); }
+  .evidence-modal-body { padding: 16px 20px 20px; overflow: auto; display: flex; justify-content: center; }
+  .evidence-modal-body img { max-width: 100%; max-height: 70vh; border-radius: 8px; display: block; }
+  .evidence-modal-empty { padding: 40px 0; color: var(--outline); font-size: 14px; text-align: center; }
 
   .navbar-accent {
   height: 4px;
@@ -212,7 +279,7 @@
 <div class="nav-group">
   <a href="/admin/dashboard" class="nav-link">
     <span class="material-symbols-outlined">dashboard</span>
-    Dashboard
+    หน้าหลัก
   </a>
 
   <a href="/admin/manager" class="nav-link">
@@ -275,21 +342,49 @@
 </div>
 
 <!-- ══════════════════════════════════════════
-     MODAL ใหม่: รายละเอียดรายงาน + ระงับบัญชี
-     (แทนที่ suspendModal เดิม — ปุ่ม "ดู" ในตารางจะเปิด modal นี้
-      แล้วมีปุ่ม "ยืนยันระงับบัญชี" อยู่ด้านล่างเลย)
-══════════════════════════════════════════ --><div class="modal-overlay" id="reportDetailModal">
+     MODAL: รายละเอียดรายงาน + ระงับบัญชี
+     (หน้าตาแบบเดียวกับหน้าจัดการทัวร์ — avatar/สถานะ/
+      ข้อมูลติดต่อ/สรุปยอด/รายการรายงาน + ดูหลักฐาน/
+      ปุ่มระงับที่กดแล้วค่อยกางฟอร์มเหตุผล)
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="reportDetailModal">
   <div class="report-modal-box">
     <div class="report-modal-header">
-      <div class="rm-target" id="rmTargetName">-</div>
-      <div class="rm-owner" id="rmOwnerName">-</div>
+      <div class="rm-header-top">
+        <div class="rm-header-left">
+          <div class="rm-avatar" id="rmAvatar">-</div>
+          <div>
+            <div class="rm-target" id="rmOwnerName">-</div>
+            <div class="rm-owner" id="rmOwnerId">-</div>
+          </div>
+        </div>
+        <span class="rm-status-badge" id="rmStatusBadge">ใช้งานปกติ</span>
+        <button type="button" class="rm-modal-close" onclick="closeModal('reportDetailModal')" aria-label="ปิด">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="rm-info-box">
+        <div class="rm-info-item rm-span-2">
+          <div class="rm-info-label">ที่อยู่โฮมสเตย์</div>
+          <div class="rm-info-value" id="rmAddress">-</div>
+        </div>
+        <div class="rm-info-item">
+          <div class="rm-info-label">อีเมล</div>
+          <div class="rm-info-value" id="rmEmail">-</div>
+        </div>
+        <div class="rm-info-item">
+          <div class="rm-info-label">เบอร์โทร</div>
+          <div class="rm-info-value" id="rmPhone">-</div>
+        </div>
+      </div>
     </div>
 
     <div class="report-modal-body">
-      <!-- สรุปการรายงาน -->
+      <!-- สรุปการรายงาน: รวมทั้งหมด / จำนวนโฮมสเตย์ที่ถูกรายงาน -->
       <div class="rm-summary-row" id="rmSummaryRow"></div>
 
-      <div class="report-list-title">ประวัติการรายงาน</div>
+      <div class="report-list-title">รายการที่ถูกรายงาน</div>
       <div id="rmReportList"><!-- JS เติมการ์ดกลุ่ม/รายการ report ที่นี่ --></div>
       <div class="report-empty" id="rmEmptyState" style="display:none;">
         ยังไม่มีรายงานสำหรับรายการนี้
@@ -297,18 +392,42 @@
     </div>
 
     <div class="report-modal-footer">
-      <div class="rm-reason-field">
-        <label for="rmSuspendReasonInput">
-          กรุณาระบุเหตุผลในการระงับ <span class="required">*</span>
-        </label>
-        <textarea id="rmSuspendReasonInput"
-                  placeholder="เช่น ได้รับการร้องเรียนจากนักท่องเที่ยว, ข้อมูลบัญชีธนาคารไม่ถูกต้อง ฯลฯ"></textarea>
-      </div>
+      <!-- ปุ่มแรก: กดแล้วค่อยกางฟอร์มเหตุผล -->
+      <button type="button" class="rm-suspend-trigger" id="rmSuspendTriggerBtn">
+        <span class="material-symbols-outlined">block</span> ระงับบัญชีเจ้าของโฮมสเตย์คนนี้
+      </button>
 
-      <div class="rm-actions">
-        <button type="button" class="rm-btn-cancel" onclick="closeModal('reportDetailModal')">ยกเลิก</button>
-        <button type="button" class="rm-btn-suspend" id="rmSuspendConfirmBtn">ยืนยันระงับบัญชี</button>
+      <div class="rm-suspend-form" id="rmSuspendForm">
+        <div class="rm-reason-field" style="margin-top:16px;">
+          <label for="rmSuspendReasonInput">
+            กรุณาระบุเหตุผลในการระงับ <span class="required">*</span>
+          </label>
+          <textarea id="rmSuspendReasonInput"
+                    placeholder="เช่น ได้รับการร้องเรียนจากนักท่องเที่ยว, ข้อมูลบัญชีธนาคารไม่ถูกต้อง ฯลฯ"></textarea>
+        </div>
+
+        <div class="rm-actions">
+          <button type="button" class="rm-btn-cancel" id="rmSuspendCancelBtn">ยกเลิก</button>
+          <button type="button" class="rm-btn-suspend" id="rmSuspendConfirmBtn">ยืนยันระงับบัญชี</button>
+        </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL: ดูรูปหลักฐาน (เปิดจากปุ่ม "ดูหลักฐาน" ในแต่ละรายงาน)
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="evidenceImageModal">
+  <div class="evidence-modal-box">
+    <div class="evidence-modal-header">
+      <span class="em-title">รูปหลักฐาน</span>
+      <button type="button" class="evidence-modal-close" onclick="closeModal('evidenceImageModal')">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="evidence-modal-body" id="evidenceModalBody">
+      <div class="evidence-modal-empty">ไม่มีรูปหลักฐานแนบมากับรายงานนี้</div>
     </div>
   </div>
 </div>
@@ -412,7 +531,11 @@
                     th:classappend="${h.pendingReportCount != null and h.pendingReportCount > 0} ? ' has-report'"
                     th:attr="data-id=${h.ownerid},
                              data-target=${h.homestays != null and !h.homestays.isEmpty() ? h.homestays[0].homestayname : '-'},
-                             data-owner=${h.firstname + ' ' + h.lastname}"
+                             data-owner=${h.firstname + ' ' + h.lastname},
+                             data-email=${h.email},
+                             data-phone=${h.phone},
+                             data-status=${h.accountstatus},
+                             data-address=${h.homestays != null and !h.homestays.isEmpty() ? h.homestays[0].address : '-'}"
                     onclick="openReportModal(this)">
               <span class="material-symbols-outlined">visibility</span> ดู
             </button>

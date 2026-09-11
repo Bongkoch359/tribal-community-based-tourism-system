@@ -981,12 +981,12 @@ body {
         <button type="button" class="btn-confirm" onclick="openConfirmModal()">
             ยืนยันการจองโฮมสเตย์
         </button>
-        <div class="cancel-note">สามารถแก้ไขข้อมูลได้ภายหลัง</div>
+       
     </div>
 </div>
 
-</div><!-- /booking-layout -->
-</div><!-- /page-wrap -->
+</div>
+</div>
 
 <!-- ═══ CONFIRM MODAL (ยืนยันก่อนจอง — สไตล์เดียวกับหน้าทัวร์: ติ้กถูก ✓) ═══ -->
 <div class="modal-backdrop" id="confirmModal">
@@ -1032,18 +1032,12 @@ function fmt(dateStr){
     return d.getDate()+' '+months[d.getMonth()]+' '+(d.getFullYear()+543);
 }
 
-/* ══════════════════════════════════════════
-   จำกัดจำนวนผู้ใหญ่ + เด็กรวมกัน ไม่ให้เกินความจุห้อง
-   ความจุ = maxGuestPerRoom × จำนวนห้องที่เลือก (ตรงกับ logic ฝั่ง backend)
-   sourceId = ช่องที่ผู้ใช้เพิ่งแก้ ('numofrooms' | 'guest' | 'children')
-   ใช้บอกว่าถ้าเกิน capacity ควรไปลดค่าของ "อีกช่อง" แทน ไม่ใช่ช่องที่เพิ่งแก้เอง
-══════════════════════════════════════════ */
+
 function clampGuestCounts(sourceId){
     const roomsEl    = document.getElementById('numofrooms');
     const guestEl    = document.getElementById('guest');
     const childrenEl = document.getElementById('children');
 
-    // 1) จำนวนห้อง — ต้องอย่างน้อย 1 และไม่เกิน max ของห้องที่มี
     let rooms = parseInt(roomsEl.value);
     if (isNaN(rooms) || rooms < 1) rooms = 1;
     const roomsMaxAttr = roomsEl.max ? parseInt(roomsEl.max) : 99;

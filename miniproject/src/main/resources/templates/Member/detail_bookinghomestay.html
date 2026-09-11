@@ -1682,9 +1682,10 @@
     <!-- ══ PAGE CONTENT ══ -->
     <div class="page-wrap">
 
-        <div th:with="
+    <div th:with="
     detail=${booking.roomDetails != null and !booking.roomDetails.isEmpty() ? booking.roomDetails[0] : null},
-    sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'}">
+    sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'},
+    thMonths=${#strings.arraySplit('มกราคม,กุมภาพันธ์,มีนาคม,เมษายน,พฤษภาคม,มิถุนายน,กรกฎาคม,สิงหาคม,กันยายน,ตุลาคม,พฤศจิกายน,ธันวาคม',',')}">
 
             <div class="alert alert-success" th:if="${successMsg != null}"><span>✅</span><span
                     th:text="${successMsg}"></span></div>
@@ -1708,11 +1709,13 @@
                         <span th:if="${sts == 'CANCEL'}">❌ ยกเลิกแล้ว</span>
                     </span>
 
-                    <span style="font-size:.8rem;color:var(--gray-600);">
-                        วันที่จอง :
-                        <strong
-                            th:text="${booking.bookingdate != null ? #dates.format(booking.bookingdate,'dd/MM/yyyy') : '-'}"></strong>
-                    </span>
+                   <span style="font-size:.8rem;color:var(--gray-600);">
+    วันที่จอง :
+    <strong
+        th:if="${booking.bookingdate != null}"
+        th:text="|${#numbers.formatInteger(#dates.day(booking.bookingdate),2)}/${#numbers.formatInteger(#dates.month(booking.bookingdate),2)}/${#dates.year(booking.bookingdate)}|"></strong>
+    <strong th:if="${booking.bookingdate == null}">-</strong>
+</span>
                 </div>
 
                 <button class="btn-edit-toggle" id="editToggleBtn"
@@ -1728,257 +1731,248 @@
                 <div>
 
                     <!-- SECTION 1 : ข้อมูลการเข้าพัก -->
-                    <div class="card" id="stayCard" th:if="${detail != null}">
+<div class="card" id="stayCard" th:if="${detail != null}">
 
-                        <div class="edit-banner">✏️ กำลังแก้ไข — เปลี่ยนข้อมูลได้เลย แล้วกด "บันทึก"</div>
+    <div class="edit-banner">✏️ กำลังแก้ไข — เปลี่ยนข้อมูลได้เลย แล้วกด "บันทึก"</div>
 
-                        <div class="section-header">
-                            <div class="section-header-left">
-                                <div class="section-num">1</div>
-                                ข้อมูลการเข้าพัก
-                            </div>
-                        </div>
+    <div class="section-header">
+        <div class="section-header-left">
+            <div class="section-num">1</div>
+            ข้อมูลการเข้าพัก
+        </div>
+    </div>
 
-                        <!-- ⬇️ form นี้ครอบตั้งแต่ section 1 ยาวไปจนถึง section 3 (guestCard)
-                     เพื่อให้ input ชื่อผู้เข้าพักถูกส่งไปพร้อมกับปุ่ม "บันทึกการเปลี่ยนแปลง" -->
-                        <form th:action="@{/booking/homestay/edit/{id}(id=${booking.bookingid})}" method="post"
-                            id="editForm">
+    <form th:action="@{/booking/homestay/edit/{id}(id=${booking.bookingid})}" method="post" id="editForm">
 
-                            <div class="section-body">
-                                <div class="detail-grid">
+        <div class="section-body">
+            <div class="detail-grid">
 
-                                    <!-- ประเภทห้อง (ไม่แก้ได้) -->
-                                    <div class="detail-item">
-                                        <div class="detail-label">ประเภทห้อง</div>
-                                        <div class="detail-value view-val"
-                                            th:text="${detail.roomtype != null ? detail.roomtype.typename : '-'}"></div>
-                                    </div>
+                <!-- ประเภทห้อง (ไม่แก้ได้) -->
+                <div class="detail-item">
+                    <div class="detail-label">ประเภทห้อง</div>
+                    <div class="detail-value view-val"
+                        th:text="${detail.roomtype != null ? detail.roomtype.typename : '-'}"></div>
+                </div>
 
-                                    <!-- จำนวนห้อง (ไม่แก้ได้) -->
-                                    <div class="detail-item">
-                                        <div class="detail-label">จำนวนห้อง</div>
-                                        <div class="detail-value view-val">
-                                            <span th:text="${detail.numofrooms}"></span> ห้อง
-                                        </div>
-                                    </div>
-
-                                    <!-- เช็คอิน ✏️ -->
-                                    <div class="detail-item editable">
-                                        <div class="detail-label">เช็คอิน</div>
-                                        <div class="detail-value view-val"
-                                            th:text="${detail.checkindate != null ? #dates.format(detail.checkindate,'dd MMMM yyyy') : '-'}">
-                                        </div>
-                                        <div class="inline-field">
-                                            <input class="inline-input" type="date" name="checkin" id="edit-checkin"
-                                                th:value="${detail.checkindate != null ? #dates.format(detail.checkindate,'yyyy-MM-dd') : ''}"
-                                                required data-label="วันเช็คอิน">
-                                            <div class="field-error" id="err-checkin"></div>
-                                        </div>
-                                    </div>
-
-                                    <!-- เช็คเอาท์ ✏️ -->
-                                    <div class="detail-item editable">
-                                        <div class="detail-label">เช็คเอาท์</div>
-                                        <div class="detail-value view-val"
-                                            th:text="${detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'dd MMMM yyyy') : '-'}">
-                                        </div>
-                                        <div class="inline-field">
-                                            <input class="inline-input" type="date" name="checkout" id="edit-checkout"
-                                                th:value="${detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'yyyy-MM-dd') : ''}"
-                                                required data-label="วันเช็คเอาท์">
-                                            <div class="field-error" id="err-checkout"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="divider"></div>
-
-                                <div class="detail-grid cols3">
-                                    <!-- ผู้ใหญ่ ✏️ -->
-                                    <div class="detail-item editable">
-                                        <div class="detail-label">ผู้ใหญ่</div>
-                                        <div class="detail-value view-val">
-                                            <span th:text="${detail.numofadults}"></span> คน
-                                        </div>
-                                        <div class="inline-field">
-                                            <input class="inline-input" type="number" name="guest" id="edit-guest"
-                                                min="1" max="99"
-                                                th:value="${detail.numofadults != null ? detail.numofadults : 1}"
-                                                required data-label="จำนวนผู้ใหญ่">
-                                            <div class="field-error" id="err-guest"></div>
-                                        </div>
-                                    </div>
-                                    <!-- เด็ก ✏️ -->
-                                    <div class="detail-item editable">
-                                        <div class="detail-label">เด็ก</div>
-                                        <div class="detail-value view-val">
-                                            <span th:text="${detail.numofChcldren}"></span> คน
-                                        </div>
-                                        <div class="inline-field">
-                                            <input class="inline-input" type="number" name="children" id="edit-children"
-                                                min="0" max="99"
-                                                th:value="${detail.numofChcldren != null ? detail.numofChcldren : 0}"
-                                                data-label="จำนวนเด็ก">
-                                            <div class="field-error" id="err-children"></div>
-                                        </div>
-                                    </div>
-                                    <!-- จำนวนคืน -->
-                                    <div class="detail-item">
-                                        <div class="detail-label">จำนวนคืน</div>
-                                        <div class="detail-value" id="nights-display">-</div>
-                                    </div>
-                                </div>
-
-                                <!-- ⬇️ ใช้ #dates.format ให้ได้รูปแบบ yyyy-MM-dd ที่ new Date() ฝั่ง JS parse ได้เสถียรทุกเบราว์เซอร์ -->
-                                <span id="js-checkin"
-                                    th:attr="data-date=${detail.checkindate != null ? #dates.format(detail.checkindate,'yyyy-MM-dd') : ''}"
-                                    style="display:none;"></span>
-                                <span id="js-checkout"
-                                    th:attr="data-date=${detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'yyyy-MM-dd') : ''}"
-                                    style="display:none;"></span>
-                            </div>
-
-                            <!-- SECTION 4 : หมายเหตุ -->
-                            <div style="padding:0 20px 4px;border-top:1px solid var(--gray-100);">
-                                <div
-                                    style="display:flex;align-items:center;gap:.5rem;padding:14px 0 8px;font-weight:800;font-size:.95rem;">
-                                    <div class="section-num">4</div>
-                                    หมายเหตุ
-                                </div>
-                                <div class="view-val">
-                                    <p class="note-text" th:if="${booking.note != null and !booking.note.isEmpty()}"
-                                        th:text="${booking.note}"></p>
-                                    <p class="note-empty" th:if="${booking.note == null or booking.note.isEmpty()}">
-                                        ไม่มีหมายเหตุ</p>
-                                </div>
-                                <div class="inline-field" style="padding-bottom:6px;">
-                                    <textarea class="inline-textarea" name="note" id="edit-note" rows="3"
-                                        maxlength="500" placeholder="หมายเหตุเพิ่มเติม..."
-                                        th:text="${booking.note != null ? booking.note : ''}"></textarea>
-                                    <div class="field-error" id="err-note"></div>
-                                </div>
-                            </div>
-
+                <!-- จำนวนห้อง (ไม่แก้ได้) -->
+                <div class="detail-item">
+                    <div class="detail-label">จำนวนห้อง</div>
+                    <div class="detail-value view-val">
+                        <span th:text="${detail.numofrooms}"></span> ห้อง
                     </div>
-                    <!-- ⬆️ FIX: ปิด #stayCard ตรงนี้ (หลัง section 4) แทนที่จะเว้นเปิดค้างไว้
-                         เพื่อให้เห็นชัดว่า card ของ "ข้อมูลการเข้าพัก" จบตรงนี้ ส่วนปุ่มบันทึก
-                         ถูกย้ายไปไว้ท้ายสุดหลัง guestCard ด้านล่าง (ฟอร์ม #editForm ยังคงครอบทั้งสอง card เหมือนเดิม) -->
+                </div>
 
-                    <!-- SECTION 2 : ข้อมูลผู้ติดต่อ -->
-                    <div class="card">
-                        <div class="section-header">
-                            <div class="section-header-left">
-                                <div class="section-num">2</div>
-                                ข้อมูลผู้ติดต่อ
-                            </div>
+                <!-- เช็คอิน ✏️ -->
+                <div class="detail-item editable">
+                    <div class="detail-label">เช็คอิน</div>
+                    <div class="detail-value view-val"
+                        th:if="${detail.checkindate != null}"
+                        th:text="|${#dates.day(detail.checkindate)} ${thMonths[#dates.month(detail.checkindate)-1]} ${#dates.year(detail.checkindate)}|">
+                    </div>
+                    <div class="detail-value view-val" th:if="${detail.checkindate == null}">-</div>
+                    <div class="inline-field">
+                        <input class="inline-input" type="date" name="checkin" id="edit-checkin"
+                            th:value="${detail.checkindate != null ? #dates.format(detail.checkindate,'yyyy-MM-dd') : ''}"
+                            required data-label="วันเช็คอิน">
+                        <div class="field-error" id="err-checkin"></div>
+                    </div>
+                </div>
+
+                <!-- เช็คเอาท์ ✏️ -->
+                <div class="detail-item editable">
+                    <div class="detail-label">เช็คเอาท์</div>
+                    <div class="detail-value view-val"
+                        th:if="${detail.checkoutdate != null}"
+                        th:text="|${#dates.day(detail.checkoutdate)} ${thMonths[#dates.month(detail.checkoutdate)-1]} ${#dates.year(detail.checkoutdate)}|">
+                    </div>
+                    <div class="detail-value view-val" th:if="${detail.checkoutdate == null}">-</div>
+                    <div class="inline-field">
+                        <input class="inline-input" type="date" name="checkout" id="edit-checkout"
+                            th:value="${detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'yyyy-MM-dd') : ''}"
+                            required data-label="วันเช็คเอาท์">
+                        <div class="field-error" id="err-checkout"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="detail-grid cols3">
+                <!-- ผู้ใหญ่ ✏️ -->
+                <div class="detail-item editable">
+                    <div class="detail-label">ผู้ใหญ่</div>
+                    <div class="detail-value view-val">
+                        <span th:text="${detail.numofadults}"></span> คน
+                    </div>
+                    <div class="inline-field">
+                        <input class="inline-input" type="number" name="guest" id="edit-guest"
+                            min="1" max="99"
+                            th:value="${detail.numofadults != null ? detail.numofadults : 1}"
+                            required data-label="จำนวนผู้ใหญ่">
+                        <div class="field-error" id="err-guest"></div>
+                    </div>
+                </div>
+                <!-- เด็ก ✏️ -->
+                <div class="detail-item editable">
+                    <div class="detail-label">เด็ก</div>
+                    <div class="detail-value view-val">
+                        <span th:text="${detail.numofChcldren}"></span> คน
+                    </div>
+                    <div class="inline-field">
+                        <input class="inline-input" type="number" name="children" id="edit-children"
+                            min="0" max="99"
+                            th:value="${detail.numofChcldren != null ? detail.numofChcldren : 0}"
+                            data-label="จำนวนเด็ก">
+                        <div class="field-error" id="err-children"></div>
+                    </div>
+                </div>
+                <!-- จำนวนคืน -->
+                <div class="detail-item">
+                    <div class="detail-label">จำนวนคืน</div>
+                    <div class="detail-value" id="nights-display">-</div>
+                </div>
+            </div>
+
+            <span id="js-checkin"
+                th:attr="data-date=${detail.checkindate != null ? #dates.format(detail.checkindate,'yyyy-MM-dd') : ''}"
+                style="display:none;"></span>
+            <span id="js-checkout"
+                th:attr="data-date=${detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'yyyy-MM-dd') : ''}"
+                style="display:none;"></span>
+        </div>
+    </form>
+</div><!-- /stayCard -->
+
+<!-- SECTION 2 : ข้อมูลผู้ติดต่อ -->
+<div class="card">
+    <div class="section-header">
+        <div class="section-header-left">
+            <div class="section-num">2</div>
+            ข้อมูลผู้ติดต่อ
+        </div>
+    </div>
+    <div class="section-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">ชื่อ</div>
+                <div class="detail-value"
+                    th:text="${booking.member != null ? booking.member.firstname : '-'}"></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">นามสกุล</div>
+                <div class="detail-value"
+                    th:text="${booking.member != null ? booking.member.lastname : '-'}"></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">โทรศัพท์</div>
+                <div class="detail-value"
+                    th:text="${booking.member != null ? booking.member.phone : '-'}"></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">อีเมล</div>
+                <div class="detail-value"
+                    th:text="${booking.member != null ? booking.member.email : '-'}"></div>
+            </div>
+        </div>
+    </div>
+</div><!-- /section 2 -->
+
+<!-- SECTION 3 : รายชื่อผู้เข้าพัก -->
+<div class="card" id="guestCard">
+    <div class="edit-banner">✏️ กำลังแก้ไข — แก้ชื่อผู้เข้าพักได้ที่นี่</div>
+    <div class="section-header">
+        <div class="section-header-left">
+            <div class="section-num">3</div>
+            รายชื่อผู้เข้าพัก
+        </div>
+        <span class="info-chip chip-green" th:if="${booking.isBookerGoing}">🙋 ผู้จองไปเอง</span>
+        <span class="info-chip chip-orange" th:if="${!booking.isBookerGoing}">🎁 จองให้ผู้อื่น</span>
+    </div>
+    <div class="section-body">
+
+        <div th:if="${booking.isBookerGoing}">
+            <div class="guest-row">
+                <div class="guest-avatar">👤</div>
+                <div>
+                    <div class="guest-name" th:text="${(booking.member != null ? booking.member.firstname : '')
+                           + ' '
+                           + (booking.member != null ? booking.member.lastname : '')}"></div>
+                    <div class="guest-role">ผู้จอง (แก้ไขในโปรไฟล์)</div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${!booking.isBookerGoing}">
+            <div th:if="${booking.guests != null}" th:each="g,iter : ${booking.guests}">
+                <div class="guest-row">
+                    <div class="guest-avatar">👥</div>
+                    <div style="flex:1;">
+                        <div class="view-val">
+                            <div class="guest-name" th:text="${(g.firstname != null ? g.firstname : '')
+                                   + ' '
+                                   + (g.lastname  != null ? g.lastname  : '')}"></div>
+                            <div class="guest-role">ผู้เข้าพัก</div>
                         </div>
-                        <div class="section-body">
-                            <div class="detail-grid">
-                                <div class="detail-item">
+                        <div class="inline-field">
+                            <input type="hidden" name="guestId" form="editForm" th:value="${g.guestid}">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                <div>
                                     <div class="detail-label">ชื่อ</div>
-                                    <div class="detail-value"
-                                        th:text="${booking.member != null ? booking.member.firstname : '-'}"></div>
+                                    <input class="inline-input guest-firstname" type="text"
+                                        name="guestFirstname" form="editForm" th:value="${g.firstname}"
+                                        placeholder="ชื่อ" required data-label="ชื่อผู้เข้าพัก">
+                                    <div class="field-error"></div>
                                 </div>
-                                <div class="detail-item">
+                                <div>
                                     <div class="detail-label">นามสกุล</div>
-                                    <div class="detail-value"
-                                        th:text="${booking.member != null ? booking.member.lastname : '-'}"></div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">โทรศัพท์</div>
-                                    <div class="detail-value"
-                                        th:text="${booking.member != null ? booking.member.phone : '-'}"></div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">อีเมล</div>
-                                    <div class="detail-value"
-                                        th:text="${booking.member != null ? booking.member.email : '-'}"></div>
+                                    <input class="inline-input guest-lastname" type="text"
+                                        name="guestLastname" form="editForm" th:value="${g.lastname}"
+                                        placeholder="นามสกุล" required
+                                        data-label="นามสกุลผู้เข้าพัก">
+                                    <div class="field-error"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <p class="guest-empty" th:if="${booking.guests == null or booking.guests.isEmpty()}">
+                ไม่มีรายชื่อผู้เข้าพัก</p>
+        </div>
 
-                    <!-- SECTION 3 : รายชื่อผู้เข้าพัก -->
-                    <!-- ⬇️ การ์ดนี้ยังอยู่ "ใน" <form id="editForm"> เดียวกับ section 1
-                 (ก่อนหน้านี้อยู่นอกฟอร์ม ทำให้กดบันทึกแล้วชื่อผู้เข้าพักไม่ถูกส่งไป backend เลย) -->
-                    <div class="card" id="guestCard">
-                        <div class="edit-banner">✏️ กำลังแก้ไข — แก้ชื่อผู้เข้าพักได้ที่นี่</div>
-                        <div class="section-header">
-                            <div class="section-header-left">
-                                <div class="section-num">3</div>
-                                รายชื่อผู้เข้าพัก
-                            </div>
-                            <span class="info-chip chip-green" th:if="${booking.isBookerGoing}">🙋 ผู้จองไปเอง</span>
-                            <span class="info-chip chip-orange" th:if="${!booking.isBookerGoing}">🎁
-                                จองให้ผู้อื่น</span>
-                        </div>
-                        <div class="section-body">
+    </div>
+</div><!-- /guestCard -->
 
-                            <div th:if="${booking.isBookerGoing}">
-                                <div class="guest-row">
-                                    <div class="guest-avatar">👤</div>
-                                    <div>
-                                        <div class="guest-name" th:text="${(booking.member != null ? booking.member.firstname : '')
-                                               + ' '
-                                               + (booking.member != null ? booking.member.lastname : '')}"></div>
-                                        <div class="guest-role">ผู้จอง (แก้ไขในโปรไฟล์)</div>
-                                    </div>
-                                </div>
-                            </div>
+<!-- SECTION 4 : หมายเหตุ -->
+<div class="card" id="noteCard">
+    <div class="edit-banner">✏️ กำลังแก้ไข — แก้หมายเหตุได้เลย</div>
+    <div class="section-header">
+        <div class="section-header-left">
+            <div class="section-num">4</div>
+            หมายเหตุ
+        </div>
+    </div>
+    <div class="section-body">
+        <div class="view-val">
+            <p class="note-text" th:if="${booking.note != null and !booking.note.isEmpty()}"
+                th:text="${booking.note}"></p>
+            <p class="note-empty" th:if="${booking.note == null or booking.note.isEmpty()}">
+                ไม่มีหมายเหตุ</p>
+        </div>
+        <div class="inline-field">
+            <textarea class="inline-textarea" name="note" id="edit-note" form="editForm" rows="3"
+                maxlength="500" placeholder="หมายเหตุเพิ่มเติม..."
+                th:text="${booking.note != null ? booking.note : ''}"></textarea>
+            <div class="field-error" id="err-note"></div>
+        </div>
+    </div>
 
-                            <!-- ⬇️ hidden input name="guestId" (ผูก th:value="${g.guestid}" —
-                         ⚠️ ปรับชื่อ property ให้ตรงกับ entity Guest จริงของคุณ เช่น g.id / g.guestid)
-                         เพื่อให้ backend รู้ว่ากำลังแก้ guest record ไหน และรองรับหลายคนพร้อมกัน
-                         ด้วยการ bind เป็น List<String> ตามลำดับ index ที่ตรงกันทั้ง 3 ฟิลด์ -->
-                            <div th:if="${!booking.isBookerGoing}">
-                                <div th:if="${booking.guests != null}" th:each="g,iter : ${booking.guests}">
-                                    <div class="guest-row">
-                                        <div class="guest-avatar">👥</div>
-                                        <div style="flex:1;">
-                                            <div class="view-val">
-                                                <div class="guest-name" th:text="${(g.firstname != null ? g.firstname : '')
-                                                       + ' '
-                                                       + (g.lastname  != null ? g.lastname  : '')}"></div>
-                                                <div class="guest-role">ผู้เข้าพัก</div>
-                                            </div>
-                                            <div class="inline-field">
-                                                <input type="hidden" name="guestId" th:value="${g.guestid}">
-                                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                                                    <div>
-                                                        <div class="detail-label">ชื่อ</div>
-                                                        <input class="inline-input guest-firstname" type="text"
-                                                            name="guestFirstname" th:value="${g.firstname}"
-                                                            placeholder="ชื่อ" required data-label="ชื่อผู้เข้าพัก">
-                                                        <div class="field-error"></div>
-                                                    </div>
-                                                    <div>
-                                                        <div class="detail-label">นามสกุล</div>
-                                                        <input class="inline-input guest-lastname" type="text"
-                                                            name="guestLastname" th:value="${g.lastname}"
-                                                            placeholder="นามสกุล" required
-                                                            data-label="นามสกุลผู้เข้าพัก">
-                                                        <div class="field-error"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="guest-empty" th:if="${booking.guests == null or booking.guests.isEmpty()}">
-                                    ไม่มีรายชื่อผู้เข้าพัก</p>
-                            </div>
+    <!-- ปุ่มบันทึก/ยกเลิก มีจุดเดียวในทั้งหน้า อยู่ท้ายสุดหลัง section ที่แก้ไขได้ทั้งหมด -->
+    <div class="inline-actions">
+        <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
+        <button type="submit" form="editForm" class="btn-inline-save">💾 บันทึกการเปลี่ยนแปลง</button>
+    </div>
 
-                        </div>
-
-                        <!-- ⬇️ FIX: ย้ายปุ่ม "ยกเลิก / บันทึกการเปลี่ยนแปลง" มาไว้ท้ายสุด
-                     หลัง section 3 (guestCard) แทนที่จะอยู่หลัง section 4 (หมายเหตุ)
-                     เหตุผล: ผู้ใช้แก้ไขข้อมูลไล่จากบนลงล่าง (เช็คอิน/เช็คเอาท์ → หมายเหตุ → ชื่อผู้เข้าพัก)
-                     ปุ่มบันทึกควรอยู่ท้ายสุดของเนื้อหาที่แก้ไขได้ทั้งหมด ผู้ใช้จะได้ไม่ต้องเลื่อนย้อนกลับขึ้นไปหาปุ่ม
-                     (ฟอร์ม #editForm ยังคงครอบทั้ง stayCard และ guestCard เหมือนเดิม ข้อมูลจึงถูกส่งครบทุกช่องเช่นเดิม) -->
-                        <div class="inline-actions">
-                            <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
-                            <button type="submit" form="editForm" class="btn-inline-save">💾 บันทึกการเปลี่ยนแปลง</button>
-                        </div>
 
                     </div>
                     </form>
@@ -2037,17 +2031,20 @@
 
                             <div class="summary-divider"></div>
 
+                           <div class="sum-row">
+    <span class="lbl">เช็คอิน</span>
+    <span class="val"
+        th:if="${detail != null and detail.checkindate != null}"
+        th:text="|${#numbers.formatInteger(#dates.day(detail.checkindate),2)}/${#numbers.formatInteger(#dates.month(detail.checkindate),2)}/${#dates.year(detail.checkindate)}|">-</span>
+    <span class="val" th:if="${detail == null or detail.checkindate == null}">-</span>
+</div>
                             <div class="sum-row">
-                                <span class="lbl">เช็คอิน</span>
-                                <span class="val"
-                                    th:text="${detail != null and detail.checkindate != null ? #dates.format(detail.checkindate,'dd/MM/yyyy') : '-'}"></span>
-                            </div>
-                            <div class="sum-row">
-                                <span class="lbl">เช็คเอาท์</span>
-                                <span class="val"
-                                    th:text="${detail != null and detail.checkoutdate != null ? #dates.format(detail.checkoutdate,'dd/MM/yyyy') : '-'}"></span>
-                            </div>
-                            <div class="sum-row">
+    <span class="lbl">เช็คเอาท์</span>
+    <span class="val"
+        th:if="${detail != null and detail.checkoutdate != null}"
+        th:text="|${#numbers.formatInteger(#dates.day(detail.checkoutdate),2)}/${#numbers.formatInteger(#dates.month(detail.checkoutdate),2)}/${#dates.year(detail.checkoutdate)}|">-</span>
+    <span class="val" th:if="${detail == null or detail.checkoutdate == null}">-</span>
+</div>
                                 <span class="lbl">ประเภทห้อง</span>
                                 <span class="val"
                                     th:text="${detail != null and detail.roomtype != null ? detail.roomtype.typename : '-'}"></span>
@@ -2225,13 +2222,13 @@
         /* ════ Inline Edit Toggle ════ */
         let editing = false;
         function setEditCards(on) {
-            ['stayCard', 'guestCard'].forEach(function (id) {
-                const el = document.getElementById(id);
-                if (!el) return;
-                el.classList.toggle('editing-mode', on);
-                el.classList.toggle('is-editable', on);
-            });
-        }
+    ['stayCard', 'guestCard', 'noteCard'].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.toggle('editing-mode', on);
+        el.classList.toggle('is-editable', on);
+    });
+}
         function toggleEdit() {
             editing = !editing;
             const btn = document.getElementById('editToggleBtn');
