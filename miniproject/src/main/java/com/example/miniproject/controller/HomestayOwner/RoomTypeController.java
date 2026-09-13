@@ -86,18 +86,18 @@ public class RoomTypeController {
             // คำนวณสถานะแบบ Dynamic
             String calculatedStatus = room.getStatus(); // ค่าตั้งต้น เช่น "เปิดจอง" หรือ "ปิดปรับปรุง"
 
-            // ตรวจสอบเฉพาะห้องที่เปิดจองอยู่ว่าถูกจองจนเต็มแล้วหรือไม่
-            if ("เปิดจอง".equals(calculatedStatus)) {
-                // ดึงจำนวนห้องที่ถูกจองอยู่ในปัจจุบันของ roomtype นี้ (ผ่าน BookingService หรือ
-                // RoomTypeService)
-                int bookedCount = roomTypeService.getCurrentlyBookedRooms(room.getRoomtypeid());
+            // ดึงจำนวนห้องที่ถูกจองอยู่ในปัจจุบันของ roomtype นี้ (ผ่าน RoomTypeService)
+            int bookedCount = roomTypeService.getCurrentlyBookedRooms(room.getRoomtypeid());
+            int totalRooms = room.getTotalrooms() != null ? room.getTotalrooms() : 0;
+            int availableRooms = Math.max(totalRooms - bookedCount, 0);
 
-                if (bookedCount >= room.getTotalrooms()) {
-                    calculatedStatus = "เต็ม";
-                }
+            // ตรวจสอบเฉพาะห้องที่เปิดจองอยู่ว่าถูกจองจนเต็มแล้วหรือไม่
+            if ("เปิดจอง".equals(calculatedStatus) && bookedCount >= totalRooms) {
+                calculatedStatus = "เต็ม";
             }
 
             m.put("status", calculatedStatus);
+            m.put("availableRooms", availableRooms);
 
             String firstImg = null;
             String imgs = room.getImages();
@@ -254,11 +254,15 @@ public class RoomTypeController {
 
         List<String> imageList = buildImageList(room.getImages());
 
+        // นับจำนวนห้องที่ถูกจองอยู่ในปัจจุบัน ใช้เช็คว่าเปลี่ยนสถานะเป็น "ปิดปรับปรุง"/"เต็ม" ได้หรือไม่
+        int bookedCount = roomTypeService.getCurrentlyBookedRooms(roomtypeid);
+
         model.addAttribute("ownername", orDefault(session, "ownername"));
         model.addAttribute("room", room);
         model.addAttribute("allFacilities", allFacilities);
         model.addAttribute("checkedIds", checkedIds);
         model.addAttribute("imageList", imageList);
+        model.addAttribute("bookedCount", bookedCount);
         model.addAttribute("homestayid", room.getHomestay() != null
                 ? room.getHomestay().getHomestayid()
                 : null);
@@ -289,6 +293,18 @@ public class RoomTypeController {
             return ResponseEntity.status(401)
                     .body(Map.of("success", false, "message", "กรุณาเข้าสู่ระบบ"));
         }
+
+        // ── กันฝั่ง server: ห้ามเปลี่ยนสถานะเป็น "ปิดปรับปรุง" หรือ "เต็ม" ถ้าห้องยังมีการจองอยู่ ──
+        if ("ปิดปรับปรุง".equals(status) || "เต็ม".equals(status)) {
+            int bookedCount = roomTypeService.getCurrentlyBookedRooms(roomtypeid);
+            if (bookedCount > 0) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "ไม่สามารถเปลี่ยนสถานะเป็น \"" + status
+                                + "\" ได้ เนื่องจากห้องนี้ยังมีการจองที่ใช้งานอยู่ (" + bookedCount + " ห้อง)"));
+            }
+        }
+
         try {
             // รวม path รูปเดิม + รูปใหม่ที่อัปโหลด
             String newImageUrls = saveImages(newImages);

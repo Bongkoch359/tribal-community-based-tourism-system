@@ -155,8 +155,10 @@
 }
 
 textarea.form-control {
-    resize: vertical;
-    min-height: 90px;
+    resize: none;
+    min-height: 44px;
+    overflow: hidden;
+    transition: height 0.1s ease;
 }
 
 .input-suffix {
@@ -289,7 +291,7 @@ textarea.form-control {
 .upload-box {
     border: 2px dashed #ddd;
     border-radius: 12px;
-    min-height: 160px;
+    min-height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -310,14 +312,14 @@ textarea.form-control {
 
 .upload-placeholder {
     text-align: center;
-    padding: 2rem;
+    padding: 0.5rem;
 }
 
 .upload-placeholder i {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     color: #ccc;
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
 }
 
 .upload-placeholder p {
@@ -551,7 +553,7 @@ textarea.form-control {
 .upload-box {
     border: 2px dashed #b5d6b5;
     border-radius: 12px;
-    padding: 32px 20px;
+    padding: 14px 16px;
     text-align: center;
     cursor: pointer;
     transition: border-color .2s, background .2s;
@@ -568,13 +570,14 @@ textarea.form-control {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     color: #555;
 }
 
 .upload-placeholder i {
-    font-size: 2.4rem;
+    font-size: 1.5rem;
     color: #2d6a2d;
+    margin-bottom: 0;
 }
 
 .upload-placeholder p {

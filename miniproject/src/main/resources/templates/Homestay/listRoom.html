@@ -175,6 +175,7 @@
                         <th>ราคา/คืน</th>
                         <th>รองรับ</th>
                         <th>จำนวนห้องทั้งหมด</th>
+                        <th>ห้องว่าง</th>
                         <th>สถานะ</th>
                         <th></th>
                     </tr>
@@ -182,7 +183,7 @@
                 <tbody id="roomBody">
 
                     <tr th:if="${#lists.isEmpty(rooms)}">
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="empty-state">
                                 <i class="fas fa-door-open"></i>
                                 <p>ยังไม่มีห้องพักในระบบ</p>
@@ -254,6 +255,14 @@
 
                         <td th:text="${room['maxguest']} + ' คน'"></td>
                         <td th:text="${room['totalrooms']} + ' ห้อง'"></td>
+
+                        <td>
+                            <span class="available-badge"
+                                th:classappend="${room['availableRooms']} == 0 ? 'available-none'
+                                                 : (${room['availableRooms']} <= 1 ? 'available-low' : 'available-ok')"
+                                th:text="${room['availableRooms']} + ' ห้อง'">
+                            </span>
+                        </td>
 
                         <td>
                             <span th:switch="${room['status']}">

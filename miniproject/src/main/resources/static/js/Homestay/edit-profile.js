@@ -6,9 +6,10 @@
 // Regex สำหรับ validate ฝั่ง client (ก่อน submit จริง)
 // ─────────────────────────────────────────
 const nameRegex = /^[ก-์a-zA-Z]+$/;
+const nameWithSpaceRegex = /^[ก-์a-zA-Z\s]+$/; 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^0[689][0-9]{8}$/;
-const accountRegex = /^[0-9\-]{6,30}$/;
+const accountRegex = /^[0-9]{6,30}$/; // เลขบัญชี: ตัวเลขล้วนเท่านั้น
 // ─────────────────────────────────────────
 // Toast helper — แสดงผลจากข้อความที่ server ส่งมาผ่าน flash attribute
 // ─────────────────────────────────────────
@@ -69,7 +70,7 @@ document.querySelectorAll('.toggle-password').forEach(btn => {
 });
 
 // ─────────────────────────────────────────
-// Real-time validation: ชื่อ / นามสกุล / อีเมล / เบอร์โทร (เหมือน manager)
+// Real-time validation: ชื่อ / นามสกุล / อีเมล / เบอร์โทร 
 // ─────────────────────────────────────────
 function attachNameValidation(inputId, label) {
     const input = document.getElementById(inputId);
@@ -143,14 +144,46 @@ document.getElementById('personalForm').addEventListener('submit', function (e) 
 });
 
 // ─────────────────────────────────────────
+// Real-time validation: สาขา / ชื่อบัญชี / เลขบัญชี
+// ─────────────────────────────────────────
+const bankBranchInputEl = document.getElementById('bankBranch');
+bankBranchInputEl.addEventListener('input', () => {
+    const v = bankBranchInputEl.value.trim();
+    const errorEl = document.getElementById('bankBranchError');
+    if (!v) errorEl.textContent = ''; // สาขาไม่บังคับกรอก
+    else if (!nameWithSpaceRegex.test(v)) errorEl.textContent = 'สาขาใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น (เว้นวรรคได้)';
+    else errorEl.textContent = '';
+});
+
+const accountNameInputEl = document.getElementById('accountName');
+accountNameInputEl.addEventListener('input', () => {
+    const v = accountNameInputEl.value.trim();
+    const errorEl = document.getElementById('accountNameError');
+    if (!v) errorEl.textContent = 'กรุณากรอกชื่อบัญชี';
+    else if (!nameWithSpaceRegex.test(v)) errorEl.textContent = 'ชื่อบัญชีใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น (เว้นวรรคได้)';
+    else errorEl.textContent = '';
+});
+
+const accountNumberInputEl = document.getElementById('accountNumber');
+accountNumberInputEl.addEventListener('input', () => {
+    const v = accountNumberInputEl.value.trim();
+    const errorEl = document.getElementById('accountNumberError');
+    if (!v) errorEl.textContent = 'กรุณากรอกเลขบัญชี';
+    else if (!accountRegex.test(v)) errorEl.textContent = 'เลขบัญชีต้องเป็นตัวเลขเท่านั้น (6-30 หลัก)';
+    else errorEl.textContent = '';
+});
+
+// ─────────────────────────────────────────
 // FORM 2: ข้อมูลธนาคาร — validate ก่อน submit จริง
 // ─────────────────────────────────────────
 document.getElementById('bankForm').addEventListener('submit', function (e) {
     const bankName = document.getElementById('bankName').value;
+    const bankBranch = document.getElementById('bankBranch').value.trim();
     const accountName = document.getElementById('accountName').value.trim();
     const accountNumber = document.getElementById('accountNumber').value.trim();
 
     document.getElementById('bankNameError').textContent = '';
+    document.getElementById('bankBranchError').textContent = '';
     document.getElementById('accountNameError').textContent = '';
     document.getElementById('accountNumberError').textContent = '';
 
@@ -159,14 +192,19 @@ document.getElementById('bankForm').addEventListener('submit', function (e) {
         document.getElementById('bankNameError').textContent = 'กรุณาเลือกธนาคาร';
         return;
     }
-    if (!accountName) {
+    if (bankBranch && !nameWithSpaceRegex.test(bankBranch)) {
         e.preventDefault();
-        document.getElementById('accountNameError').textContent = 'กรุณากรอกชื่อบัญชี';
+        document.getElementById('bankBranchError').textContent = 'สาขาใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น (เว้นวรรคได้)';
+        return;
+    }
+    if (!accountName || !nameWithSpaceRegex.test(accountName)) {
+        e.preventDefault();
+        document.getElementById('accountNameError').textContent = 'กรุณากรอกชื่อบัญชีให้ถูกต้อง (ไทย/อังกฤษ เว้นวรรคได้ ไม่มีอักขระพิเศษ)';
         return;
     }
     if (!accountNumber || !accountRegex.test(accountNumber)) {
         e.preventDefault();
-        document.getElementById('accountNumberError').textContent = 'กรุณากรอกเลขบัญชีให้ถูกต้อง';
+        document.getElementById('accountNumberError').textContent = 'กรุณากรอกเลขบัญชีให้ถูกต้อง (ตัวเลขเท่านั้น 6-30 หลัก)';
         return;
     }
 });
@@ -229,7 +267,6 @@ document.getElementById('passwordForm').addEventListener('submit', function (e) 
 });
 // ─────────────────────────────────────────
 // แก้ปัญหา bfcache: เคลียร์ modal/toast ที่ค้างอยู่
-// เมื่อผู้ใช้กดปุ่ม "กลับ" แล้วเบราว์เซอร์ดึงหน้าจาก back-forward cache
 // ─────────────────────────────────────────
 window.addEventListener('pageshow', function (event) {
     if (event.persisted) {

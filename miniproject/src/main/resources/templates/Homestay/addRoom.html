@@ -12,11 +12,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link th:href="@{/css/Homestay/dashboard.css}" rel="stylesheet">
-    <link th:href="@{/css/Homestay/add-room.css}" rel="stylesheet">
-
-
-
-       
+    <link th:href="@{/css/Homestay/add-room.css}" rel="stylesheet">  
 </head>
 
 <body>
@@ -172,16 +168,16 @@
                     <!-- คำอธิบาย -->
                     <div class="form-group">
                         <label class="form-label">รายละเอียดที่พัก <span class="req">*</span></label>
-                        <textarea id="description" name="description" class="form-control"
-                            placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..."></textarea>
+                        <textarea id="description" name="description" class="form-control auto-grow"
+                            placeholder="รายละเอียดเพิ่มเติม บรรยากาศ วิว..." rows="2"></textarea>
                         <span class="field-error" id="descriptionError"></span>
                     </div>
 
                     <!-- เงื่อนไขการเข้าพัก -->
                     <div class="form-group">
                         <label class="form-label">เงื่อนไขการเข้าพัก <span class="req">*</span></label>
-                        <textarea id="roomcondition" name="roomcondition" class="form-control"
-                            placeholder="เช่น ห้ามสูบบุหรี่..."></textarea>
+                        <textarea id="roomcondition" name="roomcondition" class="form-control auto-grow"
+                            placeholder="เช่น ห้ามสูบบุหรี่..." rows="2"></textarea>
                         <span class="field-error" id="roomconditionError"></span>
                     </div>
 
@@ -284,6 +280,20 @@
     </footer>
 
     <script th:src="@{/js/Homestay/addroom.js}"></script>
+    <script>
+        // ให้ textarea ขยายความสูงอัตโนมัติตามจำนวนตัวอักษรที่พิมพ์
+        function autoGrowTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        }
+
+        document.querySelectorAll('textarea.auto-grow').forEach(function (el) {
+            autoGrowTextarea(el); // ตั้งค่าความสูงเริ่มต้น (เผื่อมีข้อความอยู่แล้ว)
+            el.addEventListener('input', function () {
+                autoGrowTextarea(el);
+            });
+        });
+    </script>
 </body>
 
 </html>

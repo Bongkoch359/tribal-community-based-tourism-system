@@ -209,6 +209,7 @@
                                 th:value="${loggedInOwner?.bankBranch}" placeholder="เช่น สาขาเชียงใหม่">
                             <span class="input-icon"><i class="fas fa-location-dot"></i></span>
                         </div>
+                        <span class="error-msg" id="bankBranchError"></span>
                     </div>
                 </div>
 
@@ -226,7 +227,8 @@
                     <label class="form-label" for="accountNumber">เลขบัญชีธนาคาร <span class="required">*</span></label>
                     <div class="input-with-icon">
                         <input type="text" id="accountNumber" name="accountNumber" class="form-input"
-                            th:value="${loggedInOwner?.accountNumber}" placeholder="เช่น 1234567890" maxlength="30">
+                            th:value="${loggedInOwner?.accountNumber}" placeholder="เช่น 1234567890" maxlength="30"
+                            inputmode="numeric">
                         <span class="input-icon"><i class="fas fa-credit-card"></i></span>
                     </div>
                     <span class="error-msg" id="accountNumberError"></span>
