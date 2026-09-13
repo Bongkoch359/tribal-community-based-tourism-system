@@ -275,35 +275,37 @@
   .action-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
   .btn-action {
-    padding: 6px 14px;
-    border-radius: 6px;
+    padding: 7px 16px;
+    border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    border: 1px solid;
+    border: 1.5px solid;
     transition: all 0.2s;
     font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    background: transparent;
+    gap: 5px;
   }
 
   .btn-detail {
+    background: var(--surface-container);
     border-color: var(--outline-variant);
-    color: var(--on-surface-variant);
+    color: var(--on-surface);
   }
-  .btn-detail:hover { background: var(--surface-variant); }
+  .btn-detail:hover { background: var(--outline-variant); }
 
   .btn-approve {
+    background: var(--action-orange-light);
     border-color: var(--action-orange);
-    color: var(--action-orange);
+    color: var(--action-orange-hover);
   }
   .btn-approve:hover { background: var(--action-orange); color: #fff; }
 
   .btn-reject {
+    background: var(--error-container);
     border-color: var(--error);
-    color: var(--error);
+    color: var(--on-error-container);
   }
   .btn-reject:hover { background: var(--error); color: #fff; }
 
@@ -647,37 +649,36 @@
   margin-left: -10px;
 }
 
+/* ══════════════════════════════════════════
+   VIEW TABS (คำขอรออนุมัติ / บัญชีทั้งหมด)
+   ══════════════════════════════════════════ */
 .view-tabs {
   display: inline-flex;
-  gap: 4px;
-  background: var(--surface-container);
-  padding: 5px;
-  border-radius: 14px;
-  margin-bottom: 20px;
-  border: 1px solid var(--surface-variant);
-}
-.view-tabs {
-  display: inline-flex;
-  gap: 4px;
-  background: var(--surface-container-lowest);
-  padding: 6px;
+  gap: 10px;
+  background: transparent;
+  padding: 0;
   border-radius: 999px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  border: 1px solid var(--surface-variant);
+  box-shadow: none;
+  border: none;
 }
 
 .view-tab {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 20px 9px 14px;
+  padding: 10px 20px 10px 16px;
   font-size: 14.5px;
   font-weight: 600;
   color: var(--on-surface-variant);
   text-decoration: none;
   border-radius: 999px;
-  transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .15s ease;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease, border-color .2s ease;
+
+  /* ✅ ให้แต่ละแท็บมีตัวตนของตัวเอง แม้ยัง inactive */
+  background: var(--surface-container-lowest);
+  border: 1.5px solid var(--surface-variant);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .view-tab .material-symbols-outlined {
@@ -693,27 +694,31 @@
 }
 
 .view-tab:hover {
-  color: var(--on-surface);
-  background: rgba(0, 108, 73, 0.06);
+  color: var(--primary);
+  border-color: var(--primary);
+  background: rgba(0, 108, 73, 0.05);
 }
 
 .view-tab:active { transform: scale(0.97); }
 
+/* ✅ Active: สีเขียวเข้มเต็ม ชัดเจน */
 .view-tab.active {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(0, 108, 73, 0.28);
+  background: #006c49 !important;
+  color: #ffffff !important;
+  border-color: #006c49 !important;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 108, 73, 0.35);
 }
 
 .view-tab.active .material-symbols-outlined {
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff !important;
 }
 
 .view-tab.active:hover {
-  background: var(--primary);
+  background: #00593c !important;
+  border-color: #00593c !important;
 }
-
 .status-filter-card {
   display: inline-flex;
   align-items: center;

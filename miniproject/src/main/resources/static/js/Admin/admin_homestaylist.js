@@ -1,26 +1,29 @@
 // ══════════════════════════════════════════
 // admin_homestaylist.js
-// หน้า: /admin/homestay — รายการคำขอโฮมสเตย์
+// ใช้ร่วมกันทั้งหน้า /admin/homestay (รายการ) และ /admin/homestay/detail/{id} (รายละเอียด)
 // ══════════════════════════════════════════
 
 function handleConfirmClick(button) {
   const ownerId = button.dataset.ownerId;
   const ownerName = button.dataset.ownerName;
-  const action = button.dataset.action;
+  const action = button.dataset.action; // 'approve' | 'reject' | 'suspend'
 
   openConfirmModal(ownerId, action, ownerName);
 }
 
 // ══════════════════════════════════════════
-// กรองตามสถานะบัญชี (data-status)
+// กรองตามสถานะบัญชี (data-status) — มีเฉพาะหน้ารายการ
 // ══════════════════════════════════════════
 function toggleStatusFilterMenu(e) {
   e.stopPropagation();
-  document.getElementById('statusFilterDropdown').classList.toggle('open');
+  const dropdown = document.getElementById('statusFilterDropdown');
+  if (dropdown) dropdown.classList.toggle('open');
 }
 
 function initFilterDropdown() {
   const dropdown = document.getElementById('statusFilterDropdown');
+  if (!dropdown) return; // หน้านี้ไม่มีตัวกรองสถานะ (เช่น หน้ารายละเอียด) ข้ามไปเลย
+
   const options = document.querySelectorAll('#statusFilterDropdown .sf-option');
 
   options.forEach(opt => {
@@ -62,7 +65,7 @@ function initFilterDropdown() {
 }
 
 // ══════════════════════════════════════════
-// CONFIRM MODAL (อนุมัติ / ปฏิเสธ)
+// CONFIRM MODAL (อนุมัติ / ปฏิเสธ / ระงับบัญชี)
 // ══════════════════════════════════════════
 function openConfirmModal(ownerId, action, ownerName) {
   const icon = document.getElementById('confirm-icon');
@@ -87,7 +90,25 @@ function openConfirmModal(ownerId, action, ownerName) {
     submitBtn.disabled = false;
     form.action = '/admin/homestay/approve/' + ownerId;
     reasonField.style.display = 'none';
+
+  } else if (action === 'suspend') {
+    // ระงับบัญชีที่อนุมัติไปแล้ว — ใช้ endpoint เดียวกับปฏิเสธ (ตั้งสถานะไม่ ACTIVE) แต่ข้อความต่างออกไป
+    icon.className = 'confirm-icon reject';
+    icon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 32px;">block</span>';
+    title.textContent = 'ยืนยันการระงับบัญชี';
+    desc.innerHTML = 'คุณแน่ใจหรือไม่ว่าต้องการระงับบัญชีเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>? บัญชีนี้จะไม่สามารถใช้งานระบบได้จนกว่าจะได้รับการอนุมัติใหม่อีกครั้ง';
+    submitBtn.className = 'btn-action btn-reject';
+    submitBtn.textContent = 'ยืนยันการระงับบัญชี';
+    submitBtn.disabled = true;
+    form.action = '/admin/homestay/reject/' + ownerId;
+    reasonField.style.display = 'block';
+
+    reasonInput.oninput = () => {
+      submitBtn.disabled = reasonInput.value.trim().length === 0;
+    };
+
   } else {
+    // reject (ปฏิเสธคำขอที่ยังรออนุมัติ)
     icon.className = 'confirm-icon reject';
     icon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 32px;">warning</span>';
     title.textContent = 'ยืนยันการปฏิเสธ';

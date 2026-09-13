@@ -212,9 +212,10 @@ function cancelSuspendReasonField() {
   document.getElementById('rmReasonField').classList.remove('expanded');
   document.getElementById('rmActionsRow').classList.remove('expanded');
   document.getElementById('rmSuspendReasonInput').value = '';
+  document.getElementById('rmSuspendReasonInput').classList.remove('invalid');
+  document.getElementById('rmReasonError').classList.remove('show');
   document.getElementById('rmTriggerSuspendBtn').style.display = 'flex';
 }
-
 async function showReportModal(btn) {
   const id = btn.dataset.id;
 
@@ -292,14 +293,30 @@ function closeModal(id) {
 // ขั้นตอนที่ 2: กดยืนยันใน modal สีแดง แล้วค่อยส่งฟอร์มจริง
 document.addEventListener('DOMContentLoaded', function() {
   const suspendConfirmBtn = document.getElementById('suspendConfirmBtn');
+  const reasonInput = document.getElementById('rmSuspendReasonInput');
+  const reasonError = document.getElementById('rmReasonError');
+
+  // เคลียร์ error ทันทีที่ผู้ใช้เริ่มพิมพ์
+  if (reasonInput) {
+    reasonInput.addEventListener('input', function() {
+      this.classList.remove('invalid');
+      reasonError.classList.remove('show');
+    });
+  }
+
   if (suspendConfirmBtn) {
     suspendConfirmBtn.addEventListener('click', function() {
-      const reasonValue = document.getElementById('rmSuspendReasonInput').value.trim();
+      const reasonValue = reasonInput.value.trim();
 
       if (!reasonValue) {
-        alert('กรุณาระบุเหตุผลในการระงับบัญชีก่อนยืนยัน');
-        return;
+        reasonInput.classList.add('invalid');
+        reasonError.classList.add('show');
+        reasonInput.focus();
+        return; // ไม่เปิด modal ยืนยัน ถ้ายังไม่กรอก
       }
+
+      reasonInput.classList.remove('invalid');
+      reasonError.classList.remove('show');
 
       document.getElementById('scManagerName').innerText = document.getElementById('modalManagerName').innerText;
       document.getElementById('scReasonPreview').innerText = reasonValue;

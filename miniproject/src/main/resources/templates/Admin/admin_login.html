@@ -283,6 +283,32 @@
       background: #fff8f8;
     }
 
+    /* ปุ่มไอคอนตา (แสดง/ซ่อนรหัสผ่าน) */
+    .form-control.has-toggle {
+      padding-right: 40px;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--outline);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .toggle-password:hover {
+      color: var(--action-orange);
+    }
+    .toggle-password .material-symbols-outlined {
+      font-size: 20px;
+    }
+
     /* SUBMIT BUTTON (ปรับเป็นสีส้ม Action) */
     .btn-submit {
       width: 100%;
@@ -411,7 +437,10 @@
           <label class="form-label" for="password">รหัสผ่าน</label>
           <div class="input-wrap">
             <span class="material-symbols-outlined input-icon">lock</span>
-            <input type="password" name="password" id="password" class="form-control" placeholder="••••••••" autocomplete="current-password"/>
+            <input type="password" name="password" id="password" class="form-control has-toggle" placeholder="••••••••" autocomplete="current-password"/>
+            <button type="button" class="toggle-password" id="toggle-password" aria-label="แสดง/ซ่อนรหัสผ่าน" tabindex="-1">
+              <span class="material-symbols-outlined" id="toggle-password-icon">visibility</span>
+            </button>
           </div>
         </div>
 
@@ -436,6 +465,14 @@
       var username = document.getElementById('username');
       var password = document.getElementById('password');
       var jsAlert = document.getElementById('js-alert');
+      var togglePassword = document.getElementById('toggle-password');
+      var togglePasswordIcon = document.getElementById('toggle-password-icon');
+
+      togglePassword.addEventListener('click', function () {
+        var isHidden = password.type === 'password';
+        password.type = isHidden ? 'text' : 'password';
+        togglePasswordIcon.textContent = isHidden ? 'visibility_off' : 'visibility';
+      });
 
       [username, password].forEach(function (input) {
         input.addEventListener('input', function () {

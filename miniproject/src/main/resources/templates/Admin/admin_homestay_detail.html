@@ -334,7 +334,7 @@
   }
   .hs-block:last-child { margin-bottom: 0; }
 
-  /* แกลเลอรีรูปภาพ: รูปใหญ่ซ้าย + รูปเล็ก 3 รูปขวา */
+  /* แกลเลอรีรูปภาพ: ค่าเริ่มต้น (กรณีมีหลายรูป) รูปใหญ่ซ้าย + รูปเล็ก 3 รูปขวา */
   .hs-gallery {
     display: grid;
     grid-template-columns: 1.7fr 1fr;
@@ -357,6 +357,19 @@
     color: #fff; font-size: 18px; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
   }
+
+  /* กรณีมีรูปเดียว: โชว์เต็มความกว้างแบบ hero image สวยๆ แทนโครงตาราง */
+  .hs-gallery-single {
+    display: block;
+    height: 340px;
+  }
+  .hs-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
   .hs-images-empty {
     height: 180px;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -391,6 +404,19 @@
   .room-table tr:last-child td { border-bottom: none; }
   .room-table th { color: var(--primary); font-weight: 700; background: var(--surface-container); }
 
+  .room-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--surface-container);
+    border-radius: 8px;
+    color: var(--outline);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
   .empty-note { color: var(--outline); font-size: 15px; padding: 10px 0; }
 
   /* ── SIDEBAR CARDS ── */
@@ -400,36 +426,117 @@
     font-size: 16px; font-weight: 700; color: var(--on-surface); margin-bottom: 16px;
     display: flex; align-items: center; gap: 8px;
   }
-  .summary-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--surface-container);
-    font-size: 15px;
+  /* ── การ์ดสถานะ + การดำเนินการ (แทนที่ note-card เดิม) ── */
+  .status-card { padding: 24px; }
+  .status-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--surface-variant);
   }
-  .summary-row:last-child { border-bottom: none; }
-  .summary-row .label { color: var(--on-surface-variant); }
-  .summary-row .value { font-weight: 700; color: var(--on-surface); text-align: right; }
+  .status-card-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .status-card-icon .material-symbols-outlined { font-size: 24px; }
+  .status-card-icon.pending { background: var(--gold-100); color: var(--gold-700); }
+  .status-card-icon.approved { background: #f0fdf4; color: #15803d; }
+  .status-card-icon.rejected { background: var(--error-container); color: var(--error); }
 
-  .note-card {
-    background: var(--gold-100);
-    border: 1px solid #fcd34d;
-    color: var(--gold-700);
-  }
-  .note-card p { font-size: 14.5px; line-height: 1.6; margin-bottom: 14px; }
-  .note-card a.btn-goto {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    background: var(--primary);
-    color: #fff;
+  .status-card-head .s-title { font-size: 13px; color: var(--outline); font-weight: 600; }
+  .status-card-head .s-value { font-size: 17px; font-weight: 700; color: var(--on-surface); margin-top: 2px; }
+
+  .status-card p.status-desc { font-size: 14.5px; line-height: 1.6; color: var(--on-surface-variant); margin-bottom: 18px; }
+
+  /* ── ปุ่ม action (อนุมัติ/ปฏิเสธ/ระงับบัญชี) ── */
+  .btn-action {
+    padding: 13px 18px;
+    border-radius: 10px;
+    font-size: 15.5px;
     font-weight: 700;
-    font-size: 15px;
-    padding: 11px 16px;
-    border-radius: 8px;
-    transition: background 0.15s;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.2s;
+    font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
-  .note-card a.btn-goto:hover { background: var(--on-primary-container); }
+  .btn-approve {
+    background: #15803d;
+    border-color: #15803d;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(21, 128, 61, 0.25);
+  }
+  .btn-approve:hover { background: #106630; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.3); }
 
-  .note-card-approved { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
-  .note-card-approved p { margin-bottom: 0; }
+  .btn-reject {
+    background: var(--error);
+    border-color: var(--error);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(186, 26, 26, 0.2);
+  }
+  .btn-reject:hover { background: #93000a; box-shadow: 0 4px 12px rgba(186, 26, 26, 0.25); }
+
+  .btn-cancel {
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+    color: var(--on-surface-variant);
+  }
+  .btn-cancel:hover { background: var(--surface-container); }
+
+  .action-buttons-col { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ── CONFIRM MODAL ── */
+  .confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(22,29,25,0.6);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .confirm-overlay.show { display: flex; }
+
+  .confirm-box {
+    background: var(--surface-container-lowest);
+    border-radius: var(--r-lg);
+    max-width: 450px;
+    width: 90%;
+    padding: 36px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    border: 1px solid var(--surface-variant);
+  }
+
+  .confirm-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 16px;
+  }
+  .confirm-icon.approve { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+  .confirm-icon.reject  { background: var(--error-container); color: var(--error); }
+
+  .confirm-title { font-size: 20px; font-weight: 700; color: var(--on-surface); margin-bottom: 8px; }
+  .confirm-desc  { font-size: 15px; color: var(--on-surface-variant); margin-bottom: 24px; line-height: 1.5; }
+  .confirm-desc strong { color: var(--primary); font-size: 16px; }
+
+  .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+  .confirm-actions .btn-action { flex: 1; padding: 10px 20px; font-size: 15px; justify-content: center; }
+
+  .rm-reason-field label { display: block; font-size: 14px; font-weight: 700; color: var(--on-surface); margin-bottom: 4px; }
 
   /* ── FOOTER ── */
   .footer {
@@ -447,7 +554,6 @@
   @media (max-width: 900px) {
     .layout-grid { grid-template-columns: 1fr; }
     .side-col { position: static; }
-    .hero-cover { height: 240px; }
   }
 
   @media (max-width: 768px) {
@@ -457,6 +563,7 @@
     .nav-group { flex-wrap: wrap; }
     .footer { flex-direction: column; gap: 6px; text-align: center; }
     .hs-gallery { height: 200px; }
+    .hs-gallery-single { height: 220px; }
   }
 </style>
 </head>
@@ -531,7 +638,7 @@
   <div class="page-header">
     <div>
       <h1 th:text="${h.firstname + ' ' + h.lastname}">ชื่อเจ้าของ</h1>
-      <p>รายละเอียดคำขอลงทะเบียนโฮมสเตย์ · ID #<span th:text="${h.ownerid}">001</span></p>
+      <p>รายละเอียดคำขอลงทะเบียนโฮมสเตย์ · ID <span th:text="${h.ownerid}">001</span></p>
     </div>
     <span th:if="${isPending and !isRejected}" class="badge pending">⏳ รอการตรวจสอบ</span>
     <span th:if="${isApproved}" class="badge approved-badge">✅ อนุมัติแล้ว</span>
@@ -542,7 +649,7 @@
   <div class="meta-bar">
     <div class="meta-item">
       <span class="meta-label">Owner ID</span>
-      <span class="meta-value">#<span th:text="${h.ownerid}">001</span></span>
+      <span class="meta-value"><span th:text="${h.ownerid}">001</span></span>
     </div>
     <div class="meta-item">
       <span class="meta-label">อีเมล</span>
@@ -574,20 +681,28 @@
 
         <div th:each="hs : ${h.homestays}" class="hs-block">
 
-          <!-- แกลเลอรีรูปภาพ: ใหญ่ซ้าย + เล็ก 3 รูปขวา -->
-          <div class="hs-gallery"
-               th:if="${hs.images != null and !hs.images.isEmpty()}"
+          <!-- แกลเลอรีรูปภาพ -->
+          <div th:if="${hs.images != null and !hs.images.isEmpty()}"
                th:with="imgList=${#strings.arraySplit(hs.images, ',')}, imgCount=${imgList.length}">
-            <img class="hs-main-img" th:if="${imgCount > 0}" th:src="${imgList[0]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
-            <div class="hs-thumb-wrap" th:if="${imgCount > 1}">
-              <img th:src="${imgList[1]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
+
+            <!-- กรณีมีรูปเดียว: โชว์เต็มความกว้างแบบ hero image -->
+            <div class="hs-gallery hs-gallery-single" th:if="${imgCount == 1}">
+              <img class="hs-hero-img" th:src="${imgList[0]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
             </div>
-            <div class="hs-thumb-wrap" th:if="${imgCount > 2}">
-              <img th:src="${imgList[2]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
-            </div>
-            <div class="hs-thumb-wrap" th:if="${imgCount > 3}">
-              <img th:src="${imgList[3]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
-              <div class="hs-thumb-more-overlay" th:if="${imgCount > 4}" th:text="'+' + (${imgCount} - 4)"></div>
+
+            <!-- กรณีมีหลายรูป: รูปใหญ่ซ้าย + รูปเล็ก 3 รูปขวา -->
+            <div class="hs-gallery" th:if="${imgCount > 1}">
+              <img class="hs-main-img" th:src="${imgList[0]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
+              <div class="hs-thumb-wrap" th:if="${imgCount > 1}">
+                <img th:src="${imgList[1]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
+              </div>
+              <div class="hs-thumb-wrap" th:if="${imgCount > 2}">
+                <img th:src="${imgList[2]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
+              </div>
+              <div class="hs-thumb-wrap" th:if="${imgCount > 3}">
+                <img th:src="${imgList[3]}" alt="homestay image" onerror="this.onerror=null;this.src=window.HS_IMG_FALLBACK;"/>
+                <div class="hs-thumb-more-overlay" th:if="${imgCount > 4}" th:text="'+' + (${imgCount} - 4)"></div>
+              </div>
             </div>
           </div>
           <div class="hs-images-empty" th:if="${hs.images == null or hs.images.isEmpty()}">
@@ -621,26 +736,28 @@
                 </tbody>
               </table>
             </div>
+
+            <!-- ยังไม่มีประเภทห้อง — เจ้าของจะมาเพิ่มทีหลังตอนอนุมัติแล้วเท่านั้น -->
+            <div class="room-note" th:if="${hs.roomtypes == null or hs.roomtypes.isEmpty()}">
+              <span class="material-symbols-outlined" style="font-size:18px;">bed</span>
+              <span th:if="${!isApproved}">ยังไม่มีการเพิ่มประเภทห้องพัก — เจ้าของสามารถเพิ่มได้หลังจากคำขอนี้ได้รับการอนุมัติแล้ว</span>
+              <span th:if="${isApproved}">ยังไม่มีการเพิ่มประเภทห้องพักในระบบ</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- ② ข้อมูลเจ้าของ — มาหลังจากดูตัวสถานที่จริงแล้ว -->
-      <div class="card">
+      <!-- ② ข้อมูลบัญชีธนาคาร — เจ้าของกรอกทีหลังตอนอนุมัติแล้วเท่านั้น ไม่ได้กรอกตอนสมัคร
+           จึงโชว์เฉพาะตอนอนุมัติแล้วและมีข้อมูลจริง ไม่งั้นจะเป็นกล่องว่างๆ ดูแปลก -->
+      <div class="card" th:if="${isApproved and (h.bankName != null or h.accountNumber != null)}">
         <div class="card-title">
-          <span class="material-symbols-outlined">person</span> ข้อมูลเจ้าของ
+          <span class="material-symbols-outlined">account_balance</span> ข้อมูลบัญชีธนาคาร
         </div>
         <div class="info-grid">
-          <div class="info-field"><label>ชื่อ-นามสกุล</label><div class="value" th:text="${h.firstname + ' ' + h.lastname}">-</div></div>
-          <div class="info-field"><label>อีเมล</label><div class="value" th:text="${h.email}">-</div></div>
-          <div class="info-field"><label>เบอร์โทร</label><div class="value" th:text="${h.phone}">-</div></div>
-        </div>
-        <hr class="divider">
-        <div class="info-grid">
-          <div class="info-field"><label>ธนาคาร</label><div class="value" th:text="${h.bankName}">-</div></div>
-          <div class="info-field"><label>ชื่อบัญชี</label><div class="value" th:text="${h.accountName}">-</div></div>
-          <div class="info-field"><label>เลขที่บัญชี</label><div class="value" th:text="${h.accountNumber}">-</div></div>
-          <div class="info-field"><label>สาขา</label><div class="value" th:text="${h.bankBranch}">-</div></div>
+          <div class="info-field"><label>ธนาคาร</label><div class="value" th:text="${h.bankName ?: '-'}">-</div></div>
+          <div class="info-field"><label>ชื่อบัญชี</label><div class="value" th:text="${h.accountName ?: '-'}">-</div></div>
+          <div class="info-field"><label>เลขที่บัญชี</label><div class="value" th:text="${h.accountNumber ?: '-'}">-</div></div>
+          <div class="info-field"><label>สาขา</label><div class="value" th:text="${h.bankBranch ?: '-'}">-</div></div>
         </div>
       </div>
 
@@ -649,38 +766,62 @@
     <!-- ═══ SIDE COLUMN ═══ -->
     <div class="side-col">
 
-      <div class="card side-card">
-        <h4><span class="material-symbols-outlined">summarize</span> สรุปคำขอ</h4>
-        <div class="summary-row">
-          <span class="label">Owner ID</span>
-          <span class="value">#<span th:text="${h.ownerid}"></span></span>
-        </div>
-        <div class="summary-row">
-          <span class="label">สถานะ</span>
-          <span class="value">
-            <span th:if="${isPending and !isRejected}">รอการตรวจสอบ</span>
-            <span th:if="${isApproved}">อนุมัติแล้ว</span>
-            <span th:if="${isRejected}">ปฏิเสธแล้ว</span>
-          </span>
-        </div>
-        <div class="summary-row">
-          <span class="label">จำนวนโฮมสเตย์</span>
-          <span class="value" th:text="${hsCount}"></span>
-        </div>
-      </div>
+      <!-- การ์ดเดียว: สถานะ + จำนวนโฮมสเตย์ + ปุ่มดำเนินการ รวมอยู่ด้วยกัน -->
+      <div class="card side-card status-card">
 
-      <div class="card side-card note-card" th:if="${isPending and !isRejected}">
-        <h4>💡 การดำเนินการ</h4>
-        <p>หากต้องการอนุมัติหรือปฏิเสธคำขอนี้ กรุณากลับไปที่หน้ารายการคำขอโฮมสเตย์</p>
-        <a href="/admin/homestay" class="btn-goto">
-          <span class="material-symbols-outlined" style="font-size:18px;">list_alt</span>
-          ไปหน้ารายการคำขอ
-        </a>
-      </div>
+        <div class="status-card-head">
+          <div class="status-card-icon pending" th:if="${isPending and !isRejected}">
+            <span class="material-symbols-outlined">hourglass_top</span>
+          </div>
+          <div class="status-card-icon approved" th:if="${isApproved}">
+            <span class="material-symbols-outlined">check_circle</span>
+          </div>
+          <div class="status-card-icon rejected" th:if="${isRejected}">
+            <span class="material-symbols-outlined">cancel</span>
+          </div>
+          <div>
+            <div class="s-title">สถานะคำขอ · <span th:text="${h.ownerid}"></span></div>
+            <div class="s-value">
+              <span th:if="${isPending and !isRejected}">รอการตรวจสอบ</span>
+              <span th:if="${isApproved}">อนุมัติแล้ว</span>
+              <span th:if="${isRejected}">ปฏิเสธแล้ว</span>
+              · <span th:text="${hsCount}"></span> โฮมสเตย์
+            </div>
+          </div>
+        </div>
 
-      <div class="card side-card note-card note-card-approved" th:if="${isApproved}">
-        <h4>✅ สถานะโฮมสเตย์</h4>
-        <p>คำขอนี้ได้รับการอนุมัติและเปิดใช้งานแล้ว</p>
+        <!-- รออนุมัติ: ปุ่มอนุมัติ / ปฏิเสธ -->
+        <div th:if="${isPending and !isRejected}">
+          <p class="status-desc">ตรวจสอบข้อมูลด้านบนแล้ว กรุณาเลือกดำเนินการกับคำขอนี้</p>
+          <div class="action-buttons-col">
+            <button type="button" class="btn-action btn-approve"
+                    th:attr="data-owner-id=${h.ownerid}, data-owner-name=${h.firstname + ' ' + h.lastname}, data-action='approve'"
+                    onclick="handleConfirmClick(this)">
+              <span class="material-symbols-outlined" style="font-size:19px;">check_circle</span> อนุมัติคำขอ
+            </button>
+            <button type="button" class="btn-action btn-reject"
+                    th:attr="data-owner-id=${h.ownerid}, data-owner-name=${h.firstname + ' ' + h.lastname}, data-action='reject'"
+                    onclick="handleConfirmClick(this)">
+              <span class="material-symbols-outlined" style="font-size:19px;">block</span> ปฏิเสธคำขอ
+            </button>
+          </div>
+        </div>
+
+        <!-- อนุมัติแล้ว: ปุ่มระงับบัญชี -->
+        <div th:if="${isApproved}">
+          <p class="status-desc">โฮมสเตย์นี้เปิดใช้งานอยู่ในระบบ หากพบปัญหาสามารถระงับการใช้งานบัญชีนี้ได้</p>
+          <div class="action-buttons-col">
+            <button type="button" class="btn-action btn-reject"
+                    th:attr="data-owner-id=${h.ownerid}, data-owner-name=${h.firstname + ' ' + h.lastname}, data-action='suspend'"
+                    onclick="handleConfirmClick(this)">
+              <span class="material-symbols-outlined" style="font-size:19px;">block</span> ระงับบัญชี
+            </button>
+          </div>
+        </div>
+
+        <!-- ปฏิเสธแล้ว: ข้อความเฉยๆ ไม่มีปุ่ม -->
+        <p class="status-desc" style="margin-bottom:0;" th:if="${isRejected}">คำขอนี้ถูกปฏิเสธแล้ว เจ้าของบัญชีสามารถแก้ไขข้อมูลและส่งคำขอใหม่ได้</p>
+
       </div>
 
     </div><!-- /side-col -->
@@ -689,6 +830,37 @@
 
 </main>
 
+<!-- CONFIRM MODAL (อนุมัติ / ปฏิเสธ / ระงับบัญชี) -->
+<div id="confirmModal" class="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirm-icon">
+      <span class="material-symbols-outlined" style="font-size: 32px;">check_circle</span>
+    </div>
+    <div class="confirm-title" id="confirm-title">ยืนยันการอนุมัติ</div>
+    <div class="confirm-desc" id="confirm-desc">
+      คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?
+    </div>
+
+    <!-- ช่องเหตุผล — โชว์เฉพาะตอนปฏิเสธ / ระงับบัญชี -->
+    <div class="rm-reason-field" id="rejectReasonField" style="display:none; text-align:left; margin-top:16px;">
+      <label for="rejectReasonInput">
+        กรุณาระบุเหตุผล <span class="required" style="color: var(--error);">*</span>
+      </label>
+      <textarea id="rejectReasonInput"
+                placeholder="เช่น เอกสารไม่ครบถ้วน, ข้อมูลไม่ตรงกับที่ตรวจสอบ ฯลฯ"
+                style="width:100%; min-height:80px; padding:12px 14px; border-radius:8px; border:1px solid var(--outline-variant); font-size:15px; font-family:inherit; resize:vertical;"></textarea>
+    </div>
+
+    <div class="confirm-actions" style="margin-top:20px;">
+      <button type="button" class="btn-action btn-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
+      <form id="confirm-form" method="post" style="flex: 1; margin: 0;">
+        <input type="hidden" name="reason" id="confirmHiddenReason">
+        <button type="submit" class="btn-action" id="confirm-submit-btn" style="width: 100%; justify-content: center;">ยืนยัน</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
   <span class="footer-text">ระบบท่องเที่ยวชุมชนเผ่า v1.0</span>
   <span class="footer-text">© 2025 — สงวนลิขสิทธิ์</span>
@@ -696,7 +868,6 @@
 
 <script>
   // รูป placeholder ที่ใช้แทนรูปที่โหลดไม่ขึ้น (path ผิด/ไฟล์หาย)
-  // แทนที่จะปล่อยให้ browser โชว์ไอคอน broken-image ตัวใหญ่แปลกๆ
   window.HS_IMG_FALLBACK =
     "data:image/svg+xml;charset=UTF-8," +
     encodeURIComponent(
@@ -706,6 +877,8 @@
       "</svg>"
     );
 </script>
+
+<script th:src="@{/js/Admin/admin_homestaylist.js}"></script>
 
 </body>
 </html>

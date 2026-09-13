@@ -601,3 +601,16 @@ tbody tr:hover { background: var(--surface-container-low); }
 }
 .btn-modal-confirm-suspend:hover { background: #93000a; }
 .btn-modal-confirm-suspend:disabled { opacity: .7; cursor: not-allowed; }
+
+.rm-reason-field textarea.invalid {
+  border-color: var(--error);
+  background: #fff8f8;
+}
+.rm-reason-error {
+  display: none;
+  color: var(--error);
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.rm-reason-error.show { display: block; }

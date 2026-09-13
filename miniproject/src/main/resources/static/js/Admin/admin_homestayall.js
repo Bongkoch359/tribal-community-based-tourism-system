@@ -90,14 +90,17 @@ function openReportModal(btn) {
   document.getElementById('rmPhone').textContent   = phone || '-';
 
   // ── รีเซ็ตฟอร์มระงับให้กลับไปเป็นปุ่มเดียวทุกครั้งที่เปิด modal ใหม่ ──
-  document.getElementById('rmSuspendReasonInput').value = '';
+  const reasonInput = document.getElementById('rmSuspendReasonInput');
+  const reasonError = document.getElementById('rmReasonError');
+  reasonInput.value = '';
+  reasonInput.classList.remove('invalid');
+  if (reasonError) reasonError.classList.remove('show');
   document.getElementById('rmSuspendForm').classList.remove('show');
   document.getElementById('rmSuspendTriggerBtn').style.display = '';
 
   document.getElementById('rmSummaryRow').innerHTML = '';
   document.getElementById('rmReportList').innerHTML = '';
   document.getElementById('rmEmptyState').style.display = 'none';
-  updateSuspendButtonState();
 
   openModal('reportDetailModal');
 
@@ -278,14 +281,16 @@ function escapeHtml(str) {
 }
 
 // ══════════════════════════════════════════
-// ปุ่มระงับบัญชี: ขั้นแรกกด "ระงับบัญชี..." เพื่อกางฟอร์มเหตุผล
-// จากนั้นกด "ยืนยันระงับบัญชี" -> เปิด modal ยืนยันซ้อน
+// ปุ่มระงับบัญชี: กดได้เสมอ (ไม่ disable) — พอกด "ยืนยันระงับบัญชี"
+// ค่อยเช็คว่ากรอกเหตุผลหรือยัง ถ้ายัง -> ขึ้นกรอบแดง + ข้อความเตือนใต้ช่อง
+// เหมือนหน้าจองทัวร์ ถ้ากรอกแล้วค่อยเปิด modal ยืนยันซ้อนต่อ
 // ══════════════════════════════════════════
 function initSuspendConfirmButton() {
   const triggerBtn = document.getElementById('rmSuspendTriggerBtn');
   const suspendForm = document.getElementById('rmSuspendForm');
   const cancelBtn = document.getElementById('rmSuspendCancelBtn');
   const textarea = document.getElementById('rmSuspendReasonInput');
+  const errorEl = document.getElementById('rmReasonError');
   const btn = document.getElementById('rmSuspendConfirmBtn');
   if (!textarea || !btn || !triggerBtn || !suspendForm) return;
 
@@ -296,22 +301,38 @@ function initSuspendConfirmButton() {
     textarea.focus();
   });
 
-  // กดยกเลิกในฟอร์ม -> พับฟอร์มกลับ แสดงปุ่มแดงเหมือนเดิม
+  // กดยกเลิกในฟอร์ม -> พับฟอร์มกลับ แสดงปุ่มแดงเหมือนเดิม และล้าง error
   if (cancelBtn) {
     cancelBtn.addEventListener('click', () => {
       textarea.value = '';
+      textarea.classList.remove('invalid');
+      if (errorEl) errorEl.classList.remove('show');
       suspendForm.classList.remove('show');
       triggerBtn.style.display = '';
-      updateSuspendButtonState();
     });
   }
 
-  textarea.addEventListener('input', updateSuspendButtonState);
+  // เคลียร์ error ทันทีที่ผู้ใช้เริ่มพิมพ์ (ไม่ยุ่งกับ disabled ของปุ่มอีกต่อไป)
+  textarea.addEventListener('input', () => {
+    textarea.classList.remove('invalid');
+    if (errorEl) errorEl.classList.remove('show');
+  });
 
-  // ขั้นที่ 1: กด "ยืนยันระงับบัญชี" ใน modal รายละเอียด → เปิด modal ยืนยันซ้อน
+  // ขั้นที่ 1: กด "ยืนยันระงับบัญชี" — เช็ค validate ตรงนี้แทนการ disable ปุ่มไว้ก่อน
   btn.addEventListener('click', () => {
     const reason = textarea.value.trim();
-    if (!currentSuspendOwnerId || !reason) return;
+
+    if (!reason) {
+      textarea.classList.add('invalid');
+      if (errorEl) errorEl.classList.add('show');
+      textarea.focus();
+      return; // ไม่เปิด modal ยืนยัน ถ้ายังไม่กรอกเหตุผล
+    }
+
+    textarea.classList.remove('invalid');
+    if (errorEl) errorEl.classList.remove('show');
+
+    if (!currentSuspendOwnerId) return;
 
     document.getElementById('scOwnerName').textContent =
       document.getElementById('rmOwnerName').textContent || '-';
@@ -333,14 +354,6 @@ function initSuspendConfirmButton() {
       form.submit();
     });
   }
-}
-
-// ปิดปุ่มยืนยันไว้ก่อน จนกว่าจะพิมพ์เหตุผลระงับ
-function updateSuspendButtonState() {
-  const textarea = document.getElementById('rmSuspendReasonInput');
-  const btn = document.getElementById('rmSuspendConfirmBtn');
-  if (!textarea || !btn) return;
-  btn.disabled = textarea.value.trim().length === 0;
 }
 
 // ══════════════════════════════════════════

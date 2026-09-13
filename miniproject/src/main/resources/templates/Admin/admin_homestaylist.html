@@ -93,17 +93,17 @@
         </button>
       </div>
     </div>
-  </div>  </div>
+  </div>
   <!-- ↑ ปิด resultModal -->
 
   <div class="page-toolbar">
     <!-- แท็บมุมมองบนสุด -->
     <div class="view-tabs">
-      <a href="/admin/homestay" class="view-tab" th:classappend="${currentView == 'pending'} ? ' active'">
+      <a href="/admin/homestay" class="view-tab active" th:class="${currentView == 'pending'} ? 'view-tab active' : 'view-tab'">
         <span class="material-symbols-outlined">inbox</span>
         คำขอรออนุมัติ
       </a>
-      <a href="/admin/homestay/all" class="view-tab" th:classappend="${currentView == 'all'} ? ' active'">
+      <a href="/admin/homestay/all" class="view-tab" th:class="${currentView == 'all'} ? 'view-tab active' : 'view-tab'">
         <span class="material-symbols-outlined">list_alt</span>
         บัญชีทั้งหมด
       </a>
@@ -134,8 +134,6 @@
       </div>
     </div>
   </div>
-
-  <div class="table-wrap">
 
   <div class="table-wrap">
     <table>
@@ -185,33 +183,12 @@
           </td>
 
           <td>
+            <!-- เหลือแค่ปุ่มดูรายละเอียด — การอนุมัติ/ปฏิเสธ/ระงับบัญชี ย้ายไปทำในหน้ารายละเอียดแทน -->
             <div class="action-group">
               <a th:href="@{/admin/homestay/detail/{id}(id=${h.ownerid})}"
                  class="btn-action btn-detail">
                 <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> ดูรายละเอียด
               </a>
-
-              <button type="button"
-                      th:if="${isPending and !isRejected}"
-                      class="btn-action btn-approve"
-                      th:attr="data-owner-id=${h.ownerid},
-                               data-owner-name=${h.firstname + ' ' + h.lastname},
-                               data-action='approve'"
-                      onclick="handleConfirmClick(this)">
-                <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
-                อนุมัติ
-              </button>
-
-              <button type="button"
-                      th:if="${isPending and !isRejected}"
-                      class="btn-action btn-reject"
-                      th:attr="data-owner-id=${h.ownerid},
-                               data-owner-name=${h.firstname + ' ' + h.lastname},
-                               data-action='reject'"
-                      onclick="handleConfirmClick(this)">
-                <span class="material-symbols-outlined" style="font-size: 16px;">block</span>
-                ปฏิเสธ
-              </button>
             </div>
           </td>
         </tr>
@@ -225,36 +202,6 @@
     </table>
   </div>
 </main>
-
-<!-- CONFIRM MODAL --><div id="confirmModal" class="confirm-overlay">
-  <div class="confirm-box">
-    <div class="confirm-icon" id="confirm-icon">
-      <span class="material-symbols-outlined" style="font-size: 32px;">check_circle</span>
-    </div>
-    <div class="confirm-title" id="confirm-title">ยืนยันการอนุมัติ</div>
-    <div class="confirm-desc" id="confirm-desc">
-      คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ <strong id="confirm-name"></strong>?
-    </div>
-
-    <!-- ช่องเหตุผล — โชว์เฉพาะตอนปฏิเสธ -->
-    <div class="rm-reason-field" id="rejectReasonField" style="display:none; text-align:left; margin-top:16px;">
-      <label for="rejectReasonInput">
-        กรุณาระบุเหตุผลในการปฏิเสธ <span class="required" style="color: var(--error);">*</span>
-      </label>
-      <textarea id="rejectReasonInput"
-                placeholder="เช่น เอกสารไม่ครบถ้วน, ข้อมูลไม่ตรงกับที่ตรวจสอบ ฯลฯ"
-                style="width:100%; min-height:80px; padding:12px 14px; border-radius:8px; border:1px solid var(--outline-variant); font-size:15px; font-family:inherit; resize:vertical;"></textarea>
-    </div>
-
-    <div class="confirm-actions" style="margin-top:20px;">
-      <button type="button" class="btn-action btn-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
-      <form id="confirm-form" method="post" style="flex: 1; margin: 0;">
-        <input type="hidden" name="reason" id="confirmHiddenReason">
-        <button type="submit" class="btn-action" id="confirm-submit-btn" style="width: 100%; justify-content: center;">ยืนยัน</button>
-      </form>
-    </div>
-  </div>
-</div>
 
 <!-- FOOTER -->
 <footer class="footer">

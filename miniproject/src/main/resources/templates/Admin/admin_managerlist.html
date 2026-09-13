@@ -229,18 +229,19 @@
     <div class="rm-report-list" id="rmReportList"></div>
     <div class="rm-empty" id="rmEmptyState" style="display:none;">ยังไม่มีรายงานสำหรับผู้จัดการคนนี้</div>
 
-    <!-- ปุ่มเริ่มต้น: กดเพื่อเปิดฟอร์มเหตุผล (ซ่อนฟอร์มไว้จนกว่าจะกด) -->
+       <!-- ปุ่มเริ่มต้น: กดเพื่อเปิดฟอร์มเหตุผล (ซ่อนฟอร์มไว้จนกว่าจะกด) -->
     <button type="button" class="rm-btn-trigger-suspend" id="rmTriggerSuspendBtn" onclick="toggleSuspendReasonField()">
       <span class="material-symbols-outlined">block</span> ระงับบัญชีผู้จัดการคนนี้
     </button>
 
-    <!-- ระบุเหตุผลการระงับบัญชี (ซ่อนไว้ก่อน จนกว่าจะกดปุ่มด้านบน) -->
+        <!-- ระบุเหตุผลการระงับบัญชี (ซ่อนไว้ก่อน จนกว่าจะกดปุ่มด้านบน) -->
     <div class="rm-reason-field" id="rmReasonField">
       <label for="rmSuspendReasonInput">
         กรุณาระบุเหตุผลในการระงับ <span class="required">*</span>
       </label>
       <textarea id="rmSuspendReasonInput"
                 placeholder="เช่น ได้รับการร้องเรียนจากนักท่องเที่ยว, ข้อมูลบัญชีธนาคารไม่ถูกต้อง ฯลฯ"></textarea>
+      <div class="rm-reason-error" id="rmReasonError">กรุณาระบุเหตุผลในการระงับบัญชีก่อนยืนยัน</div>
     </div>
 
     <div class="rm-actions" id="rmActionsRow">

@@ -171,6 +171,20 @@
   .rm-reason-field textarea:focus { outline: none; border-color: var(--primary); }
   .rm-reason-field textarea::placeholder { color: var(--outline); }
 
+  /* ── error message ใต้ textarea เมื่อไม่กรอกเหตุผล ── */
+  .rm-reason-field textarea.invalid {
+    border-color: var(--error);
+    background: #fff8f8;
+  }
+  .rm-reason-error {
+    display: none;
+    color: var(--error);
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .rm-reason-error.show { display: block; }
+
   .rm-actions { display: flex; gap: 12px; justify-content: center; }
   .rm-btn-cancel {
     flex: 1; padding: 11px 18px; border-radius: 8px; border: 1px solid var(--outline-variant);
@@ -404,6 +418,7 @@
           </label>
           <textarea id="rmSuspendReasonInput"
                     placeholder="เช่น ได้รับการร้องเรียนจากนักท่องเที่ยว, ข้อมูลบัญชีธนาคารไม่ถูกต้อง ฯลฯ"></textarea>
+          <div class="rm-reason-error" id="rmReasonError">กรุณาระบุเหตุผลในการระงับบัญชีก่อนยืนยัน</div>
         </div>
 
         <div class="rm-actions">
