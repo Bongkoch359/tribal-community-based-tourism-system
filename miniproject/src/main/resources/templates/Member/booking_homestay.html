@@ -440,6 +440,7 @@ body {
   margin-bottom: 16px;
   gap: 12px;
   align-items: flex-start;
+  scroll-margin-top: calc(var(--navbar-h) + 20px);
 }
 .validation-banner.show { display: flex; }
 .validation-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
@@ -1272,8 +1273,15 @@ function validateBookingForm(){
         }
     }
 
-    // แสดง banner รวม error ทั้งหมด
-    if (errors.length > 0) {
+    // 7. จำนวนผู้เข้าพักรวม ต้องไม่น้อยกว่าจำนวนห้อง (อย่างน้อย 1 คน/ห้อง)
+if (guestOk && (guestVal + childrenVal) < roomsVal) {
+    const msg = `จำนวนผู้เข้าพัก (${guestVal + childrenVal} ท่าน) น้อยกว่าจำนวนห้องที่เลือก (${roomsVal} ห้อง)`;
+    setWrapError('wrap-numofrooms','err-numofrooms', msg);
+    setWrapError('wrap-guest','err-guest', msg);
+    errors.push(msg);
+}
+
+       if (errors.length > 0) {
         const list = document.getElementById('validationList');
         errors.forEach(e => {
             const li = document.createElement('li');
@@ -1282,21 +1290,21 @@ function validateBookingForm(){
         });
         const banner = document.getElementById('validationBanner');
         banner.classList.add('show');
-        banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+       
+        requestAnimationFrame(() => {
+            banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
     }
 
     return errors.length === 0;
 }
 
-/* ══════════════════════════════════════════
-   MODAL FLOW — ตรวจก่อน แล้วค่อยเปิด modal ยืนยัน
-   (เหมือนหน้าทัวร์: validate -> confirm modal -> submit จริง -> success modal)
-══════════════════════════════════════════ */
 function openConfirmModal() {
     const form = document.getElementById('bookingForm');
 
     if (!validateBookingForm()) {
-        return; // มี error อยู่ ไม่เปิด modal ยืนยัน
+        return; 
     }
 
     pendingForm = form;

@@ -478,7 +478,7 @@ public boolean isHomestayAvailable(Integer homestayId, LocalDate checkin, LocalD
     return false;
 }
 
-// ✅ เพิ่ม method นี้เข้าไปใหม่ทั้งหมด (วางไว้ใกล้ๆ isHomestayAvailable)
+
 private boolean isMaintenanceStatus(String status) {
     return "ปิดปรับปรุง".equals(status);
 }
