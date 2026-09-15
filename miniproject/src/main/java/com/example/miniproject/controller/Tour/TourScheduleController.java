@@ -51,7 +51,6 @@ public class TourScheduleController {
 
         List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
         Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
-        // ✅ แก้จุดนี้: ส่ง tour และ bookedMap เข้าไปด้วย
         tour.setOverallStatus(tourScheduleService.computeOverallStatus(schedules, tour, bookedMap));
 
         model.addAttribute("tour", tour);
@@ -162,7 +161,7 @@ public class TourScheduleController {
             return result;
         }
 
-        // ✅ เช็คว่ามีรอบนี้จริง และเป็นของทัวร์นี้จริง
+        // เช็คว่ามีรอบนี้จริง และเป็นของทัวร์นี้จริง
         Tourschedule schedule = tourScheduleService.getScheduleById(scheduleid).orElse(null);
         if (schedule == null || !schedule.getTour().getTourid().equals(tourid)) {
             result.put("ok", false);
@@ -191,7 +190,7 @@ public class TourScheduleController {
             return result;
         }
 
-        // ✅ ยืนยันอีกครั้งว่าหายไปจริงก่อนตอบว่าสำเร็จ
+        // ยืนยันอีกครั้งว่าหายไปจริงก่อนตอบว่าสำเร็จ
         if (tourScheduleService.getScheduleById(scheduleid).isPresent()) {
             result.put("ok", false);
             result.put("message", "ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
@@ -236,13 +235,22 @@ public class TourScheduleController {
             return result;
         }
 
-        // ✅ ถ้าจะ "ปิด" รอบที่มีคนจองแล้ว ยังปิดได้ (ไม่รับจองเพิ่ม) — ตรงนี้แค่เปลี่ยน
-        // สถานะ ไม่ใช่ลบ จึงอนุญาตแม้มีคนจองแล้ว (logic อยู่ใน Service แล้ว)
-        int updated = tourScheduleService.bulkUpdateStatusByDateRange(tourid, startDate, endDate, status);
+        //  รอบทัวร์ที่มีคนจองอยู่แล้ว จะถูกข้ามไปโดยอัตโนมัติ (เปลี่ยนสถานะไม่ได้)
+        // logic การเช็คอยู่ใน Service แล้ว ที่นี่แค่รับผลลัพธ์มาแจ้งผู้ใช้
+        Map<String, Integer> bulkResult = tourScheduleService.bulkUpdateStatusByDateRange(tourid, startDate, endDate,
+                status);
+        int updated = bulkResult.getOrDefault("updated", 0);
+        int skippedBooked = bulkResult.getOrDefault("skippedBooked", 0);
+
+        String message = "อัปเดตสถานะ " + updated + " รอบทัวร์เรียบร้อย";
+        if (skippedBooked > 0) {
+            message += " (ข้าม " + skippedBooked + " รอบที่มีคนจองแล้ว ไม่สามารถเปลี่ยนสถานะได้)";
+        }
 
         result.put("ok", true);
         result.put("updated", updated);
-        result.put("message", "อัปเดตสถานะ " + updated + " รอบทัวร์เรียบร้อย");
+        result.put("skippedBooked", skippedBooked);
+        result.put("message", message);
         return result;
     }
 

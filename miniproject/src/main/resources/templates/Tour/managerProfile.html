@@ -213,6 +213,7 @@
                                 maxlength="100">
                             <span class="input-icon"><i class="fas fa-location-dot"></i></span>
                         </div>
+                        <span class="error-msg" id="bankBranchError"></span>
                     </div>
                 </div>
 
@@ -232,7 +233,7 @@
                             class="required">*</span></label>
                     <div class="input-with-icon">
                         <input class="form-input" type="text" name="accountNumber" id="accountNumberInput"
-                            th:value="${loggedInManager?.accountNumber}" placeholder="000-0-00000-0" maxlength="20"
+                            th:value="${loggedInManager?.accountNumber}" placeholder="0000000000" maxlength="20"
                             inputmode="numeric">
                         <span class="input-icon"><i class="fas fa-credit-card"></i></span>
                     </div>
