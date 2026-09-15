@@ -44,27 +44,59 @@ public String viewTourDetail(@PathVariable String id, Model model) {
     Tour tour = tourRepository.findByIdWithBookings(id).orElse(null);
     if (tour == null) return "redirect:/search";
 
-    int availableSeats = tourService.getAvailableSeats(tour);
-    String seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
+
+    // ดึงรอบทัวร์ทั้งหมด
+    List<Tourschedule> schedules =
+            tourScheduleService.getSchedulesByTour(id);
+
+    // จำนวนคนจองแยกตามรอบ
+    Map<String, Integer> bookedSeatsMap =
+            tourScheduleService.getBookedSeatsMap(id);
+
+    int maxSeatsTour = tour.getMaxSeatstour() != null
+            ? tour.getMaxSeatstour()
+            : 0;
+
+    LocalDate today = LocalDate.now();
+
+    // หาจำนวนที่นั่งว่างของเฉพาะรอบที่ยังเปิดจอง
+    int availableSeats = 0;
+
+    for (Tourschedule schedule : schedules) {
+
+        LocalDate start = schedule.getOpendate().toLocalDate();
+
+        boolean isPast = start.isBefore(today);
+        boolean isOpen = "เปิดรับจอง".equals(schedule.getStatus());
+
+        // ข้ามรอบที่ผ่านไปแล้ว หรือไม่ได้เปิดรับจอง
+        if (isPast || !isOpen) {
+            continue;
+        }
+
+        Integer booked = bookedSeatsMap.get(schedule.getScheduleid());
+        int bookedCount = booked != null ? booked : 0;
+
+        int available = Math.max(
+                maxSeatsTour - bookedCount,
+                0
+        );
+
+        // เอาจำนวนที่ว่างมากที่สุดจากรอบที่ยังจองได้
+        availableSeats = Math.max(availableSeats, available);
+    }
+
+    String seatLevel = availableSeats <= 0
+            ? "full"
+            : tourService.getSeatStatusLevel(tour, availableSeats);
+
     model.addAttribute("availableSeats", availableSeats);
     model.addAttribute("seatLevel", seatLevel);
     model.addAttribute("tour", tour);
 
-    String typeName = (tour.getTourtype() != null) ? tour.getTourtype().getTypename() : null;
-    String tourTypeDisplay = (typeName != null && !typeName.isBlank())
-            ? typeName
-            : (tour.getNumberOfDays() != null && tour.getNumberOfDays() == 1
-                    ? "ทัวร์รายวัน" : "ไม่ระบุประเภท");
-    model.addAttribute("tourTypeDisplay", tourTypeDisplay);
-
-    List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(id);
-    Map<String, Integer> bookedSeatsMap = tourScheduleService.getBookedSeatsMap(id); // ✅ key เป็น String
     model.addAttribute("schedules", schedules);
     model.addAttribute("bookedSeatsMap", bookedSeatsMap);
 
-    // ✅ สร้างข้อมูลรายวันสำหรับวาดปฏิทิน (ตามช่วง opendate–enddate ของแต่ละรอบ)
-    int maxSeatsTour = tour.getMaxSeatstour() != null ? tour.getMaxSeatstour() : 0;
-    LocalDate today = LocalDate.now();
     List<Map<String, Object>> calendarData = new ArrayList<>();
 
     for (Tourschedule s : schedules) {

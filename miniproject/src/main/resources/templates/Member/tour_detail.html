@@ -2719,11 +2719,13 @@
                    isOpen=${s.status == 'เปิดรับจอง'},
                    level=${isPast} ? 'past' : (${!isOpen} ? 'closed' : (${avail <= 0} ? 'full' : (${avail <= (maxSeats * 0.2)} ? 'low' : 'open')))">
                 <td>
-                  <span th:text="${#dates.format(s.opendate, 'dd/MM/yyyy')}"></span>
-                  <span th:if="${s.enddate != null and !s.enddate.equals(s.opendate)}"
-                    style="color:var(--neutral-400);">
-                    - <span th:text="${#dates.format(s.enddate, 'dd/MM/yyyy')}"></span>
-                  </span>
+             <span th:text="${#dates.format(s.opendate, 'dd/MM/') + (s.opendate.year + 2443)}"></span>
+
+<span th:if="${s.enddate != null and !s.enddate.equals(s.opendate)}"
+      style="color:var(--neutral-400);">
+    -
+    <span th:text="${#dates.format(s.enddate, 'dd/MM/') + (s.enddate.year + 2443)}"></span>
+</span>
                 </td>
                 <td th:text="${avail} + ' / ' + ${maxSeats}">-</td>
                 <td>
@@ -2886,7 +2888,7 @@
             </button>
             <input type="hidden" id="tourDate" value="">
             <small style="color:var(--neutral-500);font-size:0.8rem;margin-top:4px;display:block;">
-              * ปฏิทินจะแสดงวันที่จองได้ / ไม่ได้ตามรอบทัวร์จริง
+              * ปฏิทินจะแสดงเฉพาะวันที่มีรอบทัวร์ที่เปิดให้จองจริงในระบบ
             </small>
             <small id="tourDateError"
               style="color:#b3462e;font-weight:700;font-size:0.8rem;margin-top:6px;display:none;">

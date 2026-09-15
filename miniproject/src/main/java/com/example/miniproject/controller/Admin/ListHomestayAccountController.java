@@ -55,7 +55,6 @@ private HomestayReportService homestayReportService;
         model.addAttribute("homestays",     homestaysForThisPage);
         model.addAttribute("allCount",      homestaysForThisPage.size());
         model.addAttribute("pendingCount",  pending.size());
-        model.addAttribute("approvedCount", 0);
         model.addAttribute("rejectedCount", rejected.size());
 
         return "Admin/admin_homestaylist";
