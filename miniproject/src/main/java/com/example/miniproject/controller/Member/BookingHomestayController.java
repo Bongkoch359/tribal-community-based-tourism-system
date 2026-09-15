@@ -85,12 +85,7 @@ public String bookingPage(
         }
     }
 
-    // ════════════════════════════════════════════════════════
-    //  POST : แก้ไขการจอง
-    //  ⬇️ NEW: guestFirstname / guestLastname เปลี่ยนจาก String เดี่ยว
-    //          เป็น List<String> เพื่อรองรับผู้เข้าพักหลายคน
-    //          และเพิ่ม guestId (List<String>) เพื่อ map กลับไปหา record เดิม
-    // ════════════════════════════════════════════════════════
+   
 
     @PostMapping("/booking/homestay/edit/{id}")
     public String editBooking(

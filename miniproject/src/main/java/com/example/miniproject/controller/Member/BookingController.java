@@ -31,11 +31,11 @@ public class BookingController {
     @Autowired
     private BookingService bookingService;
 
-    // ⬇️ NEW: ใช้ดึงรอบทัวร์ที่เปิดรับจอง สำหรับ dropdown เลือกวันในหน้าแก้ไขการจอง
+   
     @Autowired
     private TourScheduleRepository tourScheduleRepository;
 
-    // ⬇️ NEW: ใช้ดึงข้อมูลใบเสร็จ แยกตามประเภทการจอง (โฮมสเตย์ / ทัวร์)
+   
     @Autowired
     @Qualifier("homestayPaymentService")
     private PaymentService<RoomReceiptDTO> homestayPaymentService;

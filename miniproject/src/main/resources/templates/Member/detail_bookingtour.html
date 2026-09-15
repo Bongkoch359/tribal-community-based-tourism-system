@@ -1942,6 +1942,7 @@
 
                    <span style="font-size:.8rem;color:#666;">
     วันที่จอง :
+
     <strong
         th:if="${booking.bookingdate != null}"
         th:text="|${#numbers.formatInteger(#dates.day(booking.bookingdate),2)}/${#numbers.formatInteger(#dates.month(booking.bookingdate),2)}/${#dates.year(booking.bookingdate)}|"></strong>
@@ -2207,9 +2208,9 @@
                             </div>
 
                         </form>
-                    </div><!-- /tourCard -->
+                    </div>
 
-                    <!-- SECTION 2 : ข้อมูลผู้ติดต่อ -->
+                   
                     <div class="card">
                         <div class="section-header">
                             <div class="section-header-left">
@@ -2593,7 +2594,7 @@
 
                             <!-- เขียนรีวิว -->
                             <div class="form-group">
-                                <div class="bonus-label">เขียน 30+ ตัวอักษร</div>
+                               <div class="bonus-label">เขียนรีวิว (ไม่บังคับ)</div>
                                 <div class="review-tags">
                                     <button type="button" class="review-tag" data-txt="บรรยากาศดี ">🌿 บรรยากาศ</button>
                                     <button type="button" class="review-tag" data-txt="ไกด์และการดูแล ">🙋 ไกด์</button>
