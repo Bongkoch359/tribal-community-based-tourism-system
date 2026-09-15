@@ -2,7 +2,8 @@
         const nameRegex = /^[ก-์a-zA-Z]+$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const phoneRegex = /^0[689][0-9]{8}$/;
-        const accountRegex = /^[0-9\-]{10,20}$/;
+        const thEngSpaceRegex = /^[ก-์a-zA-Z\s]+$/; // ธนาคาร/สาขา/ชื่อบัญชี: ไทย+อังกฤษ เว้นวรรคได้
+        const accountRegex = /^[0-9]{10,20}$/; // เลขบัญชี: ตัวเลขล้วนเท่านั้น
 
         // ─── Toast helper (Error / Alert) ───
         function showToast(message, isError) {
@@ -33,7 +34,6 @@
             }, 2200);
         }
 
-        // ─── Auto-show Success Modal หรือ Error Toast เมื่อโหลดหน้าจาก Server ───
         (function () {
             const el = document.getElementById('serverMsg');
             const success = el ? el.dataset.success : null;
@@ -109,11 +109,32 @@
             }
         });
 
+        // ─── Real-time: สาขา ───
+        const bankBranchInput = document.getElementById('bankBranchInput');
+        const bankBranchError = document.getElementById('bankBranchError');
+        bankBranchInput.addEventListener('input', () => {
+            const v = bankBranchInput.value.trim();
+            if (!v) {
+                bankBranchError.textContent = ''; // สาขาไม่บังคับกรอก
+            } else if (!thEngSpaceRegex.test(v)) {
+                bankBranchError.textContent = 'สาขาใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ';
+            } else {
+                bankBranchError.textContent = '';
+            }
+        });
+
         // ─── Real-time: ชื่อบัญชี ───
         const accountNameInput = document.getElementById('accountNameInput');
         const accountNameError = document.getElementById('accountNameError');
         accountNameInput.addEventListener('input', () => {
-            accountNameError.textContent = accountNameInput.value.trim() ? '' : 'กรุณากรอกชื่อบัญชี';
+            const v = accountNameInput.value.trim();
+            if (!v) {
+                accountNameError.textContent = 'กรุณากรอกชื่อบัญชี';
+            } else if (!thEngSpaceRegex.test(v)) {
+                accountNameError.textContent = 'ชื่อบัญชีใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ';
+            } else {
+                accountNameError.textContent = '';
+            }
         });
 
         // ─── Real-time: เลขบัญชีธนาคาร ───
@@ -124,7 +145,7 @@
             if (!v) {
                 accountNumberError.textContent = 'กรุณากรอกเลขบัญชีธนาคาร';
             } else if (!accountRegex.test(v)) {
-                accountNumberError.textContent = 'เลขบัญชีต้องเป็นตัวเลข 10-20 หลัก (ใส่ขีด - ได้)';
+                accountNumberError.textContent = 'เลขบัญชีต้องเป็นตัวเลขเท่านั้น 10-20 หลัก';
             } else {
                 accountNumberError.textContent = '';
             }
@@ -141,25 +162,36 @@
         newPw.addEventListener('input', checkMatch);
         confirmPw.addEventListener('input', checkMatch);
 
-        // ─── Validate bank form ก่อน submit ───
+        // ─── Validate bank form ก่อน submit (เคลียร์ error ทุกช่องก่อน แล้วเช็คตามลำดับ) ───
         document.getElementById('bankForm').addEventListener('submit', function (e) {
             const bank = document.getElementById('bankNameSelect').value;
+            const branch = bankBranchInput.value.trim();
             const accName = accountNameInput.value.trim();
             const acc = accountNumberInput.value.trim();
+
+            document.getElementById('bankNameError').textContent = '';
+            bankBranchError.textContent = '';
+            accountNameError.textContent = '';
+            accountNumberError.textContent = '';
 
             if (!bank) {
                 e.preventDefault();
                 document.getElementById('bankNameError').textContent = 'กรุณาเลือกธนาคาร';
                 return;
             }
-            if (!accName) {
+            if (branch && !thEngSpaceRegex.test(branch)) {
                 e.preventDefault();
-                accountNameError.textContent = 'กรุณากรอกชื่อบัญชี';
+                bankBranchError.textContent = 'สาขาใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น ';
+                return;
+            }
+            if (!accName || !thEngSpaceRegex.test(accName)) {
+                e.preventDefault();
+                accountNameError.textContent = 'กรุณากรอกชื่อบัญชีให้ถูกต้อง (ไทย/อังกฤษ เว้นวรรคได้ ไม่มีอักขระพิเศษ)';
                 return;
             }
             if (!acc || !accountRegex.test(acc)) {
                 e.preventDefault();
-                accountNumberError.textContent = 'กรุณากรอกเลขบัญชีให้ถูกต้อง';
+                accountNumberError.textContent = 'กรุณากรอกเลขบัญชีให้ถูกต้อง (ตัวเลขเท่านั้น 10-20 หลัก)';
                 return;
             }
         });

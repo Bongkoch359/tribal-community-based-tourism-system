@@ -157,24 +157,34 @@ public class TourScheduleService {
     // ─────────────────────────────────────────────────────────
     // อัปเดตสถานะรอบทัวร์หลายรอบพร้อมกัน
     // ตามช่วงวันที่ (ใช้กับปฏิทินแบบลากเลือกช่วงในหน้า manager)
-    // คืนค่าจำนวนรอบที่อัปเดตสำเร็จ
-    // หมายเหตุ: การ "ปิด" รอบที่มีคนจองแล้วยังทำได้ (แค่ไม่รับจองเพิ่ม
-    // ไม่ใช่การลบ) จึงไม่เช็คจำนวนที่จองแล้วในนี้ — ต่างจาก deleteSchedule
-    // ที่ต้องเช็คที่ชั้น controller ก่อนเรียก
+    // คืนค่า Map { "updated": จำนวนรอบที่อัปเดตสำเร็จ, "skippedBooked": จำนวนรอบที่ข้ามเพราะมีคนจองแล้ว }
     // ─────────────────────────────────────────────────────────
     @Transactional
-    public int bulkUpdateStatusByDateRange(String tourid, LocalDate startDate, LocalDate endDate, String status) {
+    public Map<String, Integer> bulkUpdateStatusByDateRange(String tourid, LocalDate startDate, LocalDate endDate,
+            String status) {
         List<Tourschedule> schedules = getSchedulesByTour(tourid);
+        Map<String, Integer> bookedMap = getBookedSeatsMap(tourid);
 
         int updated = 0;
+        int skippedBooked = 0;
         for (Tourschedule s : schedules) {
             LocalDate open = s.getOpendate().toLocalDate();
             if (!open.isBefore(startDate) && !open.isAfter(endDate)) {
+                int booked = bookedMap.getOrDefault(s.getScheduleid(), 0);
+                if (booked > 0) {
+                    //รอบนี้มีคนจองแล้ว ห้ามเปลี่ยนสถานะ (ทั้งเปิด/ปิด)
+                    skippedBooked++;
+                    continue;
+                }
                 updateStatus(s.getScheduleid(), status);
                 updated++;
             }
         }
-        return updated;
+
+        Map<String, Integer> result = new java.util.HashMap<>();
+        result.put("updated", updated);
+        result.put("skippedBooked", skippedBooked);
+        return result;
     }
 
     // ─────────────────────────────────────────────────────────
@@ -183,9 +193,8 @@ public class TourScheduleService {
     @Transactional
     public void deleteSchedule(String scheduleid) {
         tourScheduleRepository.deleteById(scheduleid);
-        tourScheduleRepository.flush(); // ✅ บังคับให้ DELETE ยิงจริงทันทีในเมธอดนี้
-                                        // แทนที่จะรอ flush ตอน commit เฉยๆ
-                                        // เพื่อให้ exception (เช่น FK constraint) โผล่ขึ้นมาที่นี่แน่ๆ
+        tourScheduleRepository.flush(); //บังคับให้ DELETE ยิงจริงทันทีในเมธอดนี้
+                                        
     }
 
     // ─────────────────────────────────────────────────────────

@@ -212,10 +212,7 @@ document.querySelectorAll('textarea').forEach(function (ta) {
     window.showConfirmModal = showConfirmModal;
 })();
 
-// ✅ ปรับให้ตรงกับ requirement เดียวกับฟอร์มเพิ่มทัวร์ (สูงสุด 5 รูป)
-//    เดิมฟอร์มนี้ตั้งไว้ 10 รูป ทำให้ไม่ตรงกับฟอร์มเพิ่มทัวร์ที่จำกัดไว้ 5 รูป
-// ── รูปภาพ: gallery แบบเดียวกับหน้าแก้ไขห้องพัก (ภาพใหญ่ + thumbnail strip) ──
-//    ดาว = ตั้งเป็นรูปหลัก, ✕ = ลบรูป
+
 const MAX_IMAGES = 5;
 let imageDataList = []; // { src: 'data:...' หรือ '/uploads/tours/...' , base64: '...' หรือ null, name: '...' }
 let primaryIndex = 0;
@@ -243,9 +240,7 @@ const fileInput = document.getElementById('fileInput');
 })();
 
 // ── เพิ่มไฟล์ใหม่ ──
-// ✅ แก้บั๊ก: เดิม slice() ตัดไฟล์ตามโควตาก่อนเช็คชนิดไฟล์ ทำให้ถ้ามีไฟล์ผิดชนิดปนมาก่อน
-//    รูปที่ถูกต้องแต่อยู่ลำดับหลังอาจถูกตัดทิ้งทั้งที่ยังมีโควตาว่างพอ
-//    แก้โดยกรองชนิดไฟล์ที่ถูกต้องก่อน แล้วค่อย slice ตามโควตาที่เหลือ
+
 function addFiles(files) {
     const allowed = MAX_IMAGES - imageDataList.length;
     const validFiles = files
@@ -383,7 +378,7 @@ function packImages() {
 
 function setPrimary(index) { primaryIndex = index; renderGallery(); }
 
-// ✅ แก้บั๊ก: เดิมเช็คแค่กรณี primaryIndex เกินขอบเขตหลังลบ (>= length)
+// แก้บั๊ก: เดิมเช็คแค่กรณี primaryIndex เกินขอบเขตหลังลบ (>= length)
 //    แต่ถ้าลบรูปที่ index ก่อนหน้ารูปหลัก จะทำให้ primaryIndex ชี้ไปผิดรูป (เลื่อนตำแหน่งไม่ทัน)
 //    แก้โดยปรับ primaryIndex ตามตำแหน่งที่ถูกลบ (เหมือนกับที่แก้ในฟอร์มเพิ่มทัวร์)
 function removeImage(index) {
@@ -446,7 +441,7 @@ function applyPickupRules() {
     hotelPickupAreaGroup.style.display = allowHotelPickupChk.checked ? 'block' : 'none';
     if (pickupOptionErr) pickupOptionErr.style.display = 'none';
 
-    // ✅ ตัดแผนที่ "เขตพื้นที่ที่รับได้" ออกตามคำขอ — เหลือแค่แผนที่จุดรวมพลเท่านั้น
+    //  ตัดแผนที่ "เขตพื้นที่ที่รับได้" ออกตามคำขอ — เหลือแค่แผนที่จุดรวมพลเท่านั้น
     if (allowMeetingPointChk.checked) initMeetingMap();
 }
 allowMeetingPointChk.addEventListener('change', applyPickupRules);
@@ -472,7 +467,7 @@ function createLeafletMap(divId) {
     return map;
 }
 
-// ✅ ถ้าฟอร์มมีที่อยู่เดิม (โหมดแก้ไขทัวร์) ให้พยายาม geocode หาพิกัดมาปักหมุดตั้งต้นให้เลย
+// ถ้าฟอร์มมีที่อยู่เดิม (โหมดแก้ไขทัวร์) ให้พยายาม geocode หาพิกัดมาปักหมุดตั้งต้นให้เลย
 function geocodeAddressToLatLng(address, callback) {
     if (!address || address.trim() === '') { callback(null); return; }
     const params = new URLSearchParams({
@@ -561,7 +556,7 @@ function initMeetingMap() {
     meetingMap = createLeafletMap('meetingPointMap');
     meetingMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(meetingMap);
 
-    // ✅ โหมดแก้ไข: ถ้ามีที่อยู่เดิมอยู่แล้ว ให้ลอง geocode หาพิกัดมาปักหมุดตั้งต้นให้ตรงจุดจริง
+    //  โหมดแก้ไข: ถ้ามีที่อยู่เดิมอยู่แล้ว ให้ลอง geocode หาพิกัดมาปักหมุดตั้งต้นให้ตรงจุดจริง
     if (meetingPointDetailInput.value.trim() !== '') {
         geocodeAddressToLatLng(meetingPointDetailInput.value, (latlng) => {
             if (latlng) {
@@ -599,7 +594,6 @@ function initMeetingMap() {
 }
 
 // ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
-// ✅ tourtype เป็น entity แล้ว ต้องอ่านชื่อผ่าน .typename และกัน null (ทัวร์ที่ยังไม่ผูกประเภท)
 (function initTourType() {
     const savedType = (typeof tourSavedType !== 'undefined') ? tourSavedType : '';
     if (!savedType) return;
@@ -727,6 +721,10 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
   ปฏิทินรอบทัวร์ — คลิก/ลากเลือกช่วงวันที่ แล้ว
   เปิด/ปิดรับจอง, สร้างรอบใหม่, หรือลบรอบ ได้ทีเดียวทั้งช่วง
   ไม่ต้องไล่กดทีละแถวเหมือนตารางแบบเดิมอีกต่อไป
+
+   รอบทัวร์ที่มีคนจองอยู่แล้ว (booked > 0) จะ "ล็อก" สถานะไว้
+  ไม่สามารถเปิด/ปิดรับจองใหม่ผ่านปฏิทินได้อีก (ทั้งฝั่ง UI และฝั่ง server)
+  เพื่อกันความสับสน/ปัญหากับผู้ที่จองไปแล้ว
 ═══════════════════════════════════════════ */
 (function () {
     // ── ตรวจสอบ element ทั้งหมดตั้งแต่ต้น ถ้าตัวไหนหาไม่เจอให้ log ชัดๆ ──
@@ -847,6 +845,8 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
             const cell = document.createElement('div');
             cell.className = 'cal-cell' + (schedule ? ' ' + statusClass(schedule.status, dateISO) : (dateISO < todayISO ? ' st-past' : ''));
             if (dateISO === todayISO) cell.classList.add('cal-today');
+            // ทำเครื่องหมายวันที่มีคนจองแล้ว ไว้ใช้ทั้งสไตล์ (ถ้าต้องการ) และแสดง note
+            if (schedule && (schedule.booked || 0) > 0) cell.classList.add('cal-has-booking');
             cell.dataset.date = dateISO;
 
             let sub = '';
@@ -886,19 +886,29 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
             const existing = inRange.length;
             const missing = total - existing;
 
+            // รอบที่มีคนจองแล้ว (booked > 0) ห้ามเปลี่ยนสถานะ (เปิด/ปิด) และห้ามลบ
+            const lockedByBooking = inRange.filter(s => (s.booked || 0) > 0).length;
+            const editableForStatus = existing - lockedByBooking; // รอบที่ยังไม่มีคนจอง จึงเปลี่ยนสถานะได้
+            const deletable = editableForStatus; // เงื่อนไขเดียวกับที่ลบได้ (booked === 0)
+
             calSelLabel.textContent = selStart === selEnd
                 ? formatDMY(selStart) + ` (1 วัน)`
                 : `${formatDMY(selStart)} - ${formatDMY(selEnd)} (${total} วัน)`;
-            calSelNote.textContent = `มีรอบทัวร์อยู่แล้ว ${existing} วัน · ยังไม่มีรอบ ${missing} วัน`;
 
-            calOpenBtn.disabled = existing === 0;
-            calCloseBtn.disabled = existing === 0;
+            let note = `มีรอบทัวร์อยู่แล้ว ${existing} วัน · ยังไม่มีรอบ ${missing} วัน`;
+            if (lockedByBooking > 0) {
+                note += ` · มีคนจองแล้ว ${lockedByBooking} วัน (เปลี่ยนสถานะ/ลบไม่ได้)`;
+            }
+            calSelNote.textContent = note;
+
+            calOpenBtn.disabled = editableForStatus === 0;
+            calCloseBtn.disabled = editableForStatus === 0;
             calCreateBtn.disabled = missing === 0;
-            calDeleteBtn.disabled = existing === 0;
+            calDeleteBtn.disabled = deletable === 0;
 
             calToolbar.style.display = 'block';
         } catch (err) {
-            console.error('❌ finalizeSelection() error:', err);
+            console.error(' finalizeSelection() error:', err);
         }
     }
 
@@ -940,7 +950,12 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         });
         let body = null;
         try { body = await res.json(); } catch (e) { /* response อาจไม่ใช่ JSON ก็ได้ */ }
-        return { httpOk: res.ok, message: body && body.message };
+        return {
+            httpOk: res.ok,
+            message: body && body.message,
+            updated: body ? body.updated : undefined,
+            skippedBooked: body ? body.skippedBooked : undefined
+        };
     }
     async function createScheduleRequest(opendate, enddate) {
         const res = await fetch(scheduleAddUrl, {
@@ -959,12 +974,18 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     }
 
     // ── ปุ่ม: เปิด/ปิดรับจองทั้งช่วง (bulk-status endpoint เดิม) ──
+    //  รอบใดที่มีคนจองแล้วจะถูกเซิร์ฟเวอร์ข้ามให้อัตโนมัติ และแจ้งเตือนกลับมา
     async function runBulkStatus(status) {
         setToolbarBusy(true);
         const result = await bulkStatusRequest(selStart, selEnd, status);
         setToolbarBusy(false);
         if (!result.httpOk) {
             await showAlertModal(result.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่', { type: 'error' });
+        } else if (result.skippedBooked > 0) {
+            await showAlertModal(
+                result.message || `ข้าม ${result.skippedBooked} รอบที่มีคนจองแล้ว ไม่สามารถเปลี่ยนสถานะได้`,
+                { type: 'warning' }
+            );
         }
         await refreshScheduleData();
     }
