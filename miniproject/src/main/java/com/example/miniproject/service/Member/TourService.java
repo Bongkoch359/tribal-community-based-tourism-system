@@ -226,4 +226,30 @@ public int getAvailableSeatsForSchedule(Tour tour, String scheduleId) {
     int booked = tourScheduleRepository.countBookedSeatsBySchedule(scheduleId);
     return Math.max(0, tour.getMaxSeatstour() - booked);
 }
+
+public Map<String, Boolean> checkTourAvailability(List<String> tourIds) {
+    Map<String, Boolean> result = new java.util.HashMap<>();
+    for (String id : tourIds) {
+        result.put(id, false);
+    }
+    if (tourIds.isEmpty()) {
+        return result;
+    }
+
+    java.sql.Date today = java.sql.Date.valueOf(java.time.LocalDate.now());
+    List<Object[]> rows = tourScheduleRepository.findBookableScheduleSeatsForTours(tourIds, today);
+
+    for (Object[] row : rows) {
+        String tourId    = (String) row[0];
+        Integer maxSeats = (Integer) row[1];
+        Number bookedNum = (Number) row[2];
+        long booked      = bookedNum != null ? bookedNum.longValue() : 0L;
+
+        boolean hasSeat = (maxSeats == null) || (booked < maxSeats);
+        if (hasSeat) {
+            result.put(tourId, true);
+        }
+    }
+    return result;
+}
 }

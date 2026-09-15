@@ -88,4 +88,25 @@ public interface TourScheduleRepository extends JpaRepository<Tourschedule, Stri
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate);
 
+            @Query(value = "SELECT * FROM tourschedule WHERE scheduleid = :id FOR UPDATE", nativeQuery = true)
+Tourschedule lockScheduleForUpdate(@Param("id") String id);
+
+@Query("""
+            SELECT s.tour.tourid, s.tour.maxSeatstour,
+                   COALESCE(SUM(
+                       CASE WHEN b.bookingStatus <> com.example.miniproject.entity.enums.BookingStatus.CANCEL
+                            THEN d.numofadult + COALESCE(d.numofchild, 0)
+                            ELSE 0 END
+                   ), 0)
+            FROM Tourschedule s
+            LEFT JOIN s.bookingtourdetails d
+            LEFT JOIN d.booking b
+            WHERE s.tour.tourid IN :tourIds
+            AND s.status = 'เปิดรับจอง'
+            AND s.opendate >= :today
+            GROUP BY s.scheduleid, s.tour.tourid, s.tour.maxSeatstour
+        """)
+List<Object[]> findBookableScheduleSeatsForTours(@Param("tourIds") List<String> tourIds,
+                                                   @Param("today") Date today);
 }
+

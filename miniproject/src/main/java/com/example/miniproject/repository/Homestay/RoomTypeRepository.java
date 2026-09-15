@@ -10,4 +10,7 @@ public interface RoomTypeRepository extends JpaRepository<Roomtype, String> {
 
     @Query("SELECT r FROM Roomtype r WHERE r.homestay.homestayid = :homestayid")
     List<Roomtype> findByHomestayId(@Param("homestayid") Integer homestayid);
+
+    @Query(value = "SELECT * FROM roomtype WHERE roomtypeid = :id FOR UPDATE", nativeQuery = true)
+    Roomtype lockRoomTypeForUpdate(@Param("id") String id);
 }

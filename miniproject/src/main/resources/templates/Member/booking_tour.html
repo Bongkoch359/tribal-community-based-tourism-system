@@ -676,95 +676,137 @@ img { display: block; }
                 }
             },
 
-            validate() {
-                const errors = {};
+           validate() {
+    const errors = {};
 
-                // 1. วันที่เดินทาง
-                const dateVal = document.getElementById('tourdate-input').value;
-                if (!dateVal) {
-                    errors['tourdate'] = 'กรุณาเลือกวันที่เดินทาง';
-                } else {
-                    const chosen = new Date(dateVal + 'T00:00:00');
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    if (chosen < today) {
-                        errors['tourdate'] = 'ไม่สามารถเลือกวันย้อนหลังได้';
-                    }
-                }
+    // 1. วันที่เดินทาง
+    const dateInputEl = document.getElementById('tourdate-input');
+    const dateVal = dateInputEl.value;
+    if (!dateVal) {
+        errors['tourdate'] = 'กรุณาเลือกวันที่เดินทาง';
+    } else {
+        const chosen = new Date(dateVal + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (chosen < today) {
+            errors['tourdate'] = 'ไม่สามารถเลือกวันย้อนหลังได้';
+        }
+    }
 
-                // 2. จำนวนผู้โดยสาร
-                if (this.numOfGuest < 1) {
-                    errors['numOfGuest'] = 'กรุณาระบุจำนวนผู้เดินทางอย่างน้อย 1 ท่าน';
-                } else if (this.numOfGuest > this.availableSeats) {
-                    errors['numOfGuest'] = `ที่นั่งเหลือเพียง ${this.availableSeats} ที่ กรุณาลดจำนวนผู้เดินทาง`;
-                }
+    // 1.5 ★ ใหม่: เช็คว่า option ที่เลือกมี scheduleid จริง (กันข้อมูล schedule เพี้ยน)
+    const selectedOption = dateInputEl.selectedOptions[0];
+    if (dateVal && (!selectedOption || !selectedOption.dataset.scheduleid)) {
+        errors['tourdate'] = 'ข้อมูลรอบทัวร์ไม่ถูกต้อง กรุณาเลือกรอบวันที่ใหม่อีกครั้ง';
+    }
 
-                // 2.4 ประเภทจุดรับ — ต้องมีค่าเสมอ (กันเคสทัวร์ไม่เปิดทั้งสองแบบ แล้วไม่มี radio ให้เลือก)
-                if (!this.pickupType) {
-                    errors['pickuptype'] = 'ไม่พบช่องทางรับส่งสำหรับทัวร์นี้ กรุณาติดต่อเจ้าหน้าที่';
-                }
+    // 2. จำนวนผู้โดยสาร
+    if (this.numOfAdult < 1) {
+        // ★ ใหม่: กันเคสค่าถูกแก้ผ่าน devtools ให้ต่ำกว่า 1
+        errors['numOfGuest'] = 'ต้องมีผู้ใหญ่อย่างน้อย 1 ท่าน';
+    } else if (this.numOfGuest < 1) {
+        errors['numOfGuest'] = 'กรุณาระบุจำนวนผู้เดินทางอย่างน้อย 1 ท่าน';
+    } else if (this.numOfGuest > this.availableSeats) {
+        errors['numOfGuest'] = `ที่นั่งเหลือเพียง ${this.availableSeats} ที่ กรุณาลดจำนวนผู้เดินทาง`;
+    }
 
-                // 2.5 ที่อยู่โรงแรม (กรณีเลือกให้ไปรับ) — เช็คแค่ว่ากรอกมาหรือยัง ไม่บังคับคำพื้นที่
-                if (this.pickupType === 'โรงแรม/ที่พัก') {
-                    if (!this.pickupLocation || !this.pickupLocation.trim()) {
-                        errors['pickuplocation'] = 'กรุณาระบุชื่อ/ที่อยู่โรงแรมที่พัก';
-                    }
-                }
+    // 2.4 ประเภทจุดรับ — ต้องมีค่าเสมอ
+    if (!this.pickupType) {
+        errors['pickuptype'] = 'ไม่พบช่องทางรับส่งสำหรับทัวร์นี้ กรุณาติดต่อเจ้าหน้าที่';
+    }
 
-                // 3. ชื่อผู้เดินทาง
-                const guestFirstInputs = document.querySelectorAll('input[name="guestFirstname"]');
-                const guestLastInputs  = document.querySelectorAll('input[name="guestLastname"]');
-                let guestError = false;
+    // 2.5 ที่อยู่โรงแรม (กรณีเลือกให้ไปรับ)
+    if (this.pickupType === 'โรงแรม/ที่พัก') {
+        if (!this.pickupLocation || !this.pickupLocation.trim()) {
+            errors['pickuplocation'] = 'กรุณาระบุชื่อ/ที่อยู่โรงแรมที่พัก';
+        }
+    }
 
-                guestFirstInputs.forEach(inp => {
-                    if (!inp.value.trim()) {
-                        inp.classList.add('is-invalid');
-                        inp.classList.remove('is-valid');
-                        guestError = true;
-                    } else {
-                        inp.classList.remove('is-invalid');
-                        inp.classList.add('is-valid');
-                    }
-                });
-                guestLastInputs.forEach(inp => {
-                    if (!inp.value.trim()) {
-                        inp.classList.add('is-invalid');
-                        inp.classList.remove('is-valid');
-                        guestError = true;
-                    } else {
-                        inp.classList.remove('is-invalid');
-                        inp.classList.add('is-valid');
-                    }
-                });
+    // 3. ชื่อผู้เดินทาง
+    const guestFirstInputs = document.querySelectorAll('input[name="guestFirstname"]');
+    const guestLastInputs  = document.querySelectorAll('input[name="guestLastname"]');
+    let guestError = false;
 
-                if (guestError) {
-                    errors['guests'] = 'กรุณากรอกชื่อ-นามสกุลผู้เดินทางให้ครบถ้วน';
-                }
+    // 3.5 ★ ใหม่: เช็คว่าจำนวน input ที่ render ออกมาจริง ตรงกับจำนวนที่ควรจะเป็น
+    //     (กัน Alpine x-for ยัง sync ไม่ทันตอนกด submit เร็วเกินไป)
+    const expectedGuestFormCount = this.isBookingForOther ? this.numOfGuest : (this.numOfGuest - 1);
+    if (guestFirstInputs.length !== expectedGuestFormCount) {
+        errors['guests'] = 'ระบบกำลังอัปเดตแบบฟอร์ม กรุณารอสักครู่แล้วกดยืนยันอีกครั้ง';
+    }
 
-                // 4. เลขบัตรประชาชน (ประกันภาคบังคับ ต้องกรอกทุกครั้ง)
-                if (this.hasInsuranceOption && this.wantInsurance) {
-                    const idcardInputs = document.querySelectorAll('input[name="guestIdcard"]');
-                    let idcardError = false;
+    guestFirstInputs.forEach(inp => {
+        if (!inp.value.trim()) {
+            inp.classList.add('is-invalid');
+            inp.classList.remove('is-valid');
+            guestError = true;
+        } else {
+            inp.classList.remove('is-invalid');
+            inp.classList.add('is-valid');
+        }
+    });
+    guestLastInputs.forEach(inp => {
+        if (!inp.value.trim()) {
+            inp.classList.add('is-invalid');
+            inp.classList.remove('is-valid');
+            guestError = true;
+        } else {
+            inp.classList.remove('is-invalid');
+            inp.classList.add('is-valid');
+        }
+    });
 
-                    idcardInputs.forEach(inp => {
-                        const val = inp.value.trim();
-                        if (!/^[0-9]{13}$/.test(val)) {
-                            inp.classList.add('is-invalid');
-                            inp.classList.remove('is-valid');
-                            idcardError = true;
-                        } else {
-                            inp.classList.remove('is-invalid');
-                            inp.classList.add('is-valid');
-                        }
-                    });
+    if (guestError && !errors['guests']) {
+        errors['guests'] = 'กรุณากรอกชื่อ-นามสกุลผู้เดินทางให้ครบถ้วน';
+    }
 
-                    if (idcardError) {
-                        errors['idcards'] = 'กรุณากรอกเลขบัตรประชาชน 13 หลักให้ครบทุกท่านเพื่อทำประกัน';
-                    }
-                }
+    // 4. เลขบัตรประชาชน (ประกันภาคบังคับ ต้องกรอกทุกครั้ง)
+    if (this.hasInsuranceOption && this.wantInsurance) {
+        const idcardInputs = document.querySelectorAll('input[name="guestIdcard"]');
+        let idcardFormatError = false;
+        const allValues = [];
 
-                return errors;
-            },
+        // รอบแรก: เช็ค format (ต้องเป็นตัวเลข 13 หลักเท่านั้น)
+        idcardInputs.forEach(inp => {
+            const val = inp.value.trim();
+            allValues.push(val);
+            if (!/^[0-9]{13}$/.test(val)) {
+                inp.classList.add('is-invalid');
+                inp.classList.remove('is-valid');
+                idcardFormatError = true;
+            }
+        });
+
+        // รอบสอง: ★ ใหม่ — เช็คเลขบัตรซ้ำกันระหว่างผู้เดินทางในการจองเดียวกัน
+        const seenIdcards = new Map(); // idcard -> index แรกที่เจอ
+        const dupIndexes = new Set();
+        allValues.forEach((val, idx) => {
+            if (!/^[0-9]{13}$/.test(val)) return; // ข้ามตัวที่ format ผิดอยู่แล้ว ไม่ต้องเช็คซ้ำซ้อน
+            if (seenIdcards.has(val)) {
+                dupIndexes.add(idx);
+                dupIndexes.add(seenIdcards.get(val));
+            } else {
+                seenIdcards.set(val, idx);
+            }
+        });
+
+        idcardInputs.forEach((inp, idx) => {
+            if (dupIndexes.has(idx)) {
+                inp.classList.add('is-invalid');
+                inp.classList.remove('is-valid');
+            } else if (/^[0-9]{13}$/.test(allValues[idx])) {
+                inp.classList.remove('is-invalid');
+                inp.classList.add('is-valid');
+            }
+        });
+
+        if (dupIndexes.size > 0) {
+            errors['idcards'] = 'พบเลขบัตรประชาชนซ้ำกัน กรุณาตรวจสอบ (แต่ละท่านต้องใช้เลขบัตรของตนเอง)';
+        } else if (idcardFormatError) {
+            errors['idcards'] = 'กรุณากรอกเลขบัตรประชาชน 13 หลักให้ครบทุกท่านเพื่อทำประกัน';
+        }
+    }
+
+    return errors;
+},
 
             showSuccessModal(redirectUrl) {
                 const modal = document.getElementById('successModal');
@@ -794,13 +836,27 @@ img { display: block; }
                     dateInp.classList.add('is-valid');
                 }
 
-                if (Object.keys(this.fieldErrors).length > 0) {
-                    this.$nextTick(() => {
-                        const banner = document.getElementById('validationBanner');
-                        if (banner) banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    });
-                    return;
-                }
+              if (Object.keys(this.fieldErrors).length > 0) {
+    this.$nextTick(() => {
+        const banner = document.getElementById('validationBanner');
+        if (!banner) return;
+
+      
+        const navbar = document.querySelector('.navbar');
+        const navbarHeight = navbar ? navbar.offsetHeight : 0;
+        const extraGap = 16; 
+
+        const bannerTop = banner.getBoundingClientRect().top + window.scrollY;
+        const targetY = bannerTop - navbarHeight - extraGap;
+
+        window.scrollTo({
+            top: Math.max(targetY, 0),
+            behavior: 'smooth'
+        });
+    });
+    return;
+}
+                
 
                 // ข้อมูลครบถ้วน — เปิด modal ให้ผู้ใช้ยืนยันก่อนส่งจริง
                 document.getElementById('confirmModal').classList.add('show');

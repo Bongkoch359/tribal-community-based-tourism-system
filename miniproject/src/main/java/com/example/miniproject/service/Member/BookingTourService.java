@@ -171,9 +171,12 @@ public void cancelTourBookingByManager(String bookingId, String managerId, Strin
 
         // ── 2.5 ดึง schedule ของวันที่เลือก ───────────────
         Tourschedule schedule = tourScheduleRepository
-                .findByTourTouridAndOpendate(tourId, java.sql.Date.valueOf(startDate))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
+        .findByTourTouridAndOpendate(tourId, java.sql.Date.valueOf(startDate))
+        .orElseThrow(() -> new IllegalArgumentException(
+                "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
+
+// ✅ lock แถว schedule นี้ไว้ก่อนเช็คที่นั่ง กันจองซ้อนตอนมีคนกดพร้อมกัน
+schedule = tourScheduleRepository.lockScheduleForUpdate(schedule.getScheduleid());
 
         if (!"เปิดรับจอง".equals(schedule.getStatus())) {
             throw new IllegalArgumentException("รอบทัวร์วันที่เลือกไม่เปิดรับจองแล้ว");
@@ -399,22 +402,22 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
                 || !oldSchedule.getOpendate().toLocalDate().equals(startDate);
 
         Tourschedule newSchedule;
-        if (isChangingDate) {
-            Tourschedule newScheduleRef = tourScheduleRepository
-                    .findByTourTouridAndOpendate(tour.getTourid(), java.sql.Date.valueOf(startDate))
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
+if (isChangingDate) {
+    Tourschedule newScheduleRef = tourScheduleRepository
+            .findByTourTouridAndOpendate(tour.getTourid(), java.sql.Date.valueOf(startDate))
+            .orElseThrow(() -> new IllegalArgumentException(
+                    "ไม่พบรอบทัวร์ในวันที่เลือก กรุณาเลือกวันที่ที่เปิดรับจอง"));
 
-            // ล็อกรอบใหม่ไว้ ก่อนเช็คที่นั่ง กันคนอื่นแย่งที่พร้อมกัน
-            newSchedule = newScheduleRef;
+   
+    newSchedule = tourScheduleRepository.lockScheduleForUpdate(newScheduleRef.getScheduleid());
 
-            if (!"เปิดรับจอง".equals(newSchedule.getStatus())) {
-                throw new IllegalArgumentException("รอบทัวร์วันที่เลือกไม่เปิดรับจองแล้ว");
-            }
-        } else {
-            // วันเดิม ไม่ได้เปลี่ยนรอบ — ยังล็อกไว้เพราะจำนวนคนอาจเปลี่ยน
-            newSchedule = oldSchedule;
-        }
+    if (!"เปิดรับจอง".equals(newSchedule.getStatus())) {
+        throw new IllegalArgumentException("รอบทัวร์วันที่เลือกไม่เปิดรับจองแล้ว");
+    }
+} else {
+    
+    newSchedule = tourScheduleRepository.lockScheduleForUpdate(oldSchedule.getScheduleid());
+}
 
         // ── 6. คำนวณใหม่ ──────────────────────────────────
         int adults = (adult != null && adult > 0) ? adult : 1;

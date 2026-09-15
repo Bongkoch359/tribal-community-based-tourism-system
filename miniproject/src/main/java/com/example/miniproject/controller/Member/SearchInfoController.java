@@ -152,6 +152,8 @@ public class SearchInfoController {
             tourReviewCount.put(tid, count != null ? count : 0L);
         }
 
+        Map<String, Boolean> tourAvailability = tourService.checkTourAvailability(new ArrayList<>(allTourIds));
+model.addAttribute("tourAvailability", tourAvailability);
         Map<String, String> actRating      = new HashMap<>();
         Map<String, Long>   actReviewCount = new HashMap<>();
 
@@ -159,17 +161,32 @@ public class SearchInfoController {
                 && endDate != null && !endDate.isBlank()
                 && !homestays.isEmpty()) {
             try {
-                java.time.LocalDate checkin  = java.time.LocalDate.parse(startDate);
-                java.time.LocalDate checkout = java.time.LocalDate.parse(endDate);
+                java.time.LocalDate checkin;
+java.time.LocalDate checkout;
+try {
+    if (startDate != null && !startDate.isBlank() && endDate != null && !endDate.isBlank()) {
+        checkin  = java.time.LocalDate.parse(startDate);
+        checkout = java.time.LocalDate.parse(endDate);
+    } else {
+        checkin  = java.time.LocalDate.now();
+        checkout = checkin.plusDays(1);
+    }
+} catch (java.time.format.DateTimeParseException e) {
+    log.debug("Invalid date format for availability check: {}", e.getMessage());
+    checkin  = java.time.LocalDate.now();
+    checkout = checkin.plusDays(1);
+}
 
-                List<Integer> homestayIds = homestays.stream()
-                        .map(Homestay::getHomestayid)
-                        .collect(Collectors.toList());
+if (!homestays.isEmpty()) {
+    List<Integer> homestayIds = homestays.stream()
+            .map(Homestay::getHomestayid)
+            .collect(Collectors.toList());
 
-                Map<Integer, Boolean> hsAvailability =
-                        bookingService.checkAvailabilityForHomestays(homestayIds, checkin, checkout);
+    Map<Integer, Boolean> hsAvailability =
+            bookingService.checkAvailabilityForHomestays(homestayIds, checkin, checkout);
 
-                model.addAttribute("hsAvailability", hsAvailability);
+    model.addAttribute("hsAvailability", hsAvailability);
+}
             } catch (java.time.format.DateTimeParseException e) {
                 log.debug("Invalid date format for availability check: {}", e.getMessage());
             }

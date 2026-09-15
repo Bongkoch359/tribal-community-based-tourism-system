@@ -93,9 +93,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var actionText = (el.tagName === 'SELECT') ? 'กรุณาเลือก' : 'กรุณากรอก';
         showFieldError(id, actionText + getFieldLabel(id));
         
-        if (!firstErrorField) firstErrorField = el;
-        hasError = true;
-      }
+       if (!firstErrorField) firstErrorField = el;
+    hasError = true;
+  } else {
+    clearFieldError(id);   
+  }
     });
 
     if (hasError) {

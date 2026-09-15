@@ -167,8 +167,10 @@ private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
         validateGuestCounts(numofrooms, numofAdults, numofChildren);
 
         // ── 2. ดึง Roomtype ────────────────────────────────────
-        Roomtype roomtype = roomtypeRepository.findById(roomtypeId)
-                .orElseThrow(() -> new RuntimeException("ไม่พบประเภทห้องพัก: " + roomtypeId));
+        Roomtype roomtype = roomtypeRepository.lockRoomTypeForUpdate(roomtypeId);
+if (roomtype == null) {
+    throw new RuntimeException("ไม่พบประเภทห้องพัก: " + roomtypeId);
+}
 
         int rooms    = numofrooms;
         int adults   = numofAdults;
@@ -451,21 +453,18 @@ public void autoCompleteIfPastEndDate(Booking booking) {
         bookingRepository.save(booking);
     }
 }
-
-// ════════════════════════════════════════════════════════
-//  CHECK AVAILABILITY (สำหรับหน้า search / รายละเอียด)
-// ════════════════════════════════════════════════════════
-
-/**
- * เช็คว่า homestay ยังมีห้องว่างเหลืออย่างน้อย 1 ประเภทหรือไม่
- * ในช่วงวันที่ระบุ (รวมทุก roomtype ของ homestay นั้น)
- */
 public boolean isHomestayAvailable(Integer homestayId, LocalDate checkin, LocalDate checkout) {
     List<Roomtype> roomtypes = roomtypeRepository.findByHomestayId(homestayId);
-    if (roomtypes.isEmpty()) return true; // ไม่มีข้อมูลห้อง ไม่ควรตัดสิทธิ์เข้าดู
+    if (roomtypes.isEmpty()) return true;
 
     for (Roomtype rt : roomtypes) {
-        if (rt.getTotalrooms() == null) return true; // ไม่ได้กำหนด totalrooms ถือว่าว่างเสมอ
+
+        // ✅ เพิ่มบรรทัดนี้: ข้ามห้องที่ปิดปรับปรุง ไม่ให้นับว่าห้องนั้นทำให้ homestay ว่าง
+        if (isMaintenanceStatus(rt.getStatus())) {
+            continue;
+        }
+
+        if (rt.getTotalrooms() == null) return true;
 
         Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
                 rt.getRoomtypeid(), Date.valueOf(checkin), Date.valueOf(checkout));
@@ -473,16 +472,17 @@ public boolean isHomestayAvailable(Integer homestayId, LocalDate checkin, LocalD
         int available = rt.getTotalrooms() - booked;
 
         if (available > 0) {
-            return true; // เจอ roomtype ที่ยังว่าง → homestay นี้ยังจองได้
+            return true;
         }
     }
-    return false; // ทุก roomtype เต็มหมด
+    return false;
 }
 
-/**
- * เช็คห้องว่างของหลาย homestay พร้อมกัน (สำหรับหน้า search)
- * คืน Map<homestayId, Boolean> — true = ยังว่าง, false = เต็มทุกประเภท
- */
+// ✅ เพิ่ม method นี้เข้าไปใหม่ทั้งหมด (วางไว้ใกล้ๆ isHomestayAvailable)
+private boolean isMaintenanceStatus(String status) {
+    return "ปิดปรับปรุง".equals(status);
+}
+
 public Map<Integer, Boolean> checkAvailabilityForHomestays(
         List<Integer> homestayIds, LocalDate checkin, LocalDate checkout) {
 

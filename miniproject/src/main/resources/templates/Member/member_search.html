@@ -576,13 +576,16 @@
 
 
 <!-- Tours -->
+<!-- Tours -->
 <th:block th:each="t : ${featuredTours}">
   <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
     <div class="fcard-img">
       <img th:with="imgs=${t.images != null ? #strings.arraySplit(t.images, '||') : null}"
            th:src="${imgs != null and imgs.length > 0} ? @{/uploads/tours/{img}(img=${imgs[0]})} : @{/images/default-tour.jpg}"
            alt="ภาพทัวร์" loading="lazy"/>
-      <span class="fcard-badge badge-tour">ทัวร์ชุมชน</span>
+            <span class="fcard-badge badge-tour">ทัวร์ชุมชน</span>
+      <span th:if="${tourAvailability != null and tourAvailability[t.tourid] == false}"
+            class="fcard-badge badge-full">เต็มทุกรอบ</span>
       <span th:if="${t.tribeid != null}"
             class="fcard-badge"
             style="left:14px; right:auto; top:14px; background:#e2f0e5; color:#1c4026;"
@@ -796,12 +799,15 @@
        alt="ภาพทัวร์"
        loading="lazy"/>
 
-  <span class="card-badge badge-tour">
+   <span class="fcard-badge badge-tour">
     ทัวร์ชุมชน
   </span>
 
+  <span th:if="${tourAvailability != null and tourAvailability[t.tourid] == false}"
+        class="fcard-badge badge-full">เต็มทุกรอบ</span>
+
   <span th:if="${t.tribeid != null}"
-        class="card-badge"
+        class="fcard-badge"
         style="left:14px; right:auto; top:14px; background:#e2f0e5; color:#1c4026;"
         th:text="${T(com.example.miniproject.model.TribeCode).labelOf(t.tribeid)}">
   </span>
