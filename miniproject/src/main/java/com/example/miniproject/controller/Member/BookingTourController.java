@@ -32,9 +32,8 @@ public class BookingTourController {
     @Autowired
     private TourScheduleRepository tourScheduleRepository;
 
-    // ════════════════════════════════════════════════════════
+   
     // GET : หน้าจองทัวร์
-    // ════════════════════════════════════════════════════════
    @GetMapping("/booking/tour/{id}")
 public String bookingPage(
         @PathVariable("id") String id,
@@ -79,7 +78,7 @@ public String bookingPage(
         }
     }
 
-    // ✅ ใหม่: คำนวณที่นั่งจากรอบที่ match ได้จริง ไม่ใช่ยอดรวมทั้งทัวร์
+    // คำนวณที่นั่งจากรอบที่ match ได้จริง ไม่ใช่ยอดรวมทั้งทัวร์
     String initialScheduleId = selectedSchedule != null
             ? selectedSchedule.getScheduleid()
             : null;
@@ -116,9 +115,8 @@ public java.util.Map<String, Object> getSeatsForSchedule(
     result.put("seatLevel", seatLevel);
     return result;
 }
-    // ════════════════════════════════════════════════════════
+   
     // POST : สร้างการจองทัวร์
-    // ════════════════════════════════════════════════════════
     @PostMapping("/booking/tour/create")
     public String createBooking(
         @RequestParam("tourid") String tourId,
@@ -165,9 +163,8 @@ public java.util.Map<String, Object> getSeatsForSchedule(
     }
 }
 
-    // ════════════════════════════════════════════════════════
+    
     // POST : แก้ไขการจองทัวร์
-    // ════════════════════════════════════════════════════════
     @PostMapping("/booking/tour/edit/{id}")
 public String editBooking(
     @PathVariable("id") String bookingId,
@@ -207,7 +204,7 @@ public String editBooking(
     }
 }
 
-    // ════════════════════════════════════════════════════════
+   
     // POST : ยกเลิกการจองทัวร์
  @PostMapping("/booking/tour/cancel/{id}")
 public String cancelBooking(

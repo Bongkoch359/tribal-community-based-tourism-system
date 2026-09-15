@@ -17,20 +17,17 @@ public class EditProfileController {
     @Autowired
     private MemberService memberService;
 
-    // ══════════════════════════════════════════════════════
-    //  GET /member/profile/edit
-    //  ซีเคว้น Step 1-4: open page → getProfile() → display result
-    // ══════════════════════════════════════════════════════
+    
     @GetMapping("/edit")
     public String openEditPage(HttpSession session, Model model) {
 
-        // Guard: ต้องล็อกอินก่อน
+      
         Member loggedIn = (Member) session.getAttribute("loggedInMember");
         if (loggedIn == null) {
             return "redirect:/member/login";
         }
 
-        // getProfile(): ดึงข้อมูลล่าสุดจาก DB
+      
         Member member = memberService.getMemberById(loggedIn.getMemberid())
                                      .orElse(loggedIn);
 
@@ -83,10 +80,10 @@ public class EditProfileController {
             return "Member/member_editprofile";
         }
 
-        // ✅ เพิ่มใหม่: ตรวจสอบเบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก
+        
         if (phone != null && !phone.isBlank()) {
         String cleanPhone = phone.trim();
-        // ใช้ Regular Expression เช็กว่าเป็นตัวเลขล้วน [0-9] และมีความยาว 10 ตัวพอดี
+        
         if (!cleanPhone.matches("^[0-9]{10}$")) {
         model.addAttribute("errorMessage", "กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน");
         model.addAttribute("member", currentInput);
@@ -94,7 +91,7 @@ public class EditProfileController {
         }
         }
 
-        // ══ Alternate Flow เพิ่มเติม: ตรวจสอบความถูกต้องของรหัสผ่านใหม่ ══════════
+       
         if (newPassword != null && !newPassword.isBlank()) {
             if (newPassword.length() < 6) {
                 model.addAttribute("errorMessage", "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
@@ -108,24 +105,24 @@ public class EditProfileController {
             }
             currentInput.setPassword(newPassword);
         } else {
-            currentInput.setPassword(null); // Service จะข้ามการอัปเดตรหัสผ่านถ้าเป็น null
+            currentInput.setPassword(null); 
         }
 
-        // ══ Step 8: doEditProfile() (ส่งวัตถุไปบันทึกที่ระบบ) ══════════════════════
+       
         boolean saved = memberService.updateProfile(currentInput);
 
-        // ══ Alternate Flow 8.1.1 — เกิดข้อผิดพลาด/บันทึกไม่ได้ ════════════════
+       
         if (!saved) {
-            // แจ้งเตือนข้อความความผิดพลาดตามสเปกของระบบที่กำหนดไว้
+            
             model.addAttribute("errorMessage", "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
             model.addAttribute("member", currentInput); // คงค่าที่กรอกล่าสุดไว้ ไม่ให้พิมพ์ใหม่หมด
             return "Member/member_editprofile";
         }
 
-        // ══ Step 9: สำเร็จ → อัปเดตข้อมูลใน Session ของผู้ใช้ ══════════════
+        // อัปเดตข้อมูลใน Session ของผู้ใช้ ══════════════
         session.setAttribute("loggedInMember", currentInput);
 
-        // แสดงผลสำเร็จด้วย Flash Attribute และโหลดหน้าเว็บใหม่ป้องกันการกดส่งซ้ำ (F5)
+        // แสดงผลสำเร็จด้วย Flash Attribute และโหลดหน้าเว็บใหม่ป้องกันการกดส่งซ้ำ 
         ra.addFlashAttribute("successMessage", "แก้ไขข้อมูลสำเร็จแล้ว!");
         return "redirect:/member/profile/edit";
     }
