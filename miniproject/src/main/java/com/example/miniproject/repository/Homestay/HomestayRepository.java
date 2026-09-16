@@ -102,6 +102,8 @@ List<Homestay> searchByGuestOnly(
 @Query("""
     SELECT rt.homestay FROM Review r
     JOIN r.booking b JOIN b.roomDetails rd JOIN rd.roomtype rt
+    WHERE rt.homestay.owner.accountstatus = 'ACTIVE'
+    AND rt.homestay.owner.verificationstatus = true
     GROUP BY rt.homestay
     ORDER BY AVG(r.rating) DESC
 """)

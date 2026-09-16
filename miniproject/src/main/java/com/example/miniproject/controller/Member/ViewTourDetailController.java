@@ -3,12 +3,14 @@ package com.example.miniproject.controller.Member;
 import com.example.miniproject.entity.Review;
 import com.example.miniproject.entity.Tour;
 import com.example.miniproject.entity.Tourschedule;
+import com.example.miniproject.entity.enums.ManagerStatus;
 import com.example.miniproject.repository.Member.ReviewRepository;
 import com.example.miniproject.repository.Member.TourRepository;
 import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.service.Member.BookingService;
 import com.example.miniproject.service.Member.TourService;
 import com.example.miniproject.service.Tour.TourScheduleService;
+import com.example.miniproject.entity.enums.ManagerStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,6 +45,10 @@ public String viewTourDetail(@PathVariable String id, Model model) {
 
     Tour tour = tourRepository.findByIdWithBookings(id).orElse(null);
     if (tour == null) return "redirect:/search";
+    if (tour.getCommunitymanager() == null
+        || tour.getCommunitymanager().getAccountstatus() != ManagerStatus.ACTIVE) {
+    return "redirect:/search";
+}
 
 
     // ดึงรอบทัวร์ทั้งหมด

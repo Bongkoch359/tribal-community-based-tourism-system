@@ -85,6 +85,13 @@ public class HomestayService {
 public Homestay getHomestayDetailForMember(Integer homestayid) {
     Homestay h = homestayRepository.findById(homestayid).orElse(null);
     if (h == null) return null;
+
+     Homestayowner owner = h.getOwner();
+    if (owner == null
+            || !"ACTIVE".equals(owner.getAccountstatus())
+            || !Boolean.TRUE.equals(owner.getVerificationstatus())) {
+        return null;
+    }
     h.getRoomtypes().forEach(r -> r.getFacilities().size());
     return h;
 }

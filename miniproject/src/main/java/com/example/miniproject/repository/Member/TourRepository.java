@@ -73,31 +73,35 @@ public interface TourRepository extends JpaRepository<Tour, String> {
 
     // ค้นหาแบบไม่มีวันที่
     @Query("""
-                SELECT t FROM Tour t
-                WHERE EXISTS (
-                    SELECT 1 FROM Tourschedule s
-                    WHERE s.tour = t AND s.status = 'เปิดรับจอง'
-                )
-                AND (:keyword IS NULL
-                     OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
-                AND (:guests IS NULL
-                     OR :guests <= 1
-                     OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
-                ORDER BY t.tourmname ASC
-            """)
-    List<Tour> search(@Param("keyword") String keyword,
-            @Param("guests") Integer guests);
+            SELECT t FROM Tour t
+            WHERE t.communitymanager.accountstatus = com.example.miniproject.entity.enums.ManagerStatus.ACTIVE
+            AND EXISTS (
+                SELECT 1 FROM Tourschedule s
+                WHERE s.tour = t AND s.status = 'เปิดรับจอง'
+            )
+            AND (:keyword IS NULL
+                 OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
+            AND (:guests IS NULL
+                 OR :guests <= 1
+                 OR (t.minSeatstour <= :guests AND t.maxSeatstour >= :guests))
+            ORDER BY t.tourmname ASC
+        """)
+List<Tour> search(@Param("keyword") String keyword, @Param("guests") Integer guests);
 
     @Query("SELECT t FROM Tour t LEFT JOIN t.tourSchedules sch LEFT JOIN sch.bookingtourdetails d GROUP BY t ORDER BY COUNT(d) DESC")
     List<Tour> findTopToursByBookingCount(org.springframework.data.domain.Pageable pageable);
 
-    @Query("SELECT t FROM Tour t WHERE t.communitymanager.managerid = :managerid ORDER BY t.tourmname ASC")
-    List<Tour> findByManagerId(@Param("managerid") String managerid);
+   @Query("SELECT t FROM Tour t " +
+       "WHERE t.communitymanager.managerid = :managerid " +
+       "AND t.communitymanager.accountstatus = com.example.miniproject.entity.enums.ManagerStatus.ACTIVE " +
+       "ORDER BY t.tourmname ASC")
+List<Tour> findByManagerId(@Param("managerid") String managerid);
 
     // ค้นหาแบบไม่มีวันที่ (เพิ่ม filter tourTypeId)
     @Query("""
                 SELECT t FROM Tour t
-                WHERE EXISTS (
+                WHERE t.communitymanager.accountstatus = com.example.miniproject.entity.enums.ManagerStatus.ACTIVE
+                AND EXISTS (
                     SELECT 1 FROM Tourschedule s
                     WHERE s.tour = t AND s.status = 'เปิดรับจอง'
                     AND (
@@ -131,7 +135,8 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     // ค้นหาแบบมีวันที่ (เพิ่ม filter tourTypeId)
     @Query("""
                 SELECT DISTINCT t FROM Tour t
-                WHERE (:keyword IS NULL
+                WHERE t.communitymanager.accountstatus = com.example.miniproject.entity.enums.ManagerStatus.ACTIVE
+                AND (:keyword IS NULL
                        OR LOWER(t.tourmname) LIKE LOWER(CONCAT('%', :keyword, '%')))
                   AND (:tourTypeId IS NULL
                        OR t.tourtype.typeId = :tourTypeId)
@@ -217,10 +222,10 @@ public interface TourRepository extends JpaRepository<Tour, String> {
 
     List<Tour> findByTribeid(Integer tribeid);
 
-    /** top N ทัวร์ที่ rating เฉลี่ยสูงสุด (คืน entity ตรงๆ ใช้กับหน้า featured) */
 @Query("""
     SELECT btd.tourschedule.tour FROM Review r
     JOIN r.booking b JOIN b.tourDetails btd
+    WHERE btd.tourschedule.tour.communitymanager.accountstatus = com.example.miniproject.entity.enums.ManagerStatus.ACTIVE
     GROUP BY btd.tourschedule.tour
     ORDER BY AVG(r.rating) DESC
 """)
