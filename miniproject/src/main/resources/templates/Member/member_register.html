@@ -120,7 +120,7 @@
   letter-spacing: 0.5px;
   white-space: nowrap;
   line-height: 1;
-  margin-left: -10px; /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
+  margin-left: -10px;
 }
 
 
@@ -140,7 +140,6 @@
 
     .auth-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
-    /* ปุ่ม "เข้าสู่ระบบ" ในหน้านี้ (ไม่มี dropdown) — restyle ให้เข้าธีม search */
     .btn-login {
       background: rgba(255,255,255,0.10);
       border: 1.5px solid rgba(255,255,255,0.25);
@@ -163,7 +162,7 @@
     }
     .btn-login .icon-user svg { width: 15px; height: 15px; }
 
-    /* ══════════════════ PAGE LAYOUT / ฟอร์ม (เดิมทั้งหมด — ไม่แตะ) ══════════════════ */
+    /* ══════════════════ PAGE LAYOUT / ฟอร์ม ══════════════════ */
     .page-body {
       min-height: calc(100vh - var(--navbar-h) - 38px);
       display: flex;
@@ -362,6 +361,8 @@
     </div>
 
     <!-- Server-side Alerts (Thymeleaf) -->
+    <!-- errorMessage ใช้กับ error ทั่วไป (เช่น ระบบขัดข้อง) เท่านั้น
+         ส่วน "อีเมลซ้ำ" ให้ controller ส่ง emailError มาแทน จะได้ไม่ขึ้น banner นี้ -->
     <div th:if="${errorMessage}" class="alert alert-error">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
@@ -376,7 +377,7 @@
       <span th:text="${successMessage}"></span>
     </div>
 
-    <form th:action="@{/member/register}" method="post" id="register-form" novalidate>
+    <form th:action="@{/member/register}" th:object="${member}" method="post" id="register-form" novalidate>
 
       <div class="sec-label">ข้อมูลส่วนตัว</div>
 
@@ -385,7 +386,7 @@
           <label class="form-label">ชื่อ <span class="req">*</span></label>
           <div class="input-wrap">
             <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input class="form-control" type="text" name="firstname" id="firstname" placeholder="ชื่อ"/>
+            <input class="form-control" type="text" th:field="*{firstname}" id="firstname" placeholder="ชื่อ"/>
           </div>
           <span class="field-error" id="firstname-error"></span>
         </div>
@@ -393,7 +394,7 @@
           <label class="form-label">นามสกุล <span class="req">*</span></label>
           <div class="input-wrap">
             <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input class="form-control" type="text" name="lastname" id="lastname" placeholder="นามสกุล"/>
+            <input class="form-control" type="text" th:field="*{lastname}" id="lastname" placeholder="นามสกุล"/>
           </div>
           <span class="field-error" id="lastname-error"></span>
         </div>
@@ -403,9 +404,12 @@
         <label class="form-label">อีเมล <span class="req">*</span></label>
         <div class="input-wrap">
           <svg class="input-icon" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-          <input class="form-control" type="email" name="email" id="email" placeholder="example@email.com"/>
+          <input class="form-control" th:classappend="${emailError} ? ' input-error' : ''"
+                 type="email" th:field="*{email}" id="email" placeholder="example@email.com"/>
         </div>
-        <span class="field-error" id="email-error"></span>
+        <!-- ข้อความ error ของอีเมล: ถ้า emailError มาจาก server (เช่นซ้ำ) จะขึ้น "show" ทันทีโดยไม่ต้องรอ JS -->
+        <span class="field-error" th:classappend="${emailError} ? ' show' : ''"
+              th:text="${emailError}" id="email-error"></span>
       </div>
 
       <div class="row-two">
@@ -413,7 +417,7 @@
           <label class="form-label">เบอร์โทรศัพท์</label>
           <div class="input-wrap">
             <svg class="input-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.13 6.13l1.27-1.27a2 2 0 012.11-.45c.91.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-            <input class="form-control" type="tel" name="phone" id="phone" placeholder="0xx-xxx-xxxx"/>
+            <input class="form-control" type="tel" th:field="*{phone}" id="phone" placeholder="0xx-xxx-xxxx"/>
           </div>
           <span class="field-error" id="phone-error"></span>
         </div>
@@ -421,7 +425,8 @@
           <label class="form-label">วันเกิด</label>
           <div class="input-wrap">
             <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <input class="form-control" type="date" name="birthdate"/>
+            <!-- ถ้า birthdate เป็น LocalDate ใน Member entity ค่านี้ควร bind ถูกฟอร์แมตอัตโนมัติกับ input date -->
+            <input class="form-control" type="date" th:field="*{birthdate}"/>
           </div>
         </div>
       </div>
@@ -430,7 +435,7 @@
         <label class="form-label">ที่อยู่</label>
         <div class="input-wrap">
           <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 21c-4-4-7-7.5-7-10.5a7 7 0 1114 0c0 3-3 6.5-7 10.5z"/><circle cx="12" cy="10" r="2"/></svg>
-          <input class="form-control" type="text" name="address" placeholder="กรอกที่อยู่"/>
+          <input class="form-control" type="text" th:field="*{address}" placeholder="กรอกที่อยู่"/>
         </div>
       </div>
 
