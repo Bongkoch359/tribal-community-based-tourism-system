@@ -501,17 +501,24 @@
 
     let hasError = false;
 
-    if (!firstname)       { showFieldError('firstname', 'กรุณากรอกชื่อ'); hasError = true; }
-    if (!lastname)        { showFieldError('lastname', 'กรุณากรอกนามสกุล'); hasError = true; }
+    // อนุญาตเฉพาะตัวอักษรไทย, อังกฤษ และเว้นวรรค ห้ามตัวเลข/อักขระพิเศษ
+    const nameRegex = /^[a-zA-Zก-๙\s]+$/;
+
+    if (!firstname)                      { showFieldError('firstname', 'กรุณากรอกชื่อ'); hasError = true; }
+    else if (!nameRegex.test(firstname)) { showFieldError('firstname', 'กรอกได้เฉพาะตัวอักษรไทยหรืออังกฤษเท่านั้น'); hasError = true; }
+
+    if (!lastname)                      { showFieldError('lastname', 'กรุณากรอกนามสกุล'); hasError = true; }
+    else if (!nameRegex.test(lastname)) { showFieldError('lastname', 'กรอกได้เฉพาะตัวอักษรไทยหรืออังกฤษเท่านั้น'); hasError = true; }
+
     if (!email)            { showFieldError('email', 'กรุณากรอกอีเมล'); hasError = true; }
     if (!password)        { showFieldError('password', 'กรุณากรอกรหัสผ่าน'); hasError = true; }
     if (!confirmPassword) { showFieldError('confirmPassword', 'กรุณากรอกยืนยันรหัสผ่าน'); hasError = true; }
 
     if (hasError) { e.preventDefault(); return; }
 
-    // เบอร์โทร (ถ้ากรอก ต้องเป็นตัวเลข 10 หลัก)
-    if (phone && !/^[0-9]{10}$/.test(phone)) {
-      showFieldError('phone', 'กรุณากรอกเบอร์โทรให้ถูกต้อง (ตัวเลข 10 หลัก)');
+    // เบอร์มือถือไทย ต้องขึ้นต้นด้วย 06, 08 หรือ 09 และมี 10 หลัก
+    if (phone && !/^(06|08|09)[0-9]{8}$/.test(phone)) {
+      showFieldError('phone', 'กรุณากรอกเบอร์มือถือให้ถูกต้อง (ขึ้นต้นด้วย 06, 08 หรือ 09 จำนวน 10 หลัก)');
       e.preventDefault();
       return;
     }
