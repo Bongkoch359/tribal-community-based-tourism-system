@@ -7,7 +7,6 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <style>
@@ -536,6 +535,11 @@
 
         tbody tr:hover { background: var(--cream-50); }
 
+        /* rows that are fully finished (completed+reviewed, or cancelled) are visually de-emphasised
+           — backend already sorts these to the bottom, this just dims them */
+        tbody tr.row-finished { opacity: .72; }
+        tbody tr.row-finished:hover { opacity: 1; }
+
         /* ── BADGES ── */
         .type-badge {
             padding: 5px 14px;
@@ -561,7 +565,27 @@
         .pending   { background: var(--amber-100); color: var(--amber-700); }
         .waiting   { background: var(--blue-100); color: var(--blue-700); }
         .confirmed { background: var(--green-100); color: var(--green-700); }
+        .completed { background: #f0fdf4; color: #14532d; }
         .cancel    { background: #fbe4dd; color: #b3462e; }
+
+        /* ── REVIEW STATUS BADGE ── */
+        .review-badge {
+            padding: 5px 14px;
+            border-radius: 100px;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .review-done { background: var(--green-50); color: var(--green-700); border: 1px solid var(--green-200); }
+        .review-pending { background: var(--amber-100); color: var(--amber-700); border: 1px solid #f0c37a; }
+        .review-na { color: var(--neutral-400); font-size: 13px; }
+
+        /* ปุ่ม "ยังไม่ได้รีวิว" (เปิดโมดัลบนหน้านี้) */
+        button.review-badge { font-family: 'Sarabun', sans-serif; cursor: pointer; transition: all .15s; }
+        button.review-badge.review-pending:hover { background: var(--amber-500); color: #fff; border-color: var(--amber-500); }
 
         /* ── BOOKING NAME ── */
         .booking-name { font-weight: 700; color: var(--neutral-800); font-size: 15px; }
@@ -582,6 +606,105 @@
         }
 
         .btn-detail:hover { background: var(--amber-500); color: #fff; border-color: var(--amber-500); }
+
+        /* ── ALERT ── */
+        .alert {
+            border-radius: var(--r-md); padding: 12px 16px; font-size: 14.5px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+        }
+        .alert-success { background: var(--green-100); border: 1px solid var(--green-200); color: var(--green-800); }
+        .alert-error   { background: #fbe4dd; border: 1px solid #dba896; color: #7a3220; }
+
+        /* ── REVIEW MODAL ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(15,15,10,.5); z-index: 2000;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--paper); border-radius: 20px; box-shadow: var(--shadow-lg);
+            width: 100%; max-width: 460px; max-height: 92vh; overflow-y: auto;
+        }
+        .review-modal-header {
+            position: sticky; top: 0; background: var(--paper); z-index: 5;
+            display: flex; align-items: center; padding: 16px 14px;
+            border-bottom: 1px solid var(--neutral-100);
+        }
+        .review-modal-header .modal-close {
+            background: none; border: none; font-size: 1.35rem; cursor: pointer;
+            color: var(--neutral-800); width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center; border-radius: 50%;
+        }
+        .review-modal-header .modal-close:hover { background: var(--neutral-100); }
+        .review-modal-title { flex: 1; text-align: center; font-size: 1.02rem; font-weight: 800; margin-right: 32px; }
+        .review-modal-body { padding: 18px 20px 22px; }
+
+        .review-product-card {
+            display: flex; align-items: center; gap: 12px;
+            padding-bottom: 16px; border-bottom: 1px solid var(--neutral-100); margin-bottom: 18px;
+        }
+        .review-product-card img, .review-product-card .ph {
+            width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex-shrink: 0;
+        }
+        .review-product-card .ph { background: var(--green-100); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .review-product-name { font-weight: 800; font-size: .94rem; line-height: 1.3; }
+        .review-product-sub { font-size: .78rem; color: var(--neutral-400); margin-top: 2px; }
+
+        .rating-block { text-align: center; padding: 6px 0 20px; }
+        .rating-block-label { font-size: .9rem; font-weight: 700; margin-top: 10px; }
+        .rating-block-label .req { color: #b3462e; }
+        .star-wrap { display: flex; gap: 10px; justify-content: center; }
+        .star-btn {
+            background: none; border: none; font-size: 2.5rem; cursor: pointer;
+            color: var(--neutral-200); transition: color .15s, transform .1s; padding: 0; line-height: 1;
+        }
+        .star-btn:hover, .star-btn.active { color: var(--amber-500); }
+        .star-btn:hover { transform: scale(1.12); }
+
+        .bonus-label { font-size: .86rem; font-weight: 800; margin-bottom: 10px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px; }
+        .review-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+        .review-tag {
+            background: var(--paper); border: 1.5px solid var(--neutral-200); border-radius: 20px;
+            padding: 7px 14px; font-size: .8rem; font-weight: 700; color: var(--neutral-600);
+            cursor: pointer; font-family: inherit; transition: .15s;
+        }
+        .review-tag:hover { background: var(--green-100); border-color: var(--green-500); color: var(--green-800); }
+        .form-control {
+            padding: 14px; border: 1.5px solid var(--neutral-200); border-radius: 12px;
+            font-size: .9rem; font-family: inherit; background: var(--neutral-50); width: 100%;
+        }
+        .form-control:focus { outline: none; border-color: var(--green-500); background: var(--paper); }
+        textarea.form-control { resize: vertical; min-height: 110px; }
+        .char-count { text-align: right; font-size: .74rem; color: var(--neutral-400); margin-top: 4px; }
+
+        .upload-box {
+            width: 100%; min-height: 80px; border: 1.5px dashed var(--neutral-300); border-radius: 14px;
+            background: var(--neutral-50); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px; cursor: pointer; position: relative;
+        }
+        .upload-box:hover { background: var(--green-100); border-color: var(--green-500); }
+        .upload-box svg { width: 34px; height: 34px; color: var(--neutral-400); }
+        .upload-box span { font-size: .82rem; color: var(--neutral-400); font-weight: 600; }
+        .upload-box input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+        .img-preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+        .img-thumb { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 1/1; border: 1px solid var(--neutral-200); }
+        .img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .img-thumb .rm-btn {
+            position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%;
+            background: rgba(0,0,0,.55); color: #fff; border: none; font-size: .7rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; padding: 0;
+        }
+        .anon-row { display: flex; align-items: center; gap: 10px; margin: 4px 0 18px; cursor: pointer; user-select: none; }
+        .anon-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--green-700); }
+        .anon-row span { font-size: .88rem; font-weight: 600; }
+        .btn-modal-save {
+            width: 100%; background: linear-gradient(135deg, #e4a53a, var(--amber-500)); color: #fff;
+            border: none; border-radius: 12px; padding: 15px; font-size: 1rem; font-weight: 800;
+            cursor: pointer; font-family: inherit; box-shadow: 0 3px 12px rgba(214,143,20,.35);
+        }
+        .btn-modal-save:disabled { background: var(--neutral-400); box-shadow: none; cursor: not-allowed; }
 
         /* ── EMPTY ── */
         .empty {
@@ -667,6 +790,9 @@
   .top-bar { display: none; }
   .footer-top { grid-template-columns: 1fr; gap: 26px; }
   .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+}
+@media (max-width: 560px) {
+  .modal { max-width: 100%; height: 100%; max-height: 100%; border-radius: 0; }
 }
 @media (max-width: 480px) {
   .grid { grid-template-columns: 1fr; }
@@ -945,6 +1071,14 @@
 
 <!-- ── CONTENT ── -->
 <div class="container">
+
+    <div class="alert alert-success" th:if="${successMsg != null}">
+        <span>✅</span><span th:text="${successMsg}"></span>
+    </div>
+    <div class="alert alert-error" th:if="${errorMsg != null}">
+        <span>❌</span><span th:text="${errorMsg}"></span>
+    </div>
+
     <div class="card">
 
         <!-- TYPE TABS -->
@@ -1037,11 +1171,18 @@
                         <th>รายการ</th>
                         <th>วันที่จอง</th>
                         <th>สถานะ</th>
+                        <th>รีวิว</th>
                         <th>จัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="booking, stat : ${bookings}">
+                    <!-- ลำดับของ ${bookings} มาจาก backend เรียงตาม priority ไว้แล้ว
+                         (PENDING > WAITING_APPROVAL > CONFIRMED > COMPLETED ยังไม่รีวิว
+                          > COMPLETED รีวิวแล้ว > CANCEL) จึงไม่ต้อง sort ซ้ำฝั่ง client
+                         row-finished ใช้แค่หรี่สีแถวที่ "จบสมบูรณ์แล้ว" -->
+                    <tr th:each="booking, stat : ${bookings}"
+                        th:classappend="${(booking.bookingStatus.name() == 'COMPLETED' and booking.review != null)
+                                          or booking.bookingStatus.name() == 'CANCEL'} ? 'row-finished' : ''">
 
                         <td th:text="${stat.count}">1</td>
 
@@ -1088,6 +1229,30 @@
                                   class="status-badge cancel">ยกเลิก</span>
                         </td>
 
+                        <!-- ── คอลัมน์รีวิว: มีความหมายเฉพาะสถานะ COMPLETED เท่านั้น ── -->
+                        <td>
+                            <span th:if="${booking.bookingStatus.name() == 'COMPLETED' and booking.review != null}"
+                                  class="review-badge review-done">
+                                ✅ รีวิวแล้ว
+                            </span>
+
+                            <!-- กดแล้วเปิดโมดัลรีวิวบนหน้านี้เลย (ไม่ต้องไปหน้ารายละเอียด) -->
+                            <button type="button" class="review-badge review-pending"
+                                    th:if="${booking.bookingStatus.name() == 'COMPLETED' and booking.review == null}"
+                                    th:with="td=${booking.tourDetails != null and !#lists.isEmpty(booking.tourDetails) ? booking.tourDetails[0] : null},
+                                             rd=${booking.roomDetails != null and !#lists.isEmpty(booking.roomDetails) ? booking.roomDetails[0] : null}"
+                                    th:attr="data-id=${booking.bookingid},
+                                             data-type=${booking.bookingType.name()},
+                                             data-name=${td != null ? td.tour.tourmname : (rd != null ? rd.roomtype.homestay.homestayname : '')},
+                                             data-sub=${td != null ? 'ทัวร์' : (rd != null ? rd.roomtype.typename : '')},
+                                             data-img=${td != null and td.tour.images != null ? '/uploads/tours/' + #strings.arraySplit(td.tour.images,'||')[0] : (rd != null and rd.roomtype.images != null and !#strings.isEmpty(rd.roomtype.images) ? #strings.arraySplit(rd.roomtype.images,',')[0] : '')}"
+                                    onclick="openReviewModal(this)">
+                                ⭐ ยังไม่ได้รีวิว
+                            </button>
+
+                            <span th:if="${booking.bookingStatus.name() != 'COMPLETED'}" class="review-na">—</span>
+                        </td>
+
                         <td>
                             <a th:href="@{/member/bookings/detail/{id}(id=${booking.bookingid})}"
                                class="btn-detail">ดูรายละเอียด</a>
@@ -1103,6 +1268,78 @@
                 <p>เริ่มต้นจองทัวร์หรือที่พักได้เลย</p>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- ── REVIEW MODAL (ใช้ร่วมทุกแถว) ── -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal">
+        <div class="review-modal-header">
+            <button type="button" class="modal-close" onclick="closeReviewModal()" aria-label="ปิด">←</button>
+            <div class="review-modal-title">เขียนรีวิว</div>
+        </div>
+
+        <div class="review-modal-body">
+            <div class="review-product-card">
+                <img id="rvImg" src="" alt="" style="display:none;">
+                <div class="ph" id="rvPh">🏕️</div>
+                <div>
+                    <div class="review-product-name" id="rvName">-</div>
+                    <div class="review-product-sub" id="rvSub"></div>
+                </div>
+            </div>
+
+            <form th:action="@{/member/review/submit}" method="post" enctype="multipart/form-data" id="reviewForm">
+                <input type="hidden" name="bookingId" id="rvBookingId">
+                <input type="hidden" name="from" value="list">
+                <input type="hidden" name="type" id="rvType">
+
+                <div class="rating-block">
+                    <div class="star-wrap" id="starWrap">
+                        <button type="button" class="star-btn" data-val="1">★</button>
+                        <button type="button" class="star-btn" data-val="2">★</button>
+                        <button type="button" class="star-btn" data-val="3">★</button>
+                        <button type="button" class="star-btn" data-val="4">★</button>
+                        <button type="button" class="star-btn" data-val="5">★</button>
+                    </div>
+                    <input type="hidden" name="rating" id="ratingInput">
+                    <div class="rating-block-label">
+                        <span id="ratingLabel">ให้คะแนน</span><span class="req">*</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="bonus-label">เขียนรีวิว (ไม่บังคับ)</div>
+                    <div class="review-tags" id="reviewTags"></div>
+                    <textarea class="form-control" name="comment" id="reviewComment" rows="4"
+                              maxlength="300" placeholder="คุณรู้สึกอย่างไรบ้าง"
+                              oninput="document.getElementById('charCount').textContent=this.value.length"></textarea>
+                    <div class="char-count"><span id="charCount">0</span>/300</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="bonus-label">เพิ่มรูปภาพ</div>
+                    <label class="upload-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                            <rect x="3" y="5" width="18" height="14" rx="2.2"/>
+                            <circle cx="12" cy="12.5" r="3.4"/>
+                            <path d="M8.5 5l1-1.6h5l1 1.6"/>
+                        </svg>
+                        <span>เพิ่มรูปภาพ</span>
+                        <input type="file" name="reviewimages" id="reviewImgInput" accept="image/*" multiple
+                               onchange="handleReviewImages(event)">
+                    </label>
+                    <div id="imgPreviewGrid" class="img-preview-grid"></div>
+                </div>
+
+                <label class="anon-row">
+                    <input type="checkbox" name="anonymous" id="anonCheck">
+                    <span>โพสต์โดยไม่ระบุชื่อ</span>
+                </label>
+
+                <button type="submit" class="btn-modal-save" id="submitReviewBtn" disabled>ส่ง</button>
+            </form>
         </div>
     </div>
 </div>
@@ -1173,16 +1410,135 @@
     });
 
     function toggleStatusDropdown(e) {
-    e.stopPropagation();
-    document.getElementById('statusFilterDropdown').classList.toggle('open');
-}
-
-document.addEventListener('click', function(e) {
-    const dropdown = document.getElementById('statusFilterDropdown');
-    if (dropdown && !dropdown.contains(e.target)) {
-        dropdown.classList.remove('open');
+        e.stopPropagation();
+        document.getElementById('statusFilterDropdown').classList.toggle('open');
     }
-});
+
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('statusFilterDropdown');
+        if (dropdown && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+
+    /* ลำดับของแถวและการหรี่สี "row-finished" ทำฝั่ง backend
+       (BookingRepository#findByMemberSortedByPriority) + th:classappend
+       ในเทมเพลตแล้ว จึงไม่ต้องมี JS sort ที่นี่อีก */
+
+    /* ════ Review Modal (บนหน้ารายการ) ════ */
+    const reviewTagSets = {
+        TOUR: [
+            ['🌿 บรรยากาศ', 'บรรยากาศดี '],
+            ['🙋 ไกด์', 'ไกด์และการดูแล '],
+            ['🎯 กิจกรรม', 'กิจกรรมสนุกและคุ้มค่า ']
+        ],
+        ACCOMMODATION: [
+            ['🌿 บรรยากาศ', 'บรรยากาศดี '],
+            ['🧹 ความสะอาด', 'ความสะอาดของห้องพัก '],
+            ['🙏 การบริการ', 'การต้อนรับและบริการ ']
+        ]
+    };
+    const ratingLabels = ['', 'แย่มาก', 'พอใช้', 'ปานกลาง', 'ดี', 'ดีมาก'];
+    let reviewImageFiles = [];
+
+    function openReviewModal(btn) {
+        const d = btn.dataset;
+        const isTour = d.type === 'TOUR';
+
+        // ข้อมูลรายการที่รีวิว
+        document.getElementById('rvBookingId').value = d.id;
+        document.getElementById('rvName').textContent = d.name || '-';
+        document.getElementById('rvSub').textContent = d.sub || '';
+        const img = document.getElementById('rvImg'), ph = document.getElementById('rvPh');
+        if (d.img) { img.src = d.img; img.style.display = ''; ph.style.display = 'none'; }
+        else { img.style.display = 'none'; ph.style.display = ''; ph.textContent = isTour ? '🏕️' : '🏠'; }
+
+        // ข้อความตามประเภท
+        document.getElementById('reviewComment').placeholder =
+            isTour ? 'คุณรู้สึกอย่างไรเกี่ยวกับทริปนี้' : 'คุณรู้สึกอย่างไรเกี่ยวกับที่พักนี้';
+
+        // แท็กด่วน
+        const tagBox = document.getElementById('reviewTags');
+        tagBox.innerHTML = '';
+        reviewTagSets[d.type || 'TOUR'].forEach(function (t) {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'review-tag'; b.textContent = t[0];
+            b.onclick = function () {
+                const ta = document.getElementById('reviewComment');
+                ta.value += t[1];
+                ta.dispatchEvent(new Event('input'));
+                ta.focus();
+            };
+            tagBox.appendChild(b);
+        });
+
+        // รีเซ็ตฟอร์มทุกครั้งที่เปิด
+        document.getElementById('reviewForm').reset();
+        document.getElementById('rvBookingId').value = d.id; // reset() ล้าง hidden ด้วย ต้องใส่ใหม่
+        document.getElementById('rvType').value = d.type;
+        document.getElementById('ratingInput').value = '';
+        document.getElementById('charCount').textContent = '0';
+        document.getElementById('ratingLabel').textContent =
+            isTour ? 'ให้คะแนนทริปนี้' : 'ให้คะแนนที่พักนี้';
+        document.querySelectorAll('.star-btn').forEach(function (b) { b.classList.remove('active'); });
+        reviewImageFiles = [];
+        renderImgPreview();
+
+        document.getElementById('reviewModal').classList.add('open');
+    }
+
+    function closeReviewModal() {
+        document.getElementById('reviewModal').classList.remove('open');
+    }
+
+    document.querySelectorAll('.star-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const val = parseInt(this.dataset.val, 10);
+            document.getElementById('ratingInput').value = val;
+            document.querySelectorAll('.star-btn').forEach(function (b, i) { b.classList.toggle('active', i < val); });
+            document.getElementById('ratingLabel').textContent = ratingLabels[val] + ' — ' + val + '/5';
+            checkReviewReady();
+        });
+    });
+
+    function handleReviewImages(event) {
+        Array.from(event.target.files).forEach(function (f) { reviewImageFiles.push(f); });
+        renderImgPreview();
+    }
+    function removeReviewImage(idx) {
+        reviewImageFiles.splice(idx, 1);
+        renderImgPreview();
+    }
+    function renderImgPreview() {
+        const grid = document.getElementById('imgPreviewGrid');
+        grid.innerHTML = '';
+        reviewImageFiles.forEach(function (file, idx) {
+            const div = document.createElement('div');
+            div.className = 'img-thumb';
+            const im = document.createElement('img');
+            im.src = URL.createObjectURL(file);
+            const rm = document.createElement('button');
+            rm.type = 'button'; rm.className = 'rm-btn'; rm.innerHTML = '✕';
+            rm.onclick = function () { removeReviewImage(idx); };
+            div.appendChild(im); div.appendChild(rm);
+            grid.appendChild(div);
+        });
+        const dt = new DataTransfer();
+        reviewImageFiles.forEach(function (f) { dt.items.add(f); });
+        document.getElementById('reviewImgInput').files = dt.files;
+        checkReviewReady();
+    }
+    function checkReviewReady() {
+        document.getElementById('submitReviewBtn').disabled = !document.getElementById('ratingInput').value;
+    }
+
+    // คลิกพื้นหลัง / กด Esc เพื่อปิด
+    document.getElementById('reviewModal').addEventListener('click', function (e) {
+        if (e.target === this) closeReviewModal();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeReviewModal();
+    });
 </script>
 
 </body>

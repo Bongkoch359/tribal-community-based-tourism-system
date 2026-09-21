@@ -10,5 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GuestRepository extends JpaRepository<Guest, String> {
      List<Guest> findByBooking_Bookingid(String bookingid);
+
+     List<Guest> findByBooking_BookingidOrderByGuestidAsc(String bookingid);
     
 }

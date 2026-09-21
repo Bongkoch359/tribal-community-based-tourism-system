@@ -67,15 +67,43 @@ private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
         return bookingRepository.findByMemberMemberidOrderByBookingdateDesc(memberId);
     }
 
-    public List<Booking> getBookingsByMemberTypeAndStatus(
-            String memberId, BookingType type, BookingStatus status) {
-        return bookingRepository
-                .findByMemberMemberidOrderByBookingdateDesc(memberId)
-                .stream()
-                .filter(b -> b.getBookingType() == type)
-                .filter(b -> status == null || b.getBookingStatus() == status)
-                .collect(Collectors.toList());
+    /**
+ * คืนจำนวนห้องว่าง "สูงสุด" (จาก roomtype ที่เหลือเยอะที่สุด) ของแต่ละ homestay
+ * ในช่วงวันที่ checkin–checkout ที่ระบุ ใช้แสดงเป็น "เหลือ X ห้อง" ในหน้าค้นหา
+ */
+public Map<Integer, Integer> getMaxAvailableRoomsForHomestays(
+        List<Integer> homestayIds, LocalDate checkin, LocalDate checkout) {
+
+    Map<Integer, Integer> result = new java.util.HashMap<>();
+
+    for (Integer id : homestayIds) {
+        List<Roomtype> roomtypes = roomtypeRepository.findByHomestayId(id);
+        int best = 0;
+
+        for (Roomtype rt : roomtypes) {
+            if (isMaintenanceStatus(rt.getStatus())) continue;
+            if (rt.getTotalrooms() == null) continue;
+
+            Integer booked = bookingroomdetailRepository.countBookedRoomsInRange(
+                    rt.getRoomtypeid(), Date.valueOf(checkin), Date.valueOf(checkout));
+            int available = rt.getTotalrooms() - (booked != null ? booked : 0);
+
+            if (available > best) {
+                best = available;
+            }
+        }
+        result.put(id, best);
     }
+    return result;
+}
+
+    public List<Booking> getBookingsByMemberTypeAndStatus(
+        String memberId, BookingType type, BookingStatus status) {
+    if (type == BookingType.ACCOMMODATION) {
+        return bookingRepository.findAccommodationBookingsByMemberSortedByPriority(memberId, status);
+    }
+    return bookingRepository.findTourBookingsByMemberSortedByPriority(memberId, status);
+}
 
     public long countByMemberAndType(String memberId, BookingType type) {
         return bookingRepository

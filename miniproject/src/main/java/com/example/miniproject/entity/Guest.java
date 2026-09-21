@@ -1,5 +1,6 @@
 package  com.example.miniproject.entity;
 import jakarta.persistence.*;
+import java.util.Objects; 
 
 @Entity
 @Table(name="Guest")
@@ -52,4 +53,17 @@ public class Guest {
 	 public void setIdcardnumber(String idcardnumber) {
 		 this.idcardnumber = idcardnumber;
 	 }
+
+	 @Transient
+public boolean isBooker() {
+    if (booking == null || !Boolean.TRUE.equals(booking.getIsBookerGoing())) {
+        return false;
+    }
+    Member m = booking.getMember();
+    if (m == null) {
+        return false;
+    }
+    return Objects.equals(firstname, m.getFirstname())
+            && Objects.equals(lastname, m.getLastname());
+}
 }

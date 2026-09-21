@@ -266,30 +266,6 @@
            onerror="this.style.display='none'"
            alt="วิถีชีวิตชุมชน"/>
     </div>
-
-    <!-- Hero Slider Images
-    <div class="hero-slide">
-      <img class="hero-bg-img"
-           th:src="@{/images/activity2.png}"
-           src="../static/images/activity2.png"
-           onerror="this.style.display='none'"
-           alt="กิจกรรมชุมชน"/>
-    </div>
-    <div class="hero-slide">
-      <img class="hero-bg-img"
-           th:src="@{/images/tour2.png}"
-           src="../static/images/tour2.png"
-           onerror="this.style.display='none'"
-           alt="โฮมสเตย์และธรรมชาติ"/>
-    </div>
-    <div class="hero-slide">
-      <img class="hero-bg-img"
-           th:src="@{/images/homestay.png}"
-           src="../static/images/homestay.png"
-           onerror="this.style.display='none'"
-           alt="วัฒนธรรมชนเผ่า"/>
-    </div>
-    -->
   </div>
   <div class="hero-overlay"></div>
 
@@ -454,8 +430,6 @@
       </select>
     </div>
 
-    <!-- ⚠️ tribe-wrapper ตัวเดิมที่เคยอยู่ตรงนี้ถูกย้ายขึ้นไปด้านบนสุดแล้ว ไม่ต้องมีซ้ำ -->
-
     <!-- ── วันที่เช็คอิน (Homestay) ── -->
     <div class="sf sf-date" id="checkin-wrapper" style="display:none;">
       <div class="sf-label">
@@ -518,7 +492,7 @@
 ══════════════════════════════════════════ -->
 <div class="content">
 
-  <!-- รายการแนะนำ: แสดงเฉพาะตอนยังไม่ได้ค้นหา (keyword, startDate, endDate, numGuest ว่างทั้งหมด) -->
+  <!-- รายการแนะนำ: แสดงเฉพาะตอนยังไม่ได้ค้นหา -->
 <div class="featured-all" id="featuredAll"
      th:if="${param.managerId == null
              and param.type == null
@@ -533,49 +507,10 @@
         <h2 class="featured-all-title">รายการแนะนำสำหรับคุณ</h2>
         <p class="featured-all-sub">กิจกรรม ทัวร์ชุมชน และโฮมสเตย์ยอดนิยมในเชียงใหม่</p>
       </div>
-      <!-- filter chips ถูกลบออกตามที่ขอ -->
     </div>
 
     <div class="featured-grid" id="featuredGrid">
 
-<!--      
-      <th:block th:each="a,iterStat : ${activities}" th:if="${iterStat.index < 4}">
-        <a th:href="@{/member/activity/{id}(id=${a.activityid})}" class="fcard" data-type="activity">
-           <div class="fcard-img">
-  <img th:with="imgs=${a.images != null ? #strings.arraySplit(a.images, '||') : null}"
-       th:src="${imgs != null and imgs.length > 0} ? @{${imgs[0]}} : 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop'"
-       onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop'"
-       alt="" loading="lazy"/>
-  <span class="fcard-badge badge-activity">โพสต์กิจกรรม</span>
-</div>
-          <div class="fcard-body">
-            <p class="fcard-name" th:text="${a.title}">ชื่อกิจกรรม</p>
-            <p class="fcard-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 21c-4-4-7-7.5-7-10.5a7 7 0 1114 0c0 3-3 6.5-7 10.5z"/>
-                <circle cx="12" cy="10" r="2"/>
-              </svg>
-              <span th:text="${a.location}"></span>
-            </p>
-
-
-<p class="card-desc"
-   th:text="${a.description != null ?
-              (#strings.length(a.description) > 70 ?
-              #strings.substring(a.description,0,70) + '...' :
-              a.description)
-              : 'ไม่มีรายละเอียด'}">
-</p>
-
-            <div class="fcard-footer">
-              <span class="fcard-cta">ดูรายละเอียด →</span>
-            </div>
-          </div>
-        </a>
-      </th:block> -->
-
-
-<!-- Tours -->
 <!-- Tours -->
 <th:block th:each="t : ${featuredTours}">
   <a th:href="@{/tour/{id}(id=${t.tourid})}" class="fcard" data-type="tour">
@@ -646,10 +581,17 @@
      alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="fcard-badge badge-homestay">โฮมสเตย์</span>
 
-            <!-- ✅ เพิ่มบรรทัดนี้ -->
+            <!-- ห้องเต็ม -->
             <span th:if="${hsAvailability != null and hsAvailability[h.homestayid] == false}"
                   class="fcard-badge badge-full">ห้องเต็ม</span>
 
+            <!-- เหลือ X ห้อง (โชว์เฉพาะตอนห้องว่างจริง) -->
+            <span th:if="${hsAvailableRooms != null and hsAvailableRooms[h.homestayid] != null
+                          and hsAvailableRooms[h.homestayid] > 0
+                          and startDate != null and !#strings.isEmpty(startDate)}"
+                  class="fcard-badge badge-available"
+                  th:text="'เหลือ ' + ${hsAvailableRooms[h.homestayid]} + ' ห้อง'">
+            </span>
           </div>
           <div class="fcard-body">
             <div class="fcard-rating">
@@ -666,6 +608,20 @@
                 <circle cx="12" cy="10" r="2"/>
               </svg>
               <span th:text="${h.address}">ที่อยู่</span>
+            </p>
+
+            <!-- ว่างวันที่ (เฉพาะตอนห้องว่างจริง) -->
+            <p th:if="${startDate != null and !#strings.isEmpty(startDate)
+                       and hsAvailability != null and hsAvailability[h.homestayid] == true}"
+               style="font-size:12.5px;color:#0369a1;margin:2px 0 0;">
+              ว่างวันที่ <span th:text="${startDate} + ' – ' + ${endDate}"></span>
+            </p>
+
+            <!-- เต็มช่วงวันที่ -->
+            <p th:if="${startDate != null and !#strings.isEmpty(startDate)
+                       and hsAvailability != null and hsAvailability[h.homestayid] == false}"
+               style="font-size:12.5px;color:#b91c1c;margin:2px 0 0;">
+              เต็มช่วงวันที่ <span th:text="${startDate} + ' – ' + ${endDate}"></span>
             </p>
 
             <p class="card-desc"
@@ -691,7 +647,6 @@
 
      <div th:if="${#lists.isEmpty(activities) and #lists.isEmpty(featuredTours) and #lists.isEmpty(featuredHomestays)}"
      class="fcard-empty">
-           class="fcard-empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
         </svg>
@@ -739,7 +694,6 @@
               </svg>
               <span th:text="${a.location}"></span>
             </p>
-
 
 <p class="card-desc"
    th:text="${a.description != null ?
@@ -894,9 +848,18 @@
      th:src="@{${imgs[0]}}"
      alt="ภาพโฮมสเตย์" loading="lazy"/>
             <span class="card-badge badge-homestay">โฮมสเตย์</span>
+
+             <!-- ห้องเต็ม -->
              <span th:if="${hsAvailability != null and hsAvailability[h.homestayid] == false}"
                   class="card-badge badge-full">ห้องเต็ม</span>
 
+             <!-- เหลือ X ห้อง (โชว์เฉพาะตอนห้องว่างจริง) -->
+            <span th:if="${hsAvailableRooms != null and hsAvailableRooms[h.homestayid] != null
+                          and hsAvailableRooms[h.homestayid] > 0
+                          and startDate != null and !#strings.isEmpty(startDate)}"
+                  class="card-badge badge-available"
+                  th:text="'เหลือ ' + ${hsAvailableRooms[h.homestayid]} + ' ห้อง'">
+            </span>
           </div>
           <div class="card-body">
             <div class="fcard-rating" style="margin-bottom:6px;">
@@ -912,6 +875,19 @@
               <span th:text="${h.address}"></span>
             </p>
 
+            <!-- ว่างวันที่ (เฉพาะตอนห้องว่างจริง) -->
+            <p th:if="${startDate != null and !#strings.isEmpty(startDate)
+                       and hsAvailability != null and hsAvailability[h.homestayid] == true}"
+               style="font-size:12.5px;color:#0369a1;margin:2px 0 0;">
+              ว่างวันที่ <span th:text="${startDate} + ' – ' + ${endDate}"></span>
+            </p>
+
+            <!-- เต็มช่วงวันที่ -->
+            <p th:if="${startDate != null and !#strings.isEmpty(startDate)
+                       and hsAvailability != null and hsAvailability[h.homestayid] == false}"
+               style="font-size:12.5px;color:#b91c1c;margin:2px 0 0;">
+              เต็มช่วงวันที่ <span th:text="${startDate} + ' – ' + ${endDate}"></span>
+            </p>
 
 <p class="card-desc"
    th:text="${h.description != null ?

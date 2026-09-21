@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.example.miniproject.repository.Member.GuestRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,6 +34,9 @@ public class BookingController {
 
    
     @Autowired
+private GuestRepository guestRepository;
+
+    @Autowired
     private TourScheduleRepository tourScheduleRepository;
 
    
@@ -44,11 +48,7 @@ public class BookingController {
     @Qualifier("tourPaymentService")
     private PaymentService<TourReceiptDTO> tourPaymentService;
 
-    /**
-     * GET /member/booking/list?type=TOUR&status=PENDING
-     * type   : TOUR | HOMESTAY          (default = TOUR)
-     * status : PENDING | WAITING_APPROVAL | CONFIRMED | CANCEL | null = ทั้งหมด
-     */
+   
     @GetMapping("/list")
     public String listBookings(
             @RequestParam(value = "type",   defaultValue = "TOUR") String typeStr,
@@ -115,45 +115,48 @@ public class BookingController {
     }
 
     @GetMapping("/detail/{bookingId}")
-    public String bookingDetail(
-            @PathVariable String bookingId,
-            Model model) {
+public String bookingDetail(
+        @PathVariable String bookingId,
+        HttpSession session,
+        Model model) {
 
-        Booking booking = bookingService.getBookingById(bookingId);
+    Member member = (Member) session.getAttribute("loggedInMember");
+    if (member == null) {
+        return "redirect:/member/login";
+    }
 
-        if (booking == null) {
-            return "redirect:/member/bookings";
-        }
+    Booking booking = bookingService.getBookingById(bookingId);
 
-        bookingService.autoCompleteIfPastEndDate(booking);
-
-        model.addAttribute("booking", booking);
-
-        // จองที่พัก
-        if (booking.getBookingType() == BookingType.ACCOMMODATION) {
-
-            return "Member/detail_bookinghomestay";
-        }
-
-        // จองทัวร์
-        else if (booking.getBookingType() == BookingType.TOUR) {
-
-            if (booking.getTourDetails() != null && !booking.getTourDetails().isEmpty()
-                    && booking.getTourDetails().get(0).getTour() != null) {
-
-                String tourId = booking.getTourDetails().get(0).getTour().getTourid();
-
-                List<Tourschedule> schedules = tourScheduleRepository
-                        .findBookableSchedules(tourId, java.sql.Date.valueOf(LocalDate.now()));
-
-                model.addAttribute("schedules", schedules);
-            }
-
-            return "Member/detail_bookingtour";
-        }
-
+    if (booking == null
+            || booking.getMember() == null
+            || !booking.getMember().getMemberid().equals(member.getMemberid())) {
         return "redirect:/member/bookings/list";
     }
+
+    bookingService.autoCompleteIfPastEndDate(booking);
+    model.addAttribute("booking", booking);
+
+    if (booking.getBookingType() == BookingType.ACCOMMODATION) {
+        return "Member/detail_bookinghomestay";
+    }
+    else if (booking.getBookingType() == BookingType.TOUR) {
+
+        if (booking.getTourDetails() != null && !booking.getTourDetails().isEmpty()
+                && booking.getTourDetails().get(0).getTour() != null) {
+            String tourId = booking.getTourDetails().get(0).getTour().getTourid();
+            List<Tourschedule> schedules = tourScheduleRepository
+                    .findBookableSchedules(tourId, java.sql.Date.valueOf(LocalDate.now()));
+            model.addAttribute("schedules", schedules);
+        }
+
+        model.addAttribute("guestList",
+                guestRepository.findByBooking_BookingidOrderByGuestidAsc(bookingId));
+
+        return "Member/detail_bookingtour";
+    }
+
+    return "redirect:/member/bookings/list";
+}
 
     // ════════════════════════════════════════════════════════
     //  GET : หน้าใบเสร็จ (แยกตามประเภทการจอง)

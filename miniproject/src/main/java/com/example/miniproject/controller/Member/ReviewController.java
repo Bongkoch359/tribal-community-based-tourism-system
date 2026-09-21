@@ -17,29 +17,40 @@ public class ReviewController {
     private ReviewService reviewService;
 
     @PostMapping("/submit")
-public String submitReview(
-        @RequestParam("bookingId") String bookingId,
-        @RequestParam("rating") Integer rating,
-        @RequestParam(value = "comment", required = false) String comment,
-        @RequestParam(value = "reviewimages", required = false) MultipartFile[] imageFiles,
-        @RequestParam(value = "homestayId", required = false) Integer homestayId,
-        @RequestParam(value = "anonymous", required = false, defaultValue = "false") boolean anonymous,
-        HttpSession session,
-        RedirectAttributes redirectAttributes) {
+    public String submitReview(
+            @RequestParam("bookingId") String bookingId,
+            @RequestParam("rating") Integer rating,
+            @RequestParam(value = "comment", required = false) String comment,
+            @RequestParam(value = "reviewimages", required = false) MultipartFile[] imageFiles,
+            @RequestParam(value = "homestayId", required = false) Integer homestayId,
+            @RequestParam(value = "anonymous", required = false, defaultValue = "false") boolean anonymous,
+            @RequestParam(value = "from", required = false) String from,
+            @RequestParam(value = "type", required = false) String type,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
-    Member member = (Member) session.getAttribute("loggedInMember");
-    if (member == null) return "redirect:/member/login";
+        Member member = (Member) session.getAttribute("loggedInMember");
+        if (member == null) return "redirect:/member/login";
 
-    try {
-        reviewService.submitReview(bookingId, member.getMemberid(), rating, comment, imageFiles, anonymous);
-        redirectAttributes.addFlashAttribute("successMsg", "ขอบคุณสำหรับรีวิวของคุณ!");
-    } catch (IllegalArgumentException | IllegalStateException e) {
-        redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
-    } catch (Exception e) {
-        redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถส่งรีวิวได้ กรุณาลองใหม่");
+        try {
+            reviewService.submitReview(bookingId, member.getMemberid(), rating, comment, imageFiles, anonymous);
+            redirectAttributes.addFlashAttribute("successMsg", "ขอบคุณสำหรับรีวิวของคุณ!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถส่งรีวิวได้ กรุณาลองใหม่");
+        }
+
+        // ส่งมาจากหน้ารายการการจอง -> กลับไปหน้ารายการ (คงแท็บทัวร์/ที่พักเดิมไว้)
+        if ("list".equals(from)) {
+            // whitelist เฉพาะค่าที่รู้จัก กันค่าแปลกปลอมต่อท้าย URL
+            if ("TOUR".equals(type) || "ACCOMMODATION".equals(type)) {
+                return "redirect:/member/bookings/list?type=" + type;
+            }
+            return "redirect:/member/bookings/list";
+        }
+
+        return homestayId != null ? "redirect:/homestay/" + homestayId
+                                   : "redirect:/member/bookings/detail/" + bookingId;
     }
-
-    return homestayId != null ? "redirect:/homestay/" + homestayId
-                               : "redirect:/member/bookings/detail/" + bookingId;
-}
 }

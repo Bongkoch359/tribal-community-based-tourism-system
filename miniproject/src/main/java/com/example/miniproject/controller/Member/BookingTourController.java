@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import com.example.miniproject.entity.enums.BookingStatus;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.example.miniproject.entity.Member;
 import com.example.miniproject.entity.Tour;
@@ -163,23 +164,19 @@ public java.util.Map<String, Object> getSeatsForSchedule(
     }
 }
 
-    
     // POST : แก้ไขการจองทัวร์
     @PostMapping("/booking/tour/edit/{id}")
 public String editBooking(
-    @PathVariable("id") String bookingId,
-    @RequestParam("tourdate") String tourDate,
-    @RequestParam(value = "adult", defaultValue = "1") Integer adult,
-    @RequestParam(value = "children", defaultValue = "0") Integer children,
-    @RequestParam(value = "note", required = false) String note,
-    @RequestParam(value = "pickuptype", required = false) String pickuptype,
-    @RequestParam(value = "pickuplocation", required = false) String pickuplocation,
-    @RequestParam(value = "guestId", required = false) List<String> guestIds,           // ✅ เพิ่ม
-    @RequestParam(value = "guestFirstname", required = false) List<String> guestFirstnames,
-    @RequestParam(value = "guestLastname", required = false) List<String> guestLastnames,
-    @RequestParam(value = "guestIdcard", required = false) List<String> guestIdcards,
-    HttpSession session,
-    RedirectAttributes redirectAttributes) {
+        @PathVariable("id") String bookingId,
+        @RequestParam("tourdate") String tourDate,
+        @RequestParam(value = "adult", defaultValue = "1") Integer adult,
+        @RequestParam(value = "children", defaultValue = "0") Integer children,
+        @RequestParam(value = "note", required = false) String note,
+        @RequestParam(value = "pickuptype", required = false) String pickuptype,
+        @RequestParam(value = "pickuplocation", required = false) String pickuplocation,
+        HttpServletRequest request,
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
 
     Member member = (Member) session.getAttribute("loggedInMember");
     if (member == null) {
@@ -190,18 +187,27 @@ public String editBooking(
         tourBookingService.editTourBooking(
                 bookingId, member.getMemberid(), tourDate, adult, children, note,
                 pickuptype, pickuplocation,
-                guestIds, guestFirstnames, guestLastnames, guestIdcards);
+                paramList(request, "guestId"),
+                paramList(request, "guestFirstname"),
+                paramList(request, "guestLastname"),
+                paramList(request, "guestIdcard"));
 
-        redirectAttributes.addFlashAttribute("successMsg", "แก้ไขการจองเรียบร้อยแล้ว");
+        redirectAttributes.addFlashAttribute("editSuccessMsg", "แก้ไขการจองเรียบร้อยแล้ว");   // ← เดิมใช้ successMsg
         return "redirect:/member/bookings/detail/" + bookingId;
 
     } catch (IllegalArgumentException | IllegalStateException e) {
         redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
         return "redirect:/member/bookings/detail/" + bookingId;
     } catch (Exception e) {
+        e.printStackTrace();   // ← เดิมไม่ log
         redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถแก้ไขข้อมูลการจองทัวร์ได้ กรุณาลองใหม่อีกครั้ง");
         return "redirect:/member/bookings/detail/" + bookingId;
     }
+}
+
+private static List<String> paramList(HttpServletRequest request, String name) {
+    String[] v = request.getParameterValues(name);
+    return v == null ? List.of() : java.util.Arrays.asList(v);
 }
 
    

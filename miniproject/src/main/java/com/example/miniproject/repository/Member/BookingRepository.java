@@ -254,20 +254,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     List<Object[]> sumTourRevenueByMonthRange(@Param("startDate") java.sql.Date startDate,
             @Param("endDate") java.sql.Date endDate);
 
-    /** จำนวนการจองทัวร์รายเดือน แบบเลือกช่วงได้ */
-    // @Query("SELECT YEAR(b.bookingdate) as yr, MONTH(b.bookingdate) as mo, " +
-    // "COUNT(DISTINCT b) as cnt FROM Booking b " +
-    // "WHERE b.bookingType = com.example.miniproject.entity.enums.BookingType.TOUR
-    // " +
-    // "AND b.bookingStatus IN
-    // (com.example.miniproject.entity.enums.BookingStatus.CONFIRMED, " +
-    // " com.example.miniproject.entity.enums.BookingStatus.COMPLETED) " +
-    // "AND b.bookingdate >= :startDate AND b.bookingdate <= :endDate " +
-    // "GROUP BY YEAR(b.bookingdate), MONTH(b.bookingdate) " +
-    // "ORDER BY YEAR(b.bookingdate) ASC, MONTH(b.bookingdate) ASC")
-    // List<Object[]> countTourBookingsByMonthRange(@Param("startDate")
-    // java.sql.Date startDate,
-    // @Param("endDate") java.sql.Date endDate);
+
 
     @Query("SELECT YEAR(b.bookingdate) as yr, MONTH(b.bookingdate) as mo, " +
             "COALESCE(SUM(b.totalamount), 0) as total FROM Booking b " +
@@ -297,4 +284,56 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     List<Object[]> countTourBookingsByMonthRangeAndManager(@Param("managerId") String managerId,
             @Param("startDate") java.sql.Date startDate,
             @Param("endDate") java.sql.Date endDate);
+
+            @Query("""
+                SELECT DISTINCT b FROM Booking b
+                LEFT JOIN FETCH b.member
+                LEFT JOIN FETCH b.review r
+                LEFT JOIN FETCH b.tourDetails td
+                LEFT JOIN FETCH td.tourschedule ts
+                LEFT JOIN FETCH ts.tour t
+                WHERE b.member.memberid = :memberId
+                  AND b.bookingType = com.example.miniproject.entity.enums.BookingType.TOUR
+                  AND (:status IS NULL OR b.bookingStatus = :status)
+                ORDER BY
+                    CASE
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.PENDING THEN 0
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.WAITING_APPROVAL THEN 1
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.CONFIRMED THEN 2
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.COMPLETED AND r IS NULL THEN 3
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.COMPLETED AND r IS NOT NULL THEN 4
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.CANCEL THEN 5
+                        ELSE 6
+                    END ASC,
+                    b.bookingdate DESC
+            """)
+    List<Booking> findTourBookingsByMemberSortedByPriority(
+            @Param("memberId") String memberId,
+            @Param("status") BookingStatus status);
+
+    @Query("""
+                SELECT DISTINCT b FROM Booking b
+                LEFT JOIN FETCH b.member
+                LEFT JOIN FETCH b.review r
+                LEFT JOIN FETCH b.roomDetails rd
+                LEFT JOIN FETCH rd.roomtype rt
+                LEFT JOIN FETCH rt.homestay h
+                WHERE b.member.memberid = :memberId
+                  AND b.bookingType = com.example.miniproject.entity.enums.BookingType.ACCOMMODATION
+                  AND (:status IS NULL OR b.bookingStatus = :status)
+                ORDER BY
+                    CASE
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.PENDING THEN 0
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.WAITING_APPROVAL THEN 1
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.CONFIRMED THEN 2
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.COMPLETED AND r IS NULL THEN 3
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.COMPLETED AND r IS NOT NULL THEN 4
+                        WHEN b.bookingStatus = com.example.miniproject.entity.enums.BookingStatus.CANCEL THEN 5
+                        ELSE 6
+                    END ASC,
+                    b.bookingdate DESC
+            """)
+    List<Booking> findAccommodationBookingsByMemberSortedByPriority(
+            @Param("memberId") String memberId,
+            @Param("status") BookingStatus status);
 }

@@ -186,6 +186,10 @@ if (!homestays.isEmpty()) {
             bookingService.checkAvailabilityForHomestays(homestayIds, checkin, checkout);
 
     model.addAttribute("hsAvailability", hsAvailability);
+
+     Map<Integer, Integer> hsAvailableRooms =
+            bookingService.getMaxAvailableRoomsForHomestays(homestayIds, checkin, checkout);
+    model.addAttribute("hsAvailableRooms", hsAvailableRooms);
 }
             } catch (java.time.format.DateTimeParseException e) {
                 log.debug("Invalid date format for availability check: {}", e.getMessage());

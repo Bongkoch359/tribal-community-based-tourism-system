@@ -168,13 +168,12 @@
 
         .brand-text {
             font-family: 'Sriracha', cursive;
-            color: var(--white);
+            color: #fff;
             font-size: 1.55rem;
             letter-spacing: 0.5px;
             white-space: nowrap;
             line-height: 1;
             margin-left: -10px;
-            /* ปรับค่าติดลบตรงนี้เพิ่ม/ลดได้ เช่น -5px ถึง -15px เพื่อให้ขยับชิดโลโก้พอดีครับ */
         }
 
         .nav-links {
@@ -937,6 +936,74 @@
             font-style: italic;
         }
 
+        /* ── GUEST ITEM (แต่ละแถวอยู่ใน wrapper ของตัวเอง) ── */
+        .guest-item > .guest-row {
+            padding: 10px 0;
+            border-bottom: none;
+        }
+
+        .guest-item:not(:last-child) > .guest-row {
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .guest-edit-head {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .btn-guest-del {
+            background: var(--red-light);
+            color: var(--red);
+            border: 1.5px solid #f0c2b6;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: .78rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .15s;
+        }
+
+        .btn-guest-del:hover {
+            background: #f7d3c9;
+        }
+
+        .guest-del-choice {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            background: var(--red-light);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            font-size: .8rem;
+            font-weight: 700;
+            color: var(--red);
+        }
+
+        .guest-del-choice.show {
+            display: flex;
+        }
+
+        .guest-del-choice button {
+            background: var(--paper);
+            color: var(--gray-800);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: .78rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .guest-del-choice button:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
         /* ── NOTE ── */
         .note-text {
             font-size: .9rem;
@@ -1250,7 +1317,6 @@
             font-weight: 800;
             color: var(--gray-800);
             margin-right: 32px;
-            /* balance the back button width */
         }
 
         .review-modal-body {
@@ -1707,99 +1773,100 @@
                 border-radius: 0;
             }
         }
+
         /* ── CANCEL MODAL (icon-circle style) ── */
-.modal-box-cancel {
-    background: var(--paper);
-    border-radius: 18px;
-    box-shadow: var(--shadow-lg);
-    width: 100%;
-    max-width: 440px;
-    padding: 26px 28px 24px;
-}
+        .modal-box-cancel {
+            background: var(--paper);
+            border-radius: 18px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 440px;
+            padding: 26px 28px 24px;
+        }
 
-.cancel-modal-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
-}
+        .cancel-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
 
-.cancel-modal-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: var(--red);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .85rem;
-    font-weight: 800;
-    flex-shrink: 0;
-}
+        .cancel-modal-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--red);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
 
-.cancel-modal-header h3 {
-    font-size: 1.12rem;
-    font-weight: 800;
-    color: var(--gray-800);
-    margin-bottom: 0;
-}
+        .cancel-modal-header h3 {
+            font-size: 1.12rem;
+            font-weight: 800;
+            color: var(--gray-800);
+            margin-bottom: 0;
+        }
 
-.cancel-modal-desc {
-    font-size: .88rem;
-    color: var(--gray-600);
-    line-height: 1.65;
-    margin-bottom: 18px;
-}
+        .cancel-modal-desc {
+            font-size: .88rem;
+            color: var(--gray-600);
+            line-height: 1.65;
+            margin-bottom: 18px;
+        }
 
-.cancel-modal-label {
-    display: block;
-    font-size: .88rem;
-    font-weight: 800;
-    color: var(--gray-800);
-    margin-bottom: 7px;
-}
+        .cancel-modal-label {
+            display: block;
+            font-size: .88rem;
+            font-weight: 800;
+            color: var(--gray-800);
+            margin-bottom: 7px;
+        }
 
-.cancel-modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
+        .cancel-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
 
-.btn-modal-cancel-gray {
-    background: var(--gray-100);
-    color: var(--gray-800);
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: .88rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: .2s;
-}
+        .btn-modal-cancel-gray {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: .88rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .2s;
+        }
 
-.btn-modal-cancel-gray:hover {
-    background: var(--gray-200);
-}
+        .btn-modal-cancel-gray:hover {
+            background: var(--gray-200);
+        }
 
-.btn-modal-confirm-red {
-    background: var(--red);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 22px;
-    font-size: .88rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: .2s;
-}
+        .btn-modal-confirm-red {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 22px;
+            font-size: .88rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .2s;
+        }
 
-.btn-modal-confirm-red:hover {
-    filter: brightness(1.1);
-}
+        .btn-modal-confirm-red:hover {
+            filter: brightness(1.1);
+        }
     </style>
 </head>
 
@@ -1913,7 +1980,7 @@
 
     <!-- ══ PAGE CONTENT ══ -->
     <div class="page-wrap">
-<div th:with="
+        <div th:with="
     detail=${booking.tourDetails != null and !booking.tourDetails.isEmpty() ? booking.tourDetails[0] : null},
     sts=${booking.bookingStatus != null ? booking.bookingStatus.name() : 'PENDING'},
     thMonths=${#strings.arraySplit('มกราคม,กุมภาพันธ์,มีนาคม,เมษายน,พฤษภาคม,มิถุนายน,กรกฎาคม,สิงหาคม,กันยายน,ตุลาคม,พฤศจิกายน,ธันวาคม',',')}">
@@ -1922,7 +1989,10 @@
             <div class="alert alert-error" th:if="${errorMsg != null}"><span>❌</span><span th:text="${errorMsg}"></span>
             </div>
 
-           
+            <!-- แก้ไขการจองสำเร็จ (อยู่หน้าเดิม ไม่เด้งไปหน้ารายการ) -->
+            <div class="alert alert-success" th:if="${editSuccessMsg != null}">
+                <span>✅</span><span th:text="${editSuccessMsg}"></span>
+            </div>
 
             <!-- ══ BOOKING HEADER ══ -->
             <div class="booking-header">
@@ -1940,14 +2010,13 @@
                         <span th:if="${sts == 'CANCEL'}">❌ ยกเลิกแล้ว</span>
                     </span>
 
-                   <span style="font-size:.8rem;color:#666;">
-    วันที่จอง :
+                    <span style="font-size:.8rem;color:#666;">
+                        วันที่จอง :
 
-    <strong
-        th:if="${booking.bookingdate != null}"
-        th:text="|${#numbers.formatInteger(#dates.day(booking.bookingdate),2)}/${#numbers.formatInteger(#dates.month(booking.bookingdate),2)}/${#dates.year(booking.bookingdate)}|"></strong>
-    <strong th:if="${booking.bookingdate == null}">-</strong>
-</span>
+                        <strong th:if="${booking.bookingdate != null}"
+                            th:text="|${#numbers.formatInteger(#dates.day(booking.bookingdate),2)}/${#numbers.formatInteger(#dates.month(booking.bookingdate),2)}/${#dates.year(booking.bookingdate)}|"></strong>
+                        <strong th:if="${booking.bookingdate == null}">-</strong>
+                    </span>
                 </div>
 
                 <!-- ปุ่มแก้ไข เฉพาะ PENDING / WAITING_APPROVAL -->
@@ -1975,7 +2044,7 @@
                             </div>
                         </div>
 
-                        <!-- form ครอบทั้ง section 1 + 4 -->
+                        <!-- form ครอบ section 1 (section 3, 4 ผูกเข้าฟอร์มนี้ด้วย form="editForm") -->
                         <form th:action="@{/booking/tour/edit/{id}(id=${booking.bookingid})}" method="post"
                             id="editForm" novalidate>
 
@@ -1991,53 +2060,49 @@
 
                                 <div class="detail-grid">
                                     <!-- วันออกเดินทาง ✏️ : เลือกจากรอบทัวร์ (schedule) ที่เปิดจองจริงเท่านั้น
-                                 ต้องให้ controller ของหน้านี้ส่ง model attribute "schedules"
-                                 (List<Tourschedule> ของ detail.tour.tourid ที่เปิดรับจอง)
-                                 เหมือนกับที่ BookingTourController#bookingPage ทำไว้ตอน create -->
+                                         controller ต้องส่ง model attribute "schedules" -->
                                     <div class="detail-item editable" style="grid-column:1/-1;">
                                         <div class="detail-label">วันออกเดินทาง (เลือกรอบที่เปิดจอง)</div>
-                                 <div class="detail-value view-val"
-    th:if="${detail.tourschedule != null and detail.tourschedule.opendate != null}"
-    th:text="|${#dates.day(detail.tourschedule.opendate)} ${thMonths[#dates.month(detail.tourschedule.opendate)-1]} ${#dates.year(detail.tourschedule.opendate)}${detail.tourschedule.enddate != null ? ' - ' + #dates.day(detail.tourschedule.enddate) + ' ' + thMonths[#dates.month(detail.tourschedule.enddate)-1] + ' ' + #dates.year(detail.tourschedule.enddate) : ''}|">
-    -</div>
-<div class="detail-value view-val" th:if="${detail.tourschedule == null or detail.tourschedule.opendate == null}">-</div>
+                                        <div class="detail-value view-val"
+                                            th:if="${detail.tourschedule != null and detail.tourschedule.opendate != null}"
+                                            th:text="|${#dates.day(detail.tourschedule.opendate)} ${thMonths[#dates.month(detail.tourschedule.opendate)-1]} ${#dates.year(detail.tourschedule.opendate)}${detail.tourschedule.enddate != null ? ' - ' + #dates.day(detail.tourschedule.enddate) + ' ' + thMonths[#dates.month(detail.tourschedule.enddate)-1] + ' ' + #dates.year(detail.tourschedule.enddate) : ''}|">
+                                            -</div>
+                                        <div class="detail-value view-val"
+                                            th:if="${detail.tourschedule == null or detail.tourschedule.opendate == null}">
+                                            -</div>
 
                                         <div class="inline-field">
-                                            <!-- ⭐ FIX: เดิมใช้ th:disabled ตอนไม่มี schedule เปิดจอง แต่ input/select ที่ disabled
-                                         จะไม่ถูกส่งไปกับฟอร์มเลยตามสเปก HTML ทำให้ backend รับ "tourdate" ไม่ได้
-                                         (@RequestParam("tourdate") เป็น required ไม่มี defaultValue) แล้วโยน 400 ตอน submit
-                                         แก้โดยแยกเป็น 2 เคส: มี schedule ให้เลือกได้ปกติ / ไม่มี schedule ให้ select
-                                         เหลือ option เดียวคือรอบปัจจุบันแบบไม่ disable เพื่อให้ยังส่งค่าไปได้ -->
+                                            <!-- แยก 2 เคส: มี schedule ให้เลือก / ไม่มี (เหลือ option เดียวคือรอบปัจจุบัน
+                                                 ไม่ใช้ disabled เพราะ input ที่ disabled จะไม่ถูกส่งไปกับฟอร์ม) -->
                                             <select class="inline-select" name="tourdate" id="tourdate-input" required
                                                 th:if="${schedules != null and !schedules.isEmpty()}">
 
                                                 <!-- รอบที่เปิดจองอยู่ตอนนี้ -->
-                                              <!-- รอบที่เปิดจองอยู่ตอนนี้ -->
-    <option th:each="s : ${schedules}"
-        th:value="${#dates.format(s.opendate,'yyyy-MM-dd')}"
-        th:attr="data-scheduleid=${s.scheduleid}"
-        th:selected="${detail.tourschedule != null and s.scheduleid == detail.tourschedule.scheduleid}"
-        th:text="|${#numbers.formatInteger(#dates.day(s.opendate),2)}/${#numbers.formatInteger(#dates.month(s.opendate),2)}/${#dates.year(s.opendate)} - ${#numbers.formatInteger(#dates.day(s.enddate),2)}/${#numbers.formatInteger(#dates.month(s.enddate),2)}/${#dates.year(s.enddate)}|">
-    </option>
+                                                <option th:each="s : ${schedules}"
+                                                    th:value="${#dates.format(s.opendate,'yyyy-MM-dd')}"
+                                                    th:attr="data-scheduleid=${s.scheduleid}"
+                                                    th:selected="${detail.tourschedule != null and s.scheduleid == detail.tourschedule.scheduleid}"
+                                                    th:text="|${#numbers.formatInteger(#dates.day(s.opendate),2)}/${#numbers.formatInteger(#dates.month(s.opendate),2)}/${#dates.year(s.opendate)} - ${#numbers.formatInteger(#dates.day(s.enddate),2)}/${#numbers.formatInteger(#dates.month(s.enddate),2)}/${#dates.year(s.enddate)}|">
+                                                </option>
 
-    <!-- เผื่อรอบเดิมของการจองนี้ไม่ได้อยู่ในลิสต์ที่เปิดจองแล้ว -->
-    <option
-        th:if="${detail.tourschedule != null and !#lists.contains(schedules.![scheduleid], detail.tourschedule.scheduleid)}"
-        th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
-        th:text="|${#numbers.formatInteger(#dates.day(detail.tourschedule.opendate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.opendate),2)}/${#dates.year(detail.tourschedule.opendate)} - ${#numbers.formatInteger(#dates.day(detail.tourschedule.enddate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.enddate),2)}/${#dates.year(detail.tourschedule.enddate)} (รอบปัจจุบันของการจองนี้)|"
-        selected="selected">
-    </option>
-</select>
+                                                <!-- เผื่อรอบเดิมของการจองนี้ไม่ได้อยู่ในลิสต์ที่เปิดจองแล้ว -->
+                                                <option
+                                                    th:if="${detail.tourschedule != null and !#lists.contains(schedules.![scheduleid], detail.tourschedule.scheduleid)}"
+                                                    th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
+                                                    th:text="|${#numbers.formatInteger(#dates.day(detail.tourschedule.opendate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.opendate),2)}/${#dates.year(detail.tourschedule.opendate)} - ${#numbers.formatInteger(#dates.day(detail.tourschedule.enddate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.enddate),2)}/${#dates.year(detail.tourschedule.enddate)} (รอบปัจจุบันของการจองนี้)|"
+                                                    selected="selected">
+                                                </option>
+                                            </select>
 
-<!-- ไม่มีรอบเปิดจองเลย -->
-<select class="inline-select" name="tourdate" id="tourdate-input" required
-    th:if="${schedules == null or schedules.isEmpty()}">
-    <option th:if="${detail.tourschedule != null}"
-        th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
-        th:text="|${#numbers.formatInteger(#dates.day(detail.tourschedule.opendate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.opendate),2)}/${#dates.year(detail.tourschedule.opendate)} - ${#numbers.formatInteger(#dates.day(detail.tourschedule.enddate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.enddate),2)}/${#dates.year(detail.tourschedule.enddate)} (รอบปัจจุบันของการจองนี้)|"
-        selected="selected">
-    </option>
-</select>
+                                            <!-- ไม่มีรอบเปิดจองเลย -->
+                                            <select class="inline-select" name="tourdate" id="tourdate-input" required
+                                                th:if="${schedules == null or schedules.isEmpty()}">
+                                                <option th:if="${detail.tourschedule != null}"
+                                                    th:value="${#dates.format(detail.tourschedule.opendate,'yyyy-MM-dd')}"
+                                                    th:text="|${#numbers.formatInteger(#dates.day(detail.tourschedule.opendate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.opendate),2)}/${#dates.year(detail.tourschedule.opendate)} - ${#numbers.formatInteger(#dates.day(detail.tourschedule.enddate),2)}/${#numbers.formatInteger(#dates.month(detail.tourschedule.enddate),2)}/${#dates.year(detail.tourschedule.enddate)} (รอบปัจจุบันของการจองนี้)|"
+                                                    selected="selected">
+                                                </option>
+                                            </select>
                                             <div class="field-error-msg">กรุณาเลือกวันออกเดินทาง</div>
 
                                             <div class="pickup-hint"
@@ -2054,9 +2119,7 @@
                                             <span class="pickup-badge"
                                                 th:text="${booking.pickuptype != null ? booking.pickuptype : '-'}">-</span>
 
-                                            <!-- ⭐ FIX: เดิมกล่องจุดนัดพบ (ที่อยู่ + ลิงก์แผนที่) อยู่ใน .inline-field เท่านั้น
-                                         ซึ่งโชว์เฉพาะตอนกดแก้ไข ทำให้ผู้ใช้ไม่เห็นรายละเอียดจุดนัดพบเลยถ้าไม่กดแก้ไข
-                                         ย้ายมาโชว์ใน view mode ด้วย เมื่อ pickuptype เป็น "จุดรับส่วนกลาง" -->
+                                            <!-- โชว์จุดนัดพบใน view mode เมื่อเป็น "จุดรับส่วนกลาง" -->
                                             <div class="meetingpoint-box" style="margin-top:10px;"
                                                 th:if="${booking.pickuptype == 'จุดรับส่วนกลาง' and detail.tour != null and detail.tour.allowMeetingPoint}">
                                                 📍 <strong>จุดนัดพบ:</strong>
@@ -2199,8 +2262,6 @@
                                 </div>
                             </div>
 
-
-
                             <!-- Inline save / cancel -->
                             <div class="inline-actions">
                                 <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
@@ -2210,7 +2271,7 @@
                         </form>
                     </div>
 
-                   
+                    <!-- SECTION 2 : ข้อมูลผู้ติดต่อหลัก -->
                     <div class="card">
                         <div class="section-header">
                             <div class="section-header-left">
@@ -2259,84 +2320,111 @@
                         </div>
                         <div class="section-body">
 
-                            <div th:if="${booking.guests != null and !booking.guests.isEmpty()}"
-                                th:each="g : ${booking.guests}"
-                                th:with="isBooker=${booking.isBookerGoing and g.firstname == booking.member.firstname and g.lastname == booking.member.lastname}">
-                                <div class="guest-row">
-                                    <div class="guest-avatar" th:text="${isBooker ? '🙋' : '👤'}">👤</div>
-                                    <div style="flex:1;">
-                                        <!-- view mode -->
-                                        <div class="view-val"
-                                            style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-                                            <div>
-                                                <div class="guest-name"
-                                                    th:text="${(g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '')}">
-                                                    -</div>
-                                                <div class="guest-role"
-                                                    th:text="${isBooker ? 'ผู้จอง (แก้ไขชื่อได้ในหน้าโปรไฟล์) · เดินทางด้วยตนเอง' : 'ผู้เดินทาง'}">
-                                                    -</div>
-                                            </div>
-                                            <span class="info-chip chip-blue" th:if="${booking.wantInsurance}"
-                                                th:text="${'🛡️ ' + (g.idcardnumber != null and g.idcardnumber.length() == 13 ? #strings.substring(g.idcardnumber,0,1) + '-XXXX-XXXX-' + #strings.substring(g.idcardnumber,9,13) : 'ทำประกันแล้ว')}"></span>
-                                        </div>
-                                        <!-- inline edit: แก้ได้เฉพาะ guest ที่ไม่ใช่ผู้จอง -->
-                                        <div class="inline-field" th:if="${!isBooker}">
-                                            <input type="hidden" name="guestId" form="editForm" th:value="${g.guestid}">
-                                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                                                <div>
-                                                    <div class="detail-label">ชื่อจริง</div>
-                                                    <input class="inline-input guest-name-input" type="text"
-                                                        name="guestFirstname" form="editForm" th:value="${g.firstname}"
-                                                        placeholder="ชื่อ" required>
-                                                    <div class="field-error-msg">กรุณากรอกชื่อ</div>
-                                                </div>
-                                                <div>
-                                                    <div class="detail-label">นามสกุล</div>
-                                                    <input class="inline-input guest-name-input" type="text"
-                                                        name="guestLastname" form="editForm" th:value="${g.lastname}"
-                                                        placeholder="นามสกุล" required>
-                                                    <div class="field-error-msg">กรุณากรอกนามสกุล</div>
-                                                </div>
-                                            </div>
-                                          <div class="guest-insurance-block" style="margin-top:8px;">
-    <div class="detail-label">เลขบัตรประชาชน (สำหรับทำประกัน) <span class="req" style="color:var(--red);">*</span></div>
-    <input class="inline-input guest-idcard-input" type="text"
-        name="guestIdcard" form="editForm" th:value="${g.idcardnumber}"
-        placeholder="กรอกเลข 13 หลัก" maxlength="13" inputmode="numeric"
-        pattern="[0-9]{13}" required>
-    <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
-</div>
-                                        </div>
-
-                                       <div class="inline-field" th:if="${isBooker}">
-    <input type="hidden" name="guestId" form="editForm" th:value="${g.guestid}">
-    <div class="guest-insurance-block" style="margin-top:8px;">
-        <div class="detail-label">เลขบัตรประชาชนของผู้จอง (สำหรับทำประกัน) <span class="req" style="color:var(--red);">*</span></div>
-        <input class="inline-input guest-idcard-input" type="text"
-            name="guestIdcard" form="editForm" th:value="${g.idcardnumber}"
-            placeholder="กรอกเลข 13 หลัก" maxlength="13" inputmode="numeric"
-            pattern="[0-9]{13}" required>
-        <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
-    </div>
-    <input type="hidden" name="guestFirstname" form="editForm" th:value="${g.firstname}">
-    <input type="hidden" name="guestLastname" form="editForm" th:value="${g.lastname}">
-</div>
-                                           
-                                      
-
-                                    </div>
-                                </div>
+                            <!-- ข้อความแจ้งเมื่อจำนวนคนเปลี่ยน -->
+                            <div class="pickup-hint" id="guestCountHint" style="display:none;margin-bottom:12px;">
                             </div>
 
-                            <p class="guest-empty" th:if="${booking.guests == null or booking.guests.isEmpty()}">
+                            <div id="guestList">
+                                <div class="guest-item" th:if="${guestList != null and !guestList.isEmpty()}"
+                                    th:each="g : ${guestList}" th:with="isBooker=${g.booker == true}"
+                                    th:attr="data-booker=${isBooker ? 'true' : 'false'}">
+
+                                    <div class="guest-row">
+                                        <div class="guest-avatar" th:text="${isBooker ? '🙋' : '👤'}">👤</div>
+                                        <div style="flex:1;">
+
+                                            <!-- view mode -->
+                                            <div class="view-val"
+                                                style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                                                <div>
+                                                    <div class="guest-name"
+                                                        th:text="${(g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '')}">
+                                                        -</div>
+                                                    <div class="guest-role"
+                                                        th:text="${isBooker ? 'ผู้จอง (แก้ไขชื่อได้ในหน้าโปรไฟล์) · เดินทางด้วยตนเอง' : 'ผู้เดินทาง'}">
+                                                        -</div>
+                                                </div>
+                                                <span class="info-chip chip-blue" th:if="${booking.wantInsurance}"
+                                                    th:text="${'🛡️ ' + (g.idcardnumber != null and g.idcardnumber.length() == 13 ? #strings.substring(g.idcardnumber,0,1) + '-XXXX-XXXX-' + #strings.substring(g.idcardnumber,9,13) : 'ทำประกันแล้ว')}"></span>
+                                            </div>
+
+                                            <!-- edit mode: ผู้เดินทางทั่วไป (ลบได้) -->
+                                            <div class="inline-field" th:if="${!isBooker}">
+                                                <div class="guest-edit-head">
+                                                    <button type="button" class="btn-guest-del"
+                                                        onclick="removeGuestRow(this)">🗑 ลบผู้เดินทางนี้</button>
+                                                </div>
+                                                <div class="guest-del-choice">
+                                                    <span>ลบในฐานะ:</span>
+                                                    <button type="button"
+                                                        onclick="chooseRemoveType(this,'adult')">ผู้ใหญ่</button>
+                                                    <button type="button"
+                                                        onclick="chooseRemoveType(this,'child')">เด็ก</button>
+                                                    <button type="button" onclick="hideDelChoice(this)">ยกเลิก</button>
+                                                </div>
+
+                                                <input type="hidden" name="guestId" form="editForm"
+                                                    th:value="${g.guestid}">
+                                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                                    <div>
+                                                        <div class="detail-label">ชื่อจริง</div>
+                                                        <input class="inline-input guest-name-input" type="text"
+                                                            name="guestFirstname" form="editForm"
+                                                            th:value="${g.firstname}" placeholder="ชื่อ" required>
+                                                        <div class="field-error-msg">กรุณากรอกชื่อ</div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="detail-label">นามสกุล</div>
+                                                        <input class="inline-input guest-name-input" type="text"
+                                                            name="guestLastname" form="editForm"
+                                                            th:value="${g.lastname}" placeholder="นามสกุล" required>
+                                                        <div class="field-error-msg">กรุณากรอกนามสกุล</div>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-top:8px;">
+                                                    <div class="detail-label">เลขบัตรประชาชน (สำหรับทำประกัน) <span
+                                                            style="color:var(--red);">*</span></div>
+                                                    <input class="inline-input guest-idcard-input" type="text"
+                                                        name="guestIdcard" form="editForm"
+                                                        th:value="${g.idcardnumber}" placeholder="กรอกเลข 13 หลัก"
+                                                        maxlength="13" inputmode="numeric" required>
+                                                    <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- edit mode: ผู้จอง (ไม่มีปุ่มลบ แก้ได้เฉพาะเลขบัตร) -->
+                                            <div class="inline-field" th:if="${isBooker}">
+                                                <input type="hidden" name="guestId" form="editForm"
+                                                    th:value="${g.guestid}">
+                                                <div style="margin-top:8px;">
+                                                    <div class="detail-label">เลขบัตรประชาชนของผู้จอง (สำหรับทำประกัน)
+                                                        <span style="color:var(--red);">*</span></div>
+                                                    <input class="inline-input guest-idcard-input" type="text"
+                                                        name="guestIdcard" form="editForm"
+                                                        th:value="${g.idcardnumber}" placeholder="กรอกเลข 13 หลัก"
+                                                        maxlength="13" inputmode="numeric" required>
+                                                    <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" name="guestFirstname" form="editForm"
+                                                    th:value="${g.firstname}">
+                                                <input type="hidden" name="guestLastname" form="editForm"
+                                                    th:value="${g.lastname}">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- /guestList -->
+
+                            <p class="guest-empty" th:if="${guestList == null or guestList.isEmpty()}">
                                 ไม่มีรายชื่อผู้เดินทาง
                             </p>
 
                         </div>
 
-                        <!-- ⭐ FIX: เดิมการ์ดนี้ไม่มีปุ่ม บันทึก/ยกเลิก ของตัวเอง ทำให้ user แก้ชื่อผู้เดินทางแล้วหาปุ่มไม่เจอ
-                     ต้องเลื่อนไปการ์ดอื่นแทน ปุ่ม submit นี้อ้างฟอร์มเดียวกัน (form="editForm") ผ่าน form attribute
-                     ของ HTML5 จึงส่งข้อมูลรวมไปพร้อมกับฟอร์มหลักที่การ์ด 1 ได้โดยไม่ต้องสร้างฟอร์มซ้อนฟอร์ม -->
+                        <!-- ปุ่มบันทึก/ยกเลิกของการ์ดนี้ ผูกกับฟอร์มเดียวกันผ่าน form="editForm" -->
                         <div class="inline-actions">
                             <button type="button" class="btn-inline-cancel" onclick="cancelEdit()">✕ ยกเลิก</button>
                             <button type="submit" form="editForm" class="btn-inline-save">💾
@@ -2374,101 +2462,102 @@
                         </div>
                     </div>
 
-                  <!-- SECTION 5 : ประกันการเดินทาง -->
-<div class="card" id="insuranceCard" style="margin-bottom:16px;overflow:visible;" th:if="${detail != null}">
-    <div class="section-header">
-        <div class="section-header-left">
-            <div class="section-num">5</div>
-            ประกันการเดินทาง
-        </div>
-    </div>
-    <div class="section-body" style="padding-top:0;"
-        th:attr="data-fee=${booking.insuranceFeePerPerson != null ? booking.insuranceFeePerPerson : 0}"
-        id="insuranceSection">
-        <div class="insurance-info-card">
-            <div class="insurance-info-top">
-                <div class="insurance-info-icon">🛡️</div>
-                <div class="insurance-info-body">
-                    <div class="insurance-info-title-row">
-                        <span class="insurance-info-title">ประกันอุบัติเหตุการเดินทาง</span>
-                        <span class="insurance-info-badge included">✅ รวมในการจองเสมอ</span>
+                    <!-- SECTION 5 : ประกันการเดินทาง -->
+                    <div class="card" id="insuranceCard" style="margin-bottom:16px;overflow:visible;"
+                        th:if="${detail != null}">
+                        <div class="section-header">
+                            <div class="section-header-left">
+                                <div class="section-num">5</div>
+                                ประกันการเดินทาง
+                            </div>
+                        </div>
+                        <div class="section-body" style="padding-top:0;"
+                            th:attr="data-fee=${booking.insuranceFeePerPerson != null ? booking.insuranceFeePerPerson : 0}"
+                            id="insuranceSection">
+                            <div class="insurance-info-card">
+                                <div class="insurance-info-top">
+                                    <div class="insurance-info-icon">🛡️</div>
+                                    <div class="insurance-info-body">
+                                        <div class="insurance-info-title-row">
+                                            <span class="insurance-info-title">ประกันอุบัติเหตุการเดินทาง</span>
+                                            <span class="insurance-info-badge included">✅ รวมในการจองเสมอ</span>
+                                        </div>
+                                        <div class="insurance-info-desc">
+                                            คุ้มครองอุบัติเหตุระหว่างการเดินทาง ครอบคลุมค่ารักษาพยาบาลกรณีฉุกเฉิน
+                                            ทุกการจองต้องทำประกันให้ผู้เดินทางทุกท่าน (ไม่สามารถยกเลิกได้)
+                                        </div>
+
+                                        <!-- ประกันฟิกเป็น true เสมอ ไม่มีตัวเลือกไม่ทำประกัน -->
+                                        <input type="hidden" name="wantInsurance" value="true" form="editForm">
+
+                                        <div class="pickup-hint" style="margin-top:10px;">
+                                            ⚠️ กรุณากรอกเลขบัตรประชาชนของผู้เดินทางทุกคนใน "รายชื่อผู้เดินทาง" ด้านบน
+                                            เพื่อออกกรมธรรม์ประกัน
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- รายชื่อผู้เอาประกัน พร้อมเลขบัตร (ปิดบางส่วนเพื่อความปลอดภัยของข้อมูล) -->
+                                <div class="insurance-info-list view-val" th:if="${booking.wantInsurance}">
+                                    <div class="insurance-guest-row" th:if="${guestList != null}"
+                                        th:each="g : ${guestList}" th:with="isBooker=${g.booker == true}">
+                                        <span class="insurance-guest-name"
+                                            th:text="${(isBooker ? '🙋 ' : '👤 ') + (g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '') + (isBooker ? ' (ผู้จอง)' : '')}"></span>
+                                        <span class="insurance-guest-id"
+                                            th:text="${g.idcardnumber != null and g.idcardnumber.length() == 13 ? #strings.substring(g.idcardnumber,0,1) + '-XXXX-XXXX-' + #strings.substring(g.idcardnumber,9,13) : 'ไม่ระบุ'}"></span>
+                                    </div>
+                                </div>
+
+                                <div class="insurance-total-row" id="insuranceTotalRowWrap">
+                                    <span>ค่าประกันรวม (<span id="insuranceGuestCountDisplay"
+                                            th:text="${booking.numofguest != null ? booking.numofguest : 0}"></span>
+                                        ท่าน
+                                        &times; <span
+                                            th:text="${booking.insuranceFeePerPerson != null ? #numbers.formatDecimal(booking.insuranceFeePerPerson,0,'COMMA',0,'POINT') : '0'}"></span>
+                                        ฿/ท่าน)</span>
+                                    <span>฿ <span id="insuranceSubtotalDisplay"
+                                            th:text="${booking.subtotalInsurance != null ? #numbers.formatDecimal(booking.subtotalInsurance,0,'COMMA',0,'POINT') : '0'}"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- ปิด #insuranceCard -->
+
+                    <!-- ══ ACTION BAR ══ -->
+                    <div class="action-bar" th:if="${sts != 'CANCEL'}">
+
+                        <!-- ยกเลิก: PENDING / WAITING_APPROVAL -->
+                        <button class="btn-cancel-booking" th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
+                            onclick="confirmCancel()">❌ ยกเลิกการจอง</button>
+
+                        <!-- ชำระเงิน: PENDING -->
+                        <a th:if="${sts == 'PENDING'}" th:href="@{/payment/tour/{id}(id=${booking.bookingid})}"
+                            class="btn-pay">
+                            💳 ไปหน้าชำระเงิน
+                        </a>
+
+                        <!-- ใบเสร็จ: CONFIRMED / COMPLETED -->
+                        <a th:if="${sts == 'CONFIRMED' or sts == 'COMPLETED'}"
+                            th:href="@{/member/bookings/receipt/{id}(id=${booking.bookingid}, print=true)}"
+                            class="btn-receipt">🧾 ดูใบเสร็จ</a>
+
+                        <!-- รีวิว: COMPLETED ยังไม่ได้รีวิว -->
+                        <button class="btn-review" th:if="${sts == 'COMPLETED' and booking.review == null}"
+                            onclick="openReviewModal()">⭐ เขียนรีวิว</button>
+
+                        <!-- รีวิวแล้ว -->
+                        <div class="reviewed-box" th:if="${sts == 'COMPLETED' and booking.review != null}">
+                            ✅ คุณรีวิวทัวร์นี้แล้ว &nbsp;
+                            <span th:text="${'⭐'.repeat(booking.review.rating)}"></span>
+                        </div>
+
                     </div>
-                    <div class="insurance-info-desc">
-                        คุ้มครองอุบัติเหตุระหว่างการเดินทาง ครอบคลุมค่ารักษาพยาบาลกรณีฉุกเฉิน
-                        ทุกการจองต้องทำประกันให้ผู้เดินทางทุกท่าน (ไม่สามารถยกเลิกได้)
+
+                    <!-- แสดงแทน action-bar ตอนยกเลิกแล้ว -->
+                    <div class="reviewed-box"
+                        style="background:var(--red-light);color:#b71c1c;border-color:#ef9a9a;"
+                        th:if="${sts == 'CANCEL'}">
+                        ❌ การจองนี้ถูกยกเลิกแล้ว ไม่สามารถดำเนินการใดๆ เพิ่มเติมได้
                     </div>
-
-                    <!-- ★ แก้: ประกันฟิกเป็น true เสมอ ไม่มีตัวเลือกไม่ทำประกันอีกต่อไป -->
-                    <input type="hidden" name="wantInsurance" value="true" form="editForm">
-
-                    <div class="pickup-hint" style="margin-top:10px;">
-                        ⚠️ กรุณากรอกเลขบัตรประชาชนของผู้เดินทางทุกคนใน "รายชื่อผู้เดินทาง" ด้านบน เพื่อออกกรมธรรม์ประกัน
-                    </div>
-                </div>
-            </div>
-
-            <!-- รายชื่อผู้เอาประกัน พร้อมเลขบัตรประชาชน (แสดงแบบปิดบางส่วนเพื่อความปลอดภัยของข้อมูล) -->
-            <div class="insurance-info-list view-val" th:if="${booking.wantInsurance}">
-                <div class="insurance-guest-row" th:if="${booking.guests != null}"
-                    th:each="g : ${booking.guests}"
-                    th:with="isBooker=${booking.isBookerGoing and g.firstname == booking.member.firstname and g.lastname == booking.member.lastname}">
-                    <span class="insurance-guest-name"
-                        th:text="${(isBooker ? '🙋 ' : '👤 ') + (g.firstname != null ? g.firstname : '') + ' ' + (g.lastname != null ? g.lastname : '') + (isBooker ? ' (ผู้จอง)' : '')}"></span>
-                    <span class="insurance-guest-id"
-                        th:text="${g.idcardnumber != null and g.idcardnumber.length() == 13 ? #strings.substring(g.idcardnumber,0,1) + '-XXXX-XXXX-' + #strings.substring(g.idcardnumber,9,13) : 'ไม่ระบุ'}"></span>
-                </div>
-            </div>
-
-            <div class="insurance-total-row" id="insuranceTotalRowWrap">
-                <span>ค่าประกันรวม (<span id="insuranceGuestCountDisplay"
-                        th:text="${booking.numofguest != null ? booking.numofguest : 0}"></span>
-                    ท่าน
-                    &times; <span
-                        th:text="${booking.insuranceFeePerPerson != null ? #numbers.formatDecimal(booking.insuranceFeePerPerson,0,'COMMA',0,'POINT') : '0'}"></span>
-                    ฿/ท่าน)</span>
-                <span>฿ <span id="insuranceSubtotalDisplay"
-                        th:text="${booking.subtotalInsurance != null ? #numbers.formatDecimal(booking.subtotalInsurance,0,'COMMA',0,'POINT') : '0'}"></span></span>
-            </div>
-        </div>
-    </div>
-    <!-- ไม่มี inline-actions แล้ว — ไม่มีช่องกรอกในการ์ดนี้ ปุ่มบันทึก/ยกเลิกอยู่ใน section 1 และ 3 แล้ว -->
-</div><!-- ปิด #insuranceCard -->
-
-<!-- ══ ACTION BAR ══ -->
-<div class="action-bar" th:if="${sts != 'CANCEL'}">
-
-    <!-- ยกเลิก: PENDING / WAITING_APPROVAL -->
-    <button class="btn-cancel-booking" th:if="${sts == 'PENDING' or sts == 'WAITING_APPROVAL'}"
-        onclick="confirmCancel()">❌ ยกเลิกการจอง</button>
-
-    <!-- ชำระเงิน: PENDING -->
-    <a th:if="${sts == 'PENDING'}" th:href="@{/payment/tour/{id}(id=${booking.bookingid})}"
-        class="btn-pay">
-        💳 ไปหน้าชำระเงิน
-    </a>
-
-    <!-- ใบเสร็จ: CONFIRMED / COMPLETED -->
-    <a th:if="${sts == 'CONFIRMED' or sts == 'COMPLETED'}"
-        th:href="@{/member/bookings/receipt/{id}(id=${booking.bookingid}, print=true)}"
-        class="btn-receipt">🧾 ดูใบเสร็จ</a>
-
-    <!-- รีวิว: COMPLETED ยังไม่ได้รีวิว -->
-    <button class="btn-review" th:if="${sts == 'COMPLETED' and booking.review == null}"
-        onclick="openReviewModal()">⭐ เขียนรีวิว</button>
-
-    <!-- รีวิวแล้ว -->
-    <div class="reviewed-box" th:if="${sts == 'COMPLETED' and booking.review != null}">
-        ✅ คุณรีวิวทัวร์นี้แล้ว &nbsp;
-        <span th:text="${'⭐'.repeat(booking.review.rating)}"></span>
-    </div>
-
-</div>
-
-<!-- ★ แสดงแทน action-bar ตอนยกเลิกแล้ว -->
-<div class="reviewed-box" style="background:var(--red-light);color:#b71c1c;border-color:#ef9a9a;"
-    th:if="${sts == 'CANCEL'}">
-    ❌ การจองนี้ถูกยกเลิกแล้ว ไม่สามารถดำเนินการใดๆ เพิ่มเติมได้
-</div>
 
                 </div>
                 <!-- /LEFT -->
@@ -2499,12 +2588,13 @@
                             <div class="summary-divider"></div>
 
                             <div class="sum-row">
-    <span class="lbl">วันออกเดินทาง</span>
-    <span class="val"
-        th:if="${detail != null and detail.tourschedule != null and detail.tourschedule.opendate != null}"
-        th:text="|${#dates.day(detail.tourschedule.opendate)} ${thMonths[#dates.month(detail.tourschedule.opendate)-1]} ${#dates.year(detail.tourschedule.opendate)}|">-</span>
-    <span class="val" th:if="${detail == null or detail.tourschedule == null or detail.tourschedule.opendate == null}">-</span>
-</div>
+                                <span class="lbl">วันออกเดินทาง</span>
+                                <span class="val"
+                                    th:if="${detail != null and detail.tourschedule != null and detail.tourschedule.opendate != null}"
+                                    th:text="|${#dates.day(detail.tourschedule.opendate)} ${thMonths[#dates.month(detail.tourschedule.opendate)-1]} ${#dates.year(detail.tourschedule.opendate)}|">-</span>
+                                <span class="val"
+                                    th:if="${detail == null or detail.tourschedule == null or detail.tourschedule.opendate == null}">-</span>
+                            </div>
                             <div class="sum-row">
                                 <span class="lbl">ผู้ใหญ่</span>
                                 <span class="val"
@@ -2594,7 +2684,7 @@
 
                             <!-- เขียนรีวิว -->
                             <div class="form-group">
-                               <div class="bonus-label">เขียนรีวิว (ไม่บังคับ)</div>
+                                <div class="bonus-label">เขียนรีวิว (ไม่บังคับ)</div>
                                 <div class="review-tags">
                                     <button type="button" class="review-tag" data-txt="บรรยากาศดี ">🌿 บรรยากาศ</button>
                                     <button type="button" class="review-tag" data-txt="ไกด์และการดูแล ">🙋 ไกด์</button>
@@ -2636,42 +2726,43 @@
                 </div>
             </div>
 
-           <!-- CANCEL FORM -->
-<form id="cancelForm" th:action="@{/booking/tour/cancel/{id}(id=${booking.bookingid})}" method="post"
-    style="display:none;">
-    <input type="hidden" name="cancelReason" id="cancelReasonInput">
-</form>
+            <!-- CANCEL FORM -->
+            <form id="cancelForm" th:action="@{/booking/tour/cancel/{id}(id=${booking.bookingid})}" method="post"
+                style="display:none;">
+                <input type="hidden" name="cancelReason" id="cancelReasonInput">
+            </form>
 
-<!-- MODAL: ยกเลิกการจอง -->
-<div class="modal-overlay" id="cancelModal">
-    <div class="modal-box-cancel">
-        <div class="cancel-modal-header">
-            <div class="cancel-modal-icon">✕</div>
-            <h3>ยกเลิกการจองทัวร์</h3>
-        </div>
-        <p class="cancel-modal-desc">
-            คุณแน่ใจหรือไม่ว่าต้องการยกเลิกรายการจองนี้?
-        </p>
+            <!-- MODAL: ยกเลิกการจอง -->
+            <div class="modal-overlay" id="cancelModal">
+                <div class="modal-box-cancel">
+                    <div class="cancel-modal-header">
+                        <div class="cancel-modal-icon">✕</div>
+                        <h3>ยกเลิกการจองทัวร์</h3>
+                    </div>
+                    <p class="cancel-modal-desc">
+                        คุณแน่ใจหรือไม่ว่าต้องการยกเลิกรายการจองนี้?
+                    </p>
 
-       
-
-        <div class="cancel-modal-actions">
-            <button type="button" class="btn-modal-cancel-gray" onclick="closeCancelModal()">ปิด</button>
-            <button type="button" class="btn-modal-confirm-red" onclick="submitCancel()">✕ ยืนยันการยกเลิก</button>
-        </div>
-    </div>
-</div>
+                    <div class="cancel-modal-actions">
+                        <button type="button" class="btn-modal-cancel-gray" onclick="closeCancelModal()">ปิด</button>
+                        <button type="button" class="btn-modal-confirm-red" onclick="submitCancel()">✕
+                            ยืนยันการยกเลิก</button>
+                    </div>
+                </div>
+            </div>
 
         </div><!-- /th:with -->
     </div><!-- /page-wrap -->
 
+    <!-- modal สำเร็จ (ใช้กับการยกเลิกการจองเท่านั้น → พาไปหน้ารายการจอง) -->
     <div class="modal-overlay open" id="cancelSuccessModal" th:if="${successMsg != null}">
-    <div class="modal-box">
-        <h3>✅ สำเร็จ</h3>
-        <p th:text="${successMsg}"></p>
-        <button class="btn-modal-confirm-red" onclick="location.href='/member/bookings/list'">ตกลง</button>
+        <div class="modal-box">
+            <h3>✅ สำเร็จ</h3>
+            <p th:text="${successMsg}"></p>
+            <button class="btn-modal-confirm-red" onclick="location.href='/member/bookings/list'">ตกลง</button>
+        </div>
     </div>
-</div>
+
     <script>
         /* ════ Inline Edit Toggle ════ */
         let editing = false;
@@ -2695,11 +2786,31 @@
                 if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 recalcTotals();
             } else {
-                exitEdit(btn);
+                cancelEdit();
             }
         }
 
         function cancelEdit() {
+            // 1) คืนค่าทุกช่องเป็นค่าเดิมจากเซิร์ฟเวอร์
+            const form = document.getElementById('editForm');
+            if (form) form.reset();
+
+            // 2) เอาแถวที่เพิ่มด้วย JS ออก แล้วเปิดแถวเดิมกลับมาทั้งหมด
+            document.querySelectorAll('#guestList .guest-new').forEach(function (el) { el.remove(); });
+            document.querySelectorAll('#guestList .guest-item').forEach(function (r) {
+                delete r.dataset.removed;
+                setGuestRowActive(r, true);
+            });
+            const hint = document.getElementById('guestCountHint');
+            if (hint) hint.style.display = 'none';
+
+            // 3) sync UI ประเภทจุดรับให้ตรงกับค่าเดิม (reset ไม่ได้คืน class/การซ่อนกล่อง)
+            const checked = document.querySelector('input[name="pickuptype"]:checked');
+            if (checked) selectPickupType(checked.value);
+
+            // 4) คำนวณราคาใหม่จากค่าเดิม (ข้าม sync เพราะเพิ่งคืนแถวเรียบร้อยแล้ว)
+            recalcTotals(true);
+
             exitEdit(document.getElementById('editToggleBtn'));
             clearAllFieldErrors();
         }
@@ -2739,7 +2850,7 @@
         }
 
         /* ════ Live Price Recalculation (จำนวนคน x ราคา + ประกัน) ════ */
-        function recalcTotals() {
+        function recalcTotals(skipSync) {
             const adultEl = document.getElementById('adult-input');
             const childrenEl = document.getElementById('children-input');
             if (!adultEl) return; // ไม่มี section ทัวร์ให้แก้ (detail == null)
@@ -2752,7 +2863,7 @@
 
             const tourSubtotal = (adultQty * adultPrice) + (childQty * childPrice);
 
-           const insuranceYes = true; // ★ แก้: ประกันฟิกเป็น true เสมอ
+            const insuranceYes = true; // ประกันฟิกเป็น true เสมอ
             const insuranceSection = document.getElementById('insuranceSection');
             const fee = insuranceSection ? (parseFloat(insuranceSection.dataset.fee) || 0) : 0;
             const insuranceSubtotal = insuranceYes ? (totalGuests * fee) : 0;
@@ -2783,6 +2894,172 @@
 
             const sidebarTotalEl = document.getElementById('sidebarTotalDisplay');
             if (sidebarTotalEl) sidebarTotalEl.textContent = fmt(grandTotal);
+
+            if (!skipSync) syncGuestRows();
+        }
+
+        /* ════ แถวรายชื่อผู้เดินทาง ════ */
+        function setGuestRowActive(row, active) {
+            row.style.display = active ? '' : 'none';
+            // input ที่ disabled จะไม่ถูกส่งไปกับฟอร์ม → backend จะไม่เห็นคนที่ถูกลบ
+            row.querySelectorAll('input').forEach(function (inp) { inp.disabled = !active; });
+            const choice = row.querySelector('.guest-del-choice');
+            if (choice) choice.classList.remove('show');
+            if (!active) {
+                row.querySelectorAll('.field-error').forEach(function (el) { el.classList.remove('field-error'); });
+                row.querySelectorAll('.field-error-msg.show').forEach(function (el) { el.classList.remove('show'); });
+            }
+        }
+
+        function createGuestRow() {
+            const div = document.createElement('div');
+            div.className = 'guest-item guest-new';
+            div.dataset.booker = 'false';
+            div.innerHTML = `
+                <div class="guest-row">
+                  <div class="guest-avatar">👤</div>
+                  <div style="flex:1;">
+                    <div class="inline-field">
+                      <div class="guest-edit-head">
+                        <button type="button" class="btn-guest-del" onclick="removeGuestRow(this)">🗑 ลบผู้เดินทางนี้</button>
+                      </div>
+                      <div class="guest-del-choice">
+                        <span>ลบในฐานะ:</span>
+                        <button type="button" onclick="chooseRemoveType(this,'adult')">ผู้ใหญ่</button>
+                        <button type="button" onclick="chooseRemoveType(this,'child')">เด็ก</button>
+                        <button type="button" onclick="hideDelChoice(this)">ยกเลิก</button>
+                      </div>
+                      <input type="hidden" name="guestId" form="editForm" value="">
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                        <div>
+                          <div class="detail-label">ชื่อจริง</div>
+                          <input class="inline-input guest-name-input" type="text" name="guestFirstname" form="editForm" placeholder="ชื่อ" required>
+                          <div class="field-error-msg">กรุณากรอกชื่อ</div>
+                        </div>
+                        <div>
+                          <div class="detail-label">นามสกุล</div>
+                          <input class="inline-input guest-name-input" type="text" name="guestLastname" form="editForm" placeholder="นามสกุล" required>
+                          <div class="field-error-msg">กรุณากรอกนามสกุล</div>
+                        </div>
+                      </div>
+                      <div style="margin-top:8px;">
+                        <div class="detail-label">เลขบัตรประชาชน (สำหรับทำประกัน) <span style="color:var(--red);">*</span></div>
+                        <input class="inline-input guest-idcard-input" type="text" name="guestIdcard" form="editForm"
+                               placeholder="กรอกเลข 13 หลัก" maxlength="13" inputmode="numeric" required>
+                        <div class="field-error-msg">เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+            return div;
+        }
+
+        /* data-removed: 'auto'   = ซ่อนเพราะลดจำนวนคน (คืนได้ถ้าพิมพ์เพิ่มกลับ)
+                         'manual' = ผู้ใช้กดปุ่มลบเอง (ไม่คืนอัตโนมัติ) */
+        function syncGuestRows() {
+            const list = document.getElementById('guestList');
+            const adultEl = document.getElementById('adult-input');
+            const childrenEl = document.getElementById('children-input');
+            if (!list || !adultEl) return;
+            if (adultEl.value.trim() === '') return; // กำลังพิมพ์ค้าง อย่าเพิ่งตัดแถว
+
+            const total = Math.max(0,
+                (parseInt(adultEl.value, 10) || 0) + (childrenEl ? (parseInt(childrenEl.value, 10) || 0) : 0));
+
+            const rows = Array.from(list.querySelectorAll('.guest-item'));
+            const bookerCount = rows.filter(function (r) { return r.dataset.booker === 'true'; }).length;
+            const slots = Math.max(0, total - bookerCount);
+
+            const active = rows.filter(function (r) {
+                return r.dataset.booker !== 'true' && !r.dataset.removed;
+            });
+
+            // เกิน → ซ่อนจากท้ายรายการ
+            while (active.length > slots) {
+                const row = active.pop();
+                setGuestRowActive(row, false);
+                row.dataset.removed = 'auto';
+            }
+
+            // ขาด → คืนแถวที่ถูกซ่อนอัตโนมัติก่อน แล้วค่อยสร้างแถวว่าง
+            while (active.length < slots) {
+                const back = rows.find(function (r) {
+                    return r.dataset.removed === 'auto' && r.dataset.booker !== 'true';
+                });
+                if (back) {
+                    delete back.dataset.removed;
+                    setGuestRowActive(back, true);
+                    active.push(back);
+                } else {
+                    const row = createGuestRow();
+                    list.appendChild(row);
+                    rows.push(row);
+                    active.push(row);
+                }
+            }
+
+            const removed = list.querySelectorAll('.guest-item[data-removed]:not(.guest-new)').length;
+            const added = list.querySelectorAll('.guest-new:not([data-removed])').length;
+            const hint = document.getElementById('guestCountHint');
+            if (hint) {
+                if (removed > 0) {
+                    hint.textContent = '⚠️ ผู้เดินทาง ' + removed + ' ท่านจะถูกลบออกจากการจองเมื่อกดบันทึก';
+                    hint.style.display = '';
+                } else if (added > 0) {
+                    hint.textContent = '➕ เพิ่มผู้เดินทาง ' + added + ' ท่าน กรุณากรอกชื่อและเลขบัตรประชาชนให้ครบ';
+                    hint.style.display = '';
+                } else {
+                    hint.style.display = 'none';
+                }
+            }
+        }
+
+        /* ════ ปุ่มลบผู้เดินทางรายคน ════ */
+        function removeGuestRow(btn) {
+            const row = btn.closest('.guest-item');
+            const adultEl = document.getElementById('adult-input');
+            const childrenEl = document.getElementById('children-input');
+            if (!row || !adultEl) return;
+
+            const adults = parseInt(adultEl.value, 10) || 0;
+            const kids = childrenEl ? (parseInt(childrenEl.value, 10) || 0) : 0;
+            const canAdult = adults > 1;   // ผู้ใหญ่ต้องเหลืออย่างน้อย 1
+            const canChild = kids > 0;
+
+            if (!canAdult && !canChild) {
+                alert('ต้องมีผู้ใหญ่อย่างน้อย 1 ท่าน จึงไม่สามารถลบผู้เดินทางคนนี้ได้');
+                return;
+            }
+            if (canAdult && canChild) {
+                // ไม่รู้ว่าคนนี้เป็นผู้ใหญ่หรือเด็ก (กระทบราคา) ให้ผู้ใช้เลือก
+                row.querySelector('.guest-del-choice').classList.add('show');
+                return;
+            }
+            applyRemoveGuest(row, canAdult ? 'adult' : 'child');
+        }
+
+        function chooseRemoveType(btn, type) {
+            const row = btn.closest('.guest-item');
+            if (row) applyRemoveGuest(row, type);
+        }
+
+        function hideDelChoice(btn) {
+            btn.closest('.guest-del-choice').classList.remove('show');
+        }
+
+        function applyRemoveGuest(row, type) {
+            const el = document.getElementById(type === 'adult' ? 'adult-input' : 'children-input');
+            if (!el) return;
+            el.value = Math.max(0, (parseInt(el.value, 10) || 0) - 1);
+            if (type === 'adult') validateAdult(el); else validateChildren(el);
+
+            if (row.classList.contains('guest-new')) {
+                row.remove();                       // แถวที่เติมเอง ไม่มีใน DB ลบทิ้งได้เลย
+            } else {
+                setGuestRowActive(row, false);      // แถวเดิม: disable เพื่อไม่ให้ส่งไป backend
+                row.dataset.removed = 'manual';
+            }
+            recalcTotals();
         }
 
         /* ════════════════════════════════════════════════════
@@ -2790,7 +3067,7 @@
            ════════════════════════════════════════════════════ */
 
         function findErrorMsgEl(inputEl) {
-            // หา .field-error-msg ที่อยู่ถัดจาก input ใน DOM (พี่น้องกัน หรือใน wrapper เดียวกัน)
+            // หา .field-error-msg ที่อยู่ถัดจาก input ใน DOM (พี่น้องกัน)
             let sib = inputEl.nextElementSibling;
             while (sib) {
                 if (sib.classList && sib.classList.contains('field-error-msg')) return sib;
@@ -2837,10 +3114,10 @@
             return true;
         }
 
-        /* จำนวนเด็ก ต้อง >= 0 (ห้ามติดลบ / ห้ามว่างถ้าพิมพ์อะไรมาแล้ว) */
+        /* จำนวนเด็ก ต้อง >= 0 (ห้ามติดลบ / ปล่อยว่างได้ ระบบถือเป็น 0) */
         function validateChildren(el) {
             const msgEl = findErrorMsgEl(el);
-            if (el.value === '') { clearFieldError(el, msgEl); return true; } // ปล่อยว่างได้ ระบบจะถือเป็น 0
+            if (el.value === '') { clearFieldError(el, msgEl); return true; }
             const v = parseInt(el.value, 10);
             if (isNaN(v) || v < 0) {
                 showFieldError(el, msgEl);
@@ -2861,21 +3138,21 @@
             return true;
         }
 
-       function validateIdcard(el) {
-    const msgEl = findErrorMsgEl(el);
-    // ★ แก้: ประกันฟิกเป็น true เสมอ ต้องกรอกเลขบัตรทุกคนเสมอ ไม่มีเงื่อนไขอีกต่อไป
-    const v = el.value.trim();
-    if (!v) {
-        showFieldError(el, msgEl, 'กรุณากรอกเลขบัตรประชาชน');
-        return false;
-    }
-    if (!/^[0-9]{13}$/.test(v)) {
-        showFieldError(el, msgEl, 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
-        return false;
-    }
-    clearFieldError(el, msgEl);
-    return true;
-}
+        /* เลขบัตรประชาชน — ประกันบังคับทุกการจอง ต้องกรอกทุกคน */
+        function validateIdcard(el) {
+            const msgEl = findErrorMsgEl(el);
+            const v = el.value.trim();
+            if (!v) {
+                showFieldError(el, msgEl, 'กรุณากรอกเลขบัตรประชาชน');
+                return false;
+            }
+            if (!/^[0-9]{13}$/.test(v)) {
+                showFieldError(el, msgEl, 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
+                return false;
+            }
+            clearFieldError(el, msgEl);
+            return true;
+        }
 
         /* สถานที่รับ — บังคับเมื่อเลือก "โรงแรม/ที่พัก" และต้องมีคำว่า "เชียงใหม่" */
         function validatePickupLocation(el) {
@@ -2938,19 +3215,18 @@
 
             const childrenEl = document.getElementById('children-input');
             if (childrenEl && !validateChildren(childrenEl)) ok = false;
-            // ⭐ FIX: backend รับ children เป็น Integer ที่มี defaultValue="0" ซึ่งใช้ได้เฉพาะตอน
-            // "ไม่ส่งพารามิเตอร์มาเลย" เท่านั้น แต่ input นี้อยู่ในฟอร์มเสมอ ถ้าผู้ใช้ลบจนว่างเปล่า
-            // ค่าที่ส่งไปจะเป็น children="" ทำให้ Spring แปลงเป็น Integer ไม่ได้แล้ว throw 400
+            // backend รับ children เป็น Integer: ถ้าผู้ใช้ลบจนว่างเปล่า ค่าที่ส่งไปจะเป็น "" แล้ว Spring แปลงไม่ได้
             // จึงต้อง normalize ค่าว่างให้เป็น "0" ก่อน submit เสมอ
             if (childrenEl && childrenEl.value.trim() === '') {
                 childrenEl.value = '0';
             }
 
-            document.querySelectorAll('.guest-name-input').forEach(function (el) {
+            // ข้ามช่องของแถวที่ถูกลบ (disabled)
+            document.querySelectorAll('.guest-name-input:not(:disabled)').forEach(function (el) {
                 if (!validateGuestName(el)) ok = false;
             });
 
-            document.querySelectorAll('.guest-idcard-input').forEach(function (el) {
+            document.querySelectorAll('.guest-idcard-input:not(:disabled)').forEach(function (el) {
                 if (!validateIdcard(el)) ok = false;
             });
 
@@ -3027,22 +3303,22 @@
         }
 
         /* ════ Cancel (Modal) ════ */
-function confirmCancel() {
-    document.getElementById('cancelModal').classList.add('open');
-}
+        function confirmCancel() {
+            document.getElementById('cancelModal').classList.add('open');
+        }
 
-function closeCancelModal() {
-    document.getElementById('cancelModal').classList.remove('open');
-}
-function submitCancel() {
-    document.getElementById('cancelForm').submit();
-}
+        function closeCancelModal() {
+            document.getElementById('cancelModal').classList.remove('open');
+        }
+        function submitCancel() {
+            document.getElementById('cancelForm').submit();
+        }
 
-document.querySelectorAll('.modal-overlay').forEach(function (el) {
-    el.addEventListener('click', function (e) {
-        if (e.target === el) el.classList.remove('open');
-    });
-});
+        document.querySelectorAll('.modal-overlay').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                if (e.target === el) el.classList.remove('open');
+            });
+        });
 
         /* ════ User Menu ════ */
         function toggleUserMenu() {

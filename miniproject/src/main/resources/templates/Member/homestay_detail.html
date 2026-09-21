@@ -723,6 +723,7 @@
   font-family:'Sarabun',sans-serif; font-size:14.5px; color:var(--neutral-800); background:var(--paper);
   transition:border-color .15s;
 }
+.report-textarea.invalid { border-color:#b3462e; background:#fdf1ee; }
 .report-select:focus, .report-textarea:focus { outline:none; border-color:#b3462e; }
 .report-textarea { resize:vertical; min-height:90px; }
 
@@ -1497,10 +1498,12 @@
       </select>
     </div>
 
-    <div class="report-field">
-      <label class="report-label">รายละเอียดเพิ่มเติม</label>
-      <textarea class="report-textarea" id="reportDescription" placeholder="อธิบายสิ่งที่พบเจอ (ไม่บังคับ)"></textarea>
-    </div>
+   <div class="report-field">
+  <label class="report-label">รายละเอียดเพิ่มเติม <span class="req">*</span></label>
+  <textarea class="report-textarea" id="reportDescription"
+            placeholder="อธิบายสิ่งที่พบเจอ (จำเป็นต้องกรอก)"
+            oninput="this.classList.remove('invalid')"></textarea>
+</div>
 
     <div class="report-field">
       <label class="report-label">แนบรูปหลักฐาน (ไม่บังคับ)</label>
@@ -1522,6 +1525,7 @@
     </div>
   </div>
 </div>
+</div> 
 <!-- ══════════════════════════════════════════
      CONFIRM REPORT MODAL — ให้กดยืนยันก่อนส่งจริง (เหมือนหน้าทัวร์)
 ══════════════════════════════════════════ -->
@@ -1756,7 +1760,7 @@
 
 
   // ═══════════════════════════════════════════
-  // REPORT MODAL (โฮมสเตย์) — ตอนนี้มี 3 ขั้นตอน: กรอกฟอร์ม -> ยืนยัน -> สำเร็จ
+  // REPORT MODAL (โฮมสเตย์) — 3 ขั้นตอน: กรอกฟอร์ม -> ยืนยัน -> สำเร็จ
   // ═══════════════════════════════════════════
   var reportEvidenceBase64 = null;
 
@@ -1767,9 +1771,14 @@
     document.getElementById('reportModalOverlay').classList.remove('open');
     resetReportForm();
   }
+
+  // ★ แก้: เพิ่ม guard กันกรณียังไม่ล็อกอิน + ล้างกรอบแดงของช่องรายละเอียด
   function resetReportForm() {
-    document.getElementById('reportReason').value = '';
+    var reasonEl = document.getElementById('reportReason');
+    if (!reasonEl) return; // ยังไม่ล็อกอิน ไม่มีฟอร์มให้รีเซ็ต
+    reasonEl.value = '';
     document.getElementById('reportDescription').value = '';
+    document.getElementById('reportDescription').classList.remove('invalid');
     document.getElementById('reportFileInput').value = '';
     document.getElementById('reportFilePreview').style.display = 'none';
     document.getElementById('reportFilePreview').src = '';
@@ -1799,14 +1808,24 @@
     reader.readAsDataURL(file);
   }
 
-  // ขั้นที่ 1: ตรวจข้อมูลในฟอร์ม แล้วเปิด modal ให้ "ยืนยัน" ก่อน — ยังไม่ยิง API
+  // ★ แก้: ขั้นที่ 1 เพิ่มการบังคับกรอกรายละเอียด
   function submitReport() {
     var reason = document.getElementById('reportReason').value;
+    var descEl = document.getElementById('reportDescription');
+    var description = descEl.value.trim();
     var msg = document.getElementById('reportMsg');
 
     if (!reason) {
       msg.className = 'report-msg err';
       msg.textContent = 'กรุณาเลือกเหตุผลในการรายงาน';
+      return;
+    }
+
+    if (!description) {
+      descEl.classList.add('invalid');
+      descEl.focus();
+      msg.className = 'report-msg err';
+      msg.textContent = 'กรุณากรอกรายละเอียดเพิ่มเติม';
       return;
     }
 
@@ -1865,6 +1884,7 @@
         document.getElementById('successReportOverlay').classList.add('open');
       })
       .catch(function (err) {
+        console.error(err);
         confirmBtn.disabled = false;
         confirmBtn.textContent = 'ยืนยันส่งรายงาน';
         reportBtn.disabled = false;
@@ -1916,6 +1936,5 @@
 
   document.addEventListener('DOMContentLoaded', renderReviewPage);
 </script>
-
 </body>
 </html>
