@@ -37,10 +37,10 @@ public class HomestayOwnerService {
             throw new IllegalArgumentException("อีเมลนี้ถูกใช้งานแล้ว");
         }
 
-       Homestayowner owner = new Homestayowner();
+        Homestayowner owner = new Homestayowner();
 
-owner.setOwnerid(generateOwnerId());
-owner.setFirstname(req.getFirstname());
+        owner.setOwnerid(generateOwnerId());
+        owner.setFirstname(req.getFirstname());
         owner.setLastname(req.getLastname());
         owner.setEmail(req.getEmail());
         owner.setPhone(req.getPhone());
@@ -104,9 +104,6 @@ owner.setFirstname(req.getFirstname());
     }
 
     // ───── Update Profile ─────
-
-    // ───── Update Profile (เฉพาะข้อมูลส่วนตัว) ─────
-
     @Transactional
     public Homestayowner updateProfile(String ownerid, String firstname, String lastname,
             String email, String phone) {
@@ -126,8 +123,7 @@ owner.setFirstname(req.getFirstname());
         return ownerRepository.save(owner);
     }
 
-    // ───── Update Bank Info ─────
-
+    // ───── Update Bank Info ────
     @Transactional
     public Homestayowner updateBankInfo(String ownerid, String bankName, String accountName,
             String accountNumber, String bankBranch) {
@@ -144,7 +140,6 @@ owner.setFirstname(req.getFirstname());
     }
 
     // ───── Update Signature ─────
-
     @Transactional
     public Homestayowner updateSignature(String ownerid, String signatureBase64) {
         Homestayowner owner = ownerRepository.findById(ownerid)
@@ -154,55 +149,53 @@ owner.setFirstname(req.getFirstname());
     }
 
     // ───── Change Password ─────
-
     @Transactional
     public void changePassword(String ownerid, String currentPassword, String newPassword) {
 
-        // 1. ดึง owner
+        // ดึง owner
         Homestayowner owner = ownerRepository.findById(ownerid)
                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
 
-        // 2. ตรวจสอบรหัสผ่านปัจจุบัน
+        // ตรวจสอบรหัสผ่านปัจจุบัน
         if (!owner.getPassword().equals(currentPassword)) {
             throw new IllegalArgumentException("รหัสผ่านปัจจุบันไม่ถูกต้อง");
         }
 
-        // 3. ตรวจสอบความยาวรหัสผ่านใหม่
+        // ตรวจสอบความยาวรหัสผ่านใหม่
         if (newPassword == null || newPassword.length() < 6) {
             throw new IllegalArgumentException("รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร");
         }
 
-        // 4. บันทึกรหัสผ่านใหม่
+        // บันทึกรหัสผ่านใหม่
         owner.setPassword(newPassword);
         ownerRepository.save(owner);
     }
 
-  
     private String generateOwnerId() {
-    Integer maxNumber = ownerRepository.findMaxOwnerNumber();
+        Integer maxNumber = ownerRepository.findMaxOwnerNumber();
 
-    int nextNumber = (maxNumber == null) ? 1 : maxNumber + 1;
+        int nextNumber = (maxNumber == null) ? 1 : maxNumber + 1;
 
-    return String.format("OW%06d", nextNumber);
-}
+        return String.format("OW%06d", nextNumber);
+    }
 
-@Transactional
-public boolean suspend(String ownerid, String reason) {
-    return ownerRepository.findById(ownerid).map(owner -> {
-        owner.setAccountstatus("SUSPENDED");
-        owner.setSuspensionReason(reason);
-        ownerRepository.save(owner);
-        return true;
-    }).orElse(false);
-}
+    @Transactional
+    public boolean suspend(String ownerid, String reason) {
+        return ownerRepository.findById(ownerid).map(owner -> {
+            owner.setAccountstatus("SUSPENDED");
+            owner.setSuspensionReason(reason);
+            ownerRepository.save(owner);
+            return true;
+        }).orElse(false);
+    }
 
-@Transactional
-public boolean activate(String ownerid) {
-    return ownerRepository.findById(ownerid).map(owner -> {
-        owner.setAccountstatus("ACTIVE");
-        owner.setSuspensionReason(null);
-        ownerRepository.save(owner);
-        return true;
-    }).orElse(false);
-}
+    @Transactional
+    public boolean activate(String ownerid) {
+        return ownerRepository.findById(ownerid).map(owner -> {
+            owner.setAccountstatus("ACTIVE");
+            owner.setSuspensionReason(null);
+            ownerRepository.save(owner);
+            return true;
+        }).orElse(false);
+    }
 }

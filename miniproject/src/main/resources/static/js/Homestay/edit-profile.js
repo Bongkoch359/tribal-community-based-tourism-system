@@ -1,18 +1,12 @@
-// ============================================
-//   edit-profile.js
-// ============================================
-
 // ─────────────────────────────────────────
-// Regex สำหรับ validate ฝั่ง client (ก่อน submit จริง)
+// Regex สำหรับ validate 
 // ─────────────────────────────────────────
 const nameRegex = /^[ก-์a-zA-Z]+$/;
-const nameWithSpaceRegex = /^[ก-์a-zA-Z\s]+$/; 
+const nameWithSpaceRegex = /^[ก-์a-zA-Z\s]+$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^0[689][0-9]{8}$/;
-const accountRegex = /^[0-9]{6,30}$/; // เลขบัญชี: ตัวเลขล้วนเท่านั้น
-// ─────────────────────────────────────────
-// Toast helper — แสดงผลจากข้อความที่ server ส่งมาผ่าน flash attribute
-// ─────────────────────────────────────────
+const accountRegex = /^[0-9]{6,30}$/;
+
 // ─────────────────────────────────────────
 // Toast helper — ใช้เฉพาะกรณี error เท่านั้น
 // ─────────────────────────────────────────
@@ -31,9 +25,7 @@ function showToast(message, isError) {
     }, 2800);
 }
 
-// ─────────────────────────────────────────
 // Success Modal helper
-// ─────────────────────────────────────────
 function showSuccessModal(message) {
     const modal = document.getElementById('successModal');
     const desc = document.getElementById('successModalDesc');
@@ -53,7 +45,7 @@ function showSuccessModal(message) {
 })();
 
 // ─────────────────────────────────────────
-// Toggle show/hide password
+//  password
 // ─────────────────────────────────────────
 document.querySelectorAll('.toggle-password').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -102,12 +94,12 @@ const phoneInputEl = document.getElementById('phone');
 phoneInputEl.addEventListener('input', () => {
     const v = phoneInputEl.value.trim();
     const errorEl = document.getElementById('phoneError');
-    if (!v) errorEl.textContent = '';   // เบอร์โทรไม่บังคับกรอก
+    if (!v) errorEl.textContent = '';
     else if (!phoneRegex.test(v)) errorEl.textContent = 'เบอร์โทรต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06 08 09 เท่านั้น';
     else errorEl.textContent = '';
 });
 // ─────────────────────────────────────────
-// FORM 1: ข้อมูลส่วนตัว — validate ก่อน submit จริง (ไม่มี fetch)
+// ข้อมูลส่วนตัว — validate ก่อน submit 
 // ─────────────────────────────────────────
 document.getElementById('personalForm').addEventListener('submit', function (e) {
     const firstname = document.getElementById('firstname').value.trim();
@@ -140,17 +132,17 @@ document.getElementById('personalForm').addEventListener('submit', function (e) 
         document.getElementById('phoneError').textContent = 'เบอร์โทรต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 06 08 09 เท่านั้น';
         return;
     }
-    // ผ่านการตรวจสอบแล้ว ปล่อยให้ฟอร์ม submit ไปที่ server ตามปกติ
+
 });
 
 // ─────────────────────────────────────────
-// Real-time validation: สาขา / ชื่อบัญชี / เลขบัญชี
+//validation: สาขา / ชื่อบัญชี / เลขบัญชี
 // ─────────────────────────────────────────
 const bankBranchInputEl = document.getElementById('bankBranch');
 bankBranchInputEl.addEventListener('input', () => {
     const v = bankBranchInputEl.value.trim();
     const errorEl = document.getElementById('bankBranchError');
-    if (!v) errorEl.textContent = ''; // สาขาไม่บังคับกรอก
+    if (!v) errorEl.textContent = '';
     else if (!nameWithSpaceRegex.test(v)) errorEl.textContent = 'สาขาใช้ได้เฉพาะภาษาไทยและอังกฤษเท่านั้น (เว้นวรรคได้)';
     else errorEl.textContent = '';
 });
@@ -174,7 +166,7 @@ accountNumberInputEl.addEventListener('input', () => {
 });
 
 // ─────────────────────────────────────────
-// FORM 2: ข้อมูลธนาคาร — validate ก่อน submit จริง
+//  ข้อมูลธนาคาร — validate ก่อน submit 
 // ─────────────────────────────────────────
 document.getElementById('bankForm').addEventListener('submit', function (e) {
     const bankName = document.getElementById('bankName').value;
@@ -210,7 +202,7 @@ document.getElementById('bankForm').addEventListener('submit', function (e) {
 });
 
 // ─────────────────────────────────────────
-// FORM 3: ลายเซ็น — preview ไฟล์ก่อนอัปโหลด (validate ก่อน submit จริง)
+//  ลายเซ็น — preview ไฟล์ก่อนอัปโหลด 
 // ─────────────────────────────────────────
 document.getElementById('signatureFile').addEventListener('change', function (e) {
     const file = e.target.files[0];
@@ -239,7 +231,7 @@ document.getElementById('signatureForm').addEventListener('submit', function (e)
 });
 
 // ─────────────────────────────────────────
-// FORM 4: เปลี่ยนรหัสผ่าน — validate ก่อน submit จริง
+// เปลี่ยนรหัสผ่าน — validate ก่อน submit 
 // ─────────────────────────────────────────
 document.getElementById('passwordForm').addEventListener('submit', function (e) {
     const currentPassword = document.getElementById('currentPassword').value;
@@ -266,7 +258,7 @@ document.getElementById('passwordForm').addEventListener('submit', function (e) 
     }
 });
 // ─────────────────────────────────────────
-// แก้ปัญหา bfcache: เคลียร์ modal/toast ที่ค้างอยู่
+//  bfcache: เคลียร์ modal/toast ที่ค้างอยู่
 // ─────────────────────────────────────────
 window.addEventListener('pageshow', function (event) {
     if (event.persisted) {

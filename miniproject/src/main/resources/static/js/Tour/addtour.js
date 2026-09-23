@@ -1,15 +1,13 @@
-
 document.querySelectorAll('textarea.form-control').forEach(function (ta) {
     const autoResize = () => {
         ta.style.height = 'auto';
         ta.style.height = (ta.scrollHeight + 2) + 'px';
     };
     ta.addEventListener('input', autoResize);
-    // เรียกครั้งแรกกรณีมีข้อความเดิมอยู่แล้ว (เช่นตอนแก้ไขทัวร์)
     autoResize();
 });
 (function () {
-    if (window.showAlertModal) return; // กันประกาศซ้ำถ้าโหลดไฟล์นี้มากกว่า 1 ครั้ง
+    if (window.showAlertModal) return;
 
     const style = document.createElement('style');
     style.textContent = `
@@ -129,7 +127,7 @@ document.querySelectorAll('textarea.form-control').forEach(function (ta) {
     MULTI-IMAGE UPLOAD
  ═══════════════════════════════════════════ */
 const MAX_IMAGES = 5;
-let imageDataList = []; // [{base64, name}]
+let imageDataList = [];
 let primaryIndex = 0;
 
 const fileInput = document.getElementById('fileInput');
@@ -156,9 +154,6 @@ function handleDrop(e) {
     addFiles(Array.from(e.dataTransfer.files));
 }
 
-// ✅ แก้บั๊ก: เดิมนับ loaded เทียบกับ files.length ทั้งหมด (รวมไฟล์ที่ไม่ผ่านชนิดไฟล์)
-//    ทำให้ถ้ามีไฟล์ผิดชนิดปนมา loaded จะไม่มีวันเท่ากับ files.length -> renderGrid() ไม่ถูกเรียก
-//    แก้โดยกรองไฟล์ที่ถูกต้อง (และไม่เกินโควตา) ไว้ก่อน แล้วนับเทียบกับจำนวนไฟล์ที่ถูกต้องนั้นแทน
 function addFiles(files) {
     const allowed = MAX_IMAGES - imageDataList.length;
     const validFiles = files
@@ -209,7 +204,6 @@ function renderGrid() {
         imgGrid.appendChild(thumb);
     });
 
-    // update count note
     if (imageDataList.length > 0) {
         imgCountNote.style.display = 'block';
         imgCountNote.textContent = `เลือกแล้ว ${imageDataList.length}/${MAX_IMAGES} รูป · คลิก ⭐ เพื่อตั้งรูปหลัก`;
@@ -217,7 +211,6 @@ function renderGrid() {
         imgCountNote.style.display = 'none';
     }
 
-    // pack to JSON for hidden input (primary first)
     const ordered = imageDataList.map((img, i) => ({ base64: img.base64, primary: i === primaryIndex }));
     imagesInput.value = JSON.stringify(ordered);
 }
@@ -227,9 +220,6 @@ function setPrimary(index) {
     renderGrid();
 }
 
-// ✅ แก้บั๊ก: เดิมเช็คแค่กรณี primaryIndex เกินขอบเขตหลังลบ (>= length)
-//    แต่ถ้าลบรูปที่ index ก่อนหน้ารูปหลัก จะทำให้ primaryIndex ชี้ไปผิดรูป (เลื่อนตำแหน่งไม่ทัน)
-//    แก้โดยปรับ primaryIndex ตามตำแหน่งที่ถูกลบ
 function removeImage(index) {
     imageDataList.splice(index, 1);
     if (index < primaryIndex) {
@@ -243,13 +233,6 @@ function removeImage(index) {
 
 /* ═══════════════════════════════════════════
    รอบทัวร์ (SCHEDULES) — เพิ่ม/ลบ ก่อนบันทึกทัวร์
-   ไม่ต้องไปหน้าแยกอีกต่อไป กรอกพร้อมฟอร์มเพิ่มทัวร์เลย
-
-   ✅ ใหม่: รองรับ 2 โหมด
-   - "เพิ่มทีละรอบ" (เดิม)
-   - "เพิ่มทั้งช่วง (เปิดทุกวัน)" → manager กำหนดช่วงวันที่ แล้วระบบ
-     generate schedule ให้ทีละวันตลอดทั้งช่วงอัตโนมัติ (groupId ใช้แค่
-     จัดกลุ่มตอนแสดงผลในตารางพรีวิว ไม่ได้ส่งไป backend)
 ═══════════════════════════════════════════ */
 let scheduleList = []; // [{opendate, enddate, status, groupId?}]
 
@@ -277,19 +260,17 @@ function setScheduleMode(mode) {
     modeRangeBtn.classList.toggle('active', !isSingle);
 }
 
-// ✅ บังคับให้ใช้ได้ทีละโหมดต่อทัวร์หนึ่งๆ: เช็คว่ารอบทัวร์ที่มีอยู่ตอนนี้
-//    มาจากโหมดไหน (groupId = มาจาก "เปิดทุกวัน", ไม่มี groupId = "เพิ่มทีละรอบ")
+// บังคับให้ใช้ได้ทีละโหมดต่อทัวร์หนึ่งๆ: เช็คว่ารอบทัวร์ที่มีอยู่ตอนนี้
 function currentUsageMode() {
     if (scheduleList.length === 0) return null;
     const hasRange = scheduleList.some(s => s.groupId);
     const hasSingle = scheduleList.some(s => !s.groupId);
-    if (hasRange && hasSingle) return 'mixed'; // ไม่ควรเกิดขึ้นถ้า logic ทำงานถูกต้อง
+    if (hasRange && hasSingle) return 'mixed';
     return hasRange ? 'range' : 'single';
 }
 
 async function tryToSwitchMode(mode) {
     const usage = currentUsageMode();
-    // ถ้ายังไม่มีรอบทัวร์เลย หรือกดโหมดเดิมที่ใช้อยู่แล้ว → สลับได้เลยไม่ต้องถาม
     if (!usage || usage === mode) {
         setScheduleMode(mode);
         return;
@@ -305,7 +286,6 @@ async function tryToSwitchMode(mode) {
 
     scheduleList = [];
     renderScheduleTable();
-    // ✅ ล้างสถานะพิเศษเฉพาะวันที่ค้างอยู่ด้วย เพราะอ้างอิงกับรอบทัวร์ชุดเดิมที่เพิ่งถูกลบ
     exceptionDates = {};
     renderExceptionList();
     rangePreviewNote.style.display = 'none';
@@ -319,7 +299,7 @@ function isDailyTour() {
     return tourtypeSelect.value === 'ทัวร์รายวัน';
 }
 
-// ทัวร์รายวัน: ล็อกวันที่จบให้เท่ากับวันที่เริ่มเสมอ (วันเริ่ม = วันจบ)
+// ทัวร์รายวัน: ล็อกวันที่จบให้เท่ากับวันที่เริ่มเสมอ 
 function applyScheduleDailyLock() {
     if (isDailyTour()) {
         scheduleEndDate.readOnly = true;
@@ -354,9 +334,7 @@ function statusBadge(status) {
 }
 
 // ── ตรวจสอบวันที่ทับซ้อน: ป้องกันไม่ให้เพิ่มรอบทัวร์ที่วันที่คาบเกี่ยวกับรอบที่มีอยู่แล้ว
-//    (ไม่ว่าจะมาจากโหมด "เพิ่มทีละรอบ" หรือ "เพิ่มทั้งช่วง" ก็เช็คกับ scheduleList เดียวกัน) ──
 function rangesOverlap(aStart, aEnd, bStart, bEnd) {
-    // เทียบแบบ string ได้เลยเพราะเป็น ISO yyyy-mm-dd เรียงตามเวลาจริงอยู่แล้ว
     return aStart <= bEnd && bStart <= aEnd;
 }
 function findConflict(newStart, newEnd) {
@@ -367,7 +345,6 @@ function renderScheduleTable() {
     scheduleTableBody.innerHTML = '';
 
     // ── group แถวที่มี groupId เดียวกันและติดกัน ให้แสดงเป็น 1 แถวสรุป
-    //    (ไม่กระทบข้อมูลจริงใน scheduleList / schedulesInput) ──
     let i = 0;
     while (i < scheduleList.length) {
         const s = scheduleList[i];
@@ -405,8 +382,6 @@ function renderScheduleTable() {
     const has = scheduleList.length > 0;
     scheduleTable.style.display = has ? 'table' : 'none';
     scheduleEmptyNote.style.display = has ? 'none' : 'block';
-
-    // ✅ ส่งไป backend เหมือนเดิมทุกประการ (flatten รายวันจริง ไม่ส่ง groupId)
     schedulesInput.value = JSON.stringify(
         scheduleList.map(({ opendate, enddate, status }) => ({ opendate, enddate, status }))
     );
@@ -424,7 +399,7 @@ function removeScheduleGroup(groupId) {
 
 addScheduleBtn.addEventListener('click', () => {
     const open = scheduleOpenDate.value;
-    // ✅ ทัวร์รายวัน: วันที่เริ่มกับวันที่จบต้องเท่ากันเสมอ ไม่สนใจค่าที่กรอกในช่องวันจบ
+    // ทัวร์รายวัน: วันที่เริ่มกับวันที่จบต้องเท่ากันเสมอ
     let end = isDailyTour() ? open : scheduleEndDate.value;
 
     if (!open) {
@@ -443,7 +418,7 @@ addScheduleBtn.addEventListener('click', () => {
         return;
     }
 
-    // ✅ กันวันที่ทับซ้อนกับรอบทัวร์ที่มีอยู่แล้ว (ทั้งที่เพิ่มทีละรอบ และที่มาจาก "เปิดทุกวัน")
+    // กันวันที่ทับซ้อนกับรอบทัวร์ที่มีอยู่แล้ว
     const conflict = findConflict(open, end);
     if (conflict) {
         showErr('scheduleOpenDate', 'err-schedules',
@@ -473,11 +448,9 @@ const addScheduleRangeBtn = document.getElementById('addScheduleRangeBtn');
 const MAX_RANGE_DAYS = 366;
 
 // ═══════════════════════════════════════════
-// ✅ สถานะพิเศษเฉพาะวัน สำหรับโหมด "เปิดทุกวัน"
-// ใช้กรณีอยากเปิดรับจองทุกวัน ยกเว้นบางวัน เช่น วันหยุดนักขัตฤกษ์
-// ที่ต้องการปิดไม่รับจอง (หรือกลับกัน ตั้งค่าเริ่มต้นเป็นปิด แล้วเปิดเฉพาะบางวัน)
+// สถานะพิเศษเฉพาะวัน สำหรับโหมด "เปิดทุกวัน"
 // ═══════════════════════════════════════════
-let exceptionDates = {}; // { 'yyyy-mm-dd': status }
+let exceptionDates = {};
 
 const exceptionDateInput = document.getElementById('exceptionDate');
 const exceptionStatusSelect = document.getElementById('exceptionStatus');
@@ -486,12 +459,11 @@ const exceptionList = document.getElementById('exceptionList');
 
 // ── group วันที่ต่อเนื่องกัน (ติดกันวันต่อวัน) ที่มีสถานะเดียวกัน ให้เป็นช่วงเดียว ──
 function groupConsecutiveDates(sortedDates) {
-    // sortedDates: [{date, status}] เรียงตามวันที่แล้ว
     const groups = [];
     let current = null;
     sortedDates.forEach(({ date, status }) => {
         if (current && current.status === status && addDaysISO(current.end, 1) === date) {
-            current.end = date; // ต่อท้ายช่วงเดิม
+            current.end = date;
         } else {
             if (current) groups.push(current);
             current = { start: date, end: date, status };
@@ -532,7 +504,7 @@ function renderExceptionList() {
             'align-items:center;justify-content:center;">✕</button>';
 
         chip.querySelector('button').addEventListener('click', () => {
-            // ลบทุกวันที่อยู่ใน range นี้ออกจาก exceptionDates ทีเดียว
+
             let cursor = group.start;
             while (cursor <= group.end) {
                 delete exceptionDates[cursor];
@@ -550,7 +522,7 @@ const exceptionEndDateInput = document.getElementById('exceptionEndDate');
 
 addExceptionBtn.addEventListener('click', () => {
     const start = exceptionDateInput.value;
-    const end = exceptionEndDateInput.value || start; // ไม่กรอกวันสิ้นสุด = วันเดียวกับวันเริ่ม
+    const end = exceptionEndDateInput.value || start;
 
     if (!start) {
         showErr('exceptionDate', 'err-exceptionDate', 'กรุณาเลือกวันที่');
@@ -635,13 +607,12 @@ addScheduleRangeBtn.addEventListener('click', () => {
     // จำนวนวันของแต่ละรอบ: ทัวร์รายวัน = 1 วัน / ทัวร์หลายวัน = ตามจำนวนวันของทัวร์ที่กรอกไว้
     const tourLenDays = isDailyTour() ? 1 : (parseInt(daysInput.value) || 1);
 
-    // ✅ กันวันที่ทับซ้อนกับรอบทัวร์ที่มีอยู่แล้ว: วันไหนชนกับรอบเดิมจะถูก "ข้าม" ไม่สร้างซ้ำ
-    //    แล้วแจ้งจำนวนที่ข้ามให้ทราบ
+    // กันวันที่ทับซ้อนกับรอบทัวร์ที่มีอยู่แล้ว: วันไหนชนกับรอบเดิมจะถูก "ข้าม" ไม่สร้างซ้ำ
     const groupId = 'grp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
     let cursor = start;
     let addedCount = 0;
     let skippedCount = 0;
-    // ✅ ใช้สถานะพิเศษเฉพาะวัน (ถ้ามีกำหนดไว้) แทนสถานะเริ่มต้น เช่น วันหยุดนักขัตฤกษ์ที่ปิดรับจอง
+    // ใช้สถานะพิเศษเฉพาะวัน (ถ้ามีกำหนดไว้) แทนสถานะเริ่มต้น 
     let exceptionAppliedCount = 0;
     for (let d = 0; d < dayCount; d++) {
         const opendate = cursor;
@@ -671,7 +642,6 @@ addScheduleRangeBtn.addEventListener('click', () => {
         showAlertModal(`สร้างรอบทัวร์สำเร็จ ${addedCount} วัน (มี ${exceptionAppliedCount} วันที่ใช้สถานะพิเศษตามที่กำหนดไว้)`, { type: 'success' });
     }
 
-    // เคลียร์เฉพาะวันที่ถูกใช้ไปแล้วในช่วงนี้ ส่วนวันที่อยู่นอกช่วงเก็บไว้ใช้ครั้งถัดไป
     Object.keys(exceptionDates).forEach(d => {
         if (d >= start && d <= end) delete exceptionDates[d];
     });
@@ -686,10 +656,7 @@ addScheduleRangeBtn.addEventListener('click', () => {
 renderScheduleTable();
 
 /* ═══════════════════════════════════════════
-   TOUR TYPE → DAYS/NIGHTS
    - "ทัวร์รายวัน" เท่านั้น → numberOfDays ล็อก = 1, numberOfNights ล็อก = 0
-   - ประเภทอื่นๆ ทั้งหมด (ทัวร์วัฒนธรรมชนเผ่า / ทัวร์วิถีชีวิต / อื่นๆ) → ปลดล็อกให้ผู้ใช้กรอกวัน/คืนเอง
-     ไม่มีการเติมค่าแนะนำให้ล่วงหน้า
 ═══════════════════════════════════════════ */
 const tourtypeSelect = document.getElementById('tourtypeSelect');
 const daysInput = document.getElementById('numberOfDays');
@@ -711,7 +678,7 @@ function applyTourTypeRules() {
         daysInput.readOnly = false;
         nightsInput.readOnly = false;
     } else {
-        // ทุกประเภทที่ไม่ใช่ทัวร์รายวัน (รวม __custom__) → ให้ผู้ใช้กรอกวัน/คืนเอง
+        // ทุกประเภทที่ไม่ใช่ทัวร์รายวัน→ ให้ผู้ใช้กรอกวัน/คืนเอง
         customTypeGroup.style.display = (type === '__custom__') ? 'block' : 'none';
         daysInput.readOnly = false;
         nightsInput.readOnly = false;
@@ -760,11 +727,6 @@ window.addEventListener('DOMContentLoaded', applyPickupRules);
 
 /* ═══════════════════════════════════════════
    LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่ (จุดรวมพล / เขตรับที่โรงแรม)
-   ฟรี ไม่ต้องมี API Key ไม่เก็บ lat/lng ลง backend
-   ใช้ Nominatim (OSM) สำหรับค้นหาสถานที่ + reverse geocode
-   (หมายเหตุ: ไฟล์นี้ใช้ initMeetingMap()/initHotelMap() เวอร์ชัน Leaflet
-    เท่านั้น — เวอร์ชัน Google Maps เดิมถูกลบออกแล้วเพื่อกันการประกาศ
-    ฟังก์ชันซ้ำที่ทำให้ตัวหลังทับตัวก่อนหน้าโดยไม่รู้ตัว)
 ═══════════════════════════════════════════ */
 const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเชียงใหม่ (ปรับตามพื้นที่ให้บริการจริงได้)
 const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
@@ -843,10 +805,9 @@ function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
                 });
                 suggestBoxEl.style.display = 'block';
             });
-        }, 500); // debounce 500ms ตามนโยบายการใช้งาน Nominatim (ไม่ยิง request ถี่เกินไป)
+        }, 500);
     });
 
-    // ปิด dropdown เมื่อคลิกที่อื่น
     document.addEventListener('click', (e) => {
         if (!inputEl.contains(e.target) && !suggestBoxEl.contains(e.target)) {
             suggestBoxEl.style.display = 'none';
@@ -854,7 +815,7 @@ function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
     });
 }
 
-/* ── หาตำแหน่งปัจจุบันของผู้ใช้ (ใช้ร่วมกันทั้ง 2 แผนที่) ── */
+/* ── หาตำแหน่งปัจจุบันของผู้ใช้  ── */
 function getCurrentPositionOrDefault(onLocated, onFallback) {
     if (!navigator.geolocation) {
         onFallback();
@@ -862,14 +823,14 @@ function getCurrentPositionOrDefault(onLocated, onFallback) {
     }
     navigator.geolocation.getCurrentPosition(
         (pos) => onLocated([pos.coords.latitude, pos.coords.longitude]),
-        () => onFallback(), // ผู้ใช้กดปฏิเสธ หรือหาตำแหน่งไม่ได้ → ใช้ค่า default
+        () => onFallback(),
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
     );
 }
 
 /* ── จุดรวมพล ── */
 function initMeetingMap() {
-    if (meetingMap) return; // สร้างครั้งเดียวพอ
+    if (meetingMap) return;
 
     meetingMap = createLeafletMap('meetingPointMap');
     meetingMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(meetingMap);
@@ -892,7 +853,7 @@ function initMeetingMap() {
 
     setTimeout(() => meetingMap.invalidateSize(), 200);
 
-    // ✅ ปักหมุดที่ตำแหน่งปัจจุบันของผู้ใช้อัตโนมัติ (ถ้าช่องยังว่างอยู่ เช่น ยังไม่มีค่าจาก DB)
+    //  ปักหมุดที่ตำแหน่งปัจจุบันของผู้ใช้อัตโนมัติ
     if (!meetingPointDetailInput.value.trim()) {
         getCurrentPositionOrDefault(
             ([lat, lng]) => {
@@ -903,7 +864,7 @@ function initMeetingMap() {
                     clearErr('meetingPointDetail', 'err-meetingPointDetail');
                 });
             },
-            () => { /* ใช้ DEFAULT_MAP_CENTER ตามเดิม ไม่ต้องทำอะไรเพิ่ม */ }
+            () => { }
         );
     }
 
@@ -921,21 +882,21 @@ function initMeetingMap() {
 
 /* ── เขตรับที่โรงแรม */
 function initHotelSearch() {
-    if (initHotelSearch._bound) return; // ผูก listener ครั้งเดียวพอ
+    if (initHotelSearch._bound) return;
     initHotelSearch._bound = true;
 
     attachPlaceSearch(
         hotelPickupAreaInput,
         document.getElementById('hotelPickupSuggest'),
         (lat, lng, displayName) => {
-            // ไม่มีแผนที่ให้ปัก แค่เคลียร์ error เพราะ input.value ถูกเซ็ตไปแล้วตอนคลิก suggestion
+            // ไม่มีแผนที่ให้ปัก แค่เคลียร์ error
             clearErr('hotelPickupArea', 'err-hotelPickupArea');
         },
         { id: null }
     );
 }
 
-// เผื่อมีค่าเดิมติดมาจาก server (เช่น validation error แล้ว reload หน้าเดิม / โหมดแก้ไข)
+// เผื่อมีค่าเดิมติดมาจาก server
 window.addEventListener('DOMContentLoaded', () => {
     const savedType = /*[[${tour?.tourtype?.typename}]]*/ '';
     if (savedType) {
@@ -949,27 +910,38 @@ window.addEventListener('DOMContentLoaded', () => {
         const d = parseInt(daysInput.value);
         const n = parseInt(nightsInput.value);
         applyTourTypeRules();
-        // คืนค่าวัน/คืนเดิมจาก DB ทับค่าที่ถูกเคลียร์ไปตอน applyTourTypeRules
         if (!isNaN(d)) daysInput.value = d;
         if (!isNaN(n)) nightsInput.value = n;
     }
 });
 
-// ตรวจ "จำนวนคืนต้องน้อยกว่าจำนวนวัน" แบบ real-time ตอนผู้ใช้พิมพ์ (เฉพาะโหมดที่แก้ไขได้)
-nightsInput.addEventListener('input', () => {
-    if (tourtypeSelect.value === 'ทัวร์รายวัน') return;
-    const d = parseInt(daysInput.value);
-    const n = parseInt(nightsInput.value);
+// ตรวจ "จำนวนวัน/คืน" แบบ real-time 
+function validateDaysNights() {
+    if (tourtypeSelect.value === 'ทัวร์รายวัน') {
+        clearErr('numberOfDays', 'err-numberOfDays');
+        return;
+    }
+    const dVal = daysInput.value;
+    const nVal = nightsInput.value;
+    const d = parseInt(dVal);
+    const n = parseInt(nVal);
+
+    if (isInvalidNumeric(dVal, true)) {
+        showErr('numberOfDays', 'err-numberOfDays', 'จำนวนวันต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)');
+        return;
+    }
+    if (isInvalidNumeric(nVal, false)) {
+        showErr('numberOfDays', 'err-numberOfDays', 'จำนวนคืนต้องไม่ติดลบ');
+        return;
+    }
     if (!isNaN(d) && !isNaN(n) && n >= d) {
         showErr('numberOfDays', 'err-numberOfDays', 'จำนวนคืนต้องน้อยกว่าจำนวนวัน');
-    } else {
-        clearErr('numberOfDays', 'err-numberOfDays');
+        return;
     }
-});
-daysInput.addEventListener('input', () => {
-    if (tourtypeSelect.value === 'ทัวร์รายวัน') return;
     clearErr('numberOfDays', 'err-numberOfDays');
-});
+}
+nightsInput.addEventListener('input', validateDaysNights);
+daysInput.addEventListener('input', validateDaysNights);
 
 /* ═══════════════════════════════════════════
    VALIDATION
@@ -993,32 +965,66 @@ REQUIRED.forEach(f => {
     el.addEventListener(evt, () => clearErr(f.id, f.errId));
 });
 
-// ✅ ห้ามค่าติดลบในทุกช่องตัวเลข: จำนวนวัน/คืน, ที่นั่งขั้นต่ำ/สูงสุด, ราคาผู้ใหญ่/เด็ก
-//    (ฟอร์มมี novalidate จึง attribute min="0"/"1" ของ HTML ไม่ทำงานเอง ต้องเช็คเองด้วย JS)
-const NUMERIC_NON_NEGATIVE = [
-    { id: 'numberOfDays', errId: 'err-numberOfDays', msg: 'จำนวนวันต้องไม่ติดลบ' },
-    { id: 'numberOfNights', errId: 'err-numberOfDays', msg: 'จำนวนคืนต้องไม่ติดลบ' },
-    { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'จำนวนที่นั่งขั้นต่ำต้องไม่ติดลบ' },
-    { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'จำนวนที่นั่งสูงสุดต้องไม่ติดลบ' },
-    { id: 'adultprice', errId: 'err-adultprice', msg: 'ราคาผู้ใหญ่ต้องไม่ติดลบ' },
-    { id: 'childprice', errId: 'err-childprice', msg: 'ราคาเด็กต้องไม่ติดลบ' },
+// เช็คค่าตัวเลข: ห้ามติดลบทุกช่อง และช่องที่ห้ามเป็น 0 
+
+const NUMERIC_MIN = [
+    { id: 'numberOfDays', errId: 'err-numberOfDays', msg: 'จำนวนวันต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+    { id: 'numberOfNights', errId: 'err-numberOfDays', msg: 'จำนวนคืนต้องไม่ติดลบ', mustBePositive: false },
+    { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'ที่นั่งขั้นต่ำต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+    { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'ที่นั่งสูงสุดต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+    { id: 'adultprice', errId: 'err-adultprice', msg: 'ราคาผู้ใหญ่ต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+    { id: 'childprice', errId: 'err-childprice', msg: 'ราคาเด็กต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
 ];
 
-function isNegativeValue(val) {
-    return val !== '' && !isNaN(parseFloat(val)) && parseFloat(val) < 0;
+function isInvalidNumeric(val, mustBePositive) {
+    if (val === '' || isNaN(parseFloat(val))) return false;
+    const num = parseFloat(val);
+    return mustBePositive ? num <= 0 : num < 0;
 }
 
-NUMERIC_NON_NEGATIVE.forEach(f => {
-    const el = document.getElementById(f.id);
-    if (!el) return;
-    // ผูก listener นี้ "หลัง" listener อื่นๆ ที่ clearErr ไปแล้ว (REQUIRED / tour-type)
-    // เพื่อให้ข้อความ error เรื่องติดลบแสดงทับได้เสมอถ้ายังติดลบอยู่
-    el.addEventListener('input', () => {
-        if (isNegativeValue(el.value)) {
-            showErr(f.id, f.errId, f.msg);
-        }
+NUMERIC_MIN
+    .filter(f => !['numberOfDays', 'numberOfNights', 'minSeatstour', 'maxSeatstour'].includes(f.id))
+    .forEach(f => {
+        const el = document.getElementById(f.id);
+        if (!el) return;
+        // ผูก listener นี้ "หลัง" listener อื่นๆ ที่ clearErr ไปแล้ว (REQUIRED / tour-type)
+        // เพื่อให้ข้อความ error เรื่องค่าไม่ถูกต้องแสดงทับได้เสมอถ้ายังไม่ถูกต้องอยู่
+        el.addEventListener('input', () => {
+            if (isInvalidNumeric(el.value, f.mustBePositive)) {
+                showErr(f.id, f.errId, f.msg);
+            } else {
+                clearErr(f.id, f.errId);
+            }
+        });
     });
-});
+
+//  ที่นั่งขั้นต่ำ/สูงสุด รวมเช็คเป็นฟังก์ชันเดียว (เหมือน validateDaysNights())
+//    เพื่อไม่ให้ error "สูงสุดต้องมากกว่าขั้นต่ำ" ถูกเคลียร์ทับตอนพิมพ์อีกช่อง
+function validateSeats() {
+    const minEl = document.getElementById('minSeatstour');
+    const maxEl = document.getElementById('maxSeatstour');
+    const minVal = minEl.value, maxVal = maxEl.value;
+    const min = parseInt(minVal), max = parseInt(maxVal);
+
+    if (isInvalidNumeric(minVal, true)) {
+        showErr('minSeatstour', 'err-minSeatstour', 'ที่นั่งขั้นต่ำต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)');
+    } else {
+        clearErr('minSeatstour', 'err-minSeatstour');
+    }
+
+    if (isInvalidNumeric(maxVal, true)) {
+        showErr('maxSeatstour', 'err-maxSeatstour', 'ที่นั่งสูงสุดต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)');
+        return;
+    }
+
+    if (!isNaN(min) && !isNaN(max) && min >= max) {
+        showErr('maxSeatstour', 'err-maxSeatstour', 'จำนวนที่นั่งสูงสุดต้องมากกว่าที่นั่งขั้นต่ำ');
+        return;
+    }
+    clearErr('maxSeatstour', 'err-maxSeatstour');
+}
+document.getElementById('minSeatstour').addEventListener('input', validateSeats);
+document.getElementById('maxSeatstour').addEventListener('input', validateSeats);
 
 function showErr(id, errId, msg) {
     document.getElementById(id)?.classList.add('error');
@@ -1061,18 +1067,19 @@ document.getElementById('tourForm').addEventListener('submit', function (e) {
         else clearErr(f.id, f.errId);
     });
 
+    // ✅ เช็คว่านั่งขั้นต่ำต้องน้อยกว่า (strict) ที่นั่งสูงสุดเสมอ ห้ามเท่ากัน
     const minV = parseInt(document.getElementById('minSeatstour').value);
     const maxV = parseInt(document.getElementById('maxSeatstour').value);
-    if (!isNaN(minV) && !isNaN(maxV) && minV > maxV) {
-        showErr('maxSeatstour', 'err-maxSeatstour', 'จำนวนสูงสุดต้องมากกว่าหรือเท่ากับขั้นต่ำ');
+    if (!isNaN(minV) && !isNaN(maxV) && minV >= maxV) {
+        showErr('maxSeatstour', 'err-maxSeatstour', 'จำนวนที่นั่งสูงสุดต้องมากกว่าที่นั่งขั้นต่ำ');
         valid = false;
     }
 
-    // ─── กันค่าติดลบซ้ำอีกชั้นตอน submit (เผื่อกรณี input event ไม่ทำงาน เช่น autofill) ───
-    NUMERIC_NON_NEGATIVE.forEach(f => {
+    // ─── กันค่าไม่ถูกต้องซ้ำอีกชั้นตอน submit (เผื่อกรณี input event ไม่ทำงาน เช่น autofill) ───
+    NUMERIC_MIN.forEach(f => {
         const el = document.getElementById(f.id);
         if (!el) return;
-        if (isNegativeValue(el.value)) {
+        if (isInvalidNumeric(el.value, f.mustBePositive)) {
             showErr(f.id, f.errId, f.msg);
             valid = false;
         }

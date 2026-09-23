@@ -114,7 +114,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
         showError(emailInput, emailError, 'เกิดข้อผิดพลาด กรุณาลองใหม่');
     });
 });
-// Toggle แสดง/ซ่อนรหัสผ่าน
+
 const togglePassword = document.getElementById('togglePassword');
 const toggleIcon      = document.getElementById('toggleIcon');
 

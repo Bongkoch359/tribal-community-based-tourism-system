@@ -21,13 +21,10 @@ public class Activitypost {
     @Column(columnDefinition = "LONGTEXT")
     private String images;
 
-
-    // Many post belong to 1 manager
     @ManyToOne
     @JoinColumn(name = "managerid")
     private Communitymanager communitymanager;
-
-    // Many post can promote 1 tour (nullable: บางโพสไม่เกี่ยวกับทัวร์ เช่น ข่าวสาร/ประกาศ)
+    
     @ManyToOne
     @JoinColumn(name = "tourid",nullable = true)
     private Tour tour;

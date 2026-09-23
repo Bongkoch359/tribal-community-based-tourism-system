@@ -28,23 +28,18 @@ public class ManagerTourReviewController {
 
     @Autowired
     private TourRepository tourRepository;
-
-    // ══════════════════════════════════════════════════════
-    // GET /manager/tours/{tourid}/reviews
+   
     // หน้าแสดงรีวิวทั้งหมดของทัวร์ที่เลือก
-    // ══════════════════════════════════════════════════════
     @GetMapping("/{tourid}/reviews")
     public String viewTourReviews(@PathVariable String tourid,
             HttpSession session,
             Model model) {
 
-        // ── ตรวจสอบสิทธิ์ผู้จัดการ (เหมือนหน้าอื่น ๆ ของ manager) ──
         Communitymanager loggedInManager = (Communitymanager) session.getAttribute("loggedInManager");
         if (loggedInManager == null) {
             return "redirect:/manager/login";
         }
 
-        // ── ดึงข้อมูลทัวร์ ──
         Tour tour = tourRepository.findById(tourid)
                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์นี้"));
 
@@ -54,7 +49,7 @@ public class ManagerTourReviewController {
             throw new IllegalStateException("ไม่มีสิทธิ์ดูรีวิวของทัวร์นี้");
         }
 
-        // ── ดึงรีวิว + สรุปคะแนน (ใช้ ReviewService ที่มีอยู่แล้ว ไม่ต้องแก้) ──
+        // ── ดึงรีวิว + สรุปคะแนน  ──
         List<Review> reviews = reviewService.getReviewsByTourId(tourid);
         double avgRating = reviewService.getAvgRatingByTourId(tourid);
         Map<Integer, Long> ratingCounts = reviewService.getRatingCountsByTourId(tourid);
@@ -71,8 +66,6 @@ public class ManagerTourReviewController {
     // ══════════════════════════════════════════════════════
     // GET /manager/tours/reviews
     // หน้ารีวิว "รวม" ทุกทัวร์ของ manager คนที่ล็อกอินอยู่
-    // ไม่แยกทีละทัวร์ แต่ละรีวิวจะบอกในตัวว่าเป็นของทัวร์ไหน
-    // แล้วกรองดูได้ตามประเภททัวร์
     // ══════════════════════════════════════════════════════
     @GetMapping("/reviews")
     public String viewAllTourReviews(HttpSession session, Model model) {
@@ -87,8 +80,6 @@ public class ManagerTourReviewController {
         Map<Integer, Long> ratingCounts = reviewService.getRatingCountsForViews(reviews);
         Map<String, Long> tourTypeCounts = reviewService.getReviewCountByTourType(reviews);
 
-        // ✅ เพิ่มบรรทัดนี้ — ดึงประเภททัวร์ "ทั้งหมด" ของ manager
-        // ไม่ใช่แค่ที่มีรีวิวแล้ว
         List<String> allTourTypes = tourRepository.findDistinctTourTypeNamesByManagerId(loggedInManager.getManagerid());
         model.addAttribute("allTourTypes", allTourTypes);
 

@@ -22,13 +22,10 @@ function dismissSignatureWarning() {
 
 /* ═══════════════════════════════════════════
    โหลดรูป thumbnail จาก data-src ผ่าน JS
-   หลีกเลี่ยง HTML attribute ยาวเกิน limit
 ═══════════════════════════════════════════ */
 document.querySelectorAll('.lazy-thumb').forEach(function (img) {
     const raw = img.getAttribute('data-src') || '';
     if (!raw) return;
-
-    // ใช้รูปแรกจาก filename1.jpg||filename2.jpg
     const firstName = raw.split('||')[0].trim();
     img.src = '/uploads/tours/' + firstName;
 
@@ -36,7 +33,7 @@ document.querySelectorAll('.lazy-thumb').forEach(function (img) {
 });
 
 /* ═══════════════════════════════════════════
-   นับจำนวนทัวร์แต่ละสถานะ แล้วเติมลง badge
+   นับจำนวนทัวร์แต่ละสถานะ
 ═══════════════════════════════════════════ */
 function computeStatusCounts() {
     const rows = document.querySelectorAll('.tour-row');
@@ -91,10 +88,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 document.addEventListener('DOMContentLoaded', function () {
     updateCounts();
-    filterTours('เปิดรับจอง'); // กรองค่าเริ่มต้นเป็น "เปิดรับจอง"
+    filterTours('เปิดรับจอง');
 });
 
-// เปิด/ปิด Dropdown
+//Dropdown
 function toggleStatusDropdown() {
     const dropdown = document.getElementById('statusFilterDropdown');
     dropdown.classList.toggle('open');
@@ -113,11 +110,9 @@ function selectStatusFilter(status, itemElement) {
     const triggerBtn = document.getElementById('dropdownTriggerBtn');
     const dropdown = document.getElementById('statusFilterDropdown');
 
-    // อัปเดตคลาส active ที่เมนูย่อย
     document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
     if (itemElement) itemElement.classList.add('active');
 
-    // เปลี่ยนสีและข้อความของปุ่มกดหลัก
     triggerBtn.className = 'filter-dropdown-trigger';
     let iconClass = 'fa-circle-check';
     let countId = 'count-open';

@@ -32,7 +32,6 @@ public class OwnerReviewController {
                                        HttpSession session,
                                        Model model) {
 
-        // เช็ค login เหมือนหน้าอื่นๆ ของ owner (เช่น addroom, homestays)
         String ownerid = (String) session.getAttribute("ownerid");
         if (ownerid == null) return "redirect:/owner/login";
 
@@ -41,40 +40,36 @@ public class OwnerReviewController {
             return "redirect:/owner/homestays";
         }
 
-        // ดึงข้อมูลโฮมสเตย์จริง (ชื่อ, ที่อยู่, รูป) — ใช้ตัวเดียวกับหน้า viewHomestay/editHomestay
         HomestayDetailDto detail = homestayService.getHomestayDetail(homestayId);
         if (detail == null) return "redirect:/owner/homestays";
 
-        // ดึงรีวิวทั้งหมดของโฮมสเตย์นี้ (เรียงล่าสุดก่อน อยู่ใน repository แล้ว)
+        // ดึงรีวิวทั้งหมดของโฮมสเตย์นี้ 
         List<Review> allReviews = reviewService.getReviewsByHomestayId(homestayId);
 
-        // ค่าเฉลี่ย + จำนวนรีวิวรวม — ใช้ค่าที่ HomestayDetailDto คำนวณมาให้แล้ว
-        // (กันไม่ให้เรียกคำนวณซ้ำสองที่แล้วได้ค่าไม่ตรงกัน)
+        // ค่าเฉลี่ย + จำนวนรีวิวรวม 
         double avgRating = detail.getAvgRating();
         long totalCount = detail.getReviewCount();
 
-        // นับจำนวนรีวิวแยกตามดาว 1-5 (สำหรับกราฟแท่งสรุปคะแนน)
+        // นับจำนวนรีวิวแยกตามดาว 1-5 
         Map<Integer, Long> starCounts = allReviews.stream()
                 .filter(r -> r.getRating() != null)
                 .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
 
-        // ถ้าเลือก filter ดาว ให้กรองเฉพาะรีวิวดาวนั้น ไม่งั้นแสดงทั้งหมด
+        // ถ้าเลือก filter ดาว ให้กรองเฉพาะรีวิวดาวนั้น 
         List<Review> filteredReviews = (star != null)
                 ? allReviews.stream()
                     .filter(r -> star.equals(r.getRating()))
                     .collect(Collectors.toList())
                 : allReviews;
-
-        // ── navbar เหมือน addroom: ใช้ ownername จาก session ──
         model.addAttribute("ownername", session.getAttribute("ownername"));
 
         model.addAttribute("homestayId", homestayId);
-        model.addAttribute("homestay", detail); // ใช้ใน HTML: homestay.homestayname / homestay.address / homestay.firstImage
+        model.addAttribute("homestay", detail); 
         model.addAttribute("reviews", filteredReviews);
         model.addAttribute("avgRating", avgRating);
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("starCounts", starCounts); // Map<Integer, Long> คีย์ 1-5
-        model.addAttribute("selectedStar", star);      // null = "ทั้งหมด"
+        model.addAttribute("starCounts", starCounts); 
+        model.addAttribute("selectedStar", star);      
 
         return "Homestay/homestayReviews";
     }

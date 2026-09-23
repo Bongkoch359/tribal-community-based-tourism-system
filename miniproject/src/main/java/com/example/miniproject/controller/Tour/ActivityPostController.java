@@ -39,11 +39,11 @@ public class ActivityPostController {
     // ─── โฟลเดอร์เก็บรูปภาพโพสต์กิจกรรม ───
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/posts/";
 
-    // ─── ฟังก์ชันช่วยบันทึกไฟล์รูปภาพลงดิสก์ แล้วคืน path คั่นด้วย "||" ───
+    // ─── ฟังก์ชันช่วยบันทึกไฟล์รูปภาพลงดิสก์ ───
     private String saveImages(List<MultipartFile> images) throws IOException {
          System.out.println("UPLOAD DIR = " + UPLOAD_DIR);
         if (images == null || images.isEmpty()) {
-            return null; // ไม่มีไฟล์ใหม่ -> ไม่แตะรูปเดิม
+            return null;
         }
 
         System.out.println("จำนวนไฟล์ = " + images.size());
@@ -133,7 +133,7 @@ public class ActivityPostController {
         }
 
         model.addAttribute("loggedInManager", manager);
-        model.addAttribute("tours", getActiveOpenTours(manager)); // ดึงเฉพาะทัวร์ที่เปิดจอง
+        model.addAttribute("tours", getActiveOpenTours(manager)); 
         return "Tour/createPost";
     }
 
@@ -181,7 +181,7 @@ public class ActivityPostController {
 
         model.addAttribute("post", post);
         model.addAttribute("loggedInManager", manager);
-        model.addAttribute("tours", getActiveOpenTours(manager)); // ดึงเฉพาะทัวร์ที่เปิดจอง
+        model.addAttribute("tours", getActiveOpenTours(manager));
         return "Tour/editPost";
     }
 
@@ -203,8 +203,6 @@ public class ActivityPostController {
             return "redirect:/manager/login";
 
         try {
-            // imagePaths สุดท้าย = รูปเดิมที่ผู้ใช้ยังเก็บไว้ (keepImages) + รูปใหม่ที่เพิ่งอัปโหลด
-            // เพื่อรองรับการลบรูปเดิมทีละรูปจาก grid เดียวกันในหน้าแก้ไขโพสต์
             String imagePaths;
             if (keepImages != null) {
                 List<String> finalPaths = new ArrayList<>();
@@ -216,14 +214,13 @@ public class ActivityPostController {
                     }
                 }
 
-                String newImagePaths = saveImages(images); // null = ไม่มีไฟล์ใหม่
+                String newImagePaths = saveImages(images);
                 if (newImagePaths != null) {
                     finalPaths.addAll(List.of(newImagePaths.split("\\|\\|")));
                 }
                 imagePaths = String.join("||", finalPaths);
             } else {
-                // ไม่มี keepImages ส่งมา (เผื่อเรียกจากที่อื่น) -> ใช้พฤติกรรมเดิม
-                imagePaths = saveImages(images); // null = ไม่มีการอัปโหลดรูปใหม่ ให้ service คงรูปเดิมไว้
+                imagePaths = saveImages(images);
             }
 
             Activitypost updated = activityPostService.updatePost(

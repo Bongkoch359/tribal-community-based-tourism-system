@@ -16,11 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-
-// ═══════════════════════════════════════════════════════════════
-//  แยกออกมาจาก TourController: จัดการเฉพาะ "รอบทัวร์" (Tourschedule)
-//    - แสดงหน้าจัดการรอบทัวร์แยก (Tour/tourschedule) — ยังเก็บไว้เผื่อใช้
-//    - เพิ่ม / ลบ / เปลี่ยนสถานะ / bulk เปลี่ยนสถานะตามช่วงวันที่
 @Controller
 @RequestMapping("/manager/tours/{tourid}/schedules")
 public class TourScheduleController {
@@ -31,8 +26,7 @@ public class TourScheduleController {
     @Autowired
     private TourScheduleService tourScheduleService;
 
-    // ─── แสดงหน้าจัดการรอบทัวร์ (แยกต่างหากจากหน้าแก้ไขข้อมูลทัวร์)
-    // ─────────────────
+    // ─── แสดงหน้าจัดการรอบทัวร์ 
     @GetMapping
     public String manageSchedules(@PathVariable("tourid") String tourid,
             @RequestParam(value = "success", required = false) String success,
@@ -63,7 +57,7 @@ public class TourScheduleController {
         return "Tour/tourschedule";
     }
 
-    // ─── เพิ่มวันที่เปิดทัวร์ใหม่ (Tourschedule) ─────────────────────────────────
+    // ─── เพิ่มวันที่เปิดทัวร์ใหม่  ─────────────────────────────────
 
     @PostMapping
     public String addSchedule(@PathVariable("tourid") String tourid,
@@ -89,7 +83,7 @@ public class TourScheduleController {
             finalEnddate = opendate;
         }
 
-        // ตรวจสอบความถูกต้องของวันที่ (Validation)
+        // ตรวจสอบความถูกต้องของวันที่
         if (finalEnddate.isBefore(opendate)) {
             redirectAttributes.addFlashAttribute("errorMessage", "วันที่จบทัวร์ต้องไม่ก่อนหน้าวันที่เริ่มทัวร์");
             return "redirect:/manager/tours/" + tourid + "/schedules";
@@ -114,7 +108,7 @@ public class TourScheduleController {
         return "redirect:/manager/tours/" + tourid + "/schedules";
     }
 
-    // ─── ปิด/เปิดรับจองรอบใดรอบหนึ่งด้วยมือ ─────────────────────────────────────
+    // ─── ปิด/เปิดรับจองรอบใดรอบหนึ่ง ─────────────────────────────────────
 
     @PostMapping("/{scheduleid}/status")
     public String updateScheduleStatus(@PathVariable("tourid") String tourid,
@@ -137,8 +131,6 @@ public class TourScheduleController {
     }
 
     // ─── ลบวันที่เปิดทัวร์ (เฉพาะรอบที่ยังไม่มีคนจอง)
-    // ───────────────────────────────
-
     @PostMapping("/{scheduleid}/delete")
     @ResponseBody
     public Map<String, Object> deleteSchedule(@PathVariable("tourid") String tourid,
@@ -161,7 +153,7 @@ public class TourScheduleController {
             return result;
         }
 
-        // เช็คว่ามีรอบนี้จริง และเป็นของทัวร์นี้จริง
+        // เช็คว่ามีรอบนี้ไหม
         Tourschedule schedule = tourScheduleService.getScheduleById(scheduleid).orElse(null);
         if (schedule == null || !schedule.getTour().getTourid().equals(tourid)) {
             result.put("ok", false);
@@ -179,8 +171,6 @@ public class TourScheduleController {
         try {
             tourScheduleService.deleteSchedule(scheduleid);
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            // มักเกิดจากยังมี Bookingtourdetail (เช่น booking ที่ถูกยกเลิกแล้ว)
-            // อ้างอิง FK มาที่รอบนี้อยู่ จึงลบไม่ได้จริงในระดับฐานข้อมูล
             result.put("ok", false);
             result.put("message", "ไม่สามารถลบรอบนี้ได้ เนื่องจากมีประวัติการจอง (รวมที่ยกเลิกแล้ว) ผูกอยู่กับรอบนี้");
             return result;
@@ -190,7 +180,6 @@ public class TourScheduleController {
             return result;
         }
 
-        // ยืนยันอีกครั้งว่าหายไปจริงก่อนตอบว่าสำเร็จ
         if (tourScheduleService.getScheduleById(scheduleid).isPresent()) {
             result.put("ok", false);
             result.put("message", "ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
@@ -203,8 +192,6 @@ public class TourScheduleController {
     }
 
     // ─── อัปเดตสถานะรอบทัวร์หลายรอบพร้อมกัน ตามช่วงวันที่
-    // (ใช้กับปฏิทินแบบลากเลือกช่วง) ───
-
     @PostMapping("/bulk-status")
     @ResponseBody
     public Map<String, Object> bulkUpdateStatus(
@@ -236,7 +223,6 @@ public class TourScheduleController {
         }
 
         //  รอบทัวร์ที่มีคนจองอยู่แล้ว จะถูกข้ามไปโดยอัตโนมัติ (เปลี่ยนสถานะไม่ได้)
-        // logic การเช็คอยู่ใน Service แล้ว ที่นี่แค่รับผลลัพธ์มาแจ้งผู้ใช้
         Map<String, Integer> bulkResult = tourScheduleService.bulkUpdateStatusByDateRange(tourid, startDate, endDate,
                 status);
         int updated = bulkResult.getOrDefault("updated", 0);

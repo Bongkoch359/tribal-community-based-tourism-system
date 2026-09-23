@@ -1,25 +1,21 @@
-// ── ช่องข้อความ (รายละเอียด): ขยายความสูงอัตโนมัติตามจำนวนตัวอักษรที่พิมพ์ ──
+// ── ช่องข้อความ (รายละเอียด) ──
 document.querySelectorAll('textarea.form-control').forEach(function (ta) {
     const autoResize = () => {
         ta.style.height = 'auto';
         ta.style.height = (ta.scrollHeight + 2) + 'px';
     };
     ta.addEventListener('input', autoResize);
-    // เรียกครั้งแรกกรณีมีข้อความเดิมอยู่แล้ว (เช่นตอนแก้ไขโพสต์)
     autoResize();
 });
 
-// ── รูปภาพ: อัปโหลดเป็นไฟล์จริง (ไม่ใช้ base64) + drag & drop เหมือนหน้าแก้ไขทัวร์ ──
+// ── รูปภาพ: อัปโหลดเป็นไฟล์จริ
 const fileInput = document.getElementById('fileInput');
 const previewGrid = document.getElementById('previewGrid');
 const uploadZone = document.getElementById('uploadZone');
 
-let fileList = []; // เก็บ File object จริง ๆ
+let fileList = [];
 
 fileInput.addEventListener('change', function () {
-    // ต้อง reset value "ก่อน" เรียก addFiles() เสมอ
-    // เพราะ addFiles() -> syncFileInput() จะ set this.files ใหม่ตามรายการที่เลือกไว้
-    // ถ้า reset (this.value = '') ทีหลัง จะไปล้าง FileList ที่เพิ่ง set ไปทิ้งทั้งหมด
     // ทำให้ preview ขึ้นแต่ตอน submit จริงไฟล์รูปกลับว่างเปล่า (รูปไม่บันทึกลง DB)
     const files = Array.from(this.files);
     this.value = '';
@@ -93,8 +89,6 @@ function handleDrop(e) {
 }
 
 // ── แสดง/ซ่อนฟิลด์สถานที่ ตามการเลือกทัวร์ ──
-// เลือกทัวร์ -> แสดงฟิลด์สถานที่ (บังคับกรอก)
-// ไม่ระบุทัวร์ (ข่าวสารทั่วไป) -> ซ่อนฟิลด์สถานที่ (ไม่บังคับกรอก)
 const tourSelect = document.getElementById('tourSelect');
 const locationGroup = document.getElementById('locationGroup');
 const locationInput = document.getElementById('locationInput');
@@ -103,7 +97,7 @@ function toggleLocationField() {
     if (tourSelect.value) {
         locationGroup.style.display = '';
         locationInput.setAttribute('required', 'required');
-        initLocationMap(); // ✅ สร้างแผนที่ตอนช่องสถานที่เพิ่งถูกเปิดใช้งาน
+        initLocationMap();
     } else {
         locationGroup.style.display = 'none';
         locationInput.removeAttribute('required');
@@ -112,7 +106,7 @@ function toggleLocationField() {
 }
 
 tourSelect.addEventListener('change', toggleLocationField);
-toggleLocationField(); // เผื่อกรณีแก้ไขโพสต์ที่มีทัวร์อยู่แล้ว
+toggleLocationField();
 
 // ─── Auto-show modal ถ้ามี successMessage ───
 (function () {
@@ -131,7 +125,7 @@ toggleLocationField(); // เผื่อกรณีแก้ไขโพสต
     fill.offsetHeight;
     fill.style.animation = 'progress-drain 2s linear forwards';
 
-    // ปิด modal แล้ว redirect ไปหน้า list
+
     setTimeout(() => {
         modal.classList.remove('show');
         window.location.href = '/manager/posts';
@@ -139,7 +133,6 @@ toggleLocationField(); // เผื่อกรณีแก้ไขโพสต
 })();
 /* ═══════════════════════════════════════════
 LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่สำหรับฟิลด์ "สถานที่"
-(โค้ดชุดเดียวกับหน้า addtour: Nominatim search + reverse geocode + geolocation)
 ═══════════════════════════════════════════ */
 const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเชียงใหม่
 const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
@@ -228,7 +221,7 @@ function getCurrentPositionOrDefault(onLocated, onFallback) {
 }
 
 function initLocationMap() {
-    if (locationMap) return; // สร้างครั้งเดียวพอ
+    if (locationMap) return;
 
     locationMap = createLeafletMap('locationMap');
     locationMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(locationMap);
@@ -247,9 +240,9 @@ function initLocationMap() {
         });
     });
 
-    setTimeout(() => locationMap.invalidateSize(), 200); // กัน bug แผนที่เบี้ยวตอนเพิ่งโผล่จาก display:none
+    setTimeout(() => locationMap.invalidateSize(), 200);
 
-    // ✅ ปักหมุดตามตำแหน่งปัจจุบันอัตโนมัติ ถ้าช่องยังว่างอยู่ (เช่น ยังไม่มีค่าจาก DB)
+    //  ปักหมุดตามตำแหน่งปัจจุบันอัตโนมัติ ถ้าช่องยังว่างอยู่ (เช่น ยังไม่มีค่าจาก DB)
     if (!locationInput.value.trim()) {
         getCurrentPositionOrDefault(
             ([lat, lng]) => {

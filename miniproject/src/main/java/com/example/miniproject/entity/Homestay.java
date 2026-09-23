@@ -1,6 +1,4 @@
 package com.example.miniproject.entity;
-
-// import com.example.miniproject.entity.enums.HomestayStatus;
 import jakarta.persistence.*;
 
 import java.util.List;

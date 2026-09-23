@@ -55,10 +55,8 @@ public class RoomTypeController {
         boolean signatureMissing = checkSignatureMissing(ownerid);
         model.addAttribute("signatureMissing", signatureMissing);
 
-        // ดึงโฮมสเตย์ทั้งหมดของเจ้าของคนนี้
         List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
 
-        // ถ้าไม่ได้ส่ง homestayid มา → ใช้อันแรกของรายการ
         if (homestayid == null) {
             if (!myHomestays.isEmpty()) {
                 homestayid = myHomestays.get(0).getHomestayid();
@@ -84,9 +82,9 @@ public class RoomTypeController {
             m.put("totalrooms", room.getTotalrooms());
 
             // คำนวณสถานะแบบ Dynamic
-            String calculatedStatus = room.getStatus(); // ค่าตั้งต้น เช่น "เปิดจอง" หรือ "ปิดปรับปรุง"
+            String calculatedStatus = room.getStatus(); 
 
-            // ดึงจำนวนห้องที่ถูกจองอยู่ในปัจจุบันของ roomtype นี้ (ผ่าน RoomTypeService)
+            // ดึงจำนวนห้องที่ถูกจองอยู่ในปัจจุบันของ roomtype นี้ 
             int bookedCount = roomTypeService.getCurrentlyBookedRooms(room.getRoomtypeid());
             int totalRooms = room.getTotalrooms() != null ? room.getTotalrooms() : 0;
             int availableRooms = Math.max(totalRooms - bookedCount, 0);
@@ -170,14 +168,13 @@ public class RoomTypeController {
 
         String ownerid = (String) session.getAttribute("ownerid");
 
-        // ── กันฝั่ง server: ธนาคารยังไม่ครบ ห้ามบันทึกห้องพัก ──
+        // ── กัน ธนาคารยังไม่ครบ ห้ามบันทึกห้องพัก ──
         if (checkBankInfoMissing(ownerid)) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", "กรุณากรอกข้อมูลบัญชีธนาคารให้ครบก่อนเพิ่มห้องพัก"));
         }
 
         try {
-            // บันทึกรูปและเก็บ URL path
             String imageUrls = saveImages(images);
 
             AddRoomRequest req = new AddRoomRequest();
@@ -191,7 +188,7 @@ public class RoomTypeController {
             req.setRoomcondition(roomcondition);
             req.setStatus(status);
             req.setFacilitiesIds(facilitiesIds != null ? facilitiesIds : Collections.emptyList());
-            req.setImages(imageUrls); // เก็บ path แทน Base64
+            req.setImages(imageUrls); 
 
             roomTypeService.addRoomType(req);
             return ResponseEntity.ok(Map.of("success", true));
@@ -254,7 +251,7 @@ public class RoomTypeController {
 
         List<String> imageList = buildImageList(room.getImages());
 
-        // นับจำนวนห้องที่ถูกจองอยู่ในปัจจุบัน ใช้เช็คว่าเปลี่ยนสถานะเป็น "ปิดปรับปรุง"/"เต็ม" ได้หรือไม่
+        // นับจำนวนห้องที่ถูกจองอยู่ในปัจจุบัน 
         int bookedCount = roomTypeService.getCurrentlyBookedRooms(roomtypeid);
 
         model.addAttribute("ownername", orDefault(session, "ownername"));
@@ -269,7 +266,7 @@ public class RoomTypeController {
         return "Homestay/editRoom";
     }
 
-    // ─── POST: บันทึกการแก้ไขห้องพัก (multipart/form-data) ──────────────────
+    // ─── POST: บันทึกการแก้ไขห้องพัก ──────────────────
     @PostMapping(value = "/owner/room/edit", consumes = "multipart/form-data")
     @ResponseBody
     public ResponseEntity<?> updateRoom(
@@ -306,7 +303,7 @@ public class RoomTypeController {
         }
 
         try {
-            // รวม path รูปเดิม + รูปใหม่ที่อัปโหลด
+            // รวม path รูปเดิม และ รูปใหม่ที่อัปโหลด
             String newImageUrls = saveImages(newImages);
             String allImages = mergeImagePaths(existingImages, newImageUrls);
 
@@ -332,7 +329,7 @@ public class RoomTypeController {
         }
     }
 
-    // ─── helper: บันทึกไฟล์รูป → คืน URL paths คั่นด้วย comma ──────────────
+    // ─── helper: บันทึกไฟล์รูป  คืน URL paths คั่นด้วย comma ──────────────
     private String saveImages(List<MultipartFile> files) throws IOException {
         if (files == null || files.isEmpty())
             return "";
@@ -407,7 +404,7 @@ public class RoomTypeController {
         try {
             owner = homestayOwnerService.getProfile(ownerid);
         } catch (IllegalArgumentException e) {
-            return true; // ไม่พบ owner
+            return true; 
         }
 
         return owner.getBankName() == null || owner.getBankName().isBlank()

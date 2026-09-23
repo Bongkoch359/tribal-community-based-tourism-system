@@ -1,8 +1,8 @@
 
-// คำค้นหาปัจจุบัน (ตัวพิมพ์เล็กเสมอ เพื่อให้ค้นหาแบบไม่สนตัวพิมพ์เล็ก-ใหญ่)
+// คำค้นหาปัจจุบัน 
 let currentBookingSearchTerm = '';
 
-// หน่วงเวลาก่อนค้นหา (debounce) กันเรียกฟังก์ชันถี่เกินไปตอนพิมพ์เร็วๆ
+// หน่วงเวลาก่อนค้นหา 
 let bookingSearchDebounceTimer = null;
 const BOOKING_SEARCH_DEBOUNCE_MS = 200;
 
@@ -45,21 +45,11 @@ function toggleSearchClearButton() {
     }
 }
 
-/**
- * ฟังก์ชันกลาง: กรองแถวในตารางโดยรวมทั้ง 2 เงื่อนไขเข้าด้วยกัน
- *   1) สถานะที่เลือกจาก dropdown (currentBookingStatus ที่ประกาศในหน้า listBooking.html)
- *   2) คำค้นหาจากช่อง search (currentBookingSearchTerm)
- *
- * ฟังก์ชันนี้ถูกออกแบบให้ filterBookings() ในหน้า listBooking.html
- * เรียกใช้แทนการกรองสถานะอย่างเดียว
- */
 function applyBookingFilters() {
     const rows = document.querySelectorAll('#bookingsTbody tr[data-status]');
     const noResults = document.getElementById('noFilterResults');
     let visibleCount = 0;
 
-    // ตัวแปร currentBookingStatus มาจาก inline script ของ listBooking.html
-    // เผื่อไฟล์นั้นยังไม่โหลด ให้ไม่กรองสถานะ
     const statusKey = (typeof currentBookingStatus !== 'undefined' && currentBookingStatus)
         ? currentBookingStatus
         : null;
@@ -78,10 +68,6 @@ function applyBookingFilters() {
     updateNoResultsMessage(noResults, visibleCount, rows.length);
 }
 
-/**
- * แสดง/ซ่อนข้อความ "ไม่พบรายการที่ตรงกับเงื่อนไข" และปรับข้อความ
- * ให้เหมาะสมกับกรณีที่กำลังค้นหาด้วย เพื่อให้ผู้ใช้เข้าใจว่าทำไมไม่เจอ
- */
 function updateNoResultsMessage(noResultsEl, visibleCount, totalRows) {
     if (!noResultsEl) return;
 

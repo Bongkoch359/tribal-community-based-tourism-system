@@ -171,13 +171,15 @@ body {
 .nav-brand,
 .hs-navbar-brand {
     color: #fff;
-    font-size: 1.05rem;
-    font-weight: 700;
+    font-size: 1.55rem;
+    /* font-weight: 700; */
+    letter-spacing: 0.5px;
     display: flex;
     align-items: center;
     gap: .6rem;
     text-decoration: none;
     white-space: nowrap;
+    font-family: 'Sriracha', cursive;
 }
 
 .nav-brand i {

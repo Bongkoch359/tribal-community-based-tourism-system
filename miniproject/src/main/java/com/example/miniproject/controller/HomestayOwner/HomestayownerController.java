@@ -209,7 +209,7 @@ public class HomestayownerController {
     }
 
     // ═══════════════════════════════════════════════════
-    // ───── Update Profile (ข้อมูลส่วนตัว) — form-submit ─────
+    // ───── Update Profile (ข้อมูลส่วนตัว) 
     // ═══════════════════════════════════════════════════
 
     @PostMapping("/owner/profile/update")
@@ -258,7 +258,7 @@ public class HomestayownerController {
     }
 
     // ═══════════════════════════════════════════════════
-    // ───── Update Signature — form-submit (multipart) ─────
+    // ───── Update Signature — form-submit  ─────
     // ═══════════════════════════════════════════════════
 
     @PostMapping(value = "/owner/profile/update-signature", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -326,7 +326,6 @@ public class HomestayownerController {
     }
 
     // ───── Homestays List ─────
-
     @GetMapping("/owner/homestays")
     public String homestaysPage(HttpSession session, Model model) {
         String ownerid = (String) session.getAttribute("ownerid");
@@ -382,7 +381,7 @@ public class HomestayownerController {
         return "Homestay/editHomestay";
     }
 
-    // ───── Update Homestay (multipart) ─────
+    // ───── Update Homestay  ─────
 
     @PutMapping(value = "/owner/homestays/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody

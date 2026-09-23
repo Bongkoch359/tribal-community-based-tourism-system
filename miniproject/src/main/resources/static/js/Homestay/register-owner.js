@@ -1,19 +1,11 @@
-// ============================================================
-//  register-owner.js
-// ============================================================
-
 'use strict';
 
 const homestayImages = {};
+//  LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่โฮมสเตย์
 
-// ============================================================
-//  LEAFLET + OPENSTREETMAP — ช่วยหาที่อยู่โฮมสเตย์ (แบบเดียวกับหน้าเพิ่มทัวร์)
-//  ฟรี ไม่ต้องมี API Key ไม่เก็บ lat/lng ลง backend
-//  ใช้ Nominatim (OSM) สำหรับค้นหาสถานที่ + reverse geocode
-// ============================================================
-const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเชียงใหม่ (ปรับตามพื้นที่ให้บริการจริงได้)
+const DEFAULT_MAP_CENTER = [18.7883, 98.9853]; // ศูนย์กลางเชียงใหม่ 
 const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
-const homestayMaps = {}; // { idx: { map, marker } }
+const homestayMaps = {};
 
 function createLeafletMap(divId) {
     const map = L.map(divId, { center: DEFAULT_MAP_CENTER, zoom: 13 });
@@ -30,7 +22,7 @@ function reverseGeocode(lat, lng, callback) {
         .then(data => {
             if (data && data.display_name) callback(data.display_name);
         })
-        .catch(() => {});
+        .catch(() => { });
 }
 
 function searchPlaces(query, callback) {
@@ -75,7 +67,7 @@ function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
                 });
                 suggestBoxEl.style.display = 'block';
             });
-        }, 500); // debounce 500ms ตามนโยบายการใช้งาน Nominatim
+        }, 500);
     });
 
     document.addEventListener('click', (e) => {
@@ -85,7 +77,7 @@ function attachPlaceSearch(inputEl, suggestBoxEl, onSelect, timerRef) {
     });
 }
 
-/* ── หาตำแหน่งปัจจุบันของผู้ใช้ ── */
+/* ── หาตำแหน่งปัจจุบัน ── */
 function getCurrentPositionOrDefault(onLocated, onFallback) {
     if (!navigator.geolocation) { onFallback(); return; }
     navigator.geolocation.getCurrentPosition(
@@ -95,7 +87,7 @@ function getCurrentPositionOrDefault(onLocated, onFallback) {
     );
 }
 
-/* ── สร้าง/แสดงแผนที่สำหรับโฮมสเตย์แต่ละแห่ง (เรียกซ้ำได้ปลอดภัย — ครั้งต่อไปแค่ invalidateSize) ── */
+/* ── สร้าง/แสดงแผนที่สำหรับโฮมสเตย์แต่ละแห่ง  ── */
 function initHomestayMap(idx) {
     const mapDivId = `hs_map_${idx}`;
     const mapDiv = document.getElementById(mapDivId);
@@ -128,7 +120,7 @@ function initHomestayMap(idx) {
 
     setTimeout(() => map.invalidateSize(), 200);
 
-    // ✅ ปักหมุดที่ตำแหน่งปัจจุบันของผู้ใช้อัตโนมัติ ถ้ายังไม่มีที่อยู่กรอกไว้
+    // ปักหมุดที่ตำแหน่งปัจจุบันของผู้ใช้อัตโนมัติ
     if (!addressInput.value.trim()) {
         getCurrentPositionOrDefault(
             ([lat, lng]) => {
@@ -151,10 +143,6 @@ function initHomestayMap(idx) {
         { id: null }
     );
 }
-
-// หมายเหตุ: สไตล์ของกล่องแผนที่ (.hs-map-box, .hs-search-input-wrap ฯลฯ)
-// อยู่ใน register-owner.css แล้ว (รวมถึงตัวแก้ปัญหาแผนที่ลอยทับ navbar ตอนเลื่อนจอ
-// ด้วย isolation/z-index) จึงไม่ต้อง inject style ผ่าน JS อีกต่อไป
 
 // ============================================================
 //  HELPER
@@ -180,14 +168,21 @@ function hideSpan(spanId) {
     if (span) { span.style.display = 'none'; }
 }
 
+function isThaiEnglishOnly(str, allowSpace) {
+    const pattern = allowSpace ? /^[ก-๙a-zA-Z\s]+$/ : /^[ก-๙a-zA-Z]+$/;
+    if (!pattern.test(str)) return false;
+    if (/[๐-๙]/.test(str)) return false;
+    return true;
+}
+
 // ============================================================
-//  STEP 1 — VALIDATORS
+// VALIDATORS
 // ============================================================
 function validateFirstname() {
     const input = document.getElementById('firstname');
     const val = input.value.trim();
     if (val === '') { showError(input, 'firstnameError', 'กรุณากรอกชื่อ'); return false; }
-    if (!/^[ก-๙a-zA-Z]+$/.test(val)) { showError(input, 'firstnameError', 'ชื่อใช้ได้เฉพาะตัวอักษรภาษาไทยหรืออังกฤษเท่านั้น'); return false; }
+    if (!isThaiEnglishOnly(val, false)) { showError(input, 'firstnameError', 'ชื่อใช้ได้เฉพาะตัวอักษรภาษาไทยหรืออังกฤษเท่านั้น ห้ามเว้นวรรคหรือมีอักขระพิเศษ'); return false; }
     if (val.length < 2 || val.length > 20) { showError(input, 'firstnameError', 'ชื่อต้องมีความยาว 2–20 ตัวอักษร'); return false; }
     showValid(input, 'firstnameError'); return true;
 }
@@ -195,11 +190,11 @@ function validateLastname() {
     const input = document.getElementById('lastname');
     const val = input.value.trim();
     if (val === '') { showError(input, 'lastnameError', 'กรุณากรอกนามสกุล'); return false; }
-    if (!/^[ก-๙a-zA-Z]+$/.test(val)) { showError(input, 'lastnameError', 'นามสกุลใช้ได้เฉพาะตัวอักษรภาษาไทยหรืออังกฤษเท่านั้น'); return false; }
+    if (!isThaiEnglishOnly(val, false)) { showError(input, 'lastnameError', 'นามสกุลใช้ได้เฉพาะตัวอักษรภาษาไทยหรืออังกฤษเท่านั้น ห้ามเว้นวรรคหรือมีอักขระพิเศษ'); return false; }
     if (val.length < 2 || val.length > 20) { showError(input, 'lastnameError', 'นามสกุลต้องมีความยาว 2–20 ตัวอักษร'); return false; }
     showValid(input, 'lastnameError'); return true;
 }
-// เปลี่ยน validateEmail เป็น async และเพิ่มการเช็คซ้ำกับ backend
+
 async function validateEmail() {
     const input = document.getElementById('email');
     const val = input.value;
@@ -210,7 +205,7 @@ async function validateEmail() {
     if (localPart.length < 5 || localPart.length > 20) { showError(input, 'emailError', 'อีเมล (ก่อน @) ต้องมีความยาว 5–20 ตัวอักษร'); return false; }
 
     // เช็คอีเมลซ้ำกับระบบ
-    input.classList.add('is-checking'); // ใส่ style spinner เองได้ถ้าต้องการ
+    input.classList.add('is-checking');
     try {
         const res = await fetch(`/owner/check-email?email=${encodeURIComponent(val)}`);
         const data = await res.json();
@@ -220,7 +215,6 @@ async function validateEmail() {
         }
     } catch (err) {
         console.error('ตรวจสอบอีเมลไม่สำเร็จ', err);
-        // เช็คไม่ได้ (เช่น เน็ตหลุด) ปล่อยผ่านไปก่อน แล้วให้ backend เช็คซ้ำตอน submit จริง
     } finally {
         input.classList.remove('is-checking');
     }
@@ -250,7 +244,7 @@ function validatePassword() {
 function validateConfirmPassword() {
     const input = document.getElementById('confirmPassword');
     const val = input.value;
-    const pw  = document.getElementById('password').value;
+    const pw = document.getElementById('password').value;
     if (val === '') { showError(input, 'confirmPasswordError', 'กรุณายืนยันรหัสผ่าน'); return false; }
     if (val !== pw) { showError(input, 'confirmPasswordError', 'รหัสผ่านไม่ตรงกัน กรุณากรอกใหม่'); return false; }
     showValid(input, 'confirmPasswordError'); return true;
@@ -261,32 +255,28 @@ function validateAgree() {
     hideSpan('agreeError'); return true;
 }
 
-// หมายเหตุ: validateStep1 (เวอร์ชัน async ที่รอเช็คอีเมลซ้ำด้วย) ถูกย้ายไปประกาศ
-// ที่เดียวในส่วน "STEP 1 — LIVE VALIDATION" ท้ายไฟล์ เพื่อไม่ให้มีการประกาศซ้ำชื่อ
 
 // ============================================================
 //  TERMS & CONDITIONS MODAL
 // ============================================================
 (function () {
-    const termsLink     = document.getElementById('termsLink');
-    const acceptBtn     = document.getElementById('acceptTermsBtn');
+    const termsLink = document.getElementById('termsLink');
+    const acceptBtn = document.getElementById('acceptTermsBtn');
     const agreeCheckbox = document.getElementById('agree');
     const progressLabel = document.getElementById('termsProgress');
-    const checkAllBox   = document.getElementById('termCheckAll');
-    const termChecks    = Array.from(document.querySelectorAll('.term-check-circle')).filter(cb => cb !== checkAllBox);
+    const checkAllBox = document.getElementById('termCheckAll');
+    const termChecks = Array.from(document.querySelectorAll('.term-check-circle')).filter(cb => cb !== checkAllBox);
 
     if (!termsLink || !acceptBtn || !agreeCheckbox || termChecks.length === 0) return;
 
     const TOTAL = termChecks.length;
-    let syncing = false; // กันไม่ให้ event ไล่วนกันเองระหว่าง checkAllBox <-> termChecks
-
-    // กันไม่ให้ href="#" เลื่อนหน้า และกัน event ทะลุไปโดน label/checkbox
+    let syncing = false;
     termsLink.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
     });
 
-    // ติ๊กได้ทุกข้อไม่จำกัดลำดับ — ปุ่ม "ยอมรับเงื่อนไข" จะกดได้ก็ต่อเมื่อติ๊กครบทุกข้อ
+    // ติ๊กได้ทุกข้อไม่จำกัดลำดับ — ปุ่ม 
     function updateTermsState() {
         const checkedCount = termChecks.filter(cb => cb.checked).length;
 
@@ -305,7 +295,6 @@ function validateAgree() {
 
     termChecks.forEach(cb => cb.addEventListener('change', updateTermsState));
 
-    // วงกลม "ติ๊กทั้งหมด" — ติ๊ก/ยกเลิกรายการย่อยทั้งหมดพร้อมกัน
     checkAllBox?.addEventListener('change', () => {
         syncing = true;
         termChecks.forEach(cb => { cb.checked = checkAllBox.checked; });
@@ -313,7 +302,6 @@ function validateAgree() {
         updateTermsState();
     });
 
-    // รีเซ็ตทุกครั้งที่เปิด modal ใหม่ (ถ้ายังไม่เคยกดยอมรับมาก่อน)
     document.getElementById('termsModal')?.addEventListener('shown.bs.modal', () => {
         if (!agreeCheckbox.checked) {
             termChecks.forEach(cb => { cb.checked = false; });
@@ -324,16 +312,15 @@ function validateAgree() {
 
     updateTermsState();
 
-    // กดยอมรับใน modal -> ติ๊ก checkbox หลักให้ และปลดล็อกให้กดเองได้ต่อไป
     acceptBtn.addEventListener('click', () => {
         agreeCheckbox.checked = true;
         agreeCheckbox.disabled = false;
-        validateAgree(); // เคลียร์ error message ถ้ามี
+        validateAgree();
     });
 })();
 
 // ============================================================
-//  STEP 2 — DYNAMIC HOMESTAY + IMAGE UPLOAD
+//DYNAMIC HOMESTAY + IMAGE UPLOAD
 // ============================================================
 let homestayCount = 0;
 
@@ -342,7 +329,7 @@ function addHomestay() {
     const idx = homestayCount;
     homestayImages[idx] = [];
 
-    const list  = document.getElementById('homestay-list');
+    const list = document.getElementById('homestay-list');
     const block = document.createElement('div');
     block.className = 'homestay-block border rounded p-3 mb-3';
     block.id = `homestay-block-${idx}`;
@@ -436,9 +423,6 @@ function addHomestay() {
 
     bindHomestayListeners(idx);
 
-    // ถ้าหน้า Step 2 กำลังแสดงอยู่ (เช่น กดเพิ่มโฮมสเตย์อีกแห่งระหว่างอยู่หน้านี้) ให้สร้างแผนที่ทันที
-    // ถ้ายังไม่แสดง (เช่น ตอนโหลดหน้าครั้งแรก) จะไปสร้างตอน goToPage(2) แทน เพราะ Leaflet ต้องการ
-    // container ที่มองเห็นอยู่จริงถึงจะคำนวณขนาดแผนที่ได้ถูกต้อง
     const page2 = document.getElementById('page-2');
     if (page2 && !page2.classList.contains('d-none')) {
         initHomestayMap(idx);
@@ -457,7 +441,7 @@ function removeHomestay(idx) {
 function handleHsImages(idx, fileList) {
     const MAX = 5 * 1024 * 1024;
     Array.from(fileList).forEach(file => {
-        if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
             alert(`"${file.name}" ไม่รองรับ — ใช้ได้เฉพาะ JPG, PNG, WebP`); return;
         }
         if (file.size > MAX) { alert(`"${file.name}" มีขนาดเกิน 5MB`); return; }
@@ -514,19 +498,19 @@ async function submitAll() {
     const fd = new FormData();
 
     fd.append('firstname', document.getElementById('firstname').value.trim());
-    fd.append('lastname',  document.getElementById('lastname').value.trim());
-    fd.append('email',     document.getElementById('email').value.trim());
-    fd.append('phone',     document.getElementById('phone').value.trim());
-    fd.append('password',  document.getElementById('password').value.trim());
+    fd.append('lastname', document.getElementById('lastname').value.trim());
+    fd.append('email', document.getElementById('email').value.trim());
+    fd.append('phone', document.getElementById('phone').value.trim());
+    fd.append('password', document.getElementById('password').value.trim());
 
     const blocks = document.querySelectorAll('.homestay-block');
-    let hsIndex  = 0;
+    let hsIndex = 0;
 
     blocks.forEach(block => {
         const idx = block.id.split('-').pop();
         fd.append(`homestays[${hsIndex}].homestayname`, document.getElementById(`hs_name_${idx}`).value.trim());
-        fd.append(`homestays[${hsIndex}].address`,      document.getElementById(`hs_address_${idx}`).value.trim());
-        fd.append(`homestays[${hsIndex}].description`,  document.getElementById(`hs_desc_${idx}`).value.trim());
+        fd.append(`homestays[${hsIndex}].address`, document.getElementById(`hs_address_${idx}`).value.trim());
+        fd.append(`homestays[${hsIndex}].description`, document.getElementById(`hs_desc_${idx}`).value.trim());
         (homestayImages[idx] || []).forEach(file => {
             fd.append(`homestays[${hsIndex}].images`, file);
         });
@@ -534,7 +518,7 @@ async function submitAll() {
     });
 
     try {
-        const res  = await fetch('/owner/register', { method: 'POST', body: fd });
+        const res = await fetch('/owner/register', { method: 'POST', body: fd });
         const data = await res.json();
         if (data.success) {
             goToPage(3);
@@ -552,21 +536,21 @@ async function submitAll() {
 //  VALIDATORS HOMESTAY
 // ============================================================
 function bindHomestayListeners(idx) {
-    const nameInput    = document.getElementById(`hs_name_${idx}`);
+    const nameInput = document.getElementById(`hs_name_${idx}`);
     const addressInput = document.getElementById(`hs_address_${idx}`);
-    const descInput    = document.getElementById(`hs_desc_${idx}`);
-    nameInput.addEventListener('blur',    () => validateHsName(idx));
+    const descInput = document.getElementById(`hs_desc_${idx}`);
+    nameInput.addEventListener('blur', () => validateHsName(idx));
     addressInput.addEventListener('blur', () => validateHsAddress(idx));
-    descInput.addEventListener('blur',    () => validateHsDesc(idx));
-    nameInput.addEventListener('input',    () => { if (nameInput.classList.contains('is-invalid'))    validateHsName(idx); });
+    descInput.addEventListener('blur', () => validateHsDesc(idx));
+    nameInput.addEventListener('input', () => { if (nameInput.classList.contains('is-invalid')) validateHsName(idx); });
     addressInput.addEventListener('input', () => { if (addressInput.classList.contains('is-invalid')) validateHsAddress(idx); });
-    descInput.addEventListener('input',    () => { if (descInput.classList.contains('is-invalid'))    validateHsDesc(idx); });
+    descInput.addEventListener('input', () => { if (descInput.classList.contains('is-invalid')) validateHsDesc(idx); });
 }
 function validateHsName(idx) {
     const input = document.getElementById(`hs_name_${idx}`);
     const val = input.value.trim();
     if (val === '') { showError(input, `hs_nameError_${idx}`, 'ชื่อโฮมสเตย์ต้องไม่เป็นค่าว่าง'); return false; }
-    if (!/^[ก-๙a-zA-Z\s]+$/.test(val)) { showError(input, `hs_nameError_${idx}`, 'ชื่อโฮมสเตย์ใช้ได้เฉพาะตัวอักษรภาษาไทยหรืออังกฤษ'); return false; }
+    if (!isThaiEnglishOnly(val, true)) { showError(input, `hs_nameError_${idx}`, 'ชื่อโฮมสเตย์ใช้ได้เฉพาะตัวอักษรภาษาไทยหรืออังกฤษ (เว้นวรรคได้ แต่ห้ามมีอักขระพิเศษ)'); return false; }
     if (val.length < 3 || val.length > 255) { showError(input, `hs_nameError_${idx}`, 'ชื่อโฮมสเตย์ต้องมีความยาว 3–255 ตัวอักษร'); return false; }
     showValid(input, `hs_nameError_${idx}`); return true;
 }
@@ -622,10 +606,6 @@ function goToPage(n) {
     });
     document.getElementById(`page-${n}`).classList.remove('d-none');
 
-    // Step 2 เพิ่งถูกแสดง -> สร้าง/รีเฟรชขนาดแผนที่ของทุกโฮมสเตย์ที่มีอยู่ตอนนี้
-    // ใช้ requestAnimationFrame เพื่อรอให้ browser คำนวณ layout ของ container ที่เพิ่ง
-    // เอา d-none ออกให้เสร็จก่อน ไม่งั้น Leaflet อาจอ่านขนาด container ผิด (เช่น 0 หรือค้างจาก viewport)
-    // ทำให้แผนที่แสดงผลเลยขอบการ์ด
     if (n === 2) {
         requestAnimationFrame(() => {
             document.querySelectorAll('.homestay-block').forEach(block => {
@@ -645,7 +625,7 @@ function goToPage(n) {
 function goBack() { goToPage(1); }
 
 // ============================================================
-//  PASSWORD TOGGLE
+//  PASSWORD 
 // ============================================================
 document.querySelectorAll('.toggle-pw').forEach(icon => {
     icon.addEventListener('click', () => {
@@ -657,14 +637,14 @@ document.querySelectorAll('.toggle-pw').forEach(icon => {
 });
 
 // ============================================================
-//  STEP 1 — LIVE VALIDATION
+//   LIVE VALIDATION
 // ============================================================
 const step1Fields = [
-    { id: 'firstname',       fn: validateFirstname       },
-    { id: 'lastname',        fn: validateLastname        },
-    { id: 'email',           fn: validateEmail           }, // async ก็ใช้ตรงนี้ได้ปกติ
-    { id: 'phone',           fn: validatePhone           },
-    { id: 'password',        fn: validatePassword        },
+    { id: 'firstname', fn: validateFirstname },
+    { id: 'lastname', fn: validateLastname },
+    { id: 'email', fn: validateEmail },
+    { id: 'phone', fn: validatePhone },
+    { id: 'password', fn: validatePassword },
     { id: 'confirmPassword', fn: validateConfirmPassword },
 ];
 step1Fields.forEach(({ id, fn }) => {
@@ -693,7 +673,5 @@ async function validateStep1() {
     }
 }
 
-// ============================================================
 //  INIT
-// ============================================================
 addHomestay();

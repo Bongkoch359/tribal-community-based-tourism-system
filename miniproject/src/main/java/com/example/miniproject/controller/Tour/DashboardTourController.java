@@ -16,7 +16,7 @@ import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-
+//ไม่ได้ใช้แล้ว
 @Controller
 @RequestMapping("/manager")
 public class DashboardTourController {

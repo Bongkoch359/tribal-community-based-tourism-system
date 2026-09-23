@@ -426,6 +426,115 @@ function applyTourTypeRules() {
 tourtypeSelect.addEventListener('change', applyTourTypeRules);
 
 /* ═══════════════════════════════════════════
+   VALIDATION (ข้อมูลพื้นฐาน) — ให้ตรงกับ addtour.js
+═══════════════════════════════════════════ */
+function showErr(id, errId, msg) {
+    document.getElementById(id)?.classList.add('error');
+    const err = document.getElementById(errId);
+    if (err) { err.textContent = msg; err.classList.add('show'); }
+}
+function clearErr(id, errId) {
+    document.getElementById(id)?.classList.remove('error');
+    document.getElementById(errId)?.classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════
+    เช็คค่าตัวเลข: ห้ามติดลบทุกช่อง และช่องที่ห้ามเป็น 0 ด้วย
+   - numberOfDays / minSeatstour / maxSeatstour / adultprice / childprice
+     → ต้องมากกว่า 0 เท่านั้น (ห้ามเป็น 0 หรือติดลบ)
+   - numberOfNights → อนุญาตให้เป็น 0 ได้ (ทัวร์รายวัน) แต่ห้ามติดลบ
+   (เหมือนหน้าเพิ่มทัวร์)
+═══════════════════════════════════════════ */
+const NUMERIC_MIN = [
+    { id: 'numberOfDays', errId: 'err-numberOfDays', msg: 'จำนวนวันต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+    { id: 'numberOfNights', errId: 'err-numberOfDays', msg: 'จำนวนคืนต้องไม่ติดลบ', mustBePositive: false },
+    { id: 'minSeatstour', errId: 'err-minSeatstour', msg: 'ที่นั่งขั้นต่ำต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+    { id: 'maxSeatstour', errId: 'err-maxSeatstour', msg: 'ที่นั่งสูงสุดต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+    { id: 'adultprice', errId: 'err-adultprice', msg: 'ราคาผู้ใหญ่ต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+    { id: 'childprice', errId: 'err-childprice', msg: 'ราคาเด็กต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)', mustBePositive: true },
+];
+
+
+function isInvalidNumeric(val, mustBePositive) {
+    if (val === '' || isNaN(parseFloat(val))) return false;
+    const num = parseFloat(val);
+    return mustBePositive ? num <= 0 : num < 0;
+}
+
+// numberOfDays / numberOfNights ไม่ผูก listener ซ้ำตรงนี้ เพราะใช้ validateDaysNights()
+//    ที่ผูกไว้ด้านล่าง (ตรวจรวมทั้งค่าห้ามติดลบ/เป็น 0 และเงื่อนไขคืนต้องน้อยกว่าวันในฟังก์ชันเดียว
+//    เพื่อไม่ให้ error message ถูกเคลียร์ทับกันเองระหว่างสองช่อง)
+NUMERIC_MIN
+    .filter(f => !['numberOfDays', 'numberOfNights', 'minSeatstour', 'maxSeatstour'].includes(f.id))
+    .forEach(f => {
+        const el = document.getElementById(f.id);
+        if (!el) return;
+        el.addEventListener('input', () => {
+            if (isInvalidNumeric(el.value, f.mustBePositive)) {
+                showErr(f.id, f.errId, f.msg);
+            } else {
+                clearErr(f.id, f.errId);
+            }
+        });
+    });
+
+function validateSeats() {
+    const minEl = document.getElementById('minSeatstour');
+    const maxEl = document.getElementById('maxSeatstour');
+    const minVal = minEl.value, maxVal = maxEl.value;
+    const min = parseInt(minVal), max = parseInt(maxVal);
+
+    if (isInvalidNumeric(minVal, true)) {
+        showErr('minSeatstour', 'err-minSeatstour', 'ที่นั่งขั้นต่ำต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)');
+    } else {
+        clearErr('minSeatstour', 'err-minSeatstour');
+    }
+
+    if (isInvalidNumeric(maxVal, true)) {
+        showErr('maxSeatstour', 'err-maxSeatstour', 'ที่นั่งสูงสุดต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)');
+        return;
+    }
+
+    if (!isNaN(min) && !isNaN(max) && min >= max) {
+        showErr('maxSeatstour', 'err-maxSeatstour', 'จำนวนที่นั่งสูงสุดต้องมากกว่าที่นั่งขั้นต่ำ');
+        return;
+    }
+    clearErr('maxSeatstour', 'err-maxSeatstour');
+}
+document.getElementById('minSeatstour').addEventListener('input', validateSeats);
+document.getElementById('maxSeatstour').addEventListener('input', validateSeats);
+
+// ตรวจ "จำนวนวัน/คืน" แบบ real-time รวมเป็นฟังก์ชันเดียว ผูกกับทั้งช่องวันและช่องคืน
+//    (เดิมแยก listener กันคนละช่อง พอพิมพ์ช่องวันแล้ว listener ของช่องวันจะ clearErr
+//    โดยไม่เช็คเงื่อนไขคืน>=วันซ้ำ ทำให้ error message "จำนวนคืนต้องน้อยกว่าจำนวนวัน" หายไปทั้งที่ยังผิดอยู่)
+function validateDaysNights() {
+    if (tourtypeSelect.value === 'ทัวร์รายวัน') {
+        clearErr('numberOfDays', 'err-numberOfDays');
+        return;
+    }
+    const dVal = daysInput.value;
+    const nVal = nightsInput.value;
+    const d = parseInt(dVal);
+    const n = parseInt(nVal);
+
+    if (isInvalidNumeric(dVal, true)) {
+        showErr('numberOfDays', 'err-numberOfDays', 'จำนวนวันต้องมากกว่า 0 (ห้ามเป็น 0 หรือติดลบ)');
+        return;
+    }
+    if (isInvalidNumeric(nVal, false)) {
+        showErr('numberOfDays', 'err-numberOfDays', 'จำนวนคืนต้องไม่ติดลบ');
+        return;
+    }
+    if (!isNaN(d) && !isNaN(n) && n >= d) {
+        showErr('numberOfDays', 'err-numberOfDays', 'จำนวนคืนต้องน้อยกว่าจำนวนวัน');
+        return;
+    }
+    clearErr('numberOfDays', 'err-numberOfDays');
+}
+nightsInput.addEventListener('input', validateDaysNights);
+daysInput.addEventListener('input', validateDaysNights);
+
+/* ═══════════════════════════════════════════
    จุดรับ / นัดพบ — เปิด/ปิดช่องกรอกรายละเอียดตาม checkbox
 ═══════════════════════════════════════════ */
 const allowMeetingPointChk = document.getElementById('allowMeetingPointChk');
@@ -556,7 +665,6 @@ function initMeetingMap() {
     meetingMap = createLeafletMap('meetingPointMap');
     meetingMarker = L.marker(DEFAULT_MAP_CENTER, { draggable: true }).addTo(meetingMap);
 
-    //  โหมดแก้ไข: ถ้ามีที่อยู่เดิมอยู่แล้ว ให้ลอง geocode หาพิกัดมาปักหมุดตั้งต้นให้ตรงจุดจริง
     if (meetingPointDetailInput.value.trim() !== '') {
         geocodeAddressToLatLng(meetingPointDetailInput.value, (latlng) => {
             if (latlng) {
@@ -580,7 +688,7 @@ function initMeetingMap() {
         });
     });
 
-    setTimeout(() => meetingMap.invalidateSize(), 200); // กัน bug แผนที่เบี้ยวตอนเพิ่งโผล่จาก display:none
+    setTimeout(() => meetingMap.invalidateSize(), 200); 
 
     attachPlaceSearch(
         meetingPointDetailInput,
@@ -593,7 +701,6 @@ function initMeetingMap() {
     );
 }
 
-// ตั้งค่าเริ่มต้นจากข้อมูลเดิมใน DB ตอนโหลดหน้า
 (function initTourType() {
     const savedType = (typeof tourSavedType !== 'undefined') ? tourSavedType : '';
     if (!savedType) return;
@@ -603,7 +710,7 @@ function initMeetingMap() {
         tourtypeSelect.value = '__custom__';
         tourtypeCustom.value = savedType;
     }
-    // เก็บวัน/คืนเดิมไว้ก่อนเรียก applyTourTypeRules (เผื่อโดนล้างถ้าเป็นทัวร์รายวัน)
+    // เก็บวัน/คืนเดิมไว้ก่อนเรียก applyTourTypeRules 
     const d = daysInput.value, n = nightsInput.value;
     applyTourTypeRules();
     if (tourtypeSelect.value !== 'ทัวร์รายวัน') {
@@ -634,10 +741,25 @@ function showSuccessModal(redirectUrl) {
 document.getElementById('editForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
+    //  เช็คค่าตัวเลขทั้งหมด (จำนวนวัน / ที่นั่ง / ราคา) ห้ามเป็น 0 หรือติดลบ
+    let numericInvalid = false;
+    NUMERIC_MIN.forEach(f => {
+        const el = document.getElementById(f.id);
+        if (!el) return;
+        if (isInvalidNumeric(el.value, f.mustBePositive)) {
+            showErr(f.id, f.errId, f.msg);
+            numericInvalid = true;
+        }
+    });
+    if (numericInvalid) {
+        showAlertModal('กรุณาตรวจสอบจำนวนวัน ที่นั่ง และราคา ห้ามเป็น 0 หรือติดลบ (จำนวนคืนเป็น 0 ได้)', { type: 'error' });
+        return;
+    }
+
     const min = parseInt(document.querySelector('[name="minSeatstour"]').value);
     const max = parseInt(document.querySelector('[name="maxSeatstour"]').value);
-    if (min > max) {
-        showAlertModal('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าหรือเท่ากับสูงสุด', { type: 'error' });
+    if (isNaN(min) || isNaN(max) || min >= max) {
+        showAlertModal('จำนวนที่นั่งขั้นต่ำต้องน้อยกว่าที่นั่งสูงสุด', { type: 'error' });
         return;
     }
 
@@ -718,16 +840,9 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
 });
 
 /* ═══════════════════════════════════════════
-  ปฏิทินรอบทัวร์ — คลิก/ลากเลือกช่วงวันที่ แล้ว
-  เปิด/ปิดรับจอง, สร้างรอบใหม่, หรือลบรอบ ได้ทีเดียวทั้งช่วง
-  ไม่ต้องไล่กดทีละแถวเหมือนตารางแบบเดิมอีกต่อไป
-
-   รอบทัวร์ที่มีคนจองอยู่แล้ว (booked > 0) จะ "ล็อก" สถานะไว้
-  ไม่สามารถเปิด/ปิดรับจองใหม่ผ่านปฏิทินได้อีก (ทั้งฝั่ง UI และฝั่ง server)
-  เพื่อกันความสับสน/ปัญหากับผู้ที่จองไปแล้ว
+  ปฏิทินรอบทัวร์ — คลิก/ลากเลือกช่วงวันที่ 
 ═══════════════════════════════════════════ */
 (function () {
-    // ── ตรวจสอบ element ทั้งหมดตั้งแต่ต้น ถ้าตัวไหนหาไม่เจอให้ log ชัดๆ ──
     const REQUIRED_IDS = ['calGrid', 'calMonthLabel', 'calPrevBtn', 'calNextBtn', 'calToolbar',
         'calSelLabel', 'calSelNote', 'calOpenBtn', 'calCloseBtn', 'calCreateBtn', 'calDeleteBtn', 'calClearBtn'];
     const missing = REQUIRED_IDS.filter(id => !document.getElementById(id));
@@ -757,7 +872,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     const todayISO = new Date().toISOString().slice(0, 10);
     const today = new Date();
     let currentYear = today.getFullYear();
-    let currentMonth = today.getMonth(); // 0-indexed
+    let currentMonth = today.getMonth(); 
 
     let scheduleByDate = {};
     let selStart = null, selEnd = null;
@@ -796,7 +911,6 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     }
 
     // ── สร้าง map วันที่ → schedule (ครอบคลุมทุกวันตั้งแต่ opendate ถึง enddate) ──
-    // ข้ามรอบทัวร์ที่มีวันที่ผิดปกติ/ว่าง เพื่อไม่ให้ทั้งปฏิทินพังจากข้อมูลแค่แถวเดียว
     function buildScheduleByDate() {
         scheduleByDate = {};
         window.scheduleData.forEach(s => {
@@ -805,7 +919,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
                 return;
             }
             let cursor = s.opendate;
-            let guard = 0; // กันลูปไม่รู้จบเผื่อกรณีข้อมูลผิดปกติ
+            let guard = 0; 
             while (cursor !== null && cursor <= s.enddate && guard < 3660) {
                 scheduleByDate[cursor] = s;
                 cursor = addDaysISO(cursor, 1);
@@ -888,8 +1002,8 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
 
             // รอบที่มีคนจองแล้ว (booked > 0) ห้ามเปลี่ยนสถานะ (เปิด/ปิด) และห้ามลบ
             const lockedByBooking = inRange.filter(s => (s.booked || 0) > 0).length;
-            const editableForStatus = existing - lockedByBooking; // รอบที่ยังไม่มีคนจอง จึงเปลี่ยนสถานะได้
-            const deletable = editableForStatus; // เงื่อนไขเดียวกับที่ลบได้ (booked === 0)
+            const editableForStatus = existing - lockedByBooking;
+            const deletable = editableForStatus; 
 
             calSelLabel.textContent = selStart === selEnd
                 ? formatDMY(selStart) + ` (1 วัน)`
@@ -922,8 +1036,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         [calOpenBtn, calCloseBtn, calCreateBtn, calDeleteBtn, calClearBtn].forEach(b => b.disabled = busy);
     }
 
-    // ── ดึงข้อมูลรอบทัวร์ล่าสุดจากหน้านี้เอง (ไม่ reload ทั้งหน้า
-    //    เพื่อไม่ให้ข้อมูลฟอร์มแก้ไขทัวร์ที่ยังไม่ได้กดบันทึกหายไป) ──
+    // ── ดึงข้อมูลรอบทัวร์ล่าสุดจากหน้านี้เอง 
     async function refreshScheduleData() {
         try {
             const res = await fetch(scheduleDataUrl + '?_ts=' + Date.now(), { method: 'GET', cache: 'no-store' });
@@ -973,7 +1086,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         return { httpOk: res.ok, ok: body ? body.ok : res.ok, message: body && body.message };
     }
 
-    // ── ปุ่ม: เปิด/ปิดรับจองทั้งช่วง (bulk-status endpoint เดิม) ──
+    // ── ปุ่ม: เปิด/ปิดรับจองทั้งช่วง ──
     //  รอบใดที่มีคนจองแล้วจะถูกเซิร์ฟเวอร์ข้ามให้อัตโนมัติ และแจ้งเตือนกลับมา
     async function runBulkStatus(status) {
         setToolbarBusy(true);
@@ -992,7 +1105,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     calOpenBtn.addEventListener('click', () => runBulkStatus('เปิดรับจอง'));
     calCloseBtn.addEventListener('click', () => runBulkStatus('ปิด'));
 
-    // ── ปุ่ม: สร้างรอบทัวร์เติมเฉพาะวันที่ยังไม่มีในช่วงที่เลือก ──
+    // ──สร้างรอบทัวร์เติมเฉพาะวันที่ยังไม่มีในช่วงที่เลือก ──
     calCreateBtn.addEventListener('click', async () => {
         const tourLenDays = tourNumberOfDays || 1;
         let cursor = selStart;
@@ -1018,7 +1131,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         await refreshScheduleData();
     });
 
-    // ── ปุ่ม: ลบรอบทัวร์ทั้งหมดในช่วงที่เลือก (ข้ามรอบที่มีคนจองแล้ว) ──
+    // ─ ลบรอบทัวร์ทั้งหมดในช่วงที่เลือก (ข้ามรอบที่มีคนจองแล้ว) ──
     calDeleteBtn.addEventListener('click', async () => {
         const inRange = window.scheduleData.filter(s => s.opendate >= selStart && s.opendate <= selEnd);
         if (inRange.length === 0) { await showAlertModal('ไม่มีรอบทัวร์ในช่วงที่เลือก', { type: 'warning' }); return; }

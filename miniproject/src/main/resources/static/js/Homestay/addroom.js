@@ -1,4 +1,4 @@
-// ─── สิ่งอำนวยความสะดวก: ไอคอน (อ้างอิงชุดเดียวกับหน้าแก้ไข) ──────────────
+// ─── สิ่งอำนวยความสะดวก: ไอคอน──────────────
 const FAC_ICONS = {
     'wifi': '📶',
     'wi-fi': '📶',
@@ -38,8 +38,8 @@ function handleDragOver(e) { e.preventDefault(); document.getElementById('dropZo
 function handleDragLeave() { document.getElementById('dropZone').classList.remove('dragover'); }
 function handleDrop(e) { e.preventDefault(); handleDragLeave(); handleFileSelect(e.dataTransfer.files); }
 
-// ─── ไฟล์รูปที่เลือกไว้ (DataTransfer list) ───────────────────────────────
-// ─── Alert Modal ─────────────────────────────────────────────────────────
+// ─── ไฟล์รูปที่เลือกไว้  ─────
+// ─── Alert Modal ───────
 function showAlertModal(msg, title = 'แจ้งเตือน') {
     const modal = document.getElementById('alertModal');
     document.getElementById('alertModalTitle').textContent = title;
@@ -52,7 +52,6 @@ function closeAlertModal() {
     if (modal) modal.classList.remove('show');
 }
 
-// ─── ไฟล์รูปที่เลือกไว้ (DataTransfer list) ───────────────────────────────
 let selectedFiles = [];
 const MAX_IMAGES = 5;
 
@@ -128,7 +127,7 @@ function updateUI() {
     }
 }
 
-// ─── Real-time validation ตัวเลขห้ามติดลบ/ห้ามเป็น 0 (แบบเดียวกับ addTour) ────
+// ─── Real-time validation ตัวเลขห้ามติดลบ/ห้ามเป็น 0 ────
 const NUMERIC_POSITIVE_FIELDS = [
     { id: 'pricepernight', errId: 'priceError', label: 'ราคาต่อคืน' },
     { id: 'maxguest', errId: 'maxguestError', label: 'จำนวนผู้เข้าพัก' },
@@ -155,7 +154,7 @@ NUMERIC_POSITIVE_FIELDS.forEach(f => {
     el.addEventListener('input', () => {
         const val = el.value;
         if (val === '') {
-            clearFieldErr(f.id, f.errId); // ปล่อยให้ submit เช็คเรื่องกรอกไม่ครบเอง
+            clearFieldErr(f.id, f.errId);
             return;
         }
         const num = parseFloat(val);
@@ -166,7 +165,7 @@ NUMERIC_POSITIVE_FIELDS.forEach(f => {
         }
     });
 });
-// ─── Validate ────────────────────────────────────────────────────────────
+// ─── Validate ───────
 function validate() {
     const fields = [
         { id: 'typename', errId: 'typenameError', label: 'ประเภทที่พัก' },
@@ -179,7 +178,7 @@ function validate() {
         { id: 'status', errId: 'statusError', label: 'สถานะ' },
     ];
 
-    // ฟิลด์ตัวเลขที่ต้อง > 0 (ห้ามติดลบ ห้ามเป็น 0)
+    // ฟิลด์ตัวเลขที่ต้อง > 0 
     const numericFields = ['pricepernight', 'maxguest', 'totalrooms'];
 
     let isValid = true;
@@ -218,7 +217,7 @@ function validate() {
 
 
 
-// ─── Submit → multipart/form-data ────────────────────────────────────────
+// ─── Submit 
 async function submitForm() {
     if (!validate()) return;
 
@@ -302,7 +301,7 @@ function showSuccessModal() {
         }
     });
 
-    // ก่อนฟอร์มถูกส่งจริง (ไม่ว่าจะกดผ่าน submitForm() หรือวิธีอื่น)
+    // ก่อนฟอร์มถูกส่งจริง
     form.addEventListener('submit', function (e) {
         if (typeSelect.value === 'อื่นๆ') {
             const customName = otherInput.value.trim();
@@ -314,12 +313,10 @@ function showSuccessModal() {
                 otherInput.focus();
                 return false;
             }
-            // เพิ่ม option ใหม่ด้วยชื่อที่พิมพ์เอง แล้วเลือกมันแทน
-            // เพื่อให้ค่าที่ส่งไป backend (name="typename") เป็นข้อความนี้โดยตรง
             const customOption = document.createElement('option');
             customOption.value = customName;
             customOption.selected = true;
             typeSelect.appendChild(customOption);
         }
-    }, true); // capture phase เพื่อให้ทำงานก่อน handler อื่นที่อาจ preventDefault ทีหลัง
+    }, true);
 })();

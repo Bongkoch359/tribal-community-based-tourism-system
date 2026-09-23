@@ -41,7 +41,6 @@ public class BookingOwnerController {
         // ดึงโฮมสเตย์ทั้งหมดของเจ้าของ
         List<Homestay> myHomestays = homestayService.getHomestaysByOwnerId(ownerid);
 
-        // fallback → อันแรก
         if (homestayid == null && !myHomestays.isEmpty()) {
             homestayid = myHomestays.get(0).getHomestayid();
         }

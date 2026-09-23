@@ -48,9 +48,7 @@ function toggleSearchClearButton() {
  * ฟังก์ชันกลาง: กรองแถวในตารางโดยรวมทั้ง 2 เงื่อนไขเข้าด้วยกัน
  *   1) สถานะที่เลือกจาก dropdown (currentBookingStatus ที่ประกาศใน list-booking.js)
  *   2) คำค้นหาจากช่อง search (currentBookingSearchTerm)
- *
- * ฟังก์ชันนี้ถูกออกแบบให้ list-booking.js เรียกใช้แทนการกรองสถานะอย่างเดียว
- * (ดู filterBookings() ใน list-booking.js)
+
  */
 function applyBookingFilters() {
     const rows = document.querySelectorAll('#tourBookingsTbody tr[data-status]');

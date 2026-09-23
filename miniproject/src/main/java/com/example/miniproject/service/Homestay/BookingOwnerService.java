@@ -28,7 +28,7 @@ public class BookingOwnerService {
         return bookingRepository.findAllByHomestayIdAndStatus(homestayId, status);
     }
 
-    // ─── ยืนยันการจอง (WAITING_APPROVAL → CONFIRMED) ──────────────────────────
+    // ─── ยืนยันการจอง ──────────────────────────
     @Transactional
     public void confirmBooking(String bookingId, Integer homestayId) {
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
@@ -44,9 +44,7 @@ public class BookingOwnerService {
         bookingRepository.save(booking);
     }
 
-    // ─── ยกเลิกการจอง (owner ยกเลิก) ─────────────────────────────────────────
     // ─── ยกเลิกการจอง (owner ยกเลิก) — ยกเลิกซ้ำ, ยกเลิกที่ยืนยันแล้ว
-    //     หรือยกเลิกที่เสร็จสิ้นแล้วไม่ได้ ─────────────────────────────────────
     @Transactional
     public void cancelBookingByOwner(String bookingId, Integer homestayId, String reason) {
         if (reason == null || reason.isBlank()) {
@@ -79,7 +77,7 @@ public class BookingOwnerService {
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
     }
 
-    // ─── helper: ตรวจสอบว่าการจองนี้เป็นของ homestay นี้จริง ─────────────────
+    // ─── helper: ตรวจสอบว่าการจองนี้เป็นของ homestay นี้ ─────────────────
     private void validateHomestayOwnership(Booking booking, Integer homestayId) {
         boolean belongs = booking.getRoomDetails() != null &&
                 booking.getRoomDetails().stream()

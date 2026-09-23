@@ -126,8 +126,7 @@
 
                         <!-- File input จริง สำหรับไฟล์รูปใหม่ที่เลือก -->
                         <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple
-                            style="display:none;"
-                            onchange="addFiles(Array.from(this.files)); this.value='';">
+                            style="display:none;" onchange="addFiles(Array.from(this.files)); this.value='';">
 
                         <!-- hidden inputs -->
                         <!-- เก็บ filename เดิมจาก DB เพื่อให้ JS โหลดแสดง -->
@@ -259,6 +258,7 @@
                                 <input type="number" id="numberOfDays" name="numberOfDays" min="1"
                                     th:value="${tour.numberOfDays}" required>
                                 <p class="hint">วัน</p>
+                                <div class="field-error" id="err-numberOfDays">จำนวนวันไม่ถูกต้อง</div>
                             </div>
                             <div class="form-group">
                                 <label>จำนวนคืน</label>
@@ -272,33 +272,37 @@
                             <div class="form-group">
                                 <label>ราคาผู้ใหญ่ <span class="req">*</span></label>
                                 <div class="price-input-wrap">
-                                    <input type="number" name="adultprice" min="0" step="1"
+                                    <input type="number" id="adultprice" name="adultprice" min="0" step="1"
                                         th:value="${tour.adultprice}" required>
                                     <span class="price-unit">฿</span>
                                 </div>
+                                <div class="field-error" id="err-adultprice">ราคาผู้ใหญ่ต้องไม่ติดลบ</div>
                             </div>
                             <div class="form-group">
                                 <label>ราคาเด็ก <span class="req">*</span></label>
                                 <div class="price-input-wrap">
-                                    <input type="number" name="childprice" min="0" step="1"
+                                    <input type="number" id="childprice" name="childprice" min="0" step="1"
                                         th:value="${tour.childprice}" required>
                                     <span class="price-unit">฿</span>
                                 </div>
+                                <div class="field-error" id="err-childprice">ราคาเด็กต้องไม่ติดลบ</div>
                             </div>
                         </div>
 
                         <div class="two-col">
                             <div class="form-group">
                                 <label>ที่นั่งขั้นต่ำ <span class="req">*</span></label>
-                                <input type="number" name="minSeatstour" min="1" th:value="${tour.minSeatstour}"
-                                    required>
+                                <input type="number" id="minSeatstour" name="minSeatstour" min="1"
+                                    th:value="${tour.minSeatstour}" required>
                                 <p class="hint">ท่าน</p>
+                                <div class="field-error" id="err-minSeatstour">จำนวนที่นั่งขั้นต่ำต้องไม่ติดลบ</div>
                             </div>
                             <div class="form-group">
                                 <label>ที่นั่งสูงสุด <span class="req">*</span></label>
-                                <input type="number" name="maxSeatstour" min="1" th:value="${tour.maxSeatstour}"
-                                    required>
+                                <input type="number" id="maxSeatstour" name="maxSeatstour" min="1"
+                                    th:value="${tour.maxSeatstour}" required>
                                 <p class="hint">ท่าน</p>
+                                <div class="field-error" id="err-maxSeatstour">จำนวนที่นั่งสูงสุดต้องไม่ติดลบ</div>
                             </div>
                         </div>
 

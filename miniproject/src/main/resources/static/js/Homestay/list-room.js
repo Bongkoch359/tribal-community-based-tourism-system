@@ -9,7 +9,7 @@ function dismissSignatureBanner() {
     setTimeout(() => { b.style.display = 'none'; }, 420);
 }
 
-/* ═══ ALERT MODAL — แทน alert() ของเบราว์เซอร์ ═══ */
+/* ═══ ALERT MODAL ═══ */
 function openAlertModal(message, title) {
     const modal = document.getElementById('alertModal');
     if (!modal) { alert(message); return; } // กันพังถ้าหน้าไหนลืมแปะ markup ไว้
@@ -25,7 +25,6 @@ function closeAlertModal() {
     if (modal) modal.classList.remove('show');
 }
 
-// ปิด modal เมื่อคลิกพื้นหลังนอกกล่อง
 document.addEventListener('DOMContentLoaded', function () {
     const alertModal = document.getElementById('alertModal');
     if (alertModal) {
@@ -41,7 +40,7 @@ const statusKeyMap = {
     'ปิดปรับปรุง': 'maintenance',
 };
 
-// นับจำนวนห้องแต่ละสถานะ แล้วอัปเดต Badge
+// นับจำนวนห้องแต่ละสถานะ 
 function computeStatusCounts() {
     const rows = document.querySelectorAll('#roomBody tr[data-status]');
     const counts = {};
@@ -76,8 +75,6 @@ function filterByStatus(status) {
     const oldNotice = document.getElementById('noStatusRow');
     if (oldNotice) oldNotice.remove();
 
-    // กันข้อความซ้อนกับ Thymeleaf empty-state: แสดงเฉพาะตอนที่ "มีห้องพักในระบบ"
-    // แต่กรองตามสถานะนี้แล้วไม่เจอเท่านั้น ไม่ใช่ตอนที่ไม่มีห้องพักในระบบเลย
     if (rows.length > 0 && visibleCount === 0) {
         const tbody = document.getElementById('roomBody');
         const tr = document.createElement('tr');
@@ -119,14 +116,11 @@ function selectStatusFilter(status, itemEl) {
         <span class="count-badge" id="count-${statusKeyMap[status]}">${badgeText}</span>
     `;
 
-    // อัปเดตสีกรอบและพื้นหลังปุ่ม
     triggerBtn.className = 'filter-dropdown-trigger status-' + statusKeyMap[status];
 
-    // เปลี่ยน Active class
     document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
     itemEl.classList.add('active');
 
-    // ปิดเมนูและกรองข้อมูล
     document.getElementById('statusFilterDropdown').classList.remove('open');
     filterByStatus(status);
 }

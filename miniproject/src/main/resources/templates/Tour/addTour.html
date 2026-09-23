@@ -99,7 +99,6 @@
 
         <form id="tourForm" th:action="@{/manager/tours/create}" method="post" novalidate>
 
-            <!-- รูปภาพเก็บเป็น JSON array base64 ใน hidden field -->
             <input type="hidden" name="images" id="imagesInput" />
 
             <div class="main-layout">
@@ -267,13 +266,9 @@
                     </div>
                     <div class="form-group" id="hotelPickupAreaGroup" style="display:none;">
                         <label class="form-label">เขตพื้นที่ที่รับได้ <span class="req">*</span></label>
-                        <div class="search-input-wrap">
-                            <input class="form-control" type="text" id="hotelPickupArea" name="hotelPickupArea"
-                                placeholder="เช่น เฉพาะเขต อำเภอเมือง (เชียงใหม่)" th:value="${tour?.hotelPickupArea}"
-                                autocomplete="off" />
-                            <div class="search-suggest-box" id="hotelPickupSuggest"></div>
-                        </div>
-
+                        <input class="form-control" type="text" id="hotelPickupArea" name="hotelPickupArea"
+                            placeholder="เช่น เฉพาะเขต อำเภอเมือง (เชียงใหม่)" th:value="${tour?.hotelPickupArea}"
+                            autocomplete="off" />
                     </div>
                     <div class="field-error" id="err-pickupOption">กรุณาเปิดอย่างน้อย 1 ช่องทางรับ-ส่ง</div>
 

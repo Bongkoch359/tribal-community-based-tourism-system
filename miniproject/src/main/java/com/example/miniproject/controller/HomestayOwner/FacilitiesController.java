@@ -34,7 +34,7 @@ public class FacilitiesController {
         }
         name = name.trim();
 
-        // 1) ถ้ามีชื่อนี้อยู่แล้ว → คืนของเดิม ไม่สร้างซ้ำ
+        // ถ้ามีชื่อนี้อยู่แล้ว → คืนของเดิม ไม่สร้างซ้ำ
         Optional<Facilities> existing = facilitiesRepository.findByFacilitiesnameIgnoreCase(name);
         if (existing.isPresent()) {
             Facilities f = existing.get();
@@ -45,7 +45,7 @@ public class FacilitiesController {
             ));
         }
 
-        // 2) generate id ใหม่ต่อจากตัวล่าสุด 
+       
         Integer maxNum = facilitiesRepository.findMaxFacilitiesNumericId();
         int nextNum = (maxNum != null ? maxNum : 0) + 1;
         String newId = String.format("f%03d", nextNum);

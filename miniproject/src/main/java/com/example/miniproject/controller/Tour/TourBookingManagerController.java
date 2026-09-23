@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// ─── หน้ารายการจองทัวร์ สำหรับผู้จัดการชุมชน (ตรวจสอบการจอง) ───
 @Controller
 @RequestMapping("/manager/bookings")
 public class TourBookingManagerController {
@@ -29,7 +28,6 @@ public class TourBookingManagerController {
     @Autowired
     private BookingTourService tourBookingService;
 
-    // แท็บ: รอตรวจสอบ (default) / ยืนยันแล้ว / ยกเลิก
     @GetMapping
     public String listBookings(
             @RequestParam(value = "status", required = false, defaultValue = "WAITING_APPROVAL") String status,
@@ -58,7 +56,7 @@ public class TourBookingManagerController {
 
         List<Booking> bookings = tourBookingService.getTourBookingsByManager(manager.getManagerid(), null);
 
-        // ── นับจำนวนแต่ละสถานะ (ไม่ผูกกับ tab ที่กำลังดูอยู่ ใช้ทั้งหมดของ manager) ──
+        // ── นับจำนวนแต่ละสถานะ ──
         List<Booking> allBookings = tourBookingService.getTourBookingsByManager(manager.getManagerid(), null);
         long countWaiting = allBookings.stream()
                 .filter(b -> b.getBookingStatus() == BookingStatus.WAITING_APPROVAL).count();
@@ -97,12 +95,11 @@ public class TourBookingManagerController {
             model.addAttribute("loggedInManager", manager);
             return "Tour/tourBookingDetail";
         } catch (RuntimeException e) {
-            // ไม่พบการจอง หรือไม่มีสิทธิ์เข้าถึง -> เด้งกลับไปหน้ารายการ
             return "redirect:/manager/bookings?error=" + e.getMessage();
         }
     }
 
-    // ─── ยืนยันการจองทัวร์ (เรียกจากปุ่มในหน้ารายละเอียด ผ่าน fetch/AJAX) ───
+    // ─── ยืนยันการจองทัวร์  ───
     @PostMapping("/confirm")
     @ResponseBody
     public Map<String, Object> confirmBooking(
@@ -128,7 +125,7 @@ public class TourBookingManagerController {
         return result;
     }
 
-    // ─── ยกเลิกการจองทัวร์ (เรียกจากปุ่มในหน้ารายละเอียด ผ่าน fetch/AJAX) ───
+    // ─── ยกเลิกการจองทัวร์  ───
     @PostMapping("/cancel")
     @ResponseBody
     public Map<String, Object> cancelBooking(

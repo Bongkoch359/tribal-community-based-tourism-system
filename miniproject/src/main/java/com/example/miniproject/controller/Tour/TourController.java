@@ -35,9 +35,7 @@ public class TourController {
     private TourScheduleService tourScheduleService;
 
     @Autowired
-    private ReviewService reviewService;
-
-    
+    private ReviewService reviewService;    
 
     private static final String UPLOAD_DIR = "uploads/tours/";
 
@@ -48,20 +46,15 @@ public class TourController {
     }
 
     // ─── บันทึกรูปจาก imagesJson ──────────────────────────────────────────────
-    // รับ 3 format:
-    // 1. "__KEEP__" → ไม่เปลี่ยนรูป คืน null
-    // 2. "__FILENAMES__:a.jpg||b.jpg" → รูปเดิมทั้งหมด คืน "a.jpg||b.jpg"
-    // 3. JSON array → มีรูปใหม่ บันทึกไฟล์แล้วคืน filenames
     private String saveImagesFromBase64(String imagesJson, String tourid) {
         if (imagesJson == null || imagesJson.isBlank() || imagesJson.equals("__KEEP__"))
             return null;
 
-        // ── format 2: รูปเดิมทั้งหมด ──
+        //  รูปเดิมทั้งหมด ──
         if (imagesJson.startsWith("__FILENAMES__:")) {
             return imagesJson.substring("__FILENAMES__:".length());
         }
 
-        // ── format 3: JSON array — ใช้ Jackson ที่มีใน Spring Boot ──
         if (!imagesJson.trim().startsWith("["))
             return null;
 
@@ -102,14 +95,14 @@ public class TourController {
                     names.add(filename);
                     idx++;
                 } catch (Exception ex) {
-                    System.out.println("❌ decode ไม่ได้: " + ex.getMessage());
+                    System.out.println(" decode ไม่ได้: " + ex.getMessage());
                 }
             }
 
             return names.isEmpty() ? null : String.join("||", names);
 
         } catch (IOException e) {
-            System.out.println("❌ บันทึกรูปไม่สำเร็จ: " + e.getMessage());
+            System.out.println(" บันทึกรูปไม่สำเร็จ: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -145,7 +138,6 @@ public class TourController {
         for (Tour t : tours) {
             List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(t.getTourid());
             Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(t.getTourid());
-            // ✅ แก้บรรทัดนี้: ส่ง t (Tour) แทน maxSeats
             t.setOverallStatus(tourScheduleService.computeOverallStatus(schedules, t, bookedMap));
         }
 
@@ -183,17 +175,13 @@ public class TourController {
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
             @RequestParam(value = "tourtype", required = false) String tourtype,
             @RequestParam(value = "images", required = false) String imagesJson,
-            // ✅ จุดรับ/นัดพบ — ผู้จัดการชุมชนกำหนดตอนสร้างทัวร์
             @RequestParam(value = "allowMeetingPoint", required = false) Boolean allowMeetingPoint,
             @RequestParam(value = "meetingPointDetail", required = false) String meetingPointDetail,
             @RequestParam(value = "allowHotelPickup", required = false) Boolean allowHotelPickup,
             @RequestParam(value = "hotelPickupArea", required = false) String hotelPickupArea,
             @RequestParam(value = "meetingTime", required = false) String meetingTime,
             @RequestParam(value = "arriveBeforeMinutes", required = false) Integer arriveBeforeMinutes,
-            @RequestParam(value = "schedules", required = false) String schedulesJson, // ✅ รอบทัวร์ (JSON array
-                                                                                       // [{opendate,enddate}])
-                                                                                       // กรอกพร้อมตอนเพิ่มทัวร์
-                                                                                       // ไม่ต้องแยกหน้า
+            @RequestParam(value = "schedules", required = false) String schedulesJson, 
             HttpSession session,
             Model model) {
         Communitymanager manager = (Communitymanager) session.getAttribute("loggedInManager");
@@ -232,17 +220,15 @@ public class TourController {
             return "Tour/addTour";
         }
 
-        // ตรวจความสอดคล้องของจำนวนวัน/คืน (กันกรณี POST ตรงๆ ข้าม JS)
+        // ตรวจความสอดคล้องของจำนวนวัน/คืน 
         if (numberOfDays == 1) {
-            // ทัวร์รายวัน: คืนต้องเป็น 0 (หรือไม่ส่งมาเลยก็ยอมรับ แล้ว backend จะ set
-            // ให้เป็น 0 อยู่แล้ว)
             if (numberOfNights != null && numberOfNights != 0) {
                 model.addAttribute("errorMessage", "ทัวร์รายวัน (1 วัน) ต้องมีจำนวนคืนเป็น 0");
                 model.addAttribute("loggedInManager", manager);
                 return "Tour/addTour";
             }
         } else {
-            // ทัวร์หลายวัน (numberOfDays > 1): ต้องระบุคืน และคืนต้องน้อยกว่าจำนวนวัน
+            // ทัวร์หลายวัน 
             if (numberOfNights == null || numberOfNights < 1) {
                 model.addAttribute("errorMessage", "ทัวร์หลายวันต้องระบุจำนวนคืนอย่างน้อย 1 คืน");
                 model.addAttribute("loggedInManager", manager);
@@ -253,7 +239,7 @@ public class TourController {
                 model.addAttribute("loggedInManager", manager);
                 return "Tour/addTour";
             }
-            // ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity
+            // ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง
             // รองรับแค่ทัวร์รายวัน)
             if (tourtype == null || tourtype.isBlank()) {
                 model.addAttribute("errorMessage",
@@ -294,10 +280,6 @@ public class TourController {
         }
 
         // ─── ตรวจสอบและแปลงรอบทัวร์ (schedules) ที่กรอกมาพร้อมฟอร์มเพิ่มทัวร์ ───
-
-        // — logic นี้ยังอยู่ใน TourController เพราะเป็นส่วนหนึ่งของการสร้างทัวร์ใหม่
-        // (สร้าง Tour + schedules พร้อมกันในธุรกรรมเดียว) ไม่ได้ย้ายไป
-        // TourScheduleController
         List<ScheduleInput> scheduleInputs = new ArrayList<>();
         if (schedulesJson != null && !schedulesJson.isBlank()) {
             try {
@@ -311,7 +293,6 @@ public class TourController {
                         continue;
 
                     java.time.LocalDate open = java.time.LocalDate.parse(openStr);
-                    // ทัวร์รายวัน (1 วัน) → บังคับวันที่จบ = วันที่เริ่มเสมอ ไม่สนใจค่าที่ส่งมา
                     java.time.LocalDate end = (numberOfDays != null && numberOfDays == 1)
                             ? open
                             : (endStr != null && !endStr.isBlank() ? java.time.LocalDate.parse(endStr) : open);
@@ -322,9 +303,7 @@ public class TourController {
                         return "Tour/addTour";
                     }
 
-                    // สถานะรอบทัวร์: รับได้แค่ "เปิดรับจอง" หรือ "ปิด" เท่านั้น
-                    // (เต็มคำนวณอัตโนมัติจากการจอง)
-                    // ค่าอื่นหรือไม่ระบุ → ใช้ค่าเริ่มต้น "เปิดรับจอง"
+                    // สถานะรอบทัวร์
                     String status = (statusStr != null
                             && TourScheduleService.ALLOWED_MANUAL_STATUS.contains(statusStr.trim()))
                                     ? statusStr.trim()
@@ -359,9 +338,9 @@ public class TourController {
         tour.setAdultprice(adultprice);
         tour.setChildprice(childprice);
         tour.setNumberOfDays(numberOfDays);
-        tour.setNumberOfNights(numberOfDays == 1 ? 0 : numberOfNights); // ทัวร์รายวันบังคับ 0 คืน
+        tour.setNumberOfNights(numberOfDays == 1 ? 0 : numberOfNights); 
 
-        // ✅ จุดรับ/นัดพบ
+        // จุดรับ/นัดพบ
         tour.setAllowMeetingPoint(meetingPointOn);
         tour.setMeetingPointDetail(meetingPointOn ? meetingPointDetail.trim() : null);
         tour.setAllowHotelPickup(hotelPickupOn);
@@ -380,7 +359,7 @@ public class TourController {
                 tourService.updateImages(saved.getTourid(), imageNames);
             }
 
-            // บันทึกรอบทัวร์ (Tourschedule) ที่กรอกมาพร้อมกันในฟอร์มเพิ่มทัวร์
+            // บันทึกรอบทัวร์ 
             for (ScheduleInput si : scheduleInputs) {
                 Tourschedule createdSchedule = tourScheduleService.createSchedule(saved,
                         Date.valueOf(si.opendate), Date.valueOf(si.enddate));
@@ -412,7 +391,6 @@ public class TourController {
 
         List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
         Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
-        // ✅ แก้จุดนี้ด้วย: ส่ง tour และ bookedMap เข้าไปด้วย
         tour.setOverallStatus(tourScheduleService.computeOverallStatus(schedules, tour, bookedMap));
 
         model.addAttribute("tour", tour);
@@ -443,7 +421,6 @@ public class TourController {
 
         List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(tourid);
         Map<String, Integer> bookedMap = tourScheduleService.getBookedSeatsMap(tourid);
-        // ✅ แก้จุดนี้ด้วย: ส่ง tour และ bookedMap เข้าไปด้วย
         tour.setOverallStatus(tourScheduleService.computeOverallStatus(schedules, tour, bookedMap));
 
         model.addAttribute("tour", tour);
@@ -468,8 +445,7 @@ public class TourController {
             @RequestParam("numberOfDays") Integer numberOfDays,
             @RequestParam(value = "numberOfNights", required = false) Integer numberOfNights,
             @RequestParam(value = "tourtype", required = false) String tourtype,
-            @RequestParam(value = "images", required = false) String imagesJson, // ✅ รับ base64 หรือ __KEEP__
-            // ✅ จุดรับ/นัดพบ — ผู้จัดการชุมชนแก้ไขได้
+            @RequestParam(value = "images", required = false) String imagesJson, 
             @RequestParam(value = "allowMeetingPoint", required = false) Boolean allowMeetingPoint,
             @RequestParam(value = "meetingPointDetail", required = false) String meetingPointDetail,
             @RequestParam(value = "allowHotelPickup", required = false) Boolean allowHotelPickup,
@@ -508,8 +484,7 @@ public class TourController {
             model.addAttribute("loggedInManager", manager);
             return "Tour/editTour";
         }
-        // ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง (auto-calc ใน entity
-        // รองรับแค่ทัวร์รายวัน)
+        // ทัวร์ที่มากกว่า 1 วัน ต้องระบุ tourtype เอง 
         if (numberOfDays != null && numberOfDays > 1) {
             if (tourtype == null || tourtype.isBlank()) {
                 model.addAttribute("errorMessage",

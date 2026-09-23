@@ -33,7 +33,7 @@ public class RoomTypeService {
         return roomTypeRepository.findById(id).orElse(null);
     }
 
-    // ─── Add ───────────────────────────────────────────────────────────────────
+    // ─── Add ────────
     public Roomtype addRoomType(AddRoomRequest req) {
 
         String id = "RT" + UUID.randomUUID().toString()
@@ -55,7 +55,6 @@ public class RoomTypeService {
         homestay.setHomestayid(req.getHomestayid());
         room.setHomestay(homestay);
 
-        // เก็บ URL paths คั่นด้วย "," (ส่งมาจาก Controller แล้ว)
         String images = req.getImages();
         room.setImages((images != null && !images.isBlank()) ? images : null);
 
@@ -68,7 +67,7 @@ public class RoomTypeService {
         return roomTypeRepository.save(room);
     }
 
-    // ─── Update ────────────────────────────────────────────────────────────────
+    // ─── Update ───────────
     @Transactional
     public Roomtype updateRoomType(UpdateRoomRequest req) {
 
@@ -84,11 +83,10 @@ public class RoomTypeService {
         room.setRoomcondition(req.getRoomcondition());
         room.setStatus(req.getStatus());
 
-        // images ถูก merge (เดิม + ใหม่) มาจาก Controller แล้ว เก็บตรงๆ
         String images = req.getImages();
         room.setImages((images != null && !images.isBlank()) ? images : null);
 
-        // ── อัปเดต Facilities ─────────────────────────────────────────────────
+        // ── อัปเดต Facilities ──────
         if (req.getFacilitiesIds() != null) {
             List<Facilities> facilitiesList = req.getFacilitiesIds().isEmpty()
                     ? new ArrayList<>()
@@ -105,12 +103,12 @@ public class RoomTypeService {
         return booked != null ? booked : 0;
     }
 
-    // ─── Read all by homestay ──────────────────────────────────────────────────
+    // ─── Read all by homestay ───────────────
     public List<Roomtype> getRoomTypesByHomestayId(Integer homestayid) {
         return roomTypeRepository.findByHomestayId(homestayid);
     }
 
-    // ─── Read one ─────────────────────────────────────────────────────────────
+    // ─── Read one ───────────────
     @Transactional
     public Roomtype getRoomTypeById(String roomtypeid) {
         Roomtype room = roomTypeRepository.findById(roomtypeid).orElse(null);
@@ -120,7 +118,7 @@ public class RoomTypeService {
         return room;
     }
 
-    // ─── Read all facilities ───────────────────────────────────────────────────
+    // ─── Read all facilities ─────────
     public List<Facilities> getAllFacilities() {
         return facilitiesRepository.findAll();
     }

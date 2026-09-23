@@ -26,7 +26,7 @@ public class Booking {
 	@Column(name = "bookingdate")
 	private Date bookingdate;
 
-	// ★ เพิ่มใหม่ — เวลาที่ต้องชำระเงินให้เสร็จก่อน (bookingdate + 30 นาที)
+	//  เวลาที่ต้องชำระเงินให้เสร็จก่อน (bookingdate + 30 นาที)
 	@Column(name = "payment_deadline")
 	private Timestamp paymentDeadline;
 
