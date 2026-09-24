@@ -52,7 +52,6 @@ public class LoginAdminController {
         return "redirect:/search";
     }
 
-    // เปิดหน้า login (step 1 open page)
     @GetMapping("/admin/login")
     public String loginPage(HttpSession session) {
         if (session.getAttribute("loggedInAdmin") != null) {
@@ -61,14 +60,13 @@ public class LoginAdminController {
         return "Admin/admin_login";
     }
 
-    // ── แก้ตรงนี้: เพิ่ม Model และดึงข้อมูลจริงจาก DB ──
+
     @GetMapping("/admin/dashboard")
     public String dashboard(HttpSession session, Model model) {
         if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
 
-        // ───────── ข้อมูล Homestay (owner) ─────────
         List<Homestayowner> allOwners = ownerRepository.findAll();
 
         long homestayPending = allOwners.stream()
@@ -85,26 +83,24 @@ public class LoginAdminController {
             .filter(o -> "REJECTED".equals(o.getAccountstatus()))
             .count();
 
-        // ───────── ข้อมูล Manager ─────────
         List<Communitymanager> managers = managerService.getAll();
         long managerTotal  = managers != null ? managers.size() : 0;
         long managerActive = managers != null ? managers.stream()
             .filter(m -> m.getAccountstatus() == ManagerStatus.ACTIVE)
             .count() : 0;
 
-        // ───────── ข้อมูล Booking / รายได้ (เพิ่มใหม่) ─────────
         double totalRevenue   = bookingRepository.sumTotalRevenue(BookingStatus.CONFIRMED);
         long bookingPending   = bookingRepository.countPendingBookings();
         long bookingConfirmed = bookingRepository.countByBookingStatus(BookingStatus.CONFIRMED);
         long bookingCancel    = bookingRepository.countByBookingStatus(BookingStatus.CANCEL);
 
-        // ───────── ทัวร์ยอดนิยม Top 5 (เพิ่มใหม่) ─────────
+  
         List<Tour> topTours = tourRepository.findTopToursByBookingCount(PageRequest.of(0, 5));
 
-        // ───────── โฮมสเตย์รีวิวต่ำสุด Top 5 (เพิ่มใหม่) ─────────
+   
         List<Object[]> lowestRated = homestayRepository.findLowestRatedHomestays(PageRequest.of(0, 5));
 
-        // ───────── ส่งเข้า Model ─────────
+       
         model.addAttribute("homestayTotal",    allOwners.size());
         model.addAttribute("homestayPending",  homestayPending);
         model.addAttribute("homestayApproved", homestayApproved);
@@ -123,14 +119,13 @@ public class LoginAdminController {
         return "Admin/admin_dashboard";
     }
 
-    // step 3-6: validate → loginAdmin() → return T/F
     @PostMapping("/admin/login")
     public String doLogin(@RequestParam String username,
                           @RequestParam String password,
                           HttpSession session,
                           RedirectAttributes redirectAttributes) {
 
-        // step 3: validate (Alternate Flow 3.1)
+    
         if (username == null || username.isBlank() ||
             password == null || password.isBlank()) {
             redirectAttributes.addFlashAttribute("message", "กรุณากรอกชื่อผู้ใช้และรหัสผ่าน");
@@ -138,17 +133,15 @@ public class LoginAdminController {
             return "redirect:/admin/login";
         }
 
-        // step 5: loginAdmin() → query DB
         Optional<Admin> adminOpt = adminService.login(username.trim(), password.trim());
 
-        // step 5.1.1: return F → error message
         if (adminOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
             redirectAttributes.addFlashAttribute("alertType", "error");
             return "redirect:/admin/login";
         }
 
-        // step 6: return T → เก็บ session แล้ว open homepage
+
         session.setAttribute("loggedInAdmin", adminOpt.get());
 
         redirectAttributes.addFlashAttribute("message", "เข้าสู่ระบบสำเร็จ!");

@@ -56,26 +56,23 @@ private GuestRepository guestRepository;
             HttpSession session,
             Model model) {
 
-        // ── ดึง member จาก session ──────────────────────────────────
+        // ── ดึง member จาก session
         Member member = (Member) session.getAttribute("loggedInMember");
         if (member == null) {
             return "redirect:/member/login";
         }
         String memberId = member.getMemberid();
 
-        // ── แปลง parameter ──────────────────────────────────────────
+        // ── แปลง parameter
         BookingType   activeType   = parseType(typeStr);
         BookingStatus activeStatus = parseStatus(statusStr);
 
-        // ── ดึงรายการจอง ────────────────────────────────────────────
+        // ── ดึงรายการจอง
         List<Booking> bookings = bookingService
                 .getBookingsByMemberTypeAndStatus(memberId, activeType, activeStatus);
 
-        // ── นับจำนวน badge บน type tab ──────────────────────────────
         long tourCount     = bookingService.countByMemberAndType(memberId, BookingType.TOUR);
         long homestayCount = bookingService.countByMemberAndType(memberId, BookingType.ACCOMMODATION);
-
-        // ── นับจำนวนตาม status (ของ type ที่กำลังดูอยู่) ─────────────
         long countAll      = bookingService.countByMemberTypeAndStatus(memberId, activeType, null);
         long countPending  = bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.PENDING);
         long countWaiting  = bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.WAITING_APPROVAL);
@@ -84,7 +81,7 @@ private GuestRepository guestRepository;
         long countCompleted = bookingService.countByMemberTypeAndStatus(memberId, activeType, BookingStatus.COMPLETED);
         model.addAttribute("countCompleted", countCompleted);
 
-        // ── ส่งข้อมูลไปยัง view ──────────────────────────────────────
+        // ── ส่งข้อมูลไปยัง view 
         model.addAttribute("member",         member);
         model.addAttribute("bookings",        bookings);
         model.addAttribute("activeType",      activeType.name());
@@ -99,10 +96,10 @@ private GuestRepository guestRepository;
         model.addAttribute("countConfirmed",  countConfirmed);
         model.addAttribute("countCancel",     countCancel);
 
-        return "member/list_booking";   // → templates/member/booking-list.html
+        return "member/list_booking";   
     }
 
-    // ── helpers ──────────────────────────────────────────────────────
+    
     private BookingType parseType(String s) {
         try { return BookingType.valueOf(s.toUpperCase()); }
         catch (Exception e) { return BookingType.TOUR; }
@@ -158,10 +155,7 @@ public String bookingDetail(
     return "redirect:/member/bookings/list";
 }
 
-    // ════════════════════════════════════════════════════════
     //  GET : หน้าใบเสร็จ (แยกตามประเภทการจอง)
-    // ════════════════════════════════════════════════════════
-
     @GetMapping("/receipt/{bookingId}")
     public String viewReceipt(
             @PathVariable String bookingId,

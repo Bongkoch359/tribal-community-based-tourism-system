@@ -13,18 +13,16 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, String> {
 
-    // ── มีอยู่เดิม ──────────────────────────────────────────────
+   
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.paymentStatus = 'PAID'")
     Double sumPaidAmount();
 
     Payment findByBooking_Bookingid(String bookingid);
 
-    // ── เพิ่มใหม่ ────────────────────────────────────────────────
 
-    // ใช้ใน HomestayPaymentServiceImpl (Optional เพื่อ orElseGet)
     Optional<Payment> findOptionalByBooking_Bookingid(String bookingid);
 
-    // ดึงทุก Payment ของโฮมสเตย์นั้น (เจ้าของโฮมสเตย์ดู dashboard)
+    // ดึงทุก Payment ของโฮมสเตย์นั้น
     @Query("""
                 SELECT p
                 FROM Payment p
@@ -43,10 +41,7 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
     List<Payment> findByHomestayIdAndStatus(@Param("homestayId") String homestayId,
             @Param("status") PaymentStatus status);
 
-    /**
-     * รายได้รวมรายเดือนในปีที่กำหนด (เฉพาะ CONFIRMED)//หน้าแดชบอช
-     * Return: Object[]{month (Integer), totalRevenue (Double)}
-     */
+  
     @Query("""
                 SELECT MONTH(p.paymentdate) AS month,
                        COALESCE(SUM(p.amount), 0) AS totalRevenue

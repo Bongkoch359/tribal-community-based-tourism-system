@@ -41,7 +41,7 @@ public class HomestayReportService {
         return String.format("HR%06d", newNumber);
     }
 
-    // ===================== ฝั่งสมาชิก: สร้าง report =====================
+    // ฝั่งสมาชิก: สร้าง report 
     public HomestayReport createReport(String reason, String description, String evidenceImage, Integer homestayId) {
 
         Homestay homestay = homestayRepository.findById(homestayId)
@@ -58,7 +58,7 @@ public class HomestayReportService {
         return homestayReportRepository.save(report);
     }
 
-    // ===================== ฝั่ง Admin: ดูรายการ =====================
+    // Admin: ดูรายการ 
     public List<HomestayReport> getAllReports() {
         return homestayReportRepository.findAllByOrderByCreatedAtDesc();
     }
@@ -76,7 +76,7 @@ public class HomestayReportService {
         return homestayReportRepository.countByHomestay_Homestayid(homestayId);
     }
 
-    // ===================== ฝั่ง Admin: ตัดสินใจดำเนินการ =====================
+    //Admin: ตัดสินใจดำเนินการ 
     public HomestayReport resolveReport(String reportId, String action) {
         HomestayReport report = getReportById(reportId);
 

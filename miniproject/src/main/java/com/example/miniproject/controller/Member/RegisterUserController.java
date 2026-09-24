@@ -37,7 +37,7 @@ public String registerUser(@ModelAttribute Member member,
         return "redirect:/member/login?registered=true";
     }
 
-    // error อื่น ๆ (ข้อมูลไม่ครบ / รหัสผ่านไม่ตรง / ผิดพลาด) ยังขึ้น banner บนสุดเหมือนเดิม
+  
     model.addAttribute("errorMessage", result);
     model.addAttribute("member", member);
     return "Member/member_register";

@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, String> {
 
-    // ─── โฮมสเตย์ ─────────────────────────────────────────
+    // ─── โฮมสเตย์
     // เพิ่ม DISTINCT ป้องกัน review ซ้ำ ถ้า booking มีหลาย roomDetail
     @Query("""
         SELECT DISTINCT r FROM Review r
@@ -49,7 +49,7 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
     """)
     Long countByHomestayId(@Param("homestayId") Integer homestayId);
 
-    // ─── ทัวร์ ────────────────────────────────────────────
+    // ─── ทัวร์ 
     @Query("""
         SELECT DISTINCT r FROM Review r
         JOIN r.booking b
@@ -95,7 +95,7 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
     """)
     List<Object[]> findReviewsWithTourByManagerId(@Param("managerId") String managerId);
 
-    // ─── หา id ที่มีรีวิวอยู่จริง (ไว้เลือก top rated) ──────
+    // ─── หา id ที่มีรีวิวอยู่จริง
 @Query("""
     SELECT DISTINCT btd.tourschedule.tour.tourid
     FROM Review r

@@ -54,9 +54,7 @@ public interface BookingroomdetailRepository
                         @Param("checkindate") Date checkindate,
                         @Param("checkoutdate") Date checkoutdate);
 
-        // /** ดึงรายละเอียดห้องที่จองทั้งหมดของ roomtype นั้น (เผื่อใช้ทำปฏิทิน) */
-        // List<Bookingroomdetail> findByRoomtypeRoomtypeid(String roomtypeid);
-
+      
         /**
          * นับจำนวนการจอง (นับตามรายละเอียดห้อง) แยกตามประเภทห้อง ของ homestay หนึ่งๆ
          */

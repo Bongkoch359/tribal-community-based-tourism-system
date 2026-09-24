@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-// ─── ตัวสร้าง ID ที่ใช้ร่วมกันระหว่างการจองโฮมสเตย์ (BookingService)
-//      และการจองทัวร์ (TourBookingService) เพื่อไม่ให้เลข booking/guest ชนกัน ───
+
 @Component
 public class BookingIdGenerator {
 

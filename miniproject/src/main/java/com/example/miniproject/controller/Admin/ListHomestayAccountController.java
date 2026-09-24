@@ -30,7 +30,6 @@ public class ListHomestayAccountController {
 private HomestayReportService homestayReportService;
 
     // GET /admin/homestay → รายการคำขอสมัคร
-    // Basic Flow 1-6 ของ List Homestay Account
     @GetMapping
     public String listHomestay(Model model, HttpSession session) {
 
@@ -69,7 +68,7 @@ private HomestayReportService homestayReportService;
 
         List<Homestayowner> allOwners = ownerrepository.findAll(); // <-- ดึงข้อมูลทั้งหมดมาก่อน
 
-        // ── คำนวณจำนวนโฮมสเตย์ที่รออนุมัติสำหรับเอาไปโชว์ที่ Navbar ──
+        // ── คำนวณจำนวนโฮมสเตย์ที่รออนุมัติ
         long homestayPending = allOwners.stream()
             .filter(o -> (o.getVerificationstatus() == null || !o.getVerificationstatus())
                       && !"REJECTED".equals(o.getAccountstatus()))
@@ -83,14 +82,7 @@ private HomestayReportService homestayReportService;
         long activeCount  = approved.stream().filter(o -> !"SUSPENDED".equals(o.getAccountstatus())).count();
         long suspendCount = approved.stream().filter(o ->  "SUSPENDED".equals(o.getAccountstatus())).count();
 
-        // ══════════════════════════════════════════
-        // เพิ่มใหม่: คำนวณจำนวนรายงาน (PENDING) ของแต่ละ owner
-        // แล้ว set ลงใน field @Transient pendingReportCount ก่อนส่งเข้า Thymeleaf
-        // นับรวมจากทุกโฮมสเตย์ที่ owner คนนั้นมี ผ่าน reportService.countReportsForHomestay(homestayId)
-        // หมายเหตุ: ถ้า owner.getHomestays() เป็น lazy collection และไม่มี @Transactional
-        // ตรงนี้อาจเจอ LazyInitializationException — ถ้าเจอให้เพิ่ม @Transactional(readOnly = true)
-        // ที่ method นี้ หรือเปลี่ยน fetch เป็น EAGER/JOIN FETCH ใน repository
-        // ══════════════════════════════════════════
+        
         approved.forEach(owner -> {
     List<Homestay> ownedHomestays = owner.getHomestays();
     long pendingReports = (ownedHomestays == null) ? 0 :
@@ -104,15 +96,12 @@ private HomestayReportService homestayReportService;
         model.addAttribute("allCount",     approved.size());
         model.addAttribute("activeCount",  activeCount);
         model.addAttribute("suspendCount", suspendCount);
-        
-        // ── เพิ่มบรรทัดนี้ เพื่อส่งตัวเลขไปแสดงที่ Navbar ──
         model.addAttribute("pendingCount", homestayPending);
 
         return "Admin/admin_homestayall";
     }
 
     // POST /admin/homestay/approve/{id}
-    // Basic Flow 5 / Alternate Flow 5.1.1 — error update message
     @PostMapping("/approve/{id}")
     public String approveHomestay(@PathVariable String id,
                                   HttpSession session,
@@ -125,12 +114,12 @@ private HomestayReportService homestayReportService;
             Homestayowner owner = ownerrepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลเจ้าของโฮมสเตย์"));
 
-            // Basic Flow 5.1 — update status
+            // update status
             owner.setVerificationstatus(true);
             owner.setAccountstatus("ACTIVE");
             ownerrepository.save(owner);
 
-            // Basic Flow 5.2 — ส่งอีเมลแจ้งเตือน
+            // ส่งอีเมลแจ้งเตือน
             try {
                 emailService.sendApprovalEmail(
                     owner.getEmail(),
@@ -144,7 +133,6 @@ private HomestayReportService homestayReportService;
             "อนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์เรียบร้อยแล้ว");
 
         } catch (Exception e) {
-            // Alternate Flow 5.1.1 — error update message → กลับไปแสดงที่ Page
             redirectAttrs.addFlashAttribute("errorMessage",
                 "ไม่สามารถอนุมัติการสมัครสมาชิกเจ้าของโฮมสเตย์ได้ กรุณาลองใหม่อีกครั้ง");
             return "redirect:/admin/homestay";
@@ -204,12 +192,10 @@ public String suspendHomestay(@PathVariable String id,
         Homestayowner owner = ownerrepository.findById(id)
             .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล"));
 
-        // Basic Flow 5.1 — update status & reason
                owner.setAccountstatus("SUSPENDED");
         owner.setSuspensionReason(reason);
         ownerrepository.save(owner);
 
-        // resolve report ที่ PENDING ทั้งหมดของทุกโฮมสเตย์ที่ owner คนนี้เป็นเจ้าของ
      List<Homestay> ownedHomestays = owner.getHomestays();
 if (ownedHomestays != null) {
     for (Homestay hs : ownedHomestays) {
@@ -241,7 +227,7 @@ public String activateHomestay(@PathVariable String id,
         ownerrepository.save(owner);
 
     } catch (Exception e) {
-        // Alternate Flow 5.1.1 — error query message
+        
         redirectAttrs.addFlashAttribute("errorMessage",
             "ไม่สามารถเปิดใช้งานบัญชีโฮมสเตย์นี้ได้ กรุณาลองใหม่อีกครั้ง");
     }

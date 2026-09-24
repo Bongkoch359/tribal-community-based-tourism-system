@@ -41,69 +41,64 @@ public class BookingService {
     private BookingIdGenerator bookingIdGenerator;
 
     @Autowired
-private TourRepository tourRepository;
+    private TourRepository tourRepository;
 
-@Autowired
-private TourScheduleRepository tourScheduleRepository;
+    @Autowired
+    private TourScheduleRepository tourScheduleRepository;
 
-@Autowired
-private BookingtourdetailRepository bookingtourdetailRepository;
+    @Autowired
+    private BookingtourdetailRepository bookingtourdetailRepository;
 
-private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
+    private static final double INSURANCE_PRICE_PER_PERSON = 100.0;
 
-    // ════════════════════════════════════════════════════════
-    //  GET / FIND
-    // ════════════════════════════════════════════════════════
-
+  
     public Booking getBookingById(String bookingId) {
         return bookingRepository.findByIdWithDetails(bookingId).orElse(null);
     }
-
-    // ════════════════════════════════════════════════════════
-    //  LIST / COUNT
-    // ════════════════════════════════════════════════════════
 
     public List<Booking> getBookingsByMember(String memberId) {
         return bookingRepository.findByMemberMemberidOrderByBookingdateDesc(memberId);
     }
 
     /**
- * คืนจำนวนห้องว่าง "สูงสุด" (จาก roomtype ที่เหลือเยอะที่สุด) ของแต่ละ homestay
- * ในช่วงวันที่ checkin–checkout ที่ระบุ ใช้แสดงเป็น "เหลือ X ห้อง" ในหน้าค้นหา
- */
-public Map<Integer, Integer> getMaxAvailableRoomsForHomestays(
-        List<Integer> homestayIds, LocalDate checkin, LocalDate checkout) {
+     * คืนจำนวนห้องว่าง "สูงสุด" (จาก roomtype ที่เหลือเยอะที่สุด) ของแต่ละ homestay
+     * ในช่วงวันที่ checkin–checkout ที่ระบุ ใช้แสดงเป็น "เหลือ X ห้อง" ในหน้าค้นหา
+     */
+    public Map<Integer, Integer> getMaxAvailableRoomsForHomestays(
+            List<Integer> homestayIds, LocalDate checkin, LocalDate checkout) {
 
-    Map<Integer, Integer> result = new java.util.HashMap<>();
+        Map<Integer, Integer> result = new java.util.HashMap<>();
 
-    for (Integer id : homestayIds) {
-        List<Roomtype> roomtypes = roomtypeRepository.findByHomestayId(id);
-        int best = 0;
+        for (Integer id : homestayIds) {
+            List<Roomtype> roomtypes = roomtypeRepository.findByHomestayId(id);
+            int best = 0;
 
-        for (Roomtype rt : roomtypes) {
-            if (isMaintenanceStatus(rt.getStatus())) continue;
-            if (rt.getTotalrooms() == null) continue;
+            for (Roomtype rt : roomtypes) {
+                if (isMaintenanceStatus(rt.getStatus()))
+                    continue;
+                if (rt.getTotalrooms() == null)
+                    continue;
 
-            Integer booked = bookingroomdetailRepository.countBookedRoomsInRange(
-                    rt.getRoomtypeid(), Date.valueOf(checkin), Date.valueOf(checkout));
-            int available = rt.getTotalrooms() - (booked != null ? booked : 0);
+                Integer booked = bookingroomdetailRepository.countBookedRoomsInRange(
+                        rt.getRoomtypeid(), Date.valueOf(checkin), Date.valueOf(checkout));
+                int available = rt.getTotalrooms() - (booked != null ? booked : 0);
 
-            if (available > best) {
-                best = available;
+                if (available > best) {
+                    best = available;
+                }
             }
+            result.put(id, best);
         }
-        result.put(id, best);
+        return result;
     }
-    return result;
-}
 
     public List<Booking> getBookingsByMemberTypeAndStatus(
-        String memberId, BookingType type, BookingStatus status) {
-    if (type == BookingType.ACCOMMODATION) {
-        return bookingRepository.findAccommodationBookingsByMemberSortedByPriority(memberId, status);
+            String memberId, BookingType type, BookingStatus status) {
+        if (type == BookingType.ACCOMMODATION) {
+            return bookingRepository.findAccommodationBookingsByMemberSortedByPriority(memberId, status);
+        }
+        return bookingRepository.findTourBookingsByMemberSortedByPriority(memberId, status);
     }
-    return bookingRepository.findTourBookingsByMemberSortedByPriority(memberId, status);
-}
 
     public long countByMemberAndType(String memberId, BookingType type) {
         return bookingRepository
@@ -122,14 +117,8 @@ public Map<Integer, Integer> getMaxAvailableRoomsForHomestays(
                 .count();
     }
 
-    // ════════════════════════════════════════════════════════
-    //  VALIDATION HELPERS (ใช้ร่วมกันทั้ง create / edit)
-    // ════════════════════════════════════════════════════════
-
-    /**
-     * ตรวจสอบจำนวนห้อง / ผู้ใหญ่ / เด็ก ให้เป็นค่าที่ถูกต้อง
-     * แทนที่จะ silently default ค่าผิดๆ ให้กลายเป็น 1 เหมือนเดิม
-     * ที่นี่จะ throw IllegalArgumentException ทันทีถ้าค่าไม่สมเหตุสมผล
+ 
+    /**ตรวจสอบจำนวนห้อง / ผู้ใหญ่ / เด็ก ให้เป็นค่าที่ถูกต้อง
      */
     private void validateGuestCounts(Integer numofrooms, Integer numofAdults, Integer numofChildren) {
 
@@ -153,7 +142,8 @@ public Map<Integer, Integer> getMaxAvailableRoomsForHomestays(
      * — ถ้าระบบจริงหมายถึงความจุรวมทั้งหมดไม่คูณตามห้อง ให้เอา " * rooms" ออก
      */
     private void validateCapacity(Roomtype roomtype, int rooms, int adults, int children) {
-        if (roomtype.getMaxguest() == null) return; // ไม่ได้กำหนดความจุไว้ ข้ามการเช็ค
+        if (roomtype.getMaxguest() == null)
+            return; // ไม่ได้กำหนดความจุไว้ ข้ามการเช็ค
 
         int totalGuests = adults + children;
         int capacity = roomtype.getMaxguest() * rooms;
@@ -165,10 +155,7 @@ public Map<Integer, Integer> getMaxAvailableRoomsForHomestays(
         }
     }
 
-    // ════════════════════════════════════════════════════════
-    //  CREATE HOMESTAY BOOKING
-    // ════════════════════════════════════════════════════════
-
+  
     @Transactional
     public String createHomestayBooking(
             Member member,
@@ -183,28 +170,28 @@ public Map<Integer, Integer> getMaxAvailableRoomsForHomestays(
             String guestFirstname,
             String guestLastname) {
 
-        // ── 1. Validate dates ──────────────────────────────────
-        LocalDate dateIn  = LocalDate.parse(checkin);
+      
+        LocalDate dateIn = LocalDate.parse(checkin);
         LocalDate dateOut = LocalDate.parse(checkout);
 
         if (!dateOut.isAfter(dateIn)) {
             throw new IllegalArgumentException("วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน");
         }
 
-        // ── 1.5 Validate จำนวนห้อง / ผู้ใหญ่ / เด็ก (ปฏิเสธค่าที่ไม่ถูกต้องแทนการ default เงียบๆ) ──
+      
         validateGuestCounts(numofrooms, numofAdults, numofChildren);
 
-        // ── 2. ดึง Roomtype ────────────────────────────────────
+        // ดึง Roomtype 
         Roomtype roomtype = roomtypeRepository.lockRoomTypeForUpdate(roomtypeId);
-if (roomtype == null) {
-    throw new RuntimeException("ไม่พบประเภทห้องพัก: " + roomtypeId);
-}
+        if (roomtype == null) {
+            throw new RuntimeException("ไม่พบประเภทห้องพัก: " + roomtypeId);
+        }
 
-        int rooms    = numofrooms;
-        int adults   = numofAdults;
+        int rooms = numofrooms;
+        int adults = numofAdults;
         int children = (numofChildren != null) ? numofChildren : 0;
 
-        // ── 2.5 เช็คความจุห้อง (ผู้ใหญ่ + เด็ก ต้องไม่เกิน maxguest * จำนวนห้อง) ──
+        // เช็คความจุห้อง (ผู้ใหญ่ + เด็ก ต้องไม่เกิน maxguest * จำนวนห้อง)
         validateCapacity(roomtype, rooms, adults, children);
 
         if (roomtype.getTotalrooms() != null) {
@@ -218,25 +205,24 @@ if (roomtype == null) {
             }
         }
 
-        long   nights   = ChronoUnit.DAYS.between(dateIn, dateOut);
+        long nights = ChronoUnit.DAYS.between(dateIn, dateOut);
         double subtotal = roomtype.getPricepernight() * nights * rooms;
 
-
-        // ── 4. สร้าง Booking หลัก ──────────────────────────────
+        // สร้าง Booking หลัก 
         Booking booking = new Booking();
         booking.setBookingid(bookingIdGenerator.generateBookingId());
         booking.setMember(member);
         booking.setBookingType(BookingType.ACCOMMODATION);
         booking.setBookingStatus(BookingStatus.PENDING);
-       booking.setBookingdate(new Date(System.currentTimeMillis()));
-booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 30 * 60 * 1000)); // ★ เพิ่ม
+        booking.setBookingdate(new Date(System.currentTimeMillis()));
+        booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 30 * 60 * 1000)); // ★ เพิ่ม
         booking.setNumofguest(adults + children);
         booking.setNote(note);
         booking.setIsBookerGoing(isBookerGoing != null ? isBookerGoing : true);
         booking.setTotalamount(subtotal);
         bookingRepository.save(booking);
 
-        // ── 5. สร้าง Bookingroomdetail ─────────────────────────
+    
         Bookingroomdetailid detailId = new Bookingroomdetailid();
         detailId.setBookingid(booking.getBookingid());
         detailId.setRoomtypeid(roomtypeId);
@@ -253,7 +239,7 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         detail.setSubtotalroom(subtotal);
         bookingroomdetailRepository.save(detail);
 
-        // ── 6. สร้าง Guest (กรณีจองให้ผู้อื่น) ────────────────
+        // สร้าง Guest (กรณีจองให้ผู้อื่น) 
         if (Boolean.FALSE.equals(isBookerGoing)
                 && guestFirstname != null && !guestFirstname.isBlank()) {
 
@@ -268,10 +254,6 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         return booking.getBookingid();
     }
 
-    // ════════════════════════════════════════════════════════
-    //  EDIT HOMESTAY BOOKING
-    // ════════════════════════════════════════════════════════
-
 
     @Transactional
     public void editHomestayBooking(
@@ -283,15 +265,15 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
             Integer numofAdults,
             Integer numofChildren,
             String note,
-            List<String> guestIds,          // ← เปลี่ยนจาก String เดี่ยว เป็น List (รองรับหลายคน)
-            List<String> guestFirstnames,   // ← เปลี่ยนจาก String เดี่ยว เป็น List
-            List<String> guestLastnames) {  // ← เปลี่ยนจาก String เดี่ยว เป็น List
+            List<String> guestIds,
+            List<String> guestFirstnames,
+            List<String> guestLastnames) { 
 
-        // ── 1. ดึง Booking ─────────────────────────────────────
+        // ── 1. ดึง Booking 
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
 
-        // ── 2. ตรวจสิทธิ์ ──────────────────────────────────────
+        // ── 2. ตรวจสิทธิ์
         if (!booking.getMember().getMemberid().equals(memberId))
             throw new IllegalArgumentException("ไม่มีสิทธิ์แก้ไขการจองนี้");
 
@@ -301,38 +283,39 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
             throw new IllegalStateException("ไม่สามารถแก้ไขข้อมูลการจองห้องพักได้ กรุณาลองใหม่อีกครั้ง");
 
         // ── 4. Validate dates ───────────────────────────────────
-        LocalDate dateIn  = LocalDate.parse(checkin);
+        LocalDate dateIn = LocalDate.parse(checkin);
         LocalDate dateOut = LocalDate.parse(checkout);
         if (!dateOut.isAfter(dateIn))
             throw new IllegalArgumentException("วันที่เช็คเอาท์ต้องมากกว่าวันเช็คอิน");
 
-        // ── 4.5 Validate จำนวนห้อง / ผู้ใหญ่ / เด็ก ─────────────
+   
         validateGuestCounts(numofrooms, numofAdults, numofChildren);
 
-        // ── 5. ดึง Bookingroomdetail ────────────────────────────
+     
         if (booking.getRoomDetails() == null || booking.getRoomDetails().isEmpty())
             throw new RuntimeException("ไม่พบรายละเอียดห้องพักของการจองนี้");
 
-        Bookingroomdetail detail   = booking.getRoomDetails().get(0);
-        Roomtype          roomtype = detail.getRoomtype();
+        Bookingroomdetail detail = booking.getRoomDetails().get(0);
+        Roomtype roomtype = detail.getRoomtype();
 
-        int rooms    = numofrooms;
-        int adults   = numofAdults;
+        int rooms = numofrooms;
+        int adults = numofAdults;
         int children = (numofChildren != null) ? numofChildren : 0;
 
-        // ── 5.5 เช็คความจุห้อง (ผู้ใหญ่ + เด็ก ต้องไม่เกิน maxguest * จำนวนห้อง) ──
+        // เช็คความจุห้อง (ผู้ใหญ่ + เด็ก ต้องไม่เกิน maxguest * จำนวนห้อง)
         validateCapacity(roomtype, rooms, adults, children);
 
-        // ⛔ เช็คห้องว่าง — นับรวมของ booking นี้เองด้วย (เพราะยังไม่ได้ save ค่าใหม่)
-        //    ต้องหักจำนวนห้องเดิมของ booking นี้ออกก่อน ถ้าช่วงวันใหม่ยังทับกับช่วงวันเดิม
+        // เช็คห้องว่าง — นับรวมของ booking นี้เองด้วย (เพราะยังไม่ได้ save ค่าใหม่)
+        // ต้องหักจำนวนห้องเดิมของ booking นี้ออกก่อน ถ้าช่วงวันใหม่ยังทับกับช่วงวันเดิม
         if (roomtype.getTotalrooms() != null) {
             Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
                     roomtype.getRoomtypeid(), Date.valueOf(dateIn), Date.valueOf(dateOut));
             int totalBooked = (bookedRooms != null ? bookedRooms : 0);
 
             // ถ้าช่วงวันเดิมของ booking นี้ทับกับช่วงวันใหม่ที่กำลังจะเช็ค ต้องหักตัวเองออก
-            // (เพราะ query countBookedRoomsInRange น่าจะนับรวม detail เดิมของ booking นี้ไปแล้ว
-            //  ถ้าช่วงวันเดิม-ใหม่คาบเกี่ยวกัน)
+            // (เพราะ query countBookedRoomsInRange น่าจะนับรวม detail เดิมของ booking
+            // นี้ไปแล้ว
+            // ถ้าช่วงวันเดิม-ใหม่คาบเกี่ยวกัน)
             boolean oldOverlapsNewRange = detail.getCheckindate().toLocalDate().isBefore(dateOut)
                     && detail.getCheckoutdate().toLocalDate().isAfter(dateIn);
             if (oldOverlapsNewRange) {
@@ -347,11 +330,10 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
             }
         }
 
-        long   nights   = ChronoUnit.DAYS.between(dateIn, dateOut);
+        long nights = ChronoUnit.DAYS.between(dateIn, dateOut);
         double subtotal = roomtype.getPricepernight() * nights * rooms;
 
-
-        // ── 7. อัปเดต Bookingroomdetail ────────────────────────
+        //  อัปเดต Bookingroomdetail
         detail.setCheckindate(Date.valueOf(dateIn));
         detail.setCheckoutdate(Date.valueOf(dateOut));
         detail.setNumofrooms(rooms);
@@ -360,31 +342,32 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
         detail.setSubtotalroom(subtotal);
         bookingroomdetailRepository.save(detail);
 
-        // ── 8. อัปเดต Booking หลัก ─────────────────────────────
+        //  อัปเดต Booking หลัก 
         booking.setNumofguest(adults + children);
         booking.setNote(note);
         booking.setTotalamount(subtotal);
         bookingRepository.save(booking);
 
         // ── 9. อัปเดตชื่อ Guest (กรณีจองให้ผู้อื่น) — รองรับหลายคน ───────────
-        // guestIds / guestFirstnames / guestLastnames ต้องมีความยาวเท่ากันและ "เรียงตามลำดับเดียวกัน"
-        // (ฝั่ง Thymeleaf loop ผ่าน guests ตัวเดียวกัน ดังนั้น index จะตรงกันโดยอัตโนมัติ)
+        // guestIds / guestFirstnames / guestLastnames ต้องมีความยาวเท่ากันและ
+        // "เรียงตามลำดับเดียวกัน"
         if (Boolean.FALSE.equals(booking.getIsBookerGoing()) && guestFirstnames != null) {
 
             int count = guestFirstnames.size();
 
             for (int i = 0; i < count; i++) {
-                String gid   = (guestIds != null && i < guestIds.size()) ? guestIds.get(i) : null;
+                String gid = (guestIds != null && i < guestIds.size()) ? guestIds.get(i) : null;
                 String fname = guestFirstnames.get(i);
                 String lname = (guestLastnames != null && i < guestLastnames.size())
-                        ? guestLastnames.get(i) : "";
+                        ? guestLastnames.get(i)
+                        : "";
 
                 if (fname == null || fname.isBlank()) {
                     continue; // ข้าม row ที่ไม่ได้กรอกชื่อ
                 }
 
                 if (gid != null && !gid.isBlank()) {
-                    // ── แก้ guest เดิมตาม id ──────────────────────────
+                    // ── แก้ guest เดิมตาม id 
                     Guest g = guestRepository.findById(gid)
                             .orElseThrow(() -> new IllegalArgumentException("ไม่พบผู้เข้าพัก: " + gid));
 
@@ -398,7 +381,7 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
                     guestRepository.save(g);
 
                 } else {
-                    // ── ไม่มี id → เป็นผู้เข้าพักคนใหม่ที่เพิ่งเพิ่ม ──
+                  
                     Guest g = new Guest();
                     g.setGuestid(bookingIdGenerator.generateGuestId());
                     g.setFirstname(fname.trim());
@@ -409,45 +392,40 @@ booking.setPaymentDeadline(new java.sql.Timestamp(System.currentTimeMillis() + 3
             }
         }
     }
-    // ════════════════════════════════════════════════════════
-    //  CANCEL HOMESTAY BOOKING
-    // ════════════════════════════════════════════════════════
+
 
     @Transactional
-public void cancelHomestayBooking(String bookingId, String memberId, String reason) {
+    public void cancelHomestayBooking(String bookingId, String memberId, String reason) {
 
-    // ── 1. ดึง Booking ─────────────────────────────────────
-    Booking booking = bookingRepository.findByIdWithDetails(bookingId)
-            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+        // ── 1. ดึง Booking 
+        Booking booking = bookingRepository.findByIdWithDetails(bookingId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
 
-    // ── 2. ตรวจสิทธิ์ ──────────────────────────────────────
-    if (!booking.getMember().getMemberid().equals(memberId))
-        throw new IllegalArgumentException("ไม่มีสิทธิ์ยกเลิกการจองนี้");
+        // ── 2. ตรวจสิทธิ์
+        if (!booking.getMember().getMemberid().equals(memberId))
+            throw new IllegalArgumentException("ไม่มีสิทธิ์ยกเลิกการจองนี้");
 
-    // ── 3. ตรวจสถานะ ───────────────────────────────────────
-    BookingStatus status = booking.getBookingStatus();
-    if (status == BookingStatus.CONFIRMED)
-        throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้ กรุณาติดต่อเจ้าหน้าที่");
-    if (status == BookingStatus.CANCEL)
-        throw new IllegalStateException("การจองนี้ถูกยกเลิกไปแล้ว");
-    if (status == BookingStatus.COMPLETED)
-        throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่เสร็จสิ้นแล้วได้");
+        // ── 3. ตรวจสถานะ 
+        BookingStatus status = booking.getBookingStatus();
+        if (status == BookingStatus.CONFIRMED)
+            throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้ กรุณาติดต่อเจ้าหน้าที่");
+        if (status == BookingStatus.CANCEL)
+            throw new IllegalStateException("การจองนี้ถูกยกเลิกไปแล้ว");
+        if (status == BookingStatus.COMPLETED)
+            throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่เสร็จสิ้นแล้วได้");
 
-    // ── 4. อัปเดต status เป็น CANCEL ──────────────────────
-    booking.setBookingStatus(BookingStatus.CANCEL);
-    booking.setCancelReason(
-        "ยกเลิกโดยผู้จอง" + (reason != null && !reason.isBlank() ? ": " + reason.trim() : "")
-    );
-    bookingRepository.save(booking);
-}
+        // ── 4. อัปเดต status เป็น CANCEL
+        booking.setBookingStatus(BookingStatus.CANCEL);
+        booking.setCancelReason(
+                "ยกเลิกโดยผู้จอง" + (reason != null && !reason.isBlank() ? ": " + reason.trim() : ""));
+        bookingRepository.save(booking);
+    }
 
-//══════════════════════════════════════════════
-    //  HELPERS
-    // ════════════════════════════════════════════════════════
-
+   
+    // HELPERS
     private String generateBookingId() {
-        String date  = LocalDate.now().format(DateTimeFormatter.ofPattern("MMdd"));
-        long   count = bookingRepository.count() + 1;
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("MMdd"));
+        long count = bookingRepository.count() + 1;
         return "BK" + date + String.format("%04d", count);
     }
 
@@ -456,70 +434,68 @@ public void cancelHomestayBooking(String bookingId, String memberId, String reas
         return "GS" + String.format("%08d", count);
     }
 
-    
-
-public void autoCompleteIfPastEndDate(Booking booking) {
-    if (booking == null || booking.getBookingStatus() != BookingStatus.CONFIRMED) {
-        return; // เช็คเฉพาะ CONFIRMED เท่านั้น ไม่ยุ่งกับ status อื่น
-    }
-
-    LocalDate today = LocalDate.now();
-    boolean isPastEnd = false;
-
-    if (booking.getTourDetails() != null && !booking.getTourDetails().isEmpty()) {
-        var schedule = booking.getTourDetails().get(0).getTourschedule();
-        isPastEnd = schedule != null && schedule.getEnddate() != null
-                && schedule.getEnddate().toLocalDate().isBefore(today);
-
-    } else if (booking.getRoomDetails() != null && !booking.getRoomDetails().isEmpty()) {
-        var checkout = booking.getRoomDetails().get(0).getCheckoutdate();
-        isPastEnd = checkout != null && checkout.toLocalDate().isBefore(today);
-    }
-
-    if (isPastEnd) {
-        booking.setBookingStatus(BookingStatus.COMPLETED);
-        bookingRepository.save(booking);
-    }
-}
-public boolean isHomestayAvailable(Integer homestayId, LocalDate checkin, LocalDate checkout) {
-    List<Roomtype> roomtypes = roomtypeRepository.findByHomestayId(homestayId);
-    if (roomtypes.isEmpty()) return true;
-
-    for (Roomtype rt : roomtypes) {
-
-        // ✅ เพิ่มบรรทัดนี้: ข้ามห้องที่ปิดปรับปรุง ไม่ให้นับว่าห้องนั้นทำให้ homestay ว่าง
-        if (isMaintenanceStatus(rt.getStatus())) {
-            continue;
+    public void autoCompleteIfPastEndDate(Booking booking) {
+        if (booking == null || booking.getBookingStatus() != BookingStatus.CONFIRMED) {
+            return; // เช็คเฉพาะ CONFIRMED เท่านั้น ไม่ยุ่งกับ status อื่น
         }
 
-        if (rt.getTotalrooms() == null) return true;
+        LocalDate today = LocalDate.now();
+        boolean isPastEnd = false;
 
-        Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
-                rt.getRoomtypeid(), Date.valueOf(checkin), Date.valueOf(checkout));
-        int booked = (bookedRooms != null) ? bookedRooms : 0;
-        int available = rt.getTotalrooms() - booked;
+        if (booking.getTourDetails() != null && !booking.getTourDetails().isEmpty()) {
+            var schedule = booking.getTourDetails().get(0).getTourschedule();
+            isPastEnd = schedule != null && schedule.getEnddate() != null
+                    && schedule.getEnddate().toLocalDate().isBefore(today);
 
-        if (available > 0) {
+        } else if (booking.getRoomDetails() != null && !booking.getRoomDetails().isEmpty()) {
+            var checkout = booking.getRoomDetails().get(0).getCheckoutdate();
+            isPastEnd = checkout != null && checkout.toLocalDate().isBefore(today);
+        }
+
+        if (isPastEnd) {
+            booking.setBookingStatus(BookingStatus.COMPLETED);
+            bookingRepository.save(booking);
+        }
+    }
+
+    public boolean isHomestayAvailable(Integer homestayId, LocalDate checkin, LocalDate checkout) {
+        List<Roomtype> roomtypes = roomtypeRepository.findByHomestayId(homestayId);
+        if (roomtypes.isEmpty())
             return true;
+
+        for (Roomtype rt : roomtypes) {
+
+            if (isMaintenanceStatus(rt.getStatus())) {
+                continue;
+            }
+
+            if (rt.getTotalrooms() == null)
+                return true;
+
+            Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
+                    rt.getRoomtypeid(), Date.valueOf(checkin), Date.valueOf(checkout));
+            int booked = (bookedRooms != null) ? bookedRooms : 0;
+            int available = rt.getTotalrooms() - booked;
+
+            if (available > 0) {
+                return true;
+            }
         }
+        return false;
     }
-    return false;
-}
 
-
-private boolean isMaintenanceStatus(String status) {
-    return "ปิดปรับปรุง".equals(status);
-}
-
-public Map<Integer, Boolean> checkAvailabilityForHomestays(
-        List<Integer> homestayIds, LocalDate checkin, LocalDate checkout) {
-
-    Map<Integer, Boolean> result = new java.util.HashMap<>();
-    for (Integer id : homestayIds) {
-        result.put(id, isHomestayAvailable(id, checkin, checkout));
+    private boolean isMaintenanceStatus(String status) {
+        return "ปิดปรับปรุง".equals(status);
     }
-    return result;
-}
 
+    public Map<Integer, Boolean> checkAvailabilityForHomestays(
+            List<Integer> homestayIds, LocalDate checkin, LocalDate checkout) {
+
+        Map<Integer, Boolean> result = new java.util.HashMap<>();
+        for (Integer id : homestayIds) {
+            result.put(id, isHomestayAvailable(id, checkin, checkout));
+        }
+        return result;
+    }
 
 }

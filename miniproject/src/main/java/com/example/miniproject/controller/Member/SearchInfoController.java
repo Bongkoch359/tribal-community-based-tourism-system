@@ -45,16 +45,16 @@ public class SearchInfoController {
 
     @GetMapping
     public String searchPage(
-            @RequestParam(defaultValue = "")         String  keyword,
-            @RequestParam(defaultValue = "")         String  date,
-            @RequestParam(required = false)          String  startDate,
-            @RequestParam(required = false)          String  endDate,
-            @RequestParam(defaultValue = "1")         Integer numGuest,
-            @RequestParam(defaultValue = "activity") String  type,
-            @RequestParam(required = false)          String  managerId,
-            @RequestParam(required = false)          String  tourTypeId,
-            @RequestParam(required = false)          String tribeName, 
-             @RequestParam(required = false)          Integer tribeId, 
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String date,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(defaultValue = "1") Integer numGuest,
+            @RequestParam(defaultValue = "activity") String type,
+            @RequestParam(required = false) String managerId,
+            @RequestParam(required = false) String tourTypeId,
+            @RequestParam(required = false) String tribeName,
+            @RequestParam(required = false) Integer tribeId,
             Model model) {
 
         if (numGuest < 1) {
@@ -115,108 +115,106 @@ public class SearchInfoController {
             log.debug("===================================");
         }
 
-        model.addAttribute("activities",    activities);
-        model.addAttribute("tours",         tours);
-        model.addAttribute("homestays",     homestays);
-        model.addAttribute("keyword",       keyword);
-        model.addAttribute("date",          date);
-        model.addAttribute("startDate",     startDate);
-        model.addAttribute("endDate",       endDate);
-        model.addAttribute("numGuest",      numGuest);
-        model.addAttribute("currentType",   type);
-        model.addAttribute("tourTypeId",    tourTypeId);
-        model.addAttribute("tribeId",       tribeId); 
+        model.addAttribute("activities", activities);
+        model.addAttribute("tours", tours);
+        model.addAttribute("homestays", homestays);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("date", date);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("numGuest", numGuest);
+        model.addAttribute("currentType", type);
+        model.addAttribute("tourTypeId", tourTypeId);
+        model.addAttribute("tribeId", tribeId);
         model.addAttribute("tribeName", tribeName);
         model.addAttribute("tribeOptions", TribeCode.values());
-        model.addAttribute("heroTribeCount",    searchInfoService.countDistinctTribes());
+        model.addAttribute("heroTribeCount", searchInfoService.countDistinctTribes());
         model.addAttribute("heroActivityCount", searchInfoService.countAllActivities());
-        model.addAttribute("tourTypes",     tourService.getAllTourTypes());
+        model.addAttribute("tourTypes", tourService.getAllTourTypes());
 
         model.addAttribute("activityCount", activities.size());
-        model.addAttribute("tourCount",     tours.size());
+        model.addAttribute("tourCount", tours.size());
         model.addAttribute("homestayCount", homestays.size());
-        model.addAttribute("totalCount",    activities.size() + tours.size() + homestays.size());
+        model.addAttribute("totalCount", activities.size() + tours.size() + homestays.size());
 
-        // ── Tour rating (union กับ featuredTours เพื่อให้ template หา key เจอทั้ง 2 ส่วน) ──
         Set<String> allTourIds = tours.stream()
                 .map(Tour::getTourid)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         featuredTours.forEach(t -> allTourIds.add(t.getTourid()));
 
-        Map<String, String> tourRating      = new HashMap<>();
-        Map<String, Long>   tourReviewCount = new HashMap<>();
+        Map<String, String> tourRating = new HashMap<>();
+        Map<String, Long> tourReviewCount = new HashMap<>();
         for (String tid : allTourIds) {
-            Double avg   = reviewRepository.avgRatingByTourId(tid);
-            Long   count = reviewRepository.countByTourId(tid);
+            Double avg = reviewRepository.avgRatingByTourId(tid);
+            Long count = reviewRepository.countByTourId(tid);
             tourRating.put(tid, avg != null ? String.format("%.1f", avg) : "-");
             tourReviewCount.put(tid, count != null ? count : 0L);
         }
 
         Map<String, Boolean> tourAvailability = tourService.checkTourAvailability(new ArrayList<>(allTourIds));
-model.addAttribute("tourAvailability", tourAvailability);
-        Map<String, String> actRating      = new HashMap<>();
-        Map<String, Long>   actReviewCount = new HashMap<>();
+        model.addAttribute("tourAvailability", tourAvailability);
+        Map<String, String> actRating = new HashMap<>();
+        Map<String, Long> actReviewCount = new HashMap<>();
 
         if (startDate != null && !startDate.isBlank()
                 && endDate != null && !endDate.isBlank()
                 && !homestays.isEmpty()) {
             try {
                 java.time.LocalDate checkin;
-java.time.LocalDate checkout;
-try {
-    if (startDate != null && !startDate.isBlank() && endDate != null && !endDate.isBlank()) {
-        checkin  = java.time.LocalDate.parse(startDate);
-        checkout = java.time.LocalDate.parse(endDate);
-    } else {
-        checkin  = java.time.LocalDate.now();
-        checkout = checkin.plusDays(1);
-    }
-} catch (java.time.format.DateTimeParseException e) {
-    log.debug("Invalid date format for availability check: {}", e.getMessage());
-    checkin  = java.time.LocalDate.now();
-    checkout = checkin.plusDays(1);
-}
+                java.time.LocalDate checkout;
+                try {
+                    if (startDate != null && !startDate.isBlank() && endDate != null && !endDate.isBlank()) {
+                        checkin = java.time.LocalDate.parse(startDate);
+                        checkout = java.time.LocalDate.parse(endDate);
+                    } else {
+                        checkin = java.time.LocalDate.now();
+                        checkout = checkin.plusDays(1);
+                    }
+                } catch (java.time.format.DateTimeParseException e) {
+                    log.debug("Invalid date format for availability check: {}", e.getMessage());
+                    checkin = java.time.LocalDate.now();
+                    checkout = checkin.plusDays(1);
+                }
 
-if (!homestays.isEmpty()) {
-    List<Integer> homestayIds = homestays.stream()
-            .map(Homestay::getHomestayid)
-            .collect(Collectors.toList());
+                if (!homestays.isEmpty()) {
+                    List<Integer> homestayIds = homestays.stream()
+                            .map(Homestay::getHomestayid)
+                            .collect(Collectors.toList());
 
-    Map<Integer, Boolean> hsAvailability =
-            bookingService.checkAvailabilityForHomestays(homestayIds, checkin, checkout);
+                    Map<Integer, Boolean> hsAvailability = bookingService.checkAvailabilityForHomestays(homestayIds,
+                            checkin, checkout);
 
-    model.addAttribute("hsAvailability", hsAvailability);
+                    model.addAttribute("hsAvailability", hsAvailability);
 
-     Map<Integer, Integer> hsAvailableRooms =
-            bookingService.getMaxAvailableRoomsForHomestays(homestayIds, checkin, checkout);
-    model.addAttribute("hsAvailableRooms", hsAvailableRooms);
-}
+                    Map<Integer, Integer> hsAvailableRooms = bookingService
+                            .getMaxAvailableRoomsForHomestays(homestayIds, checkin, checkout);
+                    model.addAttribute("hsAvailableRooms", hsAvailableRooms);
+                }
             } catch (java.time.format.DateTimeParseException e) {
                 log.debug("Invalid date format for availability check: {}", e.getMessage());
             }
         }
 
-        // ── Homestay rating (union กับ featuredHomestays) ──
         Set<Integer> allHsIds = homestays.stream()
                 .map(Homestay::getHomestayid)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         featuredHomestays.forEach(h -> allHsIds.add(h.getHomestayid()));
 
-        Map<Integer, String> hsRating      = new HashMap<>();
-        Map<Integer, Long>   hsReviewCount = new HashMap<>();
+        Map<Integer, String> hsRating = new HashMap<>();
+        Map<Integer, Long> hsReviewCount = new HashMap<>();
         for (Integer hid : allHsIds) {
-            Double avg   = reviewRepository.avgRatingByHomestayId(hid);
-            Long   count = reviewRepository.countByHomestayId(hid);
+            Double avg = reviewRepository.avgRatingByHomestayId(hid);
+            Long count = reviewRepository.countByHomestayId(hid);
             hsRating.put(hid, avg != null ? String.format("%.1f", avg) : "-");
             hsReviewCount.put(hid, count != null ? count : 0L);
         }
 
-        model.addAttribute("tourRating",      tourRating);
+        model.addAttribute("tourRating", tourRating);
         model.addAttribute("tourReviewCount", tourReviewCount);
-        model.addAttribute("actRating",       actRating);
-        model.addAttribute("actReviewCount",  actReviewCount);
-        model.addAttribute("hsRating",        hsRating);
-        model.addAttribute("hsReviewCount",   hsReviewCount);
+        model.addAttribute("actRating", actRating);
+        model.addAttribute("actReviewCount", actReviewCount);
+        model.addAttribute("hsRating", hsRating);
+        model.addAttribute("hsReviewCount", hsReviewCount);
 
         return "Member/member_search";
     }

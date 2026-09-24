@@ -13,7 +13,7 @@ import com.example.miniproject.service.Member.BookingService;
 
 import jakarta.servlet.http.HttpSession;
 
-import java.util.List; // ⬅️ NEW: ต้อง import เพิ่ม เพื่อรองรับ List<String>
+import java.util.List; 
 
 @Controller
 public class BookingHomestayController {
@@ -24,9 +24,7 @@ public class BookingHomestayController {
     @Autowired
     private BookingService bookingService;
 
-    // ════════════════════════════════════════════════════════
-    //  GET : หน้าจองโฮมสเตย์
-    // ════════════════════════════════════════════════════════
+
 
  @GetMapping("/booking/homestay/{id}")
 public String bookingPage(
@@ -44,10 +42,7 @@ public String bookingPage(
     return "Member/booking_homestay";
 }
 
-    // ════════════════════════════════════════════════════════
     //  POST : สร้างการจองใหม่
-    // ════════════════════════════════════════════════════════
-
     @PostMapping("/booking/homestay/create")
     public String createBooking(
             @RequestParam("roomtypeid")                               String  roomtypeId,
@@ -85,7 +80,6 @@ public String bookingPage(
         }
     }
 
-   
 
     @PostMapping("/booking/homestay/edit/{id}")
     public String editBooking(
@@ -126,10 +120,8 @@ public String bookingPage(
         }
     }
 
-    // ════════════════════════════════════════════════════════
+   
     //  POST : ยกเลิกการจอง
-    // ════════════════════════════════════════════════════════
-
    @PostMapping("/booking/homestay/cancel/{id}")
 public String cancelBooking(
         @PathVariable("id") String bookingId,

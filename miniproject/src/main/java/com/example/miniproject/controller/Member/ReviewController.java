@@ -41,9 +41,9 @@ public class ReviewController {
             redirectAttributes.addFlashAttribute("errorMsg", "ไม่สามารถส่งรีวิวได้ กรุณาลองใหม่");
         }
 
-        // ส่งมาจากหน้ารายการการจอง -> กลับไปหน้ารายการ (คงแท็บทัวร์/ที่พักเดิมไว้)
+     
         if ("list".equals(from)) {
-            // whitelist เฉพาะค่าที่รู้จัก กันค่าแปลกปลอมต่อท้าย URL
+         
             if ("TOUR".equals(type) || "ACCOMMODATION".equals(type)) {
                 return "redirect:/member/bookings/list?type=" + type;
             }

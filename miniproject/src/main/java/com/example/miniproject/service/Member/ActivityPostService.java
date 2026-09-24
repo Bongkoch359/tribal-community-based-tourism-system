@@ -21,23 +21,22 @@ public class ActivityPostService {
     @Autowired
     private TourRepository tourRepository;
 
-    // ─── ดึงโพสต์ทั้งหมด ───
+    //  ดึงโพสต์ทั้งหมด 
     public List<Activitypost> getAllPosts() {
         return activityPostRepository.findAllByOrderByCreateddateDesc();
     }
 
-    // ─── ดึงโพสต์ตาม ID ───
     public Activitypost getPostById(String activityId) {
         return activityPostRepository.findById(activityId).orElse(null);
     }
 
-    // ─── สร้างโพสต์ใหม่ ───
+    // ─── สร้างโพสต์ใหม่
     public Activitypost createPost(
             String title,
             String location,
             String description,
-            String images,         // base64 หลายรูป คั่นด้วย ||
-            String tourId,         // ไม่บังคับ — ทัวร์ที่โพสนี้โปรโมท
+            String images,         
+            String tourId,         
             Communitymanager manager) {
 
         Activitypost post = new Activitypost();
@@ -58,7 +57,7 @@ public class ActivityPostService {
         return activityPostRepository.save(post);
     }
 
-    // ─── หาทัวร์จาก tourId (คืน null ถ้าไม่ได้เลือก) ───
+    // ─── หาทัวร์จาก tourId (คืน null ถ้าไม่ได้เลือก)
     private Tour resolveTour(String tourId) {
         if (tourId == null || tourId.isBlank()) {
             return null;
@@ -67,7 +66,7 @@ public class ActivityPostService {
                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบทัวร์ที่เลือก (ID: " + tourId + ")"));
     }
 
-    // ─── ลบโพสต์ ───
+    //  ลบโพสต์ 
     public boolean deletePost(String activityId) {
         if (activityPostRepository.existsById(activityId)) {
             activityPostRepository.deleteById(activityId);
@@ -76,7 +75,7 @@ public class ActivityPostService {
         return false;
     }
 
-    // ─── อัปเดตโพสต์ ───
+    // อัปเดตโพสต์ 
     public Activitypost updatePost(
             String activityId,
             String title,
@@ -92,10 +91,7 @@ public class ActivityPostService {
         post.setLocation(location);
         post.setDescription(description);
 
-        // อัปเดตรูป: แยกความหมายระหว่าง "ไม่ได้ส่ง images มาเลย (null)" กับ "ส่งมาเป็นค่าสุดท้ายที่ต้องการ (ไม่ null)"
-        // - images == null      → ผู้เรียกไม่ได้ระบุสถานะรูปมา (เช่น endpoint เก่าที่ไม่มีรูปใหม่) → คงรูปเดิมไว้ ไม่แตะ
-        // - images == ""        → ผู้ใช้ตั้งใจลบรูปออกจนหมด (เช่น กด X ลบรูปเดิมทุกรูปในหน้าแก้ไข) → เคลียร์เป็น null
-        // - images == "path||path" → ตั้งค่ารูปตามที่ส่งมา (รวมรูปเดิมที่เก็บไว้ + รูปใหม่ที่อัปโหลดแล้ว)
+      
         if (images != null) {
             post.setImages(images.isBlank() ? null : images);
         }
@@ -106,17 +102,17 @@ public class ActivityPostService {
         return activityPostRepository.save(post);
     }
 
-    // ─── ดึงโพสต์ของ manager คนนั้น ───
+    // ─── ดึงโพสต์ของ manager คนนั้น 
     public List<Activitypost> getPostsByManager(String managerId) {
         return activityPostRepository.findByCommunitymanagerManageridOrderByCreateddateDesc(managerId);
     }
 
-    // ─── ค้นหาตามหัวข้อ ───
+    // ─── ค้นหาตามหัวข้อ 
     public List<Activitypost> searchByTitle(String keyword) {
         return activityPostRepository.findByTitleContainingIgnoreCase(keyword);
     }
 
-    // ─── ค้นหาตามสถานที่ ───
+    // ─── ค้นหาตามสถานที่ 
     public List<Activitypost> searchByLocation(String keyword) {
         return activityPostRepository.findByLocationContainingIgnoreCase(keyword);
     }

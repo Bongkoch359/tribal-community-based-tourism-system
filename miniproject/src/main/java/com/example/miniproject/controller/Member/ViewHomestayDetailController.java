@@ -51,26 +51,29 @@ public class ViewHomestayDetailController {
             Model model) {
 
         Homestay homestay = homestayService.getHomestayDetailForMember(id);
-        if (homestay == null) return "redirect:/search";
+        if (homestay == null)
+            return "redirect:/search";
 
         List<String> homestayImages = new ArrayList<>();
         if (homestay.getImages() != null && !homestay.getImages().isBlank()) {
             for (String img : homestay.getImages().split(",")) {
                 String trimmed = img.trim();
-                if (!trimmed.isEmpty()) homestayImages.add(trimmed);
+                if (!trimmed.isEmpty())
+                    homestayImages.add(trimmed);
             }
         }
 
-        List<Review>  reviews     = homestayService.getReviewsByHomestay(id);
-        Double        avgRating   = homestayService.getAvgRating(id);
-        Long          reviewCount = homestayService.getReviewCount(id);
+        List<Review> reviews = homestayService.getReviewsByHomestay(id);
+        Double avgRating = homestayService.getAvgRating(id);
+        Long reviewCount = homestayService.getReviewCount(id);
 
-        // ✅ นับจำนวนรีวิวแยกตามดาว (1-5) เพื่อคำนวณ % แถบคะแนนฝั่ง view
-       Map<Integer, Long> ratingCounts = reviews.stream()
-        .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
-System.out.println("DEBUG ratingCounts = " + ratingCounts);
+        // นับจำนวนรีวิวแยกตามดาว (1-5) เพื่อคำนวณ % แถบคะแนนฝั่ง view
+        Map<Integer, Long> ratingCounts = reviews.stream()
+                .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
+        System.out.println("DEBUG ratingCounts = " + ratingCounts);
 
-        // ✅ แปลงเป็น LocalDate ก่อน เพื่อคำนวณ nights ได้ตรงๆ แล้วค่อยแปลงเป็น java.sql.Date สำหรับ query
+        // แปลงเป็น LocalDate ก่อน เพื่อคำนวณ nights ได้ตรงๆ แล้วค่อยแปลงเป็น
+        // java.sql.Date สำหรับ query
         LocalDate checkinDate, checkoutDate;
         try {
             checkinDate = (checkin != null && !checkin.isBlank())
@@ -84,7 +87,7 @@ System.out.println("DEBUG ratingCounts = " + ratingCounts);
                 checkoutDate = checkinDate.plusDays(1);
             }
         } catch (Exception e) {
-            checkinDate  = LocalDate.now();
+            checkinDate = LocalDate.now();
             checkoutDate = checkinDate.plusDays(1);
         }
 
@@ -94,25 +97,25 @@ System.out.println("DEBUG ratingCounts = " + ratingCounts);
 
         Map<String, Integer> availableRooms = new HashMap<>();
         for (Roomtype room : homestay.getRoomtypes()) {
-         Integer booked = bookingroomdetailRepository
-        .countBookedRoomsInRange(room.getRoomtypeid(), sd, ed);
+            Integer booked = bookingroomdetailRepository
+                    .countBookedRoomsInRange(room.getRoomtypeid(), sd, ed);
             int remaining = room.getTotalrooms() - (booked != null ? booked : 0);
             availableRooms.put(room.getRoomtypeid(), Math.max(0, remaining));
         }
 
-        model.addAttribute("homestay",       homestay);
+        model.addAttribute("homestay", homestay);
         model.addAttribute("homestayImages", homestayImages);
-        model.addAttribute("rooms",          homestay.getRoomtypes());
-        model.addAttribute("reviews",        reviews);
-        model.addAttribute("avgRating",      avgRating);
-        model.addAttribute("reviewCount",    reviewCount);
-        model.addAttribute("ratingCounts",   ratingCounts);
+        model.addAttribute("rooms", homestay.getRoomtypes());
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("avgRating", avgRating);
+        model.addAttribute("reviewCount", reviewCount);
+        model.addAttribute("ratingCounts", ratingCounts);
         model.addAttribute("availableRooms", availableRooms);
 
-        model.addAttribute("checkinParam",  sd);
+        model.addAttribute("checkinParam", sd);
         model.addAttribute("checkoutParam", ed);
-        model.addAttribute("guestParam",    guest != null ? guest : 1);
-        model.addAttribute("nights",        nights);
+        model.addAttribute("guestParam", guest != null ? guest : 1);
+        model.addAttribute("nights", nights);
 
         Member member = (Member) session.getAttribute("loggedInMember");
         if (member != null) {
@@ -120,14 +123,13 @@ System.out.println("DEBUG ratingCounts = " + ratingCounts);
                     .findCompletedBookingsWithoutReview(member.getMemberid(), id);
 
             Map<String, java.sql.Date> checkoutDateMap = pendingReviews.stream()
-                .collect(Collectors.toMap(
-                    Booking::getBookingid,
-                    b -> b.getRoomDetails().stream()
-                            .filter(rd -> rd.getRoomtype().getHomestay().getHomestayid() == id)
-                            .map(Bookingroomdetail::getCheckoutdate)
-                            .max(java.sql.Date::compareTo)
-                            .orElse(null)
-                ));
+                    .collect(Collectors.toMap(
+                            Booking::getBookingid,
+                            b -> b.getRoomDetails().stream()
+                                    .filter(rd -> rd.getRoomtype().getHomestay().getHomestayid() == id)
+                                    .map(Bookingroomdetail::getCheckoutdate)
+                                    .max(java.sql.Date::compareTo)
+                                    .orElse(null)));
 
             model.addAttribute("pendingReviewBookings", pendingReviews);
             model.addAttribute("checkoutDateMap", checkoutDateMap);

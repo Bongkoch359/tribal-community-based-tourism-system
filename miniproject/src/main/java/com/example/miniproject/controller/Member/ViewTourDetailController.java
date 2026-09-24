@@ -37,114 +37,117 @@ public class ViewTourDetailController {
 
     @Autowired
     private TourService tourService;
-    
+
     @Autowired
-private TourScheduleService tourScheduleService;
-@GetMapping("/tour/{id}")
-public String viewTourDetail(@PathVariable String id, Model model) {
+    private TourScheduleService tourScheduleService;
 
-    Tour tour = tourRepository.findByIdWithBookings(id).orElse(null);
-    if (tour == null) return "redirect:/search";
-    if (tour.getCommunitymanager() == null
-        || tour.getCommunitymanager().getAccountstatus() != ManagerStatus.ACTIVE) {
-    return "redirect:/search";
-}
+    @GetMapping("/tour/{id}")
+    public String viewTourDetail(@PathVariable String id, Model model) {
 
-
-    // ดึงรอบทัวร์ทั้งหมด
-    List<Tourschedule> schedules =
-            tourScheduleService.getSchedulesByTour(id);
-
-    // จำนวนคนจองแยกตามรอบ
-    Map<String, Integer> bookedSeatsMap =
-            tourScheduleService.getBookedSeatsMap(id);
-
-    int maxSeatsTour = tour.getMaxSeatstour() != null
-            ? tour.getMaxSeatstour()
-            : 0;
-
-    LocalDate today = LocalDate.now();
-
-    // หาจำนวนที่นั่งว่างของเฉพาะรอบที่ยังเปิดจอง
-    int availableSeats = 0;
-
-    for (Tourschedule schedule : schedules) {
-
-        LocalDate start = schedule.getOpendate().toLocalDate();
-
-        boolean isPast = start.isBefore(today);
-        boolean isOpen = "เปิดรับจอง".equals(schedule.getStatus());
-
-        // ข้ามรอบที่ผ่านไปแล้ว หรือไม่ได้เปิดรับจอง
-        if (isPast || !isOpen) {
-            continue;
+        Tour tour = tourRepository.findByIdWithBookings(id).orElse(null);
+        if (tour == null)
+            return "redirect:/search";
+        if (tour.getCommunitymanager() == null
+                || tour.getCommunitymanager().getAccountstatus() != ManagerStatus.ACTIVE) {
+            return "redirect:/search";
         }
 
-        Integer booked = bookedSeatsMap.get(schedule.getScheduleid());
-        int bookedCount = booked != null ? booked : 0;
+        // ดึงรอบทัวร์ทั้งหมด
+        List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(id);
 
-        int available = Math.max(
-                maxSeatsTour - bookedCount,
-                0
-        );
+        // จำนวนคนจองแยกตามรอบ
+        Map<String, Integer> bookedSeatsMap = tourScheduleService.getBookedSeatsMap(id);
 
-        // เอาจำนวนที่ว่างมากที่สุดจากรอบที่ยังจองได้
-        availableSeats = Math.max(availableSeats, available);
-    }
+        int maxSeatsTour = tour.getMaxSeatstour() != null
+                ? tour.getMaxSeatstour()
+                : 0;
 
-    String seatLevel = availableSeats <= 0
-            ? "full"
-            : tourService.getSeatStatusLevel(tour, availableSeats);
+        LocalDate today = LocalDate.now();
 
-    model.addAttribute("availableSeats", availableSeats);
-    model.addAttribute("seatLevel", seatLevel);
-    model.addAttribute("tour", tour);
+        // หาจำนวนที่นั่งว่างของเฉพาะรอบที่ยังเปิดจอง
+        int availableSeats = 0;
 
-    model.addAttribute("schedules", schedules);
-    model.addAttribute("bookedSeatsMap", bookedSeatsMap);
+        for (Tourschedule schedule : schedules) {
 
-    List<Map<String, Object>> calendarData = new ArrayList<>();
+            LocalDate start = schedule.getOpendate().toLocalDate();
 
-    for (Tourschedule s : schedules) {
-        LocalDate start = s.getOpendate().toLocalDate();
-        LocalDate end = (s.getEnddate() != null) ? s.getEnddate().toLocalDate() : start;
+            boolean isPast = start.isBefore(today);
+            boolean isOpen = "เปิดรับจอง".equals(schedule.getStatus());
 
-        Integer booked = bookedSeatsMap.get(s.getScheduleid()); // ✅ key เป็น String ตรงกับ scheduleid
-        int bookedCount = booked != null ? booked : 0;
-        int avail = Math.max(maxSeatsTour - bookedCount, 0);
+            // ข้ามรอบที่ผ่านไปแล้ว หรือไม่ได้เปิดรับจอง
+            if (isPast || !isOpen) {
+                continue;
+            }
 
-        boolean isPast = start.isBefore(today);
-        boolean isOpen = "เปิดรับจอง".equals(s.getStatus());
+            Integer booked = bookedSeatsMap.get(schedule.getScheduleid());
+            int bookedCount = booked != null ? booked : 0;
 
-        String status;
-        if (isPast) status = "past";
-        else if (!isOpen) status = "closed";
-        else if (avail <= 0) status = "full";
-        else if (avail <= maxSeatsTour * 0.2) status = "low";
-        else status = "available";
+            int available = Math.max(
+                    maxSeatsTour - bookedCount,
+                    0);
 
-        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
-            Map<String, Object> entry = new HashMap<>();
-            entry.put("date", d.toString()); // yyyy-MM-dd
-            entry.put("status", status);
-            entry.put("availableSeats", avail);
-            entry.put("scheduleid", s.getScheduleid()); // ✅ เพิ่ม: ให้ frontend รู้ว่าวันไหนอยู่รอบทัวร์เดียวกัน
-            calendarData.add(entry);
+            // เอาจำนวนที่ว่างมากที่สุดจากรอบที่ยังจองได้
+            availableSeats = Math.max(availableSeats, available);
         }
+
+        String seatLevel = availableSeats <= 0
+                ? "full"
+                : tourService.getSeatStatusLevel(tour, availableSeats);
+
+        model.addAttribute("availableSeats", availableSeats);
+        model.addAttribute("seatLevel", seatLevel);
+        model.addAttribute("tour", tour);
+
+        model.addAttribute("schedules", schedules);
+        model.addAttribute("bookedSeatsMap", bookedSeatsMap);
+
+        List<Map<String, Object>> calendarData = new ArrayList<>();
+
+        for (Tourschedule s : schedules) {
+            LocalDate start = s.getOpendate().toLocalDate();
+            LocalDate end = (s.getEnddate() != null) ? s.getEnddate().toLocalDate() : start;
+
+            Integer booked = bookedSeatsMap.get(s.getScheduleid()); // ✅ key เป็น String ตรงกับ scheduleid
+            int bookedCount = booked != null ? booked : 0;
+            int avail = Math.max(maxSeatsTour - bookedCount, 0);
+
+            boolean isPast = start.isBefore(today);
+            boolean isOpen = "เปิดรับจอง".equals(s.getStatus());
+
+            String status;
+            if (isPast)
+                status = "past";
+            else if (!isOpen)
+                status = "closed";
+            else if (avail <= 0)
+                status = "full";
+            else if (avail <= maxSeatsTour * 0.2)
+                status = "low";
+            else
+                status = "available";
+
+            for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+                Map<String, Object> entry = new HashMap<>();
+                entry.put("date", d.toString()); // yyyy-MM-dd
+                entry.put("status", status);
+                entry.put("availableSeats", avail);
+                entry.put("scheduleid", s.getScheduleid()); 
+                calendarData.add(entry);
+            }
+        }
+        model.addAttribute("scheduleCalendarJson", calendarData);
+
+        List<Review> reviews = reviewRepository.findByTourId(id);
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("reviewCount", reviews.size());
+
+        Double avg = reviewRepository.avgRatingByTourId(id);
+        model.addAttribute("avgRating", avg != null ? avg : 0.0);
+
+        Map<Integer, Long> ratingCounts = reviews.stream()
+                .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
+        model.addAttribute("ratingCounts", ratingCounts);
+
+        return "Member/tour_detail";
     }
-    model.addAttribute("scheduleCalendarJson", calendarData);
-
-    List<Review> reviews = reviewRepository.findByTourId(id);
-    model.addAttribute("reviews", reviews);
-    model.addAttribute("reviewCount", reviews.size());
-
-    Double avg = reviewRepository.avgRatingByTourId(id);
-    model.addAttribute("avgRating", avg != null ? avg : 0.0);
-
-    Map<Integer, Long> ratingCounts = reviews.stream()
-            .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
-    model.addAttribute("ratingCounts", ratingCounts);
-
-    return "Member/tour_detail";
-}
 }

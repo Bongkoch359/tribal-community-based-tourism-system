@@ -38,14 +38,11 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
     private BookingCancelHelper bookingCancelHelper;
 
     @Autowired
-private BookingroomdetailRepository bookingroomdetailRepository; 
-
+    private BookingroomdetailRepository bookingroomdetailRepository;
 
     private final String slipUploadDir = System.getProperty("user.dir") + "/uploads/slips/";
 
-    // ─────────────────────────────────────────────────────────────
     // ดึงข้อมูลสำหรับแสดงหน้าชำระเงิน
-    // ─────────────────────────────────────────────────────────────
     @Override
     public RoomReceiptDTO getPaymentPageData(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -71,11 +68,11 @@ private BookingroomdetailRepository bookingroomdetailRepository;
             Bookingroomdetail detail = roomDetails.get(0);
 
             // วันเช็คอิน / เช็คเอาท์
-dto.setCheckIn(detail.getCheckindate());
-dto.setCheckOut(detail.getCheckoutdate());
+            dto.setCheckIn(detail.getCheckindate());
+            dto.setCheckOut(detail.getCheckoutdate());
 
-// ★ deadline ดึงจาก booking ตรงๆ ไม่คำนวณจาก checkindate อีกต่อไป
-dto.setPaymentDeadline(booking.getPaymentDeadline());
+            // ★ deadline ดึงจาก booking ตรงๆ ไม่คำนวณจาก checkindate อีกต่อไป
+            dto.setPaymentDeadline(booking.getPaymentDeadline());
 
             // จำนวนห้อง / ผู้ใหญ่ / เด็ก
             dto.setNumOfRooms(detail.getNumofrooms());
@@ -111,7 +108,7 @@ dto.setPaymentDeadline(booking.getPaymentDeadline());
                         dto.setBankName(detail.getRoomtype().getHomestay().getOwner().getBankName());
                         dto.setBankAccount(detail.getRoomtype().getHomestay().getOwner().getAccountNumber());
                         dto.setAccountName(detail.getRoomtype().getHomestay().getOwner().getAccountName());
-                            dto.setSignatureImageUrl(detail.getRoomtype().getHomestay().getOwner().getSignatureImageUrl());
+                        dto.setSignatureImageUrl(detail.getRoomtype().getHomestay().getOwner().getSignatureImageUrl());
                     }
                 }
             }
@@ -132,25 +129,27 @@ dto.setPaymentDeadline(booking.getPaymentDeadline());
     @Override
     @Transactional
     public void confirmPayment(String bookingId, MultipartFile slipFile, String payNote) {
-    Booking booking = bookingRepository.findById(bookingId)
-            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
 
-    if (isExpired(booking)) {
-        bookingCancelHelper.cancelNow(bookingId, "ยกเลิกอัตโนมัติ: ไม่ชำระเงินภายในกำหนดเวลา");
-        throw new IllegalStateException("เลยกำหนดชำระเงินแล้ว การจองนี้ถูกยกเลิกอัตโนมัติ กรุณาจองใหม่อีกครั้ง");
-    }
-        Bookingroomdetail detail = booking.getRoomDetails().get(0);
-    Roomtype roomtype = detail.getRoomtype();
-    if (roomtype.getTotalrooms() != null) {
-        Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
-                roomtype.getRoomtypeid(), detail.getCheckindate(), detail.getCheckoutdate());
-        int totalBooked = (bookedRooms != null ? bookedRooms : 0);
-        // totalBooked นับรวม booking นี้อยู่แล้ว (ยัง PENDING) เทียบตรงๆ กับ capacity ได้เลย
-        if (totalBooked > roomtype.getTotalrooms()) {
-            bookingCancelHelper.cancelNow(bookingId, "ยกเลิกอัตโนมัติ: ห้องเต็มก่อนชำระเงิน");
-            throw new IllegalStateException("ขออภัย ห้องเต็มแล้วก่อนที่คุณจะชำระเงิน การจองถูกยกเลิก กรุณาจองใหม่อีกครั้ง");
+        if (isExpired(booking)) {
+            bookingCancelHelper.cancelNow(bookingId, "ยกเลิกอัตโนมัติ: ไม่ชำระเงินภายในกำหนดเวลา");
+            throw new IllegalStateException("เลยกำหนดชำระเงินแล้ว การจองนี้ถูกยกเลิกอัตโนมัติ กรุณาจองใหม่อีกครั้ง");
         }
-    }
+        Bookingroomdetail detail = booking.getRoomDetails().get(0);
+        Roomtype roomtype = detail.getRoomtype();
+        if (roomtype.getTotalrooms() != null) {
+            Integer bookedRooms = bookingroomdetailRepository.countBookedRoomsInRange(
+                    roomtype.getRoomtypeid(), detail.getCheckindate(), detail.getCheckoutdate());
+            int totalBooked = (bookedRooms != null ? bookedRooms : 0);
+            // totalBooked นับรวม booking นี้อยู่แล้ว (ยัง PENDING) เทียบตรงๆ กับ capacity
+            // ได้เลย
+            if (totalBooked > roomtype.getTotalrooms()) {
+                bookingCancelHelper.cancelNow(bookingId, "ยกเลิกอัตโนมัติ: ห้องเต็มก่อนชำระเงิน");
+                throw new IllegalStateException(
+                        "ขออภัย ห้องเต็มแล้วก่อนที่คุณจะชำระเงิน การจองถูกยกเลิก กรุณาจองใหม่อีกครั้ง");
+            }
+        }
 
         String savedFileName = saveSlipFile(slipFile, bookingId);
 
@@ -172,9 +171,8 @@ dto.setPaymentDeadline(booking.getPaymentDeadline());
         bookingRepository.save(booking);
     }
 
-    // ─────────────────────────────────────────────────────────────
+   
     // Helper: บันทึกไฟล์สลิปลง disk
-    // ─────────────────────────────────────────────────────────────
     private String saveSlipFile(MultipartFile file, String bookingId) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("กรุณาอัปโหลดสลิปการโอนเงิน");
@@ -197,9 +195,8 @@ dto.setPaymentDeadline(booking.getPaymentDeadline());
         }
     }
 
-    // ─────────────────────────────────────────────────────────────
+  
     // ดึงข้อมูลสำหรับแสดงหน้าใบเสร็จ
-    // ─────────────────────────────────────────────────────────────
     @Override
     public RoomReceiptDTO getReceiptData(String bookingId) {
         RoomReceiptDTO dto = getPaymentPageData(bookingId);
@@ -214,34 +211,33 @@ dto.setPaymentDeadline(booking.getPaymentDeadline());
         dto.setAmount(payment.getAmount());
         dto.setPaymentSlip(payment.getPaymentslip());
         dto.setPaymentStatus(payment.getPaymentStatus().name());
-        
 
         return dto;
     }
 
     @Override
-public boolean isPaymentExpired(String bookingId) {
-    Booking booking = bookingRepository.findById(bookingId)
-            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
-    return isExpired(booking);
-}
-
-@Override
-@Transactional
-public void cancelIfExpired(String bookingId) {
-    Booking booking = bookingRepository.findById(bookingId)
-            .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
-    if (isExpired(booking) && booking.getBookingStatus() == BookingStatus.PENDING) {
-        booking.setBookingStatus(BookingStatus.CANCEL);
-        booking.setCancelReason("ยกเลิกอัตโนมัติ: ไม่ชำระเงินภายในกำหนดเวลา");
-        bookingRepository.save(booking);
+    public boolean isPaymentExpired(String bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+        return isExpired(booking);
     }
-}
 
-private boolean isExpired(Booking booking) {
-    if (booking.getPaymentDeadline() == null) {
-        return false;
+    @Override
+    @Transactional
+    public void cancelIfExpired(String bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
+        if (isExpired(booking) && booking.getBookingStatus() == BookingStatus.PENDING) {
+            booking.setBookingStatus(BookingStatus.CANCEL);
+            booking.setCancelReason("ยกเลิกอัตโนมัติ: ไม่ชำระเงินภายในกำหนดเวลา");
+            bookingRepository.save(booking);
+        }
     }
-    return new java.sql.Timestamp(System.currentTimeMillis()).after(booking.getPaymentDeadline());
-}
+
+    private boolean isExpired(Booking booking) {
+        if (booking.getPaymentDeadline() == null) {
+            return false;
+        }
+        return new java.sql.Timestamp(System.currentTimeMillis()).after(booking.getPaymentDeadline());
+    }
 }

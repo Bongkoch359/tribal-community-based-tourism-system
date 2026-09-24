@@ -19,7 +19,7 @@ public class ManagerService {
     @Autowired
     private TourReportService tourReportService;
 
-    // List Manager Account — step 4.1-4.2
+  
     public List<Communitymanager> getAll() {
         return managerRepository.findAll();
     }
@@ -28,7 +28,7 @@ public class ManagerService {
         return managerRepository.findByAccountstatus(status);
     }
 
-    // Create Manager Account — step 5.1
+    
     public boolean createManager(Communitymanager manager) {
         try {
             manager.setAccountstatus(ManagerStatus.ACTIVE);

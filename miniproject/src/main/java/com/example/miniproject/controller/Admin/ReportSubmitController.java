@@ -31,7 +31,7 @@ public class ReportSubmitController {
             @RequestParam(required = false) String evidenceImage,
             HttpSession session) {
 
-        // ✅ ต้องล็อกอินเป็นสมาชิกทั่วไปเท่านั้นถึงจะรายงานได้
+     
         Member loggedInMember = (Member) session.getAttribute("loggedInMember");
         if (loggedInMember == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

@@ -21,9 +21,9 @@ public class TourPaymentController {
     // GET: แสดงหน้าชำระเงินทัวร์
     @GetMapping("/{bookingId}")
     public String showPaymentPage(@PathVariable String bookingId, Model model,
-                                   RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
-            // ★ เช็คและยกเลิกอัตโนมัติก่อน ถ้าเลยเวลาแล้ว
+            // เช็คและยกเลิกอัตโนมัติก่อน ถ้าเลยเวลาแล้ว
             paymentService.cancelIfExpired(bookingId);
 
             if (paymentService.isPaymentExpired(bookingId)) {

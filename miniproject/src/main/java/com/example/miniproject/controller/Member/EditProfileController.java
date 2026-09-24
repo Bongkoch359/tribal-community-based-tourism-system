@@ -31,15 +31,10 @@ public class EditProfileController {
         Member member = memberService.getMemberById(loggedIn.getMemberid())
                                      .orElse(loggedIn);
 
-        // display result: ส่งไปหน้าฟอร์มแก้ไขข้อมูล
         model.addAttribute("member", member);
         return "Member/member_editprofile";
     }
 
-    // ══════════════════════════════════════════════════════
-    //  POST /member/profile/edit
-    //  ซีเคว้น Step 5-9: รับข้อมูล → validate → doEditProfile() → update
-    // ══════════════════════════════════════════════════════
     @PostMapping("/edit")
     public String doEditProfile(
             @RequestParam("firstname")                          String firstname,
@@ -55,13 +50,13 @@ public class EditProfileController {
             Model model,
             RedirectAttributes ra) {
 
-        // Guard
+     
         Member loggedIn = (Member) session.getAttribute("loggedInMember");
         if (loggedIn == null) {
             return "redirect:/member/login";
         }
 
-        // ══ Step 7 (Pre-build): เตรียม Object จากข้อมูลที่กรอกเข้ามา เพื่อใช้ดัก Alternate Flows ════
+      
         Member currentInput = new Member();
         currentInput.setMemberid(loggedIn.getMemberid());
         currentInput.setFirstname(firstname != null ? firstname.trim() : "");
@@ -71,10 +66,10 @@ public class EditProfileController {
         currentInput.setBirthdate(birthdate);
         currentInput.setAddress(address != null ? address.trim() : "");
 
-        // ══ Alternate Flow 6.1 — ข้อมูลไม่ครบ (หรือกรอกไม่ถูกต้อง) ══════════
+       
         if (firstname == null || firstname.isBlank() ||
             lastname  == null || lastname.isBlank()) {
-            // ดัก Alternate Flow: แสดงกล่องข้อความเตือนให้ตรงตามเอกสารสเปก
+          
             model.addAttribute("errorMessage", "กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน");
             model.addAttribute("member", currentInput); // คงค่าที่กรอกไว้หน้าจอ
             return "Member/member_editprofile";
@@ -119,15 +114,12 @@ public class EditProfileController {
             return "Member/member_editprofile";
         }
 
-        // อัปเดตข้อมูลใน Session ของผู้ใช้ ══════════════
+        // อัปเดตข้อมูลใน Session
         session.setAttribute("loggedInMember", currentInput);
-
-        // แสดงผลสำเร็จด้วย Flash Attribute และโหลดหน้าเว็บใหม่ป้องกันการกดส่งซ้ำ 
         ra.addFlashAttribute("successMessage", "แก้ไขข้อมูลสำเร็จแล้ว!");
         return "redirect:/member/profile/edit";
     }
 
-    // ── View Profile (read-only) ─────────────────────────
     @GetMapping
     public String viewProfile(HttpSession session, Model model) {
         Member loggedIn = (Member) session.getAttribute("loggedInMember");

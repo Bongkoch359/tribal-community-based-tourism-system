@@ -77,11 +77,10 @@ public class TourService {
         return tourTypeRepository.findAll();
     }
 
-    // ─────────────────────────────────────────────────────────
-    // ✅ แก้ใหม่: ดึงทัวร์ที่ "จองได้จริง" (สำหรับหน้าค้นหาของผู้ใช้)
+    
+    //  ดึงทัวร์ที่ "จองได้จริง" (สำหรับหน้าค้นหาของผู้ใช้)
     //    เดิมกรองจาก t.status == 'เปิดจอง' → ตอนนี้กรองจาก repository query
     //    ที่เช็ค EXISTS Tourschedule status = 'เปิดรับจอง' แทน
-    // ─────────────────────────────────────────────────────────
     public List<Tour> getAllActiveTours() {
         List<Tour> tours = tourRepository.search(null, null); // ใช้ query ที่กรองรอบเปิดรับจองอยู่แล้ว
 
@@ -89,36 +88,28 @@ public class TourService {
         return tours;
     }
 
-    // เพิ่ม method นี้
+   
     public void injectBookedSeats(List<Tour> tours) {
         
     }
 
-    // ─────────────────────────────────────────────────────────
-    // ✅ แก้ใหม่: ดึงทัวร์ตาม ID — เฉพาะที่ "จองได้จริง" (สำหรับผู้ใช้ทั่วไป)
-    //    เดิมกรอง t.getStatus() == "เปิดจอง" → ตัดออก เพราะไม่มี field นี้แล้ว
-    //    ถ้าต้องการกันไม่ให้เข้าดูทัวร์ที่ไม่มีรอบเปิดเลย ให้ใช้ getTourByIdAny()
-    //    แล้วเช็คที่ชั้น controller ว่ามีรอบเปิดอยู่จริงไหมแทน
-    // ─────────────────────────────────────────────────────────
+
     public Optional<Tour> getTourById(String tourid) {
         return tourRepository.findById(tourid);
     }
 
-    // ใช้เฉพาะหน้าจองทัวร์ (fetch bookings มาด้วย)
     public Optional<Tour> getTourByIdWithBookings(String tourid) {
         return tourRepository.findByIdWithBookings(tourid);
     }
 
-    // ─────────────────────────────────────────────────────────
+   
     // ดึงทัวร์ตาม ID — ไม่กรองสถานะ (สำหรับ manager ดูรายละเอียด)
-    // ─────────────────────────────────────────────────────────
     public Optional<Tour> getTourByIdAny(String tourid) {
         return tourRepository.findById(tourid);
     }
 
-    // ─────────────────────────────────────────────────────────
+   
     // สร้างทัวร์ใหม่
-    // ─────────────────────────────────────────────────────────
     @Transactional
     public Tour createTour(Tour tour, Communitymanager manager, String tourTypeName) {
         String newId = "T" + UUID.randomUUID().toString()
@@ -129,9 +120,7 @@ public class TourService {
         return tourRepository.save(tour);
     }
 
-    // ─────────────────────────────────────────────────────────
-    // อัปเดตเฉพาะรูปภาพ
-    // ─────────────────────────────────────────────────────────
+    
     @Transactional
     public void updateImages(String tourid, String images) {
         tourRepository.findById(tourid).ifPresent(t -> {
@@ -140,9 +129,7 @@ public class TourService {
         });
     }
 
-    // ─────────────────────────────────────────────────────────
-    // ✅ อัปเดตทัวร์ — ตัด existing.setStatus(...) ออก เพราะไม่มี field status แล้ว
-    // ─────────────────────────────────────────────────────────
+   
     @Transactional
     public Tour updateTour(String tourid, Tour updated, String tourTypeName) {
         Tour existing = tourRepository.findById(tourid)
@@ -181,7 +168,7 @@ public class TourService {
     }
 
     // ─────────────────────────────────────────────────────────
-    // ✅ แก้ใหม่: นับจำนวนทัวร์ที่เปิดอยู่ (จองได้จริง) — ใช้ query ใหม่แทน countByStatus
+    //  นับจำนวนทัวร์ที่เปิดอยู่ (จองได้จริง) — ใช้ query ใหม่แทน countByStatus
     // ─────────────────────────────────────────────────────────
     public long countActiveTours() {
         return tourRepository.countActivePublished();

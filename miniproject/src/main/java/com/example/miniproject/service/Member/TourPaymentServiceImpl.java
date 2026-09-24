@@ -77,7 +77,7 @@ private TourScheduleRepository tourScheduleRepository;
 
             dto.setScheduleOpenDate(openDate);
 
-// ★ deadline ดึงจาก booking ตรงๆ ไม่คำนวณจาก opendate อีกต่อไป
+//  deadline ดึงจาก booking ตรงๆ ไม่คำนวณจาก opendate อีกต่อไป
 dto.setPaymentDeadline(booking.getPaymentDeadline());
 
             // จำนวนผู้ใหญ่ / เด็ก
@@ -89,7 +89,7 @@ dto.setPaymentDeadline(booking.getPaymentDeadline());
             dto.setWantInsurance(booking.getWantInsurance());
             dto.setSubtotalInsurance(booking.getSubtotalInsurance());
 
-            // ข้อมูล Tour
+           
             if (detail.getTour() != null) {
                 dto.setTourName(detail.getTour().getTourmname());
                 dto.setTourDuration(detail.getTour().getTourDuration());

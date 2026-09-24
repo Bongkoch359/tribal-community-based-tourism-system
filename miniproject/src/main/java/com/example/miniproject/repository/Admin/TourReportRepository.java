@@ -11,7 +11,6 @@ import java.util.Optional;
 @Repository
 public interface TourReportRepository extends JpaRepository<TourReport, String> {
 
-    // สำหรับหน้า Admin > จัดการรายงาน เรียงตามล่าสุดก่อน
     List<TourReport> findAllByOrderByCreatedAtDesc();
 
     // กรองตามสถานะ เช่น ดูเฉพาะที่ยังไม่ได้ดำเนินการ (PENDING)
@@ -35,7 +34,7 @@ public interface TourReportRepository extends JpaRepository<TourReport, String> 
     """)
     List<Object[]> countPendingGroupedByManager();
 
-    // ดึง report ทั้งหมด (ไม่จำกัดสถานะ) ของทัวร์ในความดูแลของ manager คนหนึ่ง — ใช้โชว์ใน modal
+  
     List<TourReport> findByTour_Communitymanager_ManageridOrderByCreatedAtDesc(String managerid);
 
     // ดึงเฉพาะ report ที่ PENDING ของทัวร์ในความดูแลของ manager คนหนึ่ง — ใช้ตอนระงับบัญชีเพื่อ resolve ทีเดียว

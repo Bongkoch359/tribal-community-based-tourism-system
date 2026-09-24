@@ -10,7 +10,7 @@ import com.example.miniproject.entity.enums.ManagerStatus;
 
 public interface CommunitymanagerRepository extends JpaRepository<Communitymanager, String> {
 
-    // step 4.1: ดึงรายการทั้งหมด
+   
     List<Communitymanager> findAll();
 
     // กรองตามสถานะ

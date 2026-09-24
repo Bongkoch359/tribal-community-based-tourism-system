@@ -30,17 +30,12 @@ public class ReviewService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    // ══════════════════════════════════════════════════════
-    // Generate Review ID → RV001, RV002, ...
-    // ══════════════════════════════════════════════════════
     private String generateReviewId() {
         long count = reviewRepository.countAll() + 1;
         return String.format("RV%03d", count);
     }
 
-    // ══════════════════════════════════════════════════════
-    // Submit Review (เดิม — สำหรับ member)
-    // ══════════════════════════════════════════════════════
+    
     public void submitReview(String bookingId,
             String memberId,
             Integer rating,
@@ -89,27 +84,16 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    // ══════════════════════════════════════════════════════
-    // ดึงรีวิวของทัวร์ (สำหรับ manager)
-    // ══════════════════════════════════════════════════════
     public List<Review> getReviewsByTourId(String tourid) {
         return reviewRepository.findByTourId(tourid);
     }
 
-    // ══════════════════════════════════════════════════════
-    // ค่าเฉลี่ย rating ของทัวร์
-    // ══════════════════════════════════════════════════════
+    
     public double getAvgRatingByTourId(String tourid) {
         Double avg = reviewRepository.avgRatingByTourId(tourid);
         return avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
     }
 
-    // ══════════════════════════════════════════════════════
-    // นับจำนวนรีวิวแต่ละดาว → Map<Integer(ดาว), Long(จำนวน)>
-    // คืน map ที่มีครบ 5,4,3,2,1 เสมอ (ค่าเริ่มต้น 0) เรียงลำดับตายตัวด้วย
-    // LinkedHashMap
-    // กันปัญหา Thymeleaf lookup ratingCounts[star] แล้วได้ null/0 ผิด ๆ
-    // ══════════════════════════════════════════════════════
     public Map<Integer, Long> getRatingCountsByTourId(String tourid) {
         List<Review> reviews = reviewRepository.findByTourId(tourid);
 

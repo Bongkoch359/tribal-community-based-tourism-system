@@ -36,10 +36,7 @@ public class ManagerController {
     @Autowired
 private TourReportService tourReportService;
 
-    // ============================================================
-    // GET /admin/manager
-    // List Manager Account — step 2-5 (Sequence: List Manager)
-    // ============================================================
+
    @GetMapping
 public String listManager(Model model, HttpSession session,
                           RedirectAttributes redirectAttributes) {
@@ -76,10 +73,6 @@ public String listManager(Model model, HttpSession session,
     return "Admin/admin_managerlist";
 }
 
-  // ============================================================
-    // GET /admin/manager/create
-    // เปิดหน้าฟอร์ม Create Manager — step 1 open page
-    // ============================================================
     @GetMapping("/create")
     public String createPage(HttpSession session, Model model) {
         if (session.getAttribute("loggedInAdmin") == null) {
@@ -104,10 +97,7 @@ public String listManager(Model model, HttpSession session,
         return "Admin/admin_managercreate";
     }
 
-    // ============================================================
-    // POST /admin/manager/create
-    // Create Manager Account — step 3-6 (Sequence: Create Manager)
-    // ============================================================
+
     @PostMapping("/create")
     public String createManager(@RequestParam String firstname,
                                 @RequestParam String lastname,
@@ -123,7 +113,7 @@ public String listManager(Model model, HttpSession session,
             return "redirect:/admin/login";
         }
 
-        // step 3: validate (Alternate Flow 3.1)
+
         if (firstname.isBlank() || lastname.isBlank() || phone.isBlank() ||
             tribe.isBlank()     || email.isBlank()    || password.isBlank()) {
             redirectAttributes.addFlashAttribute("message",   "กรุณากรอกข้อมูลให้ถูกต้อง");
@@ -144,7 +134,6 @@ public String listManager(Model model, HttpSession session,
             return "redirect:/admin/manager/create";
         }
 
-        // step 5: createManagerAccount() → insert data
         Communitymanager manager = new Communitymanager();
         manager.setManagerid("MG" + UUID.randomUUID().toString().substring(0, 6).toUpperCase());
         manager.setFirstname(firstname);
@@ -156,14 +145,12 @@ public String listManager(Model model, HttpSession session,
 
         boolean success = managerService.createManager(manager);
 
-        // step 5.1.1: return F (Alternate Flow)
+   
         if (!success) {
             redirectAttributes.addFlashAttribute("message",   "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
             redirectAttributes.addFlashAttribute("alertType", "error");
             return "redirect:/admin/manager/create";
         }
-
-        // step 6: display result — success
         try {
         emailService.sendManagerCreatedEmail(
         email,
@@ -180,14 +167,6 @@ public String listManager(Model model, HttpSession session,
         
     }
 
-    // ============================================================
-    // POST /admin/manager/suspend/{id}
-    // Suspend Manager Account
-    // ============================================================
-    // ============================================================
-    // POST /admin/manager/suspend/{id}
-    // Suspend Manager Account
-    // ============================================================
    @PostMapping("/suspend/{id}")
 public String suspendManager(@PathVariable String id,
                                @RequestParam("reason") String reason,
@@ -213,10 +192,8 @@ public String suspendManager(@PathVariable String id,
     return "redirect:/admin/manager";
 }
 
-    // ============================================================
     // POST /admin/manager/activate/{id}
     // เปิดใช้งานบัญชีอีกครั้ง
-    // ============================================================
     @PostMapping("/activate/{id}")
     public String activateManager(@PathVariable String id,
                                   HttpSession session,

@@ -11,10 +11,9 @@ import java.util.Optional;
 @Repository
 public interface HomestayReportRepository extends JpaRepository<HomestayReport, String> {
 
-    // สำหรับหน้า Admin > จัดการรายงาน เรียงตามล่าสุดก่อน
+   
     List<HomestayReport> findAllByOrderByCreatedAtDesc();
 
-    // กรองตามสถานะ เช่น ดูเฉพาะที่ยังไม่ได้ดำเนินการ (PENDING)
     List<HomestayReport> findByStatusOrderByCreatedAtDesc(String status);
 
     // ดู report ทั้งหมดของที่พักหลังหนึ่ง

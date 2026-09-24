@@ -34,7 +34,7 @@ public class LoginMemberController {
         if ("SUCCESS".equals(result)) {
             memberService.getMemberByEmail(email)
                          .ifPresent(m -> session.setAttribute("loggedInMember", m));
-            //  ✅ ชื่อ session key ต้องตรงกับ Thymeleaf: session.loggedInMember
+         
             return "redirect:/search";
         }
 
@@ -42,7 +42,7 @@ public class LoginMemberController {
         return "Member/member_login";
     }
 
-    // ─── Logout (เรียกจาก href="/member/login/logout") ───
+
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();

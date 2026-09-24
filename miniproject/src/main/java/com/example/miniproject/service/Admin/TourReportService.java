@@ -47,7 +47,7 @@ public class TourReportService {
         return String.format("TR%06d", newNumber);
     }
 
-    // ===================== ฝั่งสมาชิก: สร้าง report =====================
+    // ฝั่งสมาชิก: สร้าง report
     public TourReport createReport(String reason, String description, String evidenceImage, String tourId) {
 
         Tour tour = tourRepository.findById(tourId)
@@ -64,7 +64,7 @@ public class TourReportService {
         return tourReportRepository.save(report);
     }
 
-    // ===================== ฝั่ง Admin: ดูรายการ =====================
+    // Admin: ดูรายการ
     public List<TourReport> getAllReports() {
         return tourReportRepository.findAllByOrderByCreatedAtDesc();
     }
@@ -82,7 +82,7 @@ public class TourReportService {
         return tourReportRepository.countByTour_Tourid(tourId);
     }
 
-    // ===================== ฝั่ง Admin: ตัดสินใจดำเนินการ =====================
+    // Admin: ตัดสินใจดำเนินการ 
     public TourReport resolveReport(String reportId, String action) {
         TourReport report = getReportById(reportId);
 
