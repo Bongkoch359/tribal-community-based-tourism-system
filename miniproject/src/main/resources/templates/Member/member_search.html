@@ -586,12 +586,13 @@
                   class="fcard-badge badge-full">ห้องเต็ม</span>
 
             <!-- เหลือ X ห้อง (โชว์เฉพาะตอนห้องว่างจริง) -->
+             <!--/*
             <span th:if="${hsAvailableRooms != null and hsAvailableRooms[h.homestayid] != null
                           and hsAvailableRooms[h.homestayid] > 0
                           and startDate != null and !#strings.isEmpty(startDate)}"
                   class="fcard-badge badge-available"
                   th:text="'เหลือ ' + ${hsAvailableRooms[h.homestayid]} + ' ห้อง'">
-            </span>
+            </span>*/-->
           </div>
           <div class="fcard-body">
             <div class="fcard-rating">
@@ -854,12 +855,13 @@
                   class="card-badge badge-full">ห้องเต็ม</span>
 
              <!-- เหลือ X ห้อง (โชว์เฉพาะตอนห้องว่างจริง) -->
+              <!--/*
             <span th:if="${hsAvailableRooms != null and hsAvailableRooms[h.homestayid] != null
                           and hsAvailableRooms[h.homestayid] > 0
                           and startDate != null and !#strings.isEmpty(startDate)}"
                   class="card-badge badge-available"
                   th:text="'เหลือ ' + ${hsAvailableRooms[h.homestayid]} + ' ห้อง'">
-            </span>
+            </span>*/-->
           </div>
           <div class="card-body">
             <div class="fcard-rating" style="margin-bottom:6px;">

@@ -216,9 +216,6 @@ public int getAvailableSeatsForSchedule(Tour tour, String scheduleId) {
 
 public Map<String, Boolean> checkTourAvailability(List<String> tourIds) {
     Map<String, Boolean> result = new java.util.HashMap<>();
-    for (String id : tourIds) {
-        result.put(id, false);
-    }
     if (tourIds.isEmpty()) {
         return result;
     }
@@ -233,9 +230,7 @@ public Map<String, Boolean> checkTourAvailability(List<String> tourIds) {
         long booked      = bookedNum != null ? bookedNum.longValue() : 0L;
 
         boolean hasSeat = (maxSeats == null) || (booked < maxSeats);
-        if (hasSeat) {
-            result.put(tourId, true);
-        }
+        result.merge(tourId, hasSeat, (oldVal, newVal) -> oldVal || newVal);
     }
     return result;
 }

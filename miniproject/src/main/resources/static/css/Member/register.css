@@ -1,0 +1,274 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── สีเดิมของหน้านี้ (ใช้กับฟอร์ม/ปุ่ม submit ฯลฯ — ไม่แตะต้อง) ── */
+      --green-950: #0a1f12;
+      --green-900: #14321e;
+      --green-800: #1a472a;
+      --green-700: #215c35;
+      --green-600: #2d7a4f;
+      --green-400: #52b788;
+      --green-200: #a7e3c3;
+      --green-50:  #f0faf4;
+      --amber-600: #c27b04;
+      --amber-500: #e8960a;
+      --neutral-800: #292524;
+      --neutral-600: #57534e;
+      --neutral-400: #a8a29e;
+      --neutral-300: #d6d3d1;
+      --neutral-200: #e7e5e4;
+      --neutral-50:  #fafaf9;
+      --white: #ffffff;
+      --navbar-h: 100px;
+
+      /* ── สีเฉพาะสำหรับ NAV/โลโก้ — ก็อปมาจากหน้า search (theme ป่า-ไม้-อำพัน) ── */
+      --nav-green-950: #0f2114;
+      --nav-green-900: #16311d;
+      --nav-green-800: #1c4026;
+      --nav-green-200: #bfdec8;
+      --nav-green-50:  #f4faf5;
+      --nav-amber-600: #b9790c;
+      --nav-amber-500: #d68f14;
+      --nav-amber-400: #e4a53a;
+      --nav-paper: #fffdf8;
+      --nav-neutral-200: #e4dac2;
+      --nav-neutral-500: #8a7a63;
+      --nav-neutral-700: #524533;
+      --nav-neutral-800: #3a2f21;
+      --nav-cream-100: #fbf6ea;
+      --nav-cream-50:  #f6efdd;
+      --nav-paper: #fffdf8;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--nav-cream-100);
+      color: var(--neutral-800);
+      min-height: 100vh;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: 'Sarabun', sans-serif; cursor: pointer; }
+
+    /* ══════════════════ TOP BAR (ธีม search) ══════════════════ */
+    .top-bar {
+      background: var(--nav-green-950);
+      padding: 7px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 20px;
+    }
+    .top-bar a {
+      color: rgba(255,255,255,0.55);
+      font-size: 13.5px; font-weight: 500;
+      transition: color .15s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .top-bar a:hover { color: var(--nav-amber-400); }
+    .top-bar a svg { width: 14px; height: 14px; }
+    .top-bar-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
+
+    /* ══════════════════ NAVBAR (ธีม search) ══════════════════ */
+   .navbar {
+  background: var(--green-900);
+  background-image: linear-gradient(180deg, var(--green-800), var(--green-900));
+  height: var(--navbar-h);
+  display: flex; align-items: center;
+  padding: 0 5% 0 3%; 
+   gap: 8px;
+  position: sticky; top: 0; z-index: 1000;
+  box-shadow: 0 3px 18px rgba(15,33,20,0.35);
+  border-bottom: 3px solid var(--amber-500);
+}
+       .navbar-brand {
+  color: #fff; margin-right: auto;
+  margin-left: 20px;
+  display: flex; align-items: center; gap: 0px; flex-shrink: 0;
+}
+    
+.brand-logo{
+    width:160px;
+    height:120px;
+    flex-shrink:0;
+}
+
+.brand-logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+  .brand-text {
+  font-family: 'Sriracha', cursive;
+  color: var(--white);
+  font-size: 1.55rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  line-height: 1;
+  margin-left: -10px;
+}
+
+
+    .nav-links { display: flex; align-items: center; gap: 2px; }
+    .nav-link {
+      color: rgba(255,255,255,.82);
+      font-size: 16px; font-weight: 600;
+      padding: 10px 16px; border-radius: 8px;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .nav-link svg { width: 17px; height: 17px; opacity: .75; flex-shrink: 0; }
+    .nav-link:hover { background: rgba(255,255,255,.10); color: var(--nav-amber-400); }
+
+    .nav-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.14); margin: 0 8px; }
+
+    .auth-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+    .btn-login {
+      background: rgba(255,255,255,0.10);
+      border: 1.5px solid rgba(255,255,255,0.25);
+      color: #fff;
+      border-radius: 100px;
+      padding: 9px 20px 9px 9px;
+      font-size: 16px; font-weight: 600;
+      display: flex; align-items: center; gap: 9px;
+      transition: background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .btn-login:hover { background: rgba(255,255,255,0.18); border-color: var(--nav-amber-400); }
+    .btn-login:active { transform: scale(0.97); }
+    .btn-login .icon-user {
+      width: 30px; height: 30px;
+      background: var(--nav-amber-500);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-login .icon-user svg { width: 15px; height: 15px; }
+
+    /* ══════════════════ PAGE LAYOUT / ฟอร์ม ══════════════════ */
+    .page-body {
+      min-height: calc(100vh - var(--navbar-h) - 38px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 24px 64px;
+    }
+
+    .form-card {
+      background: var(--nav-paper);
+      border-radius: 18px;
+      padding: 44px 48px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 14px 40px rgba(59,36,21,0.14), 0 4px 12px rgba(59,36,21,0.06);
+      border: 1px solid var(--nav-neutral-200);
+    }
+
+    .form-card-header { margin-bottom: 32px; }
+    .form-card-header h1 { font-size: 28px; font-weight: 800; color: var(--neutral-800); margin-bottom: 6px; }
+    .form-card-header p { font-size: 16px; color: var(--neutral-400); }
+
+    /* ALERT */
+    .alert {
+      border-radius: 9px; padding: 13px 16px;
+      font-size: 15px; margin-bottom: 22px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .alert-error  { background: #fff3f3; border: 1px solid #fccaca; color: #b91c1c; }
+    .alert-success{ background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+    .alert svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+
+    /* SECTION LABEL */
+    .sec-label {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 700; color: var(--neutral-400);
+      letter-spacing: .8px; text-transform: uppercase;
+      margin: 6px 0 20px;
+    }
+    .sec-label::before, .sec-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--neutral-200);
+    }
+
+    .row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 700; color: #3a3a3a; margin-bottom: 7px; }
+    .req { color: #e53e3e; margin-left: 3px; }
+
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px;
+      stroke: #bbb; fill: none; stroke-width: 1.8;
+      pointer-events: none;
+    }
+    .form-control {
+      width: 100%;
+      border: 1.5px solid var(--neutral-300);
+      border-radius: 9px;
+      padding: 12px 14px 12px 44px;
+      font-size: 16px;
+      font-family: 'Sarabun', sans-serif;
+      color: var(--neutral-800);
+      background: var(--neutral-50);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+    }
+    .form-control:focus {
+      border-color: var(--green-400);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.14);
+    }
+    .form-control::placeholder { color: #c0bdb8; font-weight: 400; }
+
+    .form-control.input-error {
+      border-color: #fca5a5;
+      background: #fff8f8;
+    }
+    .form-control.input-error:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+    }
+
+    /* ── ข้อความ error สีแดงใต้ช่อง ── */
+    .field-error {
+      display: none;
+      color: #e53e3e;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .field-error.show { display: block; }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--green-800);
+      border: none; border-radius: 10px;
+      padding: 15px;
+      color: #fff; font-size: 18px; font-weight: 700;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer; margin-top: 6px;
+      transition: background .18s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-submit:hover { background: var(--green-900); }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; }
+
+    .form-footer {
+      text-align: center; font-size: 15px;
+      color: var(--neutral-400); margin-top: 22px;
+    }
+    .form-footer a { color: var(--green-600); font-weight: 700; }
+    .form-footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .top-bar { display: none; }
+      .navbar { height: auto; min-height: 70px; padding: 12px 5%; flex-wrap: wrap; gap: 10px; }
+      .brand-name-line2 { display: none; }
+      .form-card { padding: 28px 20px; }
+      .row-two { grid-template-columns: 1fr; gap: 0; }
+    }

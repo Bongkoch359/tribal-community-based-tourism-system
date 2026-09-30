@@ -10,7 +10,6 @@ import com.example.miniproject.repository.Tour.TourScheduleRepository;
 import com.example.miniproject.service.Member.BookingService;
 import com.example.miniproject.service.Member.TourService;
 import com.example.miniproject.service.Tour.TourScheduleService;
-import com.example.miniproject.entity.enums.ManagerStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,8 +51,12 @@ public class ViewTourDetailController {
             return "redirect:/search";
         }
 
-        // ดึงรอบทัวร์ทั้งหมด
-        List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(id);
+        LocalDate today = LocalDate.now();
+
+        // ดึงรอบทัวร์ แล้วกรองรอบที่ผ่านมาแล้วออก
+        List<Tourschedule> schedules = tourScheduleService.getSchedulesByTour(id).stream()
+                .filter(s -> !s.getOpendate().toLocalDate().isBefore(today))
+                .collect(Collectors.toList());
 
         // จำนวนคนจองแยกตามรอบ
         Map<String, Integer> bookedSeatsMap = tourScheduleService.getBookedSeatsMap(id);
@@ -61,8 +64,6 @@ public class ViewTourDetailController {
         int maxSeatsTour = tour.getMaxSeatstour() != null
                 ? tour.getMaxSeatstour()
                 : 0;
-
-        LocalDate today = LocalDate.now();
 
         // หาจำนวนที่นั่งว่างของเฉพาะรอบที่ยังเปิดจอง
         int availableSeats = 0;
@@ -90,9 +91,14 @@ public class ViewTourDetailController {
             availableSeats = Math.max(availableSeats, available);
         }
 
-        String seatLevel = availableSeats <= 0
-                ? "full"
-                : tourService.getSeatStatusLevel(tour, availableSeats);
+        String seatLevel;
+if (schedules.isEmpty()) {
+    seatLevel = "none";          // ไม่มีรอบเลย ไม่ใช่เต็ม
+} else if (availableSeats <= 0) {
+    seatLevel = "full";
+} else {
+    seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
+}
 
         model.addAttribute("availableSeats", availableSeats);
         model.addAttribute("seatLevel", seatLevel);
@@ -107,7 +113,7 @@ public class ViewTourDetailController {
             LocalDate start = s.getOpendate().toLocalDate();
             LocalDate end = (s.getEnddate() != null) ? s.getEnddate().toLocalDate() : start;
 
-            Integer booked = bookedSeatsMap.get(s.getScheduleid()); // ✅ key เป็น String ตรงกับ scheduleid
+            Integer booked = bookedSeatsMap.get(s.getScheduleid());
             int bookedCount = booked != null ? booked : 0;
             int avail = Math.max(maxSeatsTour - bookedCount, 0);
 
@@ -131,7 +137,7 @@ public class ViewTourDetailController {
                 entry.put("date", d.toString()); // yyyy-MM-dd
                 entry.put("status", status);
                 entry.put("availableSeats", avail);
-                entry.put("scheduleid", s.getScheduleid()); 
+                entry.put("scheduleid", s.getScheduleid());
                 calendarData.add(entry);
             }
         }
