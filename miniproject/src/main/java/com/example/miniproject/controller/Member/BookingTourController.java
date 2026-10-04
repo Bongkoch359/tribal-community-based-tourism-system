@@ -98,17 +98,23 @@ public String bookingPage(
 
     return "Member/booking_tour";
 }
-
 @GetMapping("/booking/tour/{id}/seats")
-@org.springframework.web.bind.annotation.ResponseBody
+@ResponseBody
 public java.util.Map<String, Object> getSeatsForSchedule(
         @PathVariable("id") String tourId,
-        @RequestParam("scheduleid") String scheduleId) {
+        @RequestParam("scheduleid") String scheduleId,
+        @RequestParam(value = "bookingid", required = false) String bookingId) {
 
     Tour tour = tourService.getTourByIdAny(tourId)
             .orElseThrow(() -> new RuntimeException("ไม่พบทัวร์"));
 
     int availableSeats = tourService.getAvailableSeatsForSchedule(tour, scheduleId);
+
+    // หน้าแก้ไขการจอง: บวกคืนที่นั่งที่การจองนี้ถืออยู่ในรอบที่เลือก
+    if (bookingId != null && !bookingId.isBlank()) {
+        availableSeats += tourBookingService.seatsHeldByBookingInSchedule(bookingId, scheduleId);
+    }
+
     String seatLevel = tourService.getSeatStatusLevel(tour, availableSeats);
 
     java.util.Map<String, Object> result = new java.util.HashMap<>();

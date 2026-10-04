@@ -18,9 +18,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.miniproject.repository.Member.GuestRepository;
+import com.example.miniproject.entity.Tour;
+import com.example.miniproject.service.Member.TourService;
+import com.example.miniproject.service.Member.BookingTourService;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -48,6 +53,9 @@ private GuestRepository guestRepository;
     @Qualifier("tourPaymentService")
     private PaymentService<TourReceiptDTO> tourPaymentService;
 
+    @Autowired private TourService tourService;
+    
+@Autowired private BookingTourService bookingTourService;
    
     @GetMapping("/list")
     public String listBookings(
@@ -138,22 +146,34 @@ public String bookingDetail(
     }
     else if (booking.getBookingType() == BookingType.TOUR) {
 
-        if (booking.getTourDetails() != null && !booking.getTourDetails().isEmpty()
-                && booking.getTourDetails().get(0).getTour() != null) {
-            String tourId = booking.getTourDetails().get(0).getTour().getTourid();
-            List<Tourschedule> schedules = tourScheduleRepository
-                    .findBookableSchedules(tourId, java.sql.Date.valueOf(LocalDate.now()));
-            model.addAttribute("schedules", schedules);
-        }
+    if (booking.getTourDetails() != null && !booking.getTourDetails().isEmpty()
+            && booking.getTourDetails().get(0).getTour() != null) {
 
-        model.addAttribute("guestList",
-                guestRepository.findByBooking_BookingidOrderByGuestidAsc(bookingId));
+        var detail = booking.getTourDetails().get(0);
+        Tour tour = detail.getTour();
+        String tourId = tour.getTourid();
 
-        return "Member/detail_bookingtour";
+        List<Tourschedule> schedules = tourScheduleRepository
+                .findBookableSchedules(tourId, java.sql.Date.valueOf(LocalDate.now()));
+        model.addAttribute("schedules", schedules);
+
+        String scheduleId = detail.getTourschedule() != null
+                ? detail.getTourschedule().getScheduleid() : null;
+        int available = tourService.getAvailableSeatsForSchedule(tour, scheduleId);
+        int held = scheduleId == null ? 0
+                : bookingTourService.seatsHeldByBookingInSchedule(bookingId, scheduleId);
+        model.addAttribute("availableSeats", available + held);
     }
+
+    model.addAttribute("guestList",
+            guestRepository.findByBooking_BookingidOrderByGuestidAsc(bookingId));
+
+    return "Member/detail_bookingtour";
+}
 
     return "redirect:/member/bookings/list";
 }
+
 
     //  GET : หน้าใบเสร็จ (แยกตามประเภทการจอง)
     @GetMapping("/receipt/{bookingId}")

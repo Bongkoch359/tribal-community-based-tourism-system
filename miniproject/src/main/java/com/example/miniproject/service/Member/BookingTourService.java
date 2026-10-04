@@ -408,7 +408,8 @@ public class BookingTourService {
             int bookedInSchedule = tourScheduleRepository
                     .countBookedSeatsBySchedule(newSchedule.getScheduleid());
 
-            int currentGuestInThisBooking = isChangingDate ? 0 : booking.getNumofguest();
+           int currentGuestInThisBooking = isChangingDate ? 0
+        : (booking.getNumofguest() != null ? booking.getNumofguest() : 0);
             int availableSeats = tour.getMaxSeatstour() - (bookedInSchedule - currentGuestInThisBooking);
 
             if (totalGuest > availableSeats) {
@@ -609,4 +610,17 @@ public class BookingTourService {
                 "ยกเลิกโดยผู้จอง" + (reason != null && !reason.isBlank() ? ": " + reason.trim() : ""));
         bookingRepository.save(booking);
     }
+
+    @Transactional(readOnly = true)
+public int seatsHeldByBookingInSchedule(String bookingId, String scheduleId) {
+    Booking b = bookingRepository.findByIdWithDetails(bookingId).orElse(null);
+    if (b == null || b.getBookingStatus() == BookingStatus.CANCEL
+            || b.getTourDetails() == null || scheduleId == null) return 0;
+    return b.getTourDetails().stream()
+            .filter(d -> d.getTourschedule() != null
+                    && scheduleId.equals(d.getTourschedule().getScheduleid()))
+            .mapToInt(d -> (d.getNumofadult() == null ? 0 : d.getNumofadult())
+                         + (d.getNumofchild() == null ? 0 : d.getNumofchild()))
+            .sum();
+}
 }
