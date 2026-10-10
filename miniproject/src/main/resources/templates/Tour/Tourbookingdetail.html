@@ -389,14 +389,14 @@
                     <div class="card-body">
                         <div class="action-note">
                             <i class="fas fa-circle-info"></i>
-                            กรุณาตรวจสอบหลักฐานการชำระเงินก่อนอนุมัติการชำระเงิน
+                            กรุณาตรวจสอบหลักฐานการชำระเงินก่อนอนุมัติ
                         </div>
 
                         <button class="btn-confirm-booking" id="btnApprovePayment"
                             th:if="${booking.bookingStatus?.name() == 'WAITING_APPROVAL'}"
                             th:attr="data-bookingid=${booking.bookingid}"
                             onclick="openApproveModal(this.dataset.bookingid)">
-                            <i class="fas fa-circle-check"></i> อนุมัติการชำระเงิน
+                            <i class="fas fa-circle-check"></i> อนุมัติการจอง
                         </button>
                         <button class="btn-cancel-booking" th:attr="data-bookingid=${booking.bookingid}"
                             onclick="openCancelModal(this.dataset.bookingid)">
@@ -414,15 +414,15 @@
     <!-- MODAL: อนุมัติการชำระเงิน -->
     <div class="modal-overlay" id="approveModal">
         <div class="modal-box">
-            <h3><i class="fas fa-circle-check" style="color:var(--green-dark);"></i> อนุมัติการชำระเงิน</h3>
-            <p>ยืนยันการอนุมัติการชำระเงินใช่หรือไม่?
+            <h3><i class="fas fa-circle-check" style="color:var(--green-dark);"></i> อนุมัติการจอง</h3>
+            <p>ยืนยันการอนุมัติการจองใช่หรือไม่?
                 <!-- <strong>อนุมัติการชำระเงิน</strong> ของการจองนี้ใช่หรือไม่?<br>
                 เมื่ออนุมัติแล้วสถานะการจองจะเปลี่ยนเป็น <strong>"ยืนยันแล้ว"</strong> -->
             </p>
             <div class="modal-actions">
                 <button class="btn-modal-cancel" onclick="closeModal('approveModal')">ยกเลิก</button>
                 <button class="btn-modal-confirm-green" onclick="doApprovePayment()"><i class="fas fa-check"></i>
-                    อนุมัติการชำระเงิน</button>
+                    อนุมัติการจอง</button>
             </div>
         </div>
     </div>
