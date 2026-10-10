@@ -30,7 +30,6 @@ public class ActivityPostService {
         return activityPostRepository.findById(activityId).orElse(null);
     }
 
-    // ─── สร้างโพสต์ใหม่
     public Activitypost createPost(
             String title,
             String location,
@@ -57,7 +56,7 @@ public class ActivityPostService {
         return activityPostRepository.save(post);
     }
 
-    // ─── หาทัวร์จาก tourId (คืน null ถ้าไม่ได้เลือก)
+   
     private Tour resolveTour(String tourId) {
         if (tourId == null || tourId.isBlank()) {
             return null;
@@ -102,22 +101,22 @@ public class ActivityPostService {
         return activityPostRepository.save(post);
     }
 
-    // ─── ดึงโพสต์ของ manager คนนั้น 
+    //  ดึงโพสต์ของ manager คนนั้น 
     public List<Activitypost> getPostsByManager(String managerId) {
         return activityPostRepository.findByCommunitymanagerManageridOrderByCreateddateDesc(managerId);
     }
 
-    // ─── ค้นหาตามหัวข้อ 
+    //ค้นหาตามหัวข้อ 
     public List<Activitypost> searchByTitle(String keyword) {
         return activityPostRepository.findByTitleContainingIgnoreCase(keyword);
     }
 
-    // ─── ค้นหาตามสถานที่ 
+    //  ค้นหาตามสถานที่ 
     public List<Activitypost> searchByLocation(String keyword) {
         return activityPostRepository.findByLocationContainingIgnoreCase(keyword);
     }
 
-    // ─── ดึง 3 โพสต์ล่าสุด ───
+    //  ดึง 3 โพสต์ล่าสุด 
     public List<Activitypost> getLatestPosts() {
         return activityPostRepository.findTop3ByOrderByCreateddateDesc();
     }

@@ -11,7 +11,7 @@ public interface PaymentService<T> {
 
     T getReceiptData(String bookingId);
 
-    // สำหรับเช็ค/ยกเลิกเมื่อหมดกำหนดชำระเงิน ──
+    // สำหรับเช็ค/ยกเลิกเมื่อหมดกำหนดชำระเงิน 
     boolean isPaymentExpired(String bookingId);
 
     void cancelIfExpired(String bookingId);

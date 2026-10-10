@@ -97,7 +97,7 @@ public class ReviewService {
     public Map<Integer, Long> getRatingCountsByTourId(String tourid) {
         List<Review> reviews = reviewRepository.findByTourId(tourid);
 
-        // เตรียม map เริ่มต้นให้มีครบทุกดาว 5 → 1 ค่าเริ่มต้น 0
+       
         Map<Integer, Long> counts = new LinkedHashMap<>();
         for (int star = 5; star >= 1; star--) {
             counts.put(star, 0L);
@@ -127,10 +127,9 @@ public class ReviewService {
         return count != null ? count : 0L;
     }
 
-    // ══════════════════════════════════════════════════════
+    
     // รีวิวรวมของ manager (ทุกทัวร์ในความดูแล ไม่แยกทีละทัวร์)
-    // แต่ละรายการรู้ด้วยว่าเป็นรีวิวของทัวร์ไหน (ReviewTourView)
-    // ══════════════════════════════════════════════════════
+   
     public List<ReviewTourView> getReviewsByManagerId(String managerId) {
         List<Object[]> rows = reviewRepository.findReviewsWithTourByManagerId(managerId);
         List<ReviewTourView> result = new ArrayList<>();
@@ -155,8 +154,7 @@ public class ReviewService {
         return n > 0 ? Math.round((sum / n) * 10.0) / 10.0 : 0.0;
     }
 
-    // นับจำนวนรีวิวแต่ละดาวจากลิสต์ที่ดึงมา (คืน map ครบ 5→1 เสมอ เหมือน
-    // getRatingCountsByTourId)
+    // นับจำนวนรีวิวแต่ละดาวจากลิสต์ที่ดึงมา 
     public Map<Integer, Long> getRatingCountsForViews(List<ReviewTourView> views) {
         Map<Integer, Long> counts = new LinkedHashMap<>();
         for (int star = 5; star >= 1; star--) {

@@ -40,7 +40,7 @@ public String showPaymentPage(@PathVariable String bookingId, Model model,
     return "Member/homestay-payment";
 }
 
-    // POST: รับสลิปและยืนยันการชำระเงิน
+    // รับสลิปและยืนยันการชำระเงิน
     @PostMapping("/{bookingId}/confirm")
     public String confirmPayment(
             @PathVariable String bookingId,

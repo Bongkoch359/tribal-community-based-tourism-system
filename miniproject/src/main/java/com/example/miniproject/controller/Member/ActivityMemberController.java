@@ -14,7 +14,7 @@ public class ActivityMemberController {
     @Autowired
     private ActivityPostService activityPostService;
 
-    // ─── ดูรายละเอียดกิจกรรม ───
+   
     @GetMapping("/{id}")
     public String viewActivity(@PathVariable("id") String activityId, Model model) {
         Activitypost post = activityPostService.getPostById(activityId);

@@ -37,7 +37,7 @@ public class LoginAdminController {
     @Autowired
     private ManagerService managerService;
 
-    // ── เพิ่มใหม่ สำหรับสถิติ dashboard ──
+   
     @Autowired
     private BookingRepository bookingRepository;
 

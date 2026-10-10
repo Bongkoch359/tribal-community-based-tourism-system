@@ -45,9 +45,7 @@ private TourScheduleRepository tourScheduleRepository;
 
     private final String slipUploadDir = System.getProperty("user.dir") + "/uploads/slips/";
 
-    // ─────────────────────────────────────────────────────────────
-    // ดึงข้อมูลสำหรับแสดงหน้าชำระเงิน (ทัวร์)
-    // ─────────────────────────────────────────────────────────────
+ 
     @Override
     public TourReceiptDTO getPaymentPageData(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -58,14 +56,14 @@ private TourScheduleRepository tourScheduleRepository;
         dto.setBookingDate(booking.getBookingdate());
         dto.setTotalAmount(booking.getTotalamount());
 
-        // ── ผู้จ่ายเงิน ──
+        //  ผู้จ่ายเงิน
         if (booking.getMember() != null) {
             dto.setMemberFirstname(booking.getMember().getFirstname());
             dto.setMemberLastname(booking.getMember().getLastname());
             dto.setMemberPhone(booking.getMember().getPhone());
         }
 
-        // ดึงข้อมูลจาก tourDetails (Bookingtourdetail)
+        // ดึงข้อมูลจาก tourDetails 
         List<Bookingtourdetail> tourDetails = booking.getTourDetails();
         if (tourDetails != null && !tourDetails.isEmpty()) {
             Bookingtourdetail detail = tourDetails.get(0);
@@ -184,10 +182,10 @@ if (tour.getMaxSeatstour() != null) {
         return isExpired(booking);
     }
 
-    // ─────────────────────────────────────────────────────────────
+  
     // ยกเลิก booking ทันทีถ้าหมดเวลาแล้ว — เรียกจาก controller ตอนเปิดหน้า/ก่อน confirm
     // เพื่อไม่ต้องรอ scheduled job รอบถัดไป (สูงสุด 1 ชั่วโมง)
-    // ─────────────────────────────────────────────────────────────
+   
     @Override
     @Transactional
     public void cancelIfExpired(String bookingId) {
@@ -213,9 +211,6 @@ if (tour.getMaxSeatstour() != null) {
     return new java.sql.Timestamp(System.currentTimeMillis()).after(booking.getPaymentDeadline());
 }
 
-    // ─────────────────────────────────────────────────────────────
-    // Helper: บันทึกไฟล์สลิปลง disk
-    // ─────────────────────────────────────────────────────────────
     private String saveSlipFile(MultipartFile file, String bookingId) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("กรุณาอัปโหลดสลิปการโอนเงิน");
@@ -238,9 +233,8 @@ if (tour.getMaxSeatstour() != null) {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────
+    
     // ดึงข้อมูลสำหรับแสดงหน้าใบเสร็จ (ทัวร์)
-    // ─────────────────────────────────────────────────────────────
     @Override
     public TourReceiptDTO getReceiptData(String bookingId) {
         TourReceiptDTO dto = getPaymentPageData(bookingId);

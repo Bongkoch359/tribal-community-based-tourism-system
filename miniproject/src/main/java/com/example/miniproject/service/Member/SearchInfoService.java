@@ -162,7 +162,6 @@ public class SearchInfoService {
 
     /**
      * กันจำนวนคนติดลบหรือ 0 ที่อาจหลุดเข้ามาทาง URL query string โดยตรง
-     * (ฝั่ง client จำกัดค่าผ่านปุ่ม +/- อยู่แล้ว แต่ URL bypass ได้)
      */
     private void validateNumGuest(Integer numGuest) {
         if (numGuest != null && numGuest < 1) {
@@ -170,7 +169,7 @@ public class SearchInfoService {
         }
     }
 
-    // helper แปลง String เป็น java.sql.Date
+    
     private java.sql.Date parseDate(String dateStr) {
         try {
             if (dateStr == null || dateStr.isBlank()) return null;

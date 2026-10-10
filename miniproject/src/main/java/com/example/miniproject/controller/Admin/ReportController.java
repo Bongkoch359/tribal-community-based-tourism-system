@@ -45,7 +45,7 @@ public class ReportController {
         return combined;
     }
 
-    // ดูรายละเอียด report เดียว — เช็ค prefix id ว่าเป็น TR (tour) หรือ HR (homestay)
+    // ดูรายละเอียด report เดียว 
     @GetMapping("/{id}")
     public ReportListItemDto getOne(@PathVariable String id) {
         if (id.startsWith("TR")) {
@@ -84,7 +84,7 @@ public class ReportController {
         return 0;
     }
 
-    // ดู report ทั้งหมดของ manager คนหนึ่ง (ใช้ตอนกด "ดู" ในหน้าจัดการผู้จัดการ)
+    // ดู report ทั้งหมดของ manager คนหนึ่ง 
     @GetMapping("/by-manager/{managerId}")
     public List<ReportListItemDto> getByManager(@PathVariable String managerId) {
         return tourReportService.getReportsByManager(managerId).stream()
@@ -92,7 +92,7 @@ public class ReportController {
                 .collect(Collectors.toList());
     }
 
-    // ดู report ทั้งหมดของ homestay owner คนหนึ่ง (ใช้ตอนกด "ดู" ในหน้าจัดการโฮมสเตย์)
+    // ดู report ทั้งหมดของ homestay owner คนหนึ่ง 
     @GetMapping("/by-owner/{ownerId}")
     public List<ReportListItemDto> getByOwner(@PathVariable String ownerId) {
         return homestayReportService.getReportsByHomestayOwner(ownerId).stream()

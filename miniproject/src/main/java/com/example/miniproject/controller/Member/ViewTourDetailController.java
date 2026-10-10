@@ -93,7 +93,7 @@ public class ViewTourDetailController {
 
         String seatLevel;
 if (schedules.isEmpty()) {
-    seatLevel = "none";          // ไม่มีรอบเลย ไม่ใช่เต็ม
+    seatLevel = "none";       
 } else if (availableSeats <= 0) {
     seatLevel = "full";
 } else {

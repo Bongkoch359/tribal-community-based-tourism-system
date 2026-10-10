@@ -29,7 +29,7 @@ public class ListHomestayAccountController {
     @Autowired
 private HomestayReportService homestayReportService;
 
-    // GET /admin/homestay → รายการคำขอสมัคร
+    //  รายการคำขอสมัคร
     @GetMapping
     public String listHomestay(Model model, HttpSession session) {
 
@@ -59,7 +59,7 @@ private HomestayReportService homestayReportService;
         return "Admin/admin_homestaylist";
     }
 
-    // GET /admin/homestay/all → บัญชีที่อนุมัติแล้วทั้งหมด
+    // บัญชีที่อนุมัติแล้วทั้งหมด
     @GetMapping("/all")
     public String listAllHomestay(Model model, HttpSession session) {
 
@@ -74,7 +74,7 @@ private HomestayReportService homestayReportService;
                       && !"REJECTED".equals(o.getAccountstatus()))
             .count();
 
-        // กรองเฉพาะรายการที่อนุมัติแล้วมาแสดงในตารางหน้านี้
+     
         List<Homestayowner> approved = allOwners.stream()
             .filter(o -> Boolean.TRUE.equals(o.getVerificationstatus()))
             .toList();
@@ -101,7 +101,7 @@ private HomestayReportService homestayReportService;
         return "Admin/admin_homestayall";
     }
 
-    // POST /admin/homestay/approve/{id}
+   
     @PostMapping("/approve/{id}")
     public String approveHomestay(@PathVariable String id,
                                   HttpSession session,

@@ -60,10 +60,7 @@ public class BookingService {
         return bookingRepository.findByMemberMemberidOrderByBookingdateDesc(memberId);
     }
 
-    /**
-     * คืนจำนวนห้องว่าง "สูงสุด" (จาก roomtype ที่เหลือเยอะที่สุด) ของแต่ละ homestay
-     * ในช่วงวันที่ checkin–checkout ที่ระบุ ใช้แสดงเป็น "เหลือ X ห้อง" ในหน้าค้นหา
-     */
+   
     public Map<Integer, Integer> getMaxAvailableRoomsForHomestays(
             List<Integer> homestayIds, LocalDate checkin, LocalDate checkout) {
 
@@ -118,8 +115,7 @@ public class BookingService {
     }
 
  
-    /**ตรวจสอบจำนวนห้อง / ผู้ใหญ่ / เด็ก ให้เป็นค่าที่ถูกต้อง
-     */
+ 
     private void validateGuestCounts(Integer numofrooms, Integer numofAdults, Integer numofChildren) {
 
         if (numofrooms == null || numofrooms < 1) {
@@ -135,15 +131,10 @@ public class BookingService {
         }
     }
 
-    /**
-     * ตรวจสอบว่าจำนวนผู้เข้าพัก (ผู้ใหญ่ + เด็ก) ไม่เกินความจุของห้อง
-     * สมมติฐาน: roomtype.getMaxguest() คือความจุ "ต่อห้อง" ดังนั้นถ้าจองหลายห้อง
-     * ความจุรวมจะคูณตามจำนวนห้อง (maxguest * rooms)
-     * — ถ้าระบบจริงหมายถึงความจุรวมทั้งหมดไม่คูณตามห้อง ให้เอา " * rooms" ออก
-     */
+   
     private void validateCapacity(Roomtype roomtype, int rooms, int adults, int children) {
         if (roomtype.getMaxguest() == null)
-            return; // ไม่ได้กำหนดความจุไว้ ข้ามการเช็ค
+            return; 
 
         int totalGuests = adults + children;
         int capacity = roomtype.getMaxguest() * rooms;
@@ -181,7 +172,7 @@ public class BookingService {
       
         validateGuestCounts(numofrooms, numofAdults, numofChildren);
 
-        // ดึง Roomtype 
+         
         Roomtype roomtype = roomtypeRepository.lockRoomTypeForUpdate(roomtypeId);
         if (roomtype == null) {
             throw new RuntimeException("ไม่พบประเภทห้องพัก: " + roomtypeId);
@@ -208,7 +199,7 @@ public class BookingService {
         long nights = ChronoUnit.DAYS.between(dateIn, dateOut);
         double subtotal = roomtype.getPricepernight() * nights * rooms;
 
-        // สร้าง Booking หลัก 
+      
         Booking booking = new Booking();
         booking.setBookingid(bookingIdGenerator.generateBookingId());
         booking.setMember(member);
@@ -269,20 +260,20 @@ public class BookingService {
             List<String> guestFirstnames,
             List<String> guestLastnames) { 
 
-        // ── 1. ดึง Booking 
+        //  1. ดึง Booking 
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
 
-        // ── 2. ตรวจสิทธิ์
+        //  2. ตรวจสิทธิ์
         if (!booking.getMember().getMemberid().equals(memberId))
             throw new IllegalArgumentException("ไม่มีสิทธิ์แก้ไขการจองนี้");
 
-        // ── 3. ตรวจสถานะ (แก้ได้เฉพาะ PENDING / WAITING_APPROVAL) ──
+        //  3. ตรวจสถานะ (แก้ได้เฉพาะ PENDING / WAITING_APPROVAL) 
         BookingStatus status = booking.getBookingStatus();
         if (status != BookingStatus.PENDING && status != BookingStatus.WAITING_APPROVAL)
             throw new IllegalStateException("ไม่สามารถแก้ไขข้อมูลการจองห้องพักได้ กรุณาลองใหม่อีกครั้ง");
 
-        // ── 4. Validate dates ───────────────────────────────────
+      
         LocalDate dateIn = LocalDate.parse(checkin);
         LocalDate dateOut = LocalDate.parse(checkout);
         if (!dateOut.isAfter(dateIn))
@@ -312,10 +303,7 @@ public class BookingService {
                     roomtype.getRoomtypeid(), Date.valueOf(dateIn), Date.valueOf(dateOut));
             int totalBooked = (bookedRooms != null ? bookedRooms : 0);
 
-            // ถ้าช่วงวันเดิมของ booking นี้ทับกับช่วงวันใหม่ที่กำลังจะเช็ค ต้องหักตัวเองออก
-            // (เพราะ query countBookedRoomsInRange น่าจะนับรวม detail เดิมของ booking
-            // นี้ไปแล้ว
-            // ถ้าช่วงวันเดิม-ใหม่คาบเกี่ยวกัน)
+          
             boolean oldOverlapsNewRange = detail.getCheckindate().toLocalDate().isBefore(dateOut)
                     && detail.getCheckoutdate().toLocalDate().isAfter(dateIn);
             if (oldOverlapsNewRange) {
@@ -342,15 +330,14 @@ public class BookingService {
         detail.setSubtotalroom(subtotal);
         bookingroomdetailRepository.save(detail);
 
-        //  อัปเดต Booking หลัก 
+        //  อัปเดต Booking
         booking.setNumofguest(adults + children);
         booking.setNote(note);
         booking.setTotalamount(subtotal);
         bookingRepository.save(booking);
 
-        // ── 9. อัปเดตชื่อ Guest (กรณีจองให้ผู้อื่น) — รองรับหลายคน ───────────
-        // guestIds / guestFirstnames / guestLastnames ต้องมีความยาวเท่ากันและ
-        // "เรียงตามลำดับเดียวกัน"
+        //  9. อัปเดตชื่อ Guest (กรณีจองให้ผู้อื่น) — รองรับหลายคน 
+       
         if (Boolean.FALSE.equals(booking.getIsBookerGoing()) && guestFirstnames != null) {
 
             int count = guestFirstnames.size();
@@ -363,7 +350,7 @@ public class BookingService {
                         : "";
 
                 if (fname == null || fname.isBlank()) {
-                    continue; // ข้าม row ที่ไม่ได้กรอกชื่อ
+                    continue; 
                 }
 
                 if (gid != null && !gid.isBlank()) {
@@ -371,7 +358,7 @@ public class BookingService {
                     Guest g = guestRepository.findById(gid)
                             .orElseThrow(() -> new IllegalArgumentException("ไม่พบผู้เข้าพัก: " + gid));
 
-                    // กันแก้ guest ของ booking คนอื่น (เผื่อ id ถูกปลอมแปลงมาจากฟอร์ม)
+                  
                     if (g.getBooking() == null || !bookingId.equals(g.getBooking().getBookingid())) {
                         throw new IllegalArgumentException("ข้อมูลผู้เข้าพักไม่ตรงกับการจองนี้");
                     }
@@ -397,15 +384,15 @@ public class BookingService {
     @Transactional
     public void cancelHomestayBooking(String bookingId, String memberId, String reason) {
 
-        // ── 1. ดึง Booking 
+        //  1. ดึง Booking 
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง: " + bookingId));
 
-        // ── 2. ตรวจสิทธิ์
+        //  2. ตรวจสิทธิ์
         if (!booking.getMember().getMemberid().equals(memberId))
             throw new IllegalArgumentException("ไม่มีสิทธิ์ยกเลิกการจองนี้");
 
-        // ── 3. ตรวจสถานะ 
+        //  3. ตรวจสถานะ 
         BookingStatus status = booking.getBookingStatus();
         if (status == BookingStatus.CONFIRMED)
             throw new IllegalStateException("ไม่สามารถยกเลิกการจองที่ยืนยันแล้วได้ กรุณาติดต่อเจ้าหน้าที่");
@@ -422,7 +409,7 @@ public class BookingService {
     }
 
    
-    // HELPERS
+   
     private String generateBookingId() {
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("MMdd"));
         long count = bookingRepository.count() + 1;

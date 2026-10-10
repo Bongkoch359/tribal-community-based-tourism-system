@@ -49,7 +49,7 @@ public String listManager(Model model, HttpSession session,
 
     List<Communitymanager> managers = managerService.getAll();
 
-    // ══ เพิ่มบรรทัดนี้ ══
+   
     model.addAttribute("reportCountByManager", tourReportService.getPendingCountByManager());
 
     if (managers == null || managers.isEmpty()) {
@@ -81,7 +81,7 @@ public String listManager(Model model, HttpSession session,
         
         addPendingHomestayCount(model);
 
-        // เพิ่มรายชื่อชุมชนชนเผ่าทั้ง 8 เผ่า เพื่อส่งไปแสดงผลใน Dropdown ของหน้า HTML
+      
         List<String> tribeNames = Arrays.asList(
             "กะเหรี่ยง (ปกาเกอะญอ)",
             "ม้ง (แม้ว)",
@@ -180,7 +180,7 @@ public String suspendManager(@PathVariable String id,
     boolean success = managerService.suspend(id, reason);
 
     if (success) {
-        // ปิด (RESOLVED) report ที่ PENDING ทั้งหมดของทัวร์ในความดูแลของ manager คนนี้
+       
         tourReportService.resolveReportsForManager(id);
 
         redirectAttributes.addFlashAttribute("message", "ระงับบัญชีเรียบร้อยแล้ว");
@@ -192,7 +192,7 @@ public String suspendManager(@PathVariable String id,
     return "redirect:/admin/manager";
 }
 
-    // POST /admin/manager/activate/{id}
+    
     // เปิดใช้งานบัญชีอีกครั้ง
     @PostMapping("/activate/{id}")
     public String activateManager(@PathVariable String id,
@@ -223,10 +223,10 @@ public String suspendManager(@PathVariable String id,
         model.addAttribute("pendingCount", homestayPending);
     }
 
-    // ============================================================
+   
     // GET /admin/manager/api/check-email
     // API สำหรับเช็คอีเมลซ้ำแบบ Real-time (AJAX)
-    // ============================================================
+  
     @GetMapping("/api/check-email")
     @ResponseBody
     public boolean checkEmailDuplicate(@RequestParam("email") String email) {

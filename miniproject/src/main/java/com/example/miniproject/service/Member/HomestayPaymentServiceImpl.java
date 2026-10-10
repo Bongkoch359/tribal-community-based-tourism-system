@@ -53,7 +53,7 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
         dto.setBookingDate(booking.getBookingdate());
         dto.setTotalAmount(booking.getTotalamount());
 
-        // ── ผู้จ่ายเงิน ──
+        // ผู้จ่ายเงิน 
         if (booking.getMember() != null) {
             dto.setMemberFirstname(booking.getMember().getFirstname());
             dto.setMemberLastname(booking.getMember().getLastname());
@@ -71,7 +71,7 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
             dto.setCheckIn(detail.getCheckindate());
             dto.setCheckOut(detail.getCheckoutdate());
 
-            // ★ deadline ดึงจาก booking ตรงๆ ไม่คำนวณจาก checkindate อีกต่อไป
+            // deadline ดึงจาก booking ต
             dto.setPaymentDeadline(booking.getPaymentDeadline());
 
             // จำนวนห้อง / ผู้ใหญ่ / เด็ก
@@ -79,7 +79,7 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
             dto.setNumOfAdults(detail.getNumofadults());
             dto.setNumOfChildren(detail.getNumofChcldren());
 
-            // ── ใบเสร็จ: ค่าห้อง + ประกัน ──
+            // ── ใบเสร็จ: ค่าห้อง + ประกัน 
             dto.setRoomSubtotal(detail.getSubtotalroom());
             dto.setWantInsurance(booking.getWantInsurance());
             dto.setSubtotalInsurance(booking.getSubtotalInsurance());
@@ -123,9 +123,8 @@ public class HomestayPaymentServiceImpl implements PaymentService<RoomReceiptDTO
         return dto;
     }
 
-    // ─────────────────────────────────────────────────────────────
+  
     // ยืนยันการชำระเงิน
-    // ─────────────────────────────────────────────────────────────
     @Override
     @Transactional
     public void confirmPayment(String bookingId, MultipartFile slipFile, String payNote) {

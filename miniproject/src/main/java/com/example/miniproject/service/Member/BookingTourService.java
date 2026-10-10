@@ -52,14 +52,8 @@ public class BookingTourService {
 
     public static final double INSURANCE_PRICE_PER_PERSON = 100.0;
 
-    // ════════════════════════════════════════════════════════
-    // LIST TOUR BOOKINGS FOR COMMUNITY MANAGER
-    // ════════════════════════════════════════════════════════
+    
 
-    /**
-     * ดึงรายการจองทัวร์ทั้งหมดของ manager คนนั้น กรองตามสถานะได้ (status = null →
-     * เอาทุกสถานะ)
-     */
     public List<Booking> getTourBookingsByManager(String managerId, BookingStatus status) {
         if (status == null) {
             return bookingRepository.findTourBookingsByManagerId(managerId);
@@ -253,14 +247,11 @@ public class BookingTourService {
 
         detail.setNumofadult(adults);
         detail.setNumofchild(childs);
-        detail.setSubtotaltour(tourSubtotal); // ค่าทัวร์ล้วนๆ ไม่รวมประกัน
+        detail.setSubtotaltour(tourSubtotal); 
 
         bookingtourdetailRepository.save(detail);
 
-        
-        // ถ้าผู้จองไปเอง → สร้าง Guest แทนตัวผู้จองเพื่อเก็บชื่อ-นามสกุล-เลขบัตร
-        // (ฝั่ง HTML ส่ง guestIdcard ตัวแรกมาเป็นของผู้จองเสมอ เมื่อ isBookerGoing =
-        // true)
+       
         int idcardOffset = 0;
 
         if (Boolean.TRUE.equals(isBookerGoing) && !guestIdcards.isEmpty()) {
@@ -321,17 +312,17 @@ public class BookingTourService {
             List<String> guestLastnames,
             List<String> guestIdcards) {
 
-        // ── 1. ดึง Booking
+        // ดึง Booking
         Booking booking = bookingRepository
                 .findByIdWithDetails(bookingId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบการจอง"));
 
-        // ── 2. ตรวจสิทธิ์
+        //  ตรวจสิทธิ์
         if (!booking.getMember().getMemberid().equals(memberId)) {
             throw new IllegalArgumentException("ไม่มีสิทธิ์แก้ไขการจองนี้");
         }
 
-        // ── 3. ตรวจสถานะ 
+        // ตรวจสถานะ 
         BookingStatus status = booking.getBookingStatus();
 
         if (status != BookingStatus.PENDING
@@ -339,13 +330,13 @@ public class BookingTourService {
             throw new IllegalStateException("ไม่สามารถแก้ไขการจองได้");
         }
 
-        // ── 4. ดึง Tour Detail 
+        //   ดึง Tour Detail 
         if (booking.getTourDetails() == null
                 || booking.getTourDetails().isEmpty()) {
             throw new RuntimeException("ไม่พบรายละเอียดทัวร์");
         }
 
-        // ── 4.6 Validate จุดรับ (เหมือนตอน create) ──
+      
         if ("โรงแรม/ที่พัก".equals(pickuptype)) {
             if (pickuplocation == null || pickuplocation.trim().isEmpty()) {
                 throw new IllegalArgumentException("กรุณาระบุชื่อโรงแรม/ที่พักสำหรับรับ");
@@ -359,16 +350,15 @@ public class BookingTourService {
 
         Tour tour = detail.getTour();
 
-        // ── 5. Validate date ───────────────────────────────
+       
         LocalDate startDate = LocalDate.parse(tourDate);
 
         if (startDate.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("ไม่สามารถเลือกวันย้อนหลังได้");
         }
 
-        // ── 5.5 ดึง/ล็อกรอบทัวร์ของวันที่ใหม่ ─────────────
-        // ถ้า user เปลี่ยนวันเดินทาง → ต้องหารอบ (schedule) ใหม่
-        // ถ้าวันเดิม → ยังต้องล็อกรอบเดิมไว้ เพราะจำนวนคนอาจเปลี่ยน
+        // ดึง/ล็อกรอบทัวร์ของวันที่ใหม่ 
+       
         Tourschedule oldSchedule = detail.getTourschedule();
         boolean isChangingDate = oldSchedule == null
                 || !oldSchedule.getOpendate().toLocalDate().equals(startDate);
@@ -389,7 +379,7 @@ public class BookingTourService {
             newSchedule = tourScheduleRepository.lockScheduleForUpdate(oldSchedule.getScheduleid());
         }
 
-        // ── 6. คำนวณใหม่ ──────────────────────────────────
+       
         int adults = (adult != null && adult > 0) ? adult : 1;
 
         int childs = (children != null) ? children : 0;
@@ -400,10 +390,8 @@ public class BookingTourService {
         int totalGuest = adults + childs;
 
         // ── 6.2 เช็คที่นั่งของรอบใหม่ ───────────────────────
-        // ถ้าเปลี่ยนวัน: เช็คที่นั่งว่างของรอบใหม่ตรงๆ (ยังไม่มีคนของ booking
-        // นี้อยู่ในรอบนั้น)
-        // ถ้าไม่เปลี่ยนวัน: booking นี้นับรวมอยู่ใน bookedInSchedule แล้ว
-        // ต้องหักจำนวนเดิมออกก่อน
+        // ถ้าเปลี่ยนวัน: เช็คที่นั่งว่างของรอบใหม่ตรงๆ 
+       
         if (tour.getMaxSeatstour() != null) {
             int bookedInSchedule = tourScheduleRepository
                     .countBookedSeatsBySchedule(newSchedule.getScheduleid());

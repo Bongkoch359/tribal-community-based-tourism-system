@@ -34,7 +34,7 @@ public class BookingTourController {
     private TourScheduleRepository tourScheduleRepository;
 
    
-    // GET : หน้าจองทัวร์
+    //  หน้าจองทัวร์
    @GetMapping("/booking/tour/{id}")
 public String bookingPage(
         @PathVariable("id") String id,

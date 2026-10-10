@@ -18,7 +18,7 @@ public class TourPaymentController {
     @Qualifier("tourPaymentService")
     private PaymentService<TourReceiptDTO> paymentService;
 
-    // GET: แสดงหน้าชำระเงินทัวร์
+    // แสดงหน้าชำระเงินทัวร์
     @GetMapping("/{bookingId}")
     public String showPaymentPage(@PathVariable String bookingId, Model model,
             RedirectAttributes redirectAttributes) {
@@ -41,7 +41,7 @@ public class TourPaymentController {
         return "Member/tour-payment";
     }
 
-    // POST: รับสลิปและยืนยันการชำระเงิน
+    // รับสลิปและยืนยันการชำระเงิน
     @PostMapping("/{bookingId}/confirm")
     public String confirmPayment(
             @PathVariable String bookingId,

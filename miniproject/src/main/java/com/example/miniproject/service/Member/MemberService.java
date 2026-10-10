@@ -79,7 +79,7 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
 
-    // ค้นหาด้วย ID (String)
+  
     public Optional<Member> getMemberById(String memberId) {
         return memberRepository.findById(memberId);
     }

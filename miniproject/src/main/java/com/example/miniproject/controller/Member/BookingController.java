@@ -64,14 +64,14 @@ private GuestRepository guestRepository;
             HttpSession session,
             Model model) {
 
-        // ── ดึง member จาก session
+   
         Member member = (Member) session.getAttribute("loggedInMember");
         if (member == null) {
             return "redirect:/member/login";
         }
         String memberId = member.getMemberid();
 
-        // ── แปลง parameter
+      
         BookingType   activeType   = parseType(typeStr);
         BookingStatus activeStatus = parseStatus(statusStr);
 

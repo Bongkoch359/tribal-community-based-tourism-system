@@ -97,7 +97,6 @@ public class SearchInfoController {
                     .collect(Collectors.toList());
         }
 
-        // ── ดึงทัวร์/โฮมสเตย์ยอดนิยม (rating สูงสุด) สำหรับ featured section ──
         List<Tour> featuredTours = searchInfoService.getTopRatedTours(4);
         List<Homestay> featuredHomestays = searchInfoService.getTopRatedHomestays(4);
         model.addAttribute("featuredTours", featuredTours);

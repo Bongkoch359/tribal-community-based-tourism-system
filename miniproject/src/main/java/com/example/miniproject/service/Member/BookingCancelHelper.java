@@ -15,7 +15,7 @@ public class BookingCancelHelper {
     private BookingRepository bookingRepository;
 
     /**
-     * ยกเลิก booking ทันทีใน transaction ใหม่แยกต่างหาก (REQUIRES_NEW)
+     * ยกเลิก booking ทันทีใน transaction ใหม่แยกต่างหาก
      * เพื่อไม่ให้ถูก rollback ตาม exception ที่ throw ต่อจากนี้ใน caller
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)

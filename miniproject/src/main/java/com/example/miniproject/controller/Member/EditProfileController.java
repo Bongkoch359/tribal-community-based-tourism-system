@@ -114,7 +114,7 @@ public class EditProfileController {
             return "Member/member_editprofile";
         }
 
-        // อัปเดตข้อมูลใน Session
+      
         session.setAttribute("loggedInMember", currentInput);
         ra.addFlashAttribute("successMessage", "แก้ไขข้อมูลสำเร็จแล้ว!");
         return "redirect:/member/profile/edit";

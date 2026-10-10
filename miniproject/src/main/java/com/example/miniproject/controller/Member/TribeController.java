@@ -97,7 +97,7 @@ public class TribeController {
                 .findFirst().orElse(null);
 
         // ดักจับไอดีเพื่อเพิ่มคลังคำศัพท์ให้กับทุก ๆ ชนเผ่าก่อนส่งไปยังหน้ากากเว็บ
-        // (Thymeleaf)
+       
         if (selected != null) {
             switch (id) {
                 case 1: // กะเหรี่ยง

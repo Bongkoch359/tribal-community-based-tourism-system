@@ -33,9 +33,7 @@ public class TourService {
     // ชื่อประเภทที่บังคับใช้กับทัวร์รายวัน (numberOfDays == 1)
     private static final String DAILY_TOUR_TYPE_NAME = "ทัวร์รายวัน";
 
-    // ─────────────────────────────────────────────────────────
-    // หา TourType จากชื่อ ถ้ายังไม่มีในตาราง tourtype ให้สร้างใหม่ให้เลย
-    // ─────────────────────────────────────────────────────────
+   
     private TourType resolveTourType(String typeNameFromForm, Integer numberOfDays) {
         String name = (numberOfDays != null && numberOfDays == 1)
                 ? DAILY_TOUR_TYPE_NAME
@@ -59,16 +57,13 @@ public class TourService {
                 });
     }
 
-    // ─────────────────────────────────────────────────────────
     // ดึงทัวร์ทั้งหมดของ manager คนนั้น (ใช้ใน listTour)
-    // ─────────────────────────────────────────────────────────
     public List<Tour> getToursByManager(Communitymanager manager) {
         return tourRepository.findByCommunitymanager(manager);
     }
 
-    // ─────────────────────────────────────────────────────────
+    
     // ดึงทัวร์ทั้งหมด (ไม่กรอง manager — ใช้กรณีต้องการ admin view)
-    // ─────────────────────────────────────────────────────────
     public List<Tour> getAllTours() {
         return tourRepository.findAll();
     }
@@ -146,7 +141,7 @@ public class TourService {
         existing.setNumberOfNights(updated.getNumberOfNights());
         existing.setTourtype(resolveTourType(tourTypeName, updated.getNumberOfDays()));
 
-        // ✅ จุดรับ/นัดพบ — ผู้จัดการชุมชนแก้ไขได้เช่นกัน
+        // จุดรับ/นัดพบ — ผู้จัดการชุมชนแก้ไขได้เช่นกัน
         existing.setAllowMeetingPoint(updated.getAllowMeetingPoint());
         existing.setMeetingPointDetail(updated.getMeetingPointDetail());
         existing.setAllowHotelPickup(updated.getAllowHotelPickup());
@@ -159,9 +154,8 @@ public class TourService {
         return tourRepository.save(existing);
     }
 
-    // ─────────────────────────────────────────────────────────
+    
     // ค้นหาทัวร์ (keyword + จำนวนที่นั่ง)
-    // ─────────────────────────────────────────────────────────
     public List<Tour> searchTours(String keyword, Integer numGuest) {
         String kw = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
         return tourRepository.search(kw, numGuest);
@@ -174,9 +168,9 @@ public class TourService {
         return tourRepository.countActivePublished();
     }
 
-    // ─────────────────────────────────────────────────────────
-    // คำนวณที่นั่งคงเหลือ — จุดเดียวที่ใช้ทั้งระบบ (single source of truth)
-    // ─────────────────────────────────────────────────────────
+   
+    // คำนวณที่นั่งคงเหลือ — จุดเดียวที่ใช้ทั้งระบบ 
+    
     public int getAvailableSeats(Tour tour) {
         if (tour.getMaxSeatstour() == null) {
             return Integer.MAX_VALUE;
@@ -191,9 +185,8 @@ public class TourService {
         return Math.max(0, tour.getMaxSeatstour() - bookedSeats);
     }
 
-    // ─────────────────────────────────────────────────────────
     // ระดับสถานะที่นั่ง — ใช้ % แทนเลขตายตัว
-    // ─────────────────────────────────────────────────────────
+
     public String getSeatStatusLevel(Tour tour, int availableSeats) {
         if (availableSeats <= 0) return "full";
         if (tour.getMaxSeatstour() == null || tour.getMaxSeatstour() <= 0) return "open";
